@@ -53,6 +53,7 @@ For unattended setup after creating a Vercel token, use the bootstrap script:
 export VERCEL_TOKEN="..."
 export VERCEL_TEAM_ID="team_mhftpUYWIR5oysxTjLnSLCol"
 export VERCEL_PROJECT_NAME="vault-mcp-connector"
+export DEPLOY_AUTH_MODE="oauth"
 export PUBLIC_BASE_URL="https://vault-mcp.example.com"
 export DATABASE_URL="postgres://user:password@host:5432/vault_mcp"
 export MCP_SYNC_TOKEN="long-random-sync-token"
@@ -68,6 +69,25 @@ npm run deploy:vercel
 ```
 
 The script links the local repo to the Vercel project, adds or updates production environment variables, pulls production settings, and runs `vercel deploy --prod`. Add `-- --smoke` or set `RUN_REMOTE_SMOKE=1` when `SMOKE_ACCESS_TOKEN` or temporary `MCP_ACCESS_TOKEN` is available.
+
+For a temporary private deployment before the OAuth provider is ready, use static-token mode:
+
+```bash
+export DEPLOY_AUTH_MODE="static"
+export VERCEL_TOKEN="..."
+export VERCEL_TEAM_ID="team_mhftpUYWIR5oysxTjLnSLCol"
+export VERCEL_PROJECT_NAME="vault-mcp-connector"
+export PUBLIC_BASE_URL="https://vault-mcp.example.com"
+export DATABASE_URL="postgres://user:password@host:5432/vault_mcp"
+export MCP_SYNC_TOKEN="long-random-sync-token"
+export MCP_ACCESS_TOKEN="temporary-test-access-token"
+export ALLOWED_ORIGINS="https://chatgpt.com,https://claude.ai,https://chat.openai.com"
+
+npm run deploy:vercel:check
+npm run deploy:vercel -- --smoke
+```
+
+Static-token mode is for MCP Inspector and remote smoke testing only. Switch back to `DEPLOY_AUTH_MODE=oauth` before ChatGPT/Claude production acceptance.
 
 ## Build
 

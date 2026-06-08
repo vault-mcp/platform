@@ -8,21 +8,34 @@ const runRemoteSmoke = args.has("--smoke") || process.env.RUN_REMOTE_SMOKE === "
 const environment = process.env.VERCEL_ENVIRONMENT ?? "production";
 const teamId = process.env.VERCEL_TEAM_ID ?? "team_mhftpUYWIR5oysxTjLnSLCol";
 const projectName = process.env.VERCEL_PROJECT_NAME ?? "vault-mcp-connector";
+const authMode = process.env.DEPLOY_AUTH_MODE ?? "oauth";
 
 const vercelToken = process.env.VERCEL_TOKEN;
-const requiredRuntimeEnv = [
+if (!["oauth", "static"].includes(authMode)) {
+  console.error("DEPLOY_AUTH_MODE must be either `oauth` or `static`.");
+  process.exit(1);
+}
+
+const sharedRuntimeEnv = [
   "PUBLIC_BASE_URL",
   "DATABASE_URL",
   "MCP_SYNC_TOKEN",
   "ALLOWED_ORIGINS",
+];
+const oauthRuntimeEnv = [
   "OAUTH_ISSUER",
   "OAUTH_AUDIENCE",
   "OAUTH_AUTHORIZATION_SERVER",
   "OAUTH_JWKS_URL",
   "OAUTH_SCOPES",
 ];
-const optionalRuntimeEnv = [
+const staticRuntimeEnv = [
   "MCP_ACCESS_TOKEN",
+];
+const optionalRuntimeEnv = authMode === "oauth" ? ["MCP_ACCESS_TOKEN"] : [];
+const requiredRuntimeEnv = [
+  ...sharedRuntimeEnv,
+  ...(authMode === "oauth" ? oauthRuntimeEnv : staticRuntimeEnv),
 ];
 
 const missing = [
@@ -43,6 +56,7 @@ if (checkOnly) {
     teamId,
     projectName,
     environment,
+    authMode,
     runtimeEnv: requiredRuntimeEnv,
     optionalRuntimeEnv: optionalRuntimeEnv.filter((name) => Boolean(process.env[name])),
     runRemoteSmoke,
