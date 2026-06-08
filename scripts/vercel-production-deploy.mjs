@@ -11,6 +11,7 @@ const projectName = process.env.VERCEL_PROJECT_NAME ?? "vault-mcp-connector";
 const authMode = process.env.DEPLOY_AUTH_MODE ?? "oauth";
 
 const vercelToken = process.env.VERCEL_TOKEN;
+const vercelAuthArgs = vercelToken ? ["--token", vercelToken] : [];
 if (!["oauth", "static"].includes(authMode)) {
   console.error("DEPLOY_AUTH_MODE must be either `oauth` or `static`.");
   process.exit(1);
@@ -39,7 +40,6 @@ const requiredRuntimeEnv = [
 ];
 
 const missing = [
-  ...(!vercelToken ? ["VERCEL_TOKEN"] : []),
   ...requiredRuntimeEnv.filter((name) => !process.env[name]),
 ];
 
@@ -57,6 +57,7 @@ if (checkOnly) {
     projectName,
     environment,
     authMode,
+    authSource: vercelToken ? "VERCEL_TOKEN" : "vercel-cli-login",
     runtimeEnv: requiredRuntimeEnv,
     optionalRuntimeEnv: optionalRuntimeEnv.filter((name) => Boolean(process.env[name])),
     runRemoteSmoke,
@@ -72,8 +73,7 @@ await run("npx", [
   teamId,
   "--project",
   projectName,
-  "--token",
-  vercelToken,
+  ...vercelAuthArgs,
 ]);
 
 for (const name of [...requiredRuntimeEnv, ...optionalRuntimeEnv]) {
@@ -90,8 +90,7 @@ await run("npx", [
   "pull",
   "--yes",
   `--environment=${environment}`,
-  "--token",
-  vercelToken,
+  ...vercelAuthArgs,
 ]);
 
 const deploy = await run("npx", [
@@ -99,8 +98,7 @@ const deploy = await run("npx", [
   "deploy",
   "--prod",
   "--yes",
-  "--token",
-  vercelToken,
+  ...vercelAuthArgs,
 ]);
 
 const deploymentUrl = extractDeploymentUrl(deploy.stdout);
@@ -136,8 +134,7 @@ async function upsertEnv(name, value) {
     "add",
     name,
     environment,
-    "--token",
-    vercelToken,
+    ...vercelAuthArgs,
   ], {
     input: `${value}\n`,
     allowFailure: true,
@@ -157,8 +154,7 @@ async function upsertEnv(name, value) {
     "update",
     name,
     environment,
-    "--token",
-    vercelToken,
+    ...vercelAuthArgs,
   ], {
     input: `${value}\n`,
     allowFailure: true,
