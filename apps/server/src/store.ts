@@ -10,6 +10,14 @@ export type IndexHealth = {
   stats: IndexStats | null;
 };
 
+export type StoredOAuthClient = {
+  clientId: string;
+  redirectUris: string[];
+  clientName: string;
+  scope: string;
+  createdAt: string;
+};
+
 export interface IndexStore {
   load?(): Promise<void>;
   close?(): Promise<void>;
@@ -17,6 +25,8 @@ export interface IndexStore {
   health(): IndexHealth | Promise<IndexHealth>;
   search(query: string, limit?: number, scope?: string): SearchResponse | Promise<SearchResponse>;
   fetch(id: string): VaultDocument | null | Promise<VaultDocument | null>;
+  saveOAuthClient(client: StoredOAuthClient): void | Promise<void>;
+  getOAuthClient(clientId: string): StoredOAuthClient | null | Promise<StoredOAuthClient | null>;
   consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean | Promise<boolean>;
 }
 
@@ -24,6 +34,7 @@ export class JsonIndexStore implements IndexStore {
   private documents: VaultDocument[] = [];
   private generatedAt: string | null = null;
   private stats: IndexStats | null = null;
+  private oauthClients = new Map<string, StoredOAuthClient>();
   private consumedOAuthJtis = new Map<string, number>();
 
   constructor(private readonly indexFile: string) {}
@@ -64,6 +75,14 @@ export class JsonIndexStore implements IndexStore {
 
   fetch(id: string) {
     return fetchDocument(this.documents, id);
+  }
+
+  saveOAuthClient(client: StoredOAuthClient): void {
+    this.oauthClients.set(client.clientId, client);
+  }
+
+  getOAuthClient(clientId: string): StoredOAuthClient | null {
+    return this.oauthClients.get(clientId) ?? null;
   }
 
   consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean {
@@ -139,6 +158,14 @@ export class PostgresIndexStore implements IndexStore {
       );
 
       create index if not exists oauth_token_uses_expires_idx on oauth_token_uses (expires_at);
+
+      create table if not exists oauth_clients (
+        client_id text primary key,
+        redirect_uris jsonb not null,
+        client_name text not null,
+        scope text not null,
+        created_at timestamptz not null
+      );
     `);
 
     const meta = await this.pool.query<{ key: string; value: unknown }>("select key, value from vault_index_meta");
@@ -238,6 +265,43 @@ export class PostgresIndexStore implements IndexStore {
     }
 
     return row.rows[0];
+  }
+
+  async saveOAuthClient(client: StoredOAuthClient): Promise<void> {
+    await this.pool.query(
+      `insert into oauth_clients (client_id, redirect_uris, client_name, scope, created_at)
+       values ($1, $2::jsonb, $3, $4, $5)
+       on conflict (client_id) do update set
+         redirect_uris = excluded.redirect_uris,
+         client_name = excluded.client_name,
+         scope = excluded.scope`,
+      [client.clientId, JSON.stringify(client.redirectUris), client.clientName, client.scope, client.createdAt],
+    );
+  }
+
+  async getOAuthClient(clientId: string): Promise<StoredOAuthClient | null> {
+    const result = await this.pool.query<{
+      client_id: string;
+      redirect_uris: unknown;
+      client_name: string;
+      scope: string;
+      created_at: Date;
+    }>(
+      "select client_id, redirect_uris, client_name, scope, created_at from oauth_clients where client_id = $1",
+      [clientId],
+    );
+    const row = result.rows[0];
+    if (!row) {
+      return null;
+    }
+
+    return {
+      clientId: row.client_id,
+      redirectUris: Array.isArray(row.redirect_uris) ? row.redirect_uris.filter((uri): uri is string => typeof uri === "string") : [],
+      clientName: row.client_name,
+      scope: row.scope,
+      createdAt: row.created_at.toISOString(),
+    };
   }
 
   async consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): Promise<boolean> {

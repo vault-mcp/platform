@@ -21,6 +21,7 @@ const registration = await postJson(metadata.registration_endpoint, {
   scope,
 });
 assert(registration.client_id, "expected dynamic registration to return client_id");
+assert(/^vault-mcp-client-[0-9a-f-]+$/.test(registration.client_id), "expected compact stored client_id");
 assert(registration.token_endpoint_auth_method === "none", "expected public-client token auth");
 
 const verifier = crypto.randomBytes(32).toString("base64url");

@@ -4,13 +4,6 @@ import { SignJWT, jwtVerify } from "jose";
 import type { OAuthResourceConfig, ServerConfig } from "./config.js";
 import type { IndexStore } from "./store.js";
 
-type RegisteredClient = {
-  type: "oauth_client";
-  redirect_uris: string[];
-  client_name: string;
-  scope: string;
-};
-
 type AuthorizationCode = {
   type: "authorization_code";
   client_id: string;
@@ -30,7 +23,6 @@ type RefreshToken = {
   sub: string;
 };
 
-const CLIENT_AUDIENCE = "vault-mcp-oauth-client";
 const CODE_AUDIENCE = "vault-mcp-oauth-code";
 const REFRESH_AUDIENCE = "vault-mcp-oauth-refresh";
 const TOKEN_TTL_SECONDS = 60 * 60;
@@ -69,7 +61,14 @@ export function registerOAuthRoutes(app: import("express").Express, config: Serv
       const clientName = typeof req.body?.client_name === "string" && req.body.client_name.trim()
         ? req.body.client_name.trim().slice(0, 120)
         : "Vault MCP Client";
-      const clientId = await signClient({ type: "oauth_client", redirect_uris: redirectUris, client_name: clientName, scope }, oauth);
+      const clientId = `vault-mcp-client-${crypto.randomUUID()}`;
+      await getOAuthStore(req).saveOAuthClient({
+        clientId,
+        redirectUris,
+        clientName,
+        scope,
+        createdAt: new Date().toISOString(),
+      });
 
       res.status(201).json({
         client_id: clientId,
@@ -175,6 +174,12 @@ async function handleAuthorizationCodeGrant(req: Request, res: Response, config:
     return;
   }
 
+  const client = await store.getOAuthClient(clientId);
+  if (!client || !client.redirectUris.includes(redirectUri)) {
+    res.status(400).json({ error: "invalid_client" });
+    return;
+  }
+
   const { payload, jti, expiresAt } = await verifyAuthorizationCode(code, oauth);
   if (
     payload.client_id !== clientId ||
@@ -262,9 +267,15 @@ async function validateAuthorizationRequest(req: Request, config: ServerConfig) 
     throw new OAuthRequestError("invalid_target");
   }
 
-  const client = await verifyClient(clientId, oauth);
-  if (!client.redirect_uris.includes(redirectUri)) {
+  const client = await getOAuthStore(req).getOAuthClient(clientId);
+  if (!client) {
+    throw new OAuthRequestError("invalid_client");
+  }
+  if (!client.redirectUris.includes(redirectUri)) {
     throw new OAuthRequestError("invalid_redirect_uri");
+  }
+  if (!scopeIncludes(client.scope, scope)) {
+    throw new OAuthRequestError("invalid_scope");
   }
 
   return {
@@ -275,26 +286,6 @@ async function validateAuthorizationRequest(req: Request, config: ServerConfig) 
     scope,
     state,
   };
-}
-
-async function signClient(client: RegisteredClient, oauth: OAuthResourceConfig): Promise<string> {
-  return new SignJWT(client)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuer(oauth.issuer)
-    .setAudience(CLIENT_AUDIENCE)
-    .setIssuedAt()
-    .sign(secretKey(oauth));
-}
-
-async function verifyClient(clientId: string, oauth: OAuthResourceConfig): Promise<RegisteredClient> {
-  const { payload } = await jwtVerify(clientId, secretKey(oauth), {
-    issuer: oauth.issuer,
-    audience: CLIENT_AUDIENCE,
-  });
-  if (payload.type !== "oauth_client" || !Array.isArray(payload.redirect_uris)) {
-    throw new OAuthRequestError("invalid_client");
-  }
-  return payload as RegisteredClient;
 }
 
 async function signAuthorizationCode(code: AuthorizationCode, oauth: OAuthResourceConfig): Promise<string> {
@@ -364,6 +355,11 @@ function normalizeScope(scope: string, oauth: OAuthResourceConfig): string | nul
     return null;
   }
   return requested.join(" ");
+}
+
+function scopeIncludes(granted: string, requested: string): boolean {
+  const grantedScopes = new Set(granted.split(/\s+/).map((part) => part.trim()).filter(Boolean));
+  return requested.split(/\s+/).map((part) => part.trim()).filter(Boolean).every((scope) => grantedScopes.has(scope));
 }
 
 function stringParam(req: Request, name: string): string {

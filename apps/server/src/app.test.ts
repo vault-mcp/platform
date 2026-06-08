@@ -266,6 +266,7 @@ describe("server MCP contract", () => {
     expect(registration.status).toBe(201);
     const client = await registration.json() as { client_id: string; token_endpoint_auth_method: string };
     expect(client.client_id).toBeTruthy();
+    expect(client.client_id).toMatch(/^vault-mcp-client-[0-9a-f-]+$/);
     expect(client.token_endpoint_auth_method).toBe("none");
 
     const verifier = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
