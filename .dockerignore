@@ -1,0 +1,10 @@
+node_modules
+dist
+apps/*/dist
+packages/*/dist
+data/*.json
+apps/*/data/*.json
+.env
+.git
+coverage
+*.tsbuildinfo

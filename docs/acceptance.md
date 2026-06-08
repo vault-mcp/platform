@@ -1,0 +1,112 @@
+# Acceptance Runbook
+
+Use this after the remote HTTPS endpoint, Postgres, sync token, and OAuth provider are configured.
+
+## Automated Gates
+
+Local copied-vault gates:
+
+```bash
+npm run build
+npm run check:api
+npm test
+npm run smoke:local
+npm run smoke:oauth-local
+```
+
+Run the two local smoke scripts sequentially unless you set different `PORT` values; both default to `3333`.
+
+If a throwaway Postgres database is available, verify the production storage path too:
+
+```bash
+POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
+npm run smoke:postgres
+```
+
+This replaces the `vault_documents` table contents in that database with the copied-vault test index.
+
+Remote endpoint gate with temporary static bearer auth:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_ACCESS_TOKEN="temporary-test-access-token" \
+MCP_SYNC_TOKEN="sync-token" \
+npm run smoke:remote
+```
+
+Remote endpoint gate with OAuth:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_ACCESS_TOKEN="oauth-access-token" \
+SMOKE_EXPECT_OAUTH=true \
+npm run smoke:remote
+```
+
+Passing output must include:
+
+- `ok: true`
+- nonzero `document_count`
+- `first_result_path: "20 Projects/Vault MCP Connector/Project Home.md"`
+- `metadata_resource: "https://vault-mcp.example.com/mcp"`
+
+The smoke script also verifies authenticated `GET /mcp` returns `text/event-stream`.
+
+Also verify preflight/origin behavior:
+
+```bash
+curl -i -X OPTIONS "https://vault-mcp.example.com/mcp" \
+  -H "Origin: https://chatgpt.com" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Authorization,Content-Type,Accept"
+```
+
+Expected: `204` with `Access-Control-Allow-Origin: https://chatgpt.com`.
+
+## MCP Inspector
+
+1. Start from a synced endpoint.
+2. Run:
+
+```bash
+npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
+```
+
+3. Provide an `Authorization: Bearer ...` header.
+4. Confirm `tools/list` returns only `search` and `fetch`.
+5. Call `search` with `Vault MCP Connector`.
+6. Call `fetch` with the first returned id.
+7. Call `fetch` with `guessed-denied-id` and confirm it returns a tool error.
+
+## ChatGPT
+
+1. Enable developer mode in the ChatGPT workspace.
+2. Create a custom MCP connector/app.
+3. Endpoint: `https://vault-mcp.example.com/mcp`.
+4. Configure OAuth according to the provider backing `OAUTH_*`.
+5. Scan tools and confirm only `search` and `fetch` appear.
+6. Prompt: `Search my vault for the Vault MCP Connector project and fetch the relevant note.`
+7. Confirm the returned citation URL is under `/notes/:id`.
+8. Confirm metadata includes `obsidian_uri`.
+9. Prompt with a denied area request, such as raw daily notes or credentials, and confirm no denied path is returned.
+
+## Claude
+
+1. Add a custom remote MCP connector.
+2. Endpoint: `https://vault-mcp.example.com/mcp`.
+3. Configure the same OAuth provider.
+4. Confirm Claude sees `search` and `fetch`.
+5. Search and fetch `Vault MCP Connector`.
+6. Confirm the same note chunk can be fetched as in ChatGPT.
+7. Confirm guessed ids or denied sensitive paths are not accessible.
+
+## Completion Evidence
+
+Do not consider V1 complete until the project has:
+
+- build/test/smoke logs
+- remote smoke output
+- MCP Inspector confirmation
+- ChatGPT search/fetch confirmation
+- Claude search/fetch confirmation
+- denied-path/guessed-id confirmation

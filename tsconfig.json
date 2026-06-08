@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/vault-core" },
+    { "path": "./apps/indexer" },
+    { "path": "./apps/server" }
+  ]
+}
