@@ -309,6 +309,20 @@ describe("server MCP contract", () => {
     expect(tokenBody.token_type).toBe("Bearer");
     expect(tokenBody.refresh_token).toBeTruthy();
 
+    const replayedCode = await fetch(`${baseUrl}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: client.client_id,
+        redirect_uri: "http://127.0.0.1/callback",
+        resource: `${baseUrl}/mcp`,
+        code,
+        code_verifier: verifier,
+      }),
+    });
+    expect(replayedCode.status).toBe(400);
+
     const tools = await mcp(baseUrl, tokenBody.access_token, 1, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
 
@@ -325,6 +339,17 @@ describe("server MCP contract", () => {
     const refreshBody = await refresh.json() as { access_token: string; refresh_token: string };
     expect(refreshBody.access_token).toBeTruthy();
     expect(refreshBody.refresh_token).toBeTruthy();
+
+    const replayedRefresh = await fetch(`${baseUrl}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        resource: `${baseUrl}/mcp`,
+        refresh_token: tokenBody.refresh_token,
+      }),
+    });
+    expect(replayedRefresh.status).toBe(400);
   });
 });
 

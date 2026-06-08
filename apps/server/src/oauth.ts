@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import type { Request, Response } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { OAuthResourceConfig, ServerConfig } from "./config.js";
+import type { IndexStore } from "./store.js";
 
 type RegisteredClient = {
   type: "oauth_client";
@@ -129,11 +130,11 @@ export function registerOAuthRoutes(app: import("express").Express, config: Serv
       const oauth = requireSelfHostedOAuth(config);
       const grantType = stringParam(req, "grant_type");
       if (grantType === "authorization_code") {
-        await handleAuthorizationCodeGrant(req, res, config, oauth);
+        await handleAuthorizationCodeGrant(req, res, config, oauth, getOAuthStore(req));
         return;
       }
       if (grantType === "refresh_token") {
-        await handleRefreshGrant(req, res, config, oauth);
+        await handleRefreshGrant(req, res, config, oauth, getOAuthStore(req));
         return;
       }
 
@@ -159,7 +160,11 @@ export function authorizationServerMetadata(config: ServerConfig) {
   };
 }
 
-async function handleAuthorizationCodeGrant(req: Request, res: Response, config: ServerConfig, oauth: OAuthResourceConfig): Promise<void> {
+export function attachOAuthStore(req: Request, store: IndexStore): void {
+  (req as Request & { oauthStore?: IndexStore }).oauthStore = store;
+}
+
+async function handleAuthorizationCodeGrant(req: Request, res: Response, config: ServerConfig, oauth: OAuthResourceConfig, store: IndexStore): Promise<void> {
   const clientId = stringParam(req, "client_id");
   const redirectUri = stringParam(req, "redirect_uri");
   const codeVerifier = stringParam(req, "code_verifier");
@@ -170,13 +175,17 @@ async function handleAuthorizationCodeGrant(req: Request, res: Response, config:
     return;
   }
 
-  const payload = await verifyAuthorizationCode(code, oauth);
+  const { payload, jti, expiresAt } = await verifyAuthorizationCode(code, oauth);
   if (
     payload.client_id !== clientId ||
     payload.redirect_uri !== redirectUri ||
     payload.resource !== resource ||
     !timingSafeEqual(payload.code_challenge, pkceChallenge(codeVerifier))
   ) {
+    res.status(400).json({ error: "invalid_grant" });
+    return;
+  }
+  if (!await store.consumeOAuthJti(jti, "authorization_code", expiresAt)) {
     res.status(400).json({ error: "invalid_grant" });
     return;
   }
@@ -189,7 +198,7 @@ async function handleAuthorizationCodeGrant(req: Request, res: Response, config:
   }, oauth));
 }
 
-async function handleRefreshGrant(req: Request, res: Response, config: ServerConfig, oauth: OAuthResourceConfig): Promise<void> {
+async function handleRefreshGrant(req: Request, res: Response, config: ServerConfig, oauth: OAuthResourceConfig, store: IndexStore): Promise<void> {
   const refreshToken = stringParam(req, "refresh_token");
   const resource = stringParam(req, "resource") || config.mcpResourceUrl;
   if (!refreshToken) {
@@ -197,8 +206,12 @@ async function handleRefreshGrant(req: Request, res: Response, config: ServerCon
     return;
   }
 
-  const payload = await verifyRefreshToken(refreshToken, oauth);
+  const { payload, jti, expiresAt } = await verifyRefreshToken(refreshToken, oauth);
   if (payload.resource !== resource) {
+    res.status(400).json({ error: "invalid_grant" });
+    return;
+  }
+  if (!await store.consumeOAuthJti(jti, "refresh_token", expiresAt)) {
     res.status(400).json({ error: "invalid_grant" });
     return;
   }
@@ -295,15 +308,19 @@ async function signAuthorizationCode(code: AuthorizationCode, oauth: OAuthResour
     .sign(secretKey(oauth));
 }
 
-async function verifyAuthorizationCode(code: string, oauth: OAuthResourceConfig): Promise<AuthorizationCode> {
+async function verifyAuthorizationCode(code: string, oauth: OAuthResourceConfig): Promise<{ payload: AuthorizationCode; jti: string; expiresAt: Date }> {
   const { payload } = await jwtVerify(code, secretKey(oauth), {
     issuer: oauth.issuer,
     audience: CODE_AUDIENCE,
   });
-  if (payload.type !== "authorization_code") {
+  if (payload.type !== "authorization_code" || typeof payload.jti !== "string" || typeof payload.exp !== "number") {
     throw new OAuthRequestError("invalid_grant");
   }
-  return payload as AuthorizationCode;
+  return {
+    payload: payload as AuthorizationCode,
+    jti: payload.jti,
+    expiresAt: new Date(payload.exp * 1000),
+  };
 }
 
 async function signRefreshToken(token: RefreshToken, oauth: OAuthResourceConfig): Promise<string> {
@@ -317,15 +334,19 @@ async function signRefreshToken(token: RefreshToken, oauth: OAuthResourceConfig)
     .sign(secretKey(oauth));
 }
 
-async function verifyRefreshToken(token: string, oauth: OAuthResourceConfig): Promise<RefreshToken> {
+async function verifyRefreshToken(token: string, oauth: OAuthResourceConfig): Promise<{ payload: RefreshToken; jti: string; expiresAt: Date }> {
   const { payload } = await jwtVerify(token, secretKey(oauth), {
     issuer: oauth.issuer,
     audience: REFRESH_AUDIENCE,
   });
-  if (payload.type !== "refresh_token") {
+  if (payload.type !== "refresh_token" || typeof payload.jti !== "string" || typeof payload.exp !== "number") {
     throw new OAuthRequestError("invalid_grant");
   }
-  return payload as RefreshToken;
+  return {
+    payload: payload as RefreshToken,
+    jti: payload.jti,
+    expiresAt: new Date(payload.exp * 1000),
+  };
 }
 
 function requireSelfHostedOAuth(config: ServerConfig): OAuthResourceConfig {
@@ -348,6 +369,14 @@ function normalizeScope(scope: string, oauth: OAuthResourceConfig): string | nul
 function stringParam(req: Request, name: string): string {
   const value = req.body?.[name] ?? req.query?.[name];
   return typeof value === "string" ? value : "";
+}
+
+function getOAuthStore(req: Request): IndexStore {
+  const store = (req as Request & { oauthStore?: IndexStore }).oauthStore;
+  if (!store) {
+    throw new OAuthRequestError("oauth_store_not_configured", 503);
+  }
+  return store;
 }
 
 function isAllowedRedirectUri(uri: string): boolean {

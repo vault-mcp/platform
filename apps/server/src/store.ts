@@ -17,12 +17,14 @@ export interface IndexStore {
   health(): IndexHealth | Promise<IndexHealth>;
   search(query: string, limit?: number, scope?: string): SearchResponse | Promise<SearchResponse>;
   fetch(id: string): VaultDocument | null | Promise<VaultDocument | null>;
+  consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean | Promise<boolean>;
 }
 
 export class JsonIndexStore implements IndexStore {
   private documents: VaultDocument[] = [];
   private generatedAt: string | null = null;
   private stats: IndexStats | null = null;
+  private consumedOAuthJtis = new Map<string, number>();
 
   constructor(private readonly indexFile: string) {}
 
@@ -62,6 +64,23 @@ export class JsonIndexStore implements IndexStore {
 
   fetch(id: string) {
     return fetchDocument(this.documents, id);
+  }
+
+  consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean {
+    const now = Date.now();
+    for (const [key, expires] of this.consumedOAuthJtis.entries()) {
+      if (expires <= now) {
+        this.consumedOAuthJtis.delete(key);
+      }
+    }
+
+    const key = `${kind}:${jti}`;
+    if (this.consumedOAuthJtis.has(key)) {
+      return false;
+    }
+
+    this.consumedOAuthJtis.set(key, expiresAt.getTime());
+    return true;
   }
 
   private snapshot(): VaultIndex {
@@ -110,6 +129,16 @@ export class PostgresIndexStore implements IndexStore {
 
       create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);
       create index if not exists vault_documents_path_idx on vault_documents ((metadata->>'path'));
+
+      create table if not exists oauth_token_uses (
+        jti text not null,
+        kind text not null,
+        expires_at timestamptz not null,
+        used_at timestamptz not null default now(),
+        primary key (jti, kind)
+      );
+
+      create index if not exists oauth_token_uses_expires_idx on oauth_token_uses (expires_at);
     `);
 
     const meta = await this.pool.query<{ key: string; value: unknown }>("select key, value from vault_index_meta");
@@ -209,5 +238,16 @@ export class PostgresIndexStore implements IndexStore {
     }
 
     return row.rows[0];
+  }
+
+  async consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): Promise<boolean> {
+    await this.pool.query("delete from oauth_token_uses where expires_at < now()");
+    const result = await this.pool.query(
+      `insert into oauth_token_uses (jti, kind, expires_at)
+       values ($1, $2, $3)
+       on conflict do nothing`,
+      [jti, kind, expiresAt.toISOString()],
+    );
+    return result.rowCount === 1;
   }
 }

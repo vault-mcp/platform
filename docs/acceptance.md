@@ -52,7 +52,7 @@ MCP_SYNC_TOKEN="sync-token" \
 npm run smoke:oauth-flow
 ```
 
-This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, refresh-token exchange, copied-vault sync, and MCP `search`/`fetch`.
+This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, single-use authorization codes, refresh-token exchange, refresh-token replay denial, copied-vault sync, and MCP `search`/`fetch`.
 
 Passing output must include:
 

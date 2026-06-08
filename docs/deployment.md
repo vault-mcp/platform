@@ -217,7 +217,7 @@ Unauthenticated MCP requests return `401` with `WWW-Authenticate: Bearer resourc
 The app can run in either of two OAuth modes:
 
 - external provider mode: validate tokens from `OAUTH_JWKS_URL`
-- self-hosted mode: issue and validate HMAC-signed access tokens with `OAUTH_JWT_SECRET`, dynamic client registration, PKCE authorization codes, and refresh tokens
+- self-hosted mode: issue and validate HMAC-signed access tokens with `OAUTH_JWT_SECRET`, dynamic client registration, single-use PKCE authorization codes, and rotating refresh tokens
 
 ## CORS and Origin Protection
 

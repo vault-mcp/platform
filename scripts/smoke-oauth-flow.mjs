@@ -58,6 +58,15 @@ assert(token.access_token, "expected access token");
 assert(token.refresh_token, "expected refresh token");
 assert(token.token_type === "Bearer", "expected bearer token");
 
+await expectFormError(metadata.token_endpoint, {
+  grant_type: "authorization_code",
+  client_id: registration.client_id,
+  redirect_uri: redirectUri,
+  resource,
+  code,
+  code_verifier: verifier,
+}, "expected authorization code replay to fail");
+
 const refresh = await postForm(metadata.token_endpoint, {
   grant_type: "refresh_token",
   resource,
@@ -65,6 +74,12 @@ const refresh = await postForm(metadata.token_endpoint, {
 });
 assert(refresh.access_token, "expected refreshed access token");
 assert(refresh.refresh_token, "expected rotated refresh token");
+
+await expectFormError(metadata.token_endpoint, {
+  grant_type: "refresh_token",
+  resource,
+  refresh_token: token.refresh_token,
+}, "expected refresh token replay to fail");
 
 const smoke = spawnSync("npm", ["run", "smoke:remote"], {
   stdio: "inherit",
@@ -83,6 +98,7 @@ console.log(JSON.stringify({
   ok: true,
   oauth_flow: "authorization_code_pkce",
   refresh: true,
+  replay_protection: true,
   metadata_issuer: metadata.issuer,
   resource,
 }, null, 2));
@@ -114,6 +130,16 @@ async function postForm(url, values) {
   const text = await response.text();
   assert(response.ok, `expected ${url} to succeed: ${response.status} ${text}`);
   return JSON.parse(text);
+}
+
+async function expectFormError(url, values, message) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(values),
+  });
+  const text = await response.text();
+  assert(response.status >= 400, `${message}: ${response.status} ${text}`);
 }
 
 function required(name) {

@@ -2,7 +2,7 @@ import express, { type Request, type Response } from "express";
 import type { ServerConfig } from "./config.js";
 import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
-import { registerOAuthRoutes } from "./oauth.js";
+import { attachOAuthStore, registerOAuthRoutes } from "./oauth.js";
 import type { IndexStore } from "./store.js";
 import type { SyncPayload } from "@vault-mcp/vault-core";
 
@@ -11,6 +11,10 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   app.use(applyCors(config.allowedOrigins));
   app.use(express.json({ limit: "25mb" }));
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
+  app.use((req, _res, next) => {
+    attachOAuthStore(req, store);
+    next();
+  });
 
   registerOAuthRoutes(app, config);
 
