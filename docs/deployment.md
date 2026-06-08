@@ -47,6 +47,28 @@ If using temporary static bearer auth for a private test deployment, set `MCP_AC
 
 Local `vercel build` requires project settings from `vercel pull`. In an unauthenticated checkout, Vercel CLI returns `project_settings_required`; authenticate and link first.
 
+For unattended setup after creating a Vercel token, use the bootstrap script:
+
+```bash
+export VERCEL_TOKEN="..."
+export VERCEL_TEAM_ID="team_mhftpUYWIR5oysxTjLnSLCol"
+export VERCEL_PROJECT_NAME="vault-mcp-connector"
+export PUBLIC_BASE_URL="https://vault-mcp.example.com"
+export DATABASE_URL="postgres://user:password@host:5432/vault_mcp"
+export MCP_SYNC_TOKEN="long-random-sync-token"
+export ALLOWED_ORIGINS="https://chatgpt.com,https://claude.ai,https://chat.openai.com"
+export OAUTH_ISSUER="https://auth.example.com"
+export OAUTH_AUDIENCE="https://vault-mcp.example.com/mcp"
+export OAUTH_AUTHORIZATION_SERVER="https://auth.example.com"
+export OAUTH_JWKS_URL="https://auth.example.com/.well-known/jwks.json"
+export OAUTH_SCOPES="vault:read"
+
+npm run deploy:vercel:check
+npm run deploy:vercel
+```
+
+The script links the local repo to the Vercel project, adds or updates production environment variables, pulls production settings, and runs `vercel deploy --prod`. Add `-- --smoke` or set `RUN_REMOTE_SMOKE=1` when `SMOKE_ACCESS_TOKEN` or temporary `MCP_ACCESS_TOKEN` is available.
+
 ## Build
 
 ```bash
