@@ -154,6 +154,7 @@ async function upsertEnv(name, value) {
     "update",
     name,
     environment,
+    "--yes",
     ...vercelAuthArgs,
   ], {
     input: `${value}\n`,
@@ -195,6 +196,6 @@ async function run(command, commandArgs, options = {}) {
 }
 
 function extractDeploymentUrl(stdout) {
-  const urls = stdout.match(/https:\/\/[^\s]+/g) ?? [];
+  const urls = stdout.match(/https:\/\/[^\s",]+/g) ?? [];
   return urls.find((url) => url.includes(".vercel.app")) ?? urls[0] ?? null;
 }

@@ -8,3 +8,4 @@ apps/*/data/*.json
 .DS_Store
 coverage/
 *.tsbuildinfo
+.env*
