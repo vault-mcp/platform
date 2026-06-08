@@ -2,6 +2,7 @@ import express, { type Request, type Response } from "express";
 import type { ServerConfig } from "./config.js";
 import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
+import { registerOAuthRoutes } from "./oauth.js";
 import type { IndexStore } from "./store.js";
 import type { SyncPayload } from "@vault-mcp/vault-core";
 
@@ -9,6 +10,9 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   const app = express();
   app.use(applyCors(config.allowedOrigins));
   app.use(express.json({ limit: "25mb" }));
+  app.use(express.urlencoded({ extended: false, limit: "25mb" }));
+
+  registerOAuthRoutes(app, config);
 
   app.get("/healthz", async (_req: Request, res: Response) => {
     res.json({

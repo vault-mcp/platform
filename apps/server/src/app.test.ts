@@ -187,6 +187,7 @@ describe("server MCP contract", () => {
         authorizationServer: "https://auth.example.test",
         jwksUrl: null,
         jwtSecret: "test-oauth-secret",
+        authPassword: null,
         scopes: ["vault:read"],
       },
     });
@@ -211,6 +212,119 @@ describe("server MCP contract", () => {
 
     const tools = await mcp(baseUrl, jwt, 1, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
+  });
+
+  it("supports self-hosted OAuth dynamic registration, PKCE code exchange, and refresh", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, {
+      accessToken: null,
+      publicBaseUrl: "http://127.0.0.1:0",
+      mcpResourceUrl: "http://127.0.0.1:0/mcp",
+      oauth: {
+        issuer: "http://127.0.0.1:0",
+        audience: "http://127.0.0.1:0/mcp",
+        authorizationServer: "http://127.0.0.1:0",
+        jwksUrl: null,
+        jwtSecret: "test-oauth-secret",
+        authPassword: "authorize-me",
+        scopes: ["vault:read"],
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    config.publicBaseUrl = baseUrl;
+    config.mcpResourceUrl = `${baseUrl}/mcp`;
+    config.oauth = {
+      ...config.oauth!,
+      issuer: baseUrl,
+      audience: `${baseUrl}/mcp`,
+      authorizationServer: baseUrl,
+    };
+
+    const metadata = await (await fetch(`${baseUrl}/.well-known/oauth-authorization-server`)).json() as {
+      issuer: string;
+      authorization_endpoint: string;
+      token_endpoint: string;
+      registration_endpoint: string;
+      code_challenge_methods_supported: string[];
+    };
+    expect(metadata.issuer).toBe(baseUrl);
+    expect(metadata.authorization_endpoint).toBe(`${baseUrl}/oauth/authorize`);
+    expect(metadata.token_endpoint).toBe(`${baseUrl}/oauth/token`);
+    expect(metadata.registration_endpoint).toBe(`${baseUrl}/oauth/register`);
+    expect(metadata.code_challenge_methods_supported).toEqual(["S256"]);
+
+    const registration = await fetch(`${baseUrl}/oauth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_name: "Test MCP Client",
+        redirect_uris: ["http://127.0.0.1/callback"],
+        scope: "vault:read",
+      }),
+    });
+    expect(registration.status).toBe(201);
+    const client = await registration.json() as { client_id: string; token_endpoint_auth_method: string };
+    expect(client.client_id).toBeTruthy();
+    expect(client.token_endpoint_auth_method).toBe("none");
+
+    const verifier = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
+    const challenge = await pkceChallenge(verifier);
+    const authParams = new URLSearchParams({
+      response_type: "code",
+      client_id: client.client_id,
+      redirect_uri: "http://127.0.0.1/callback",
+      scope: "vault:read",
+      resource: `${baseUrl}/mcp`,
+      code_challenge: challenge,
+      code_challenge_method: "S256",
+      state: "state-1",
+      password: "authorize-me",
+    });
+    const authorize = await fetch(`${baseUrl}/oauth/authorize`, {
+      method: "POST",
+      body: authParams,
+      redirect: "manual",
+    });
+    expect(authorize.status).toBe(302);
+    const redirect = new URL(authorize.headers.get("location") ?? "");
+    expect(redirect.searchParams.get("state")).toBe("state-1");
+    const code = redirect.searchParams.get("code") ?? "";
+    expect(code).toBeTruthy();
+
+    const token = await fetch(`${baseUrl}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: client.client_id,
+        redirect_uri: "http://127.0.0.1/callback",
+        resource: `${baseUrl}/mcp`,
+        code,
+        code_verifier: verifier,
+      }),
+    });
+    expect(token.status).toBe(200);
+    const tokenBody = await token.json() as { access_token: string; refresh_token: string; token_type: string };
+    expect(tokenBody.token_type).toBe("Bearer");
+    expect(tokenBody.refresh_token).toBeTruthy();
+
+    const tools = await mcp(baseUrl, tokenBody.access_token, 1, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
+
+    const refresh = await fetch(`${baseUrl}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        resource: `${baseUrl}/mcp`,
+        refresh_token: tokenBody.refresh_token,
+      }),
+    });
+    expect(refresh.status).toBe(200);
+    const refreshBody = await refresh.json() as { access_token: string; refresh_token: string };
+    expect(refreshBody.access_token).toBeTruthy();
+    expect(refreshBody.refresh_token).toBeTruthy();
   });
 });
 
@@ -327,4 +441,9 @@ function fixtureDocument(overrides: {
       },
     },
   };
+}
+
+async function pkceChallenge(verifier: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  return Buffer.from(digest).toString("base64url");
 }

@@ -43,6 +43,17 @@ SMOKE_EXPECT_OAUTH=true \
 npm run smoke:remote
 ```
 
+Self-hosted OAuth flow gate:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_OAUTH_PASSWORD="private-human-authorization-password" \
+MCP_SYNC_TOKEN="sync-token" \
+npm run smoke:oauth-flow
+```
+
+This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, refresh-token exchange, copied-vault sync, and MCP `search`/`fetch`.
+
 Passing output must include:
 
 - `ok: true`
@@ -84,6 +95,8 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 2. Create a custom MCP connector/app.
 3. Endpoint: `https://vault-mcp.example.com/mcp`.
 4. Configure OAuth according to the provider backing `OAUTH_*`.
+   - For self-hosted OAuth, the provider URL is the same as the MCP host, `https://vault-mcp.example.com`.
+   - Use the connector password set in `OAUTH_AUTH_PASSWORD` when the authorization page opens.
 5. Scan tools and confirm only `search` and `fetch` appear.
 6. Prompt: `Search my vault for the Vault MCP Connector project and fetch the relevant note.`
 7. Confirm the returned citation URL is under `/notes/:id`.
@@ -95,6 +108,8 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 1. Add a custom remote MCP connector.
 2. Endpoint: `https://vault-mcp.example.com/mcp`.
 3. Configure the same OAuth provider.
+   - For self-hosted OAuth, the connector URL and OAuth provider URL are both `https://vault-mcp.example.com`; Claude should discover metadata and dynamically register.
+   - Use the connector password set in `OAUTH_AUTH_PASSWORD` when the authorization page opens.
 4. Confirm Claude sees `search` and `fetch`.
 5. Search and fetch `Vault MCP Connector`.
 6. Confirm the same note chunk can be fetched as in ChatGPT.

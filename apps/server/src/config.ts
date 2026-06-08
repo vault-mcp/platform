@@ -20,6 +20,7 @@ export type OAuthResourceConfig = {
   authorizationServer: string;
   jwksUrl: string | null;
   jwtSecret: string | null;
+  authPassword: string | null;
   scopes: string[];
 };
 
@@ -65,6 +66,7 @@ function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {
   const authorizationServer = env.OAUTH_AUTHORIZATION_SERVER ?? issuer;
   const jwksUrl = env.OAUTH_JWKS_URL ?? null;
   const jwtSecret = env.OAUTH_JWT_SECRET ?? null;
+  const authPassword = env.OAUTH_AUTH_PASSWORD ?? null;
 
   if (!issuer && !audience && !jwksUrl && !jwtSecret) {
     return null;
@@ -80,6 +82,7 @@ function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {
     authorizationServer,
     jwksUrl,
     jwtSecret,
+    authPassword,
     scopes: (env.OAUTH_SCOPES ?? "vault:read")
       .split(",")
       .map((scope) => scope.trim())

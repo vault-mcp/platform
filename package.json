@@ -16,6 +16,7 @@
     "dev:server": "npm run dev --workspace @vault-mcp/server",
     "index": "npm run dev --workspace @vault-mcp/indexer --",
     "smoke:remote": "node scripts/smoke-remote.mjs",
+    "smoke:oauth-flow": "node scripts/smoke-oauth-flow.mjs",
     "smoke:local": "npm run build && npm run check:api && node scripts/smoke-local.mjs",
     "smoke:oauth-local": "npm run build && npm run check:api && node scripts/smoke-oauth-local.mjs",
     "smoke:postgres": "npm run build && npm run check:api && node scripts/smoke-postgres-local.mjs",

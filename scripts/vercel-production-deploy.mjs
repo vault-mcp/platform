@@ -27,13 +27,14 @@ const oauthRuntimeEnv = [
   "OAUTH_ISSUER",
   "OAUTH_AUDIENCE",
   "OAUTH_AUTHORIZATION_SERVER",
-  "OAUTH_JWKS_URL",
   "OAUTH_SCOPES",
 ];
 const staticRuntimeEnv = [
   "MCP_ACCESS_TOKEN",
 ];
-const optionalRuntimeEnv = authMode === "oauth" ? ["MCP_ACCESS_TOKEN"] : [];
+const optionalRuntimeEnv = authMode === "oauth"
+  ? ["MCP_ACCESS_TOKEN", "OAUTH_JWKS_URL", "OAUTH_JWT_SECRET", "OAUTH_AUTH_PASSWORD"]
+  : [];
 const requiredRuntimeEnv = [
   ...sharedRuntimeEnv,
   ...(authMode === "oauth" ? oauthRuntimeEnv : staticRuntimeEnv),
@@ -42,6 +43,19 @@ const requiredRuntimeEnv = [
 const missing = [
   ...requiredRuntimeEnv.filter((name) => !process.env[name]),
 ];
+
+if (authMode === "oauth" && !process.env.OAUTH_JWKS_URL && !process.env.OAUTH_JWT_SECRET) {
+  missing.push("OAUTH_JWKS_URL or OAUTH_JWT_SECRET");
+}
+
+if (
+  authMode === "oauth" &&
+  process.env.OAUTH_JWT_SECRET &&
+  process.env.OAUTH_AUTHORIZATION_SERVER === process.env.PUBLIC_BASE_URL &&
+  !process.env.OAUTH_AUTH_PASSWORD
+) {
+  missing.push("OAUTH_AUTH_PASSWORD");
+}
 
 if (missing.length > 0) {
   console.error(`Missing required deployment environment variables:\n${missing.map((name) => `- ${name}`).join("\n")}`);

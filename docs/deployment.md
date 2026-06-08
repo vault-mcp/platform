@@ -22,6 +22,26 @@ OAUTH_SCOPES=vault:read
 
 `MCP_ACCESS_TOKEN` is for local development and one-off MCP Inspector testing. Production should prefer OAuth JWT validation through `OAUTH_*` variables.
 
+For a self-hosted OAuth flow on the connector itself, set the OAuth issuer and authorization server to the public service URL and use an HMAC signing secret plus a private authorization password:
+
+```bash
+PUBLIC_BASE_URL=https://vault-mcp.example.com
+OAUTH_ISSUER=https://vault-mcp.example.com
+OAUTH_AUDIENCE=https://vault-mcp.example.com/mcp
+OAUTH_AUTHORIZATION_SERVER=https://vault-mcp.example.com
+OAUTH_JWT_SECRET=long-random-jwt-secret
+OAUTH_AUTH_PASSWORD=private-human-authorization-password
+OAUTH_SCOPES=vault:read
+```
+
+This enables:
+
+- `GET /.well-known/oauth-authorization-server`
+- `GET /.well-known/oauth-authorization-server/mcp`
+- `POST /oauth/register` for dynamic client registration
+- `GET/POST /oauth/authorize` for password-gated authorization-code + PKCE
+- `POST /oauth/token` for authorization-code and refresh-token grants
+
 ## Vercel
 
 Vercel does not deploy Docker images directly. For Vercel, use the `api/index.ts` Express entrypoint and `vercel.json`; the Express app becomes a single Vercel Function.
@@ -89,6 +109,19 @@ npm run deploy:vercel -- --smoke
 ```
 
 Static-token mode is for MCP Inspector and remote smoke testing only. Switch back to `DEPLOY_AUTH_MODE=oauth` before ChatGPT/Claude production acceptance.
+
+Self-hosted OAuth mode uses the same deploy script with `OAUTH_JWT_SECRET` and `OAUTH_AUTH_PASSWORD` instead of `OAUTH_JWKS_URL`:
+
+```bash
+export DEPLOY_AUTH_MODE="oauth"
+export PUBLIC_BASE_URL="https://vault-mcp.example.com"
+export OAUTH_ISSUER="$PUBLIC_BASE_URL"
+export OAUTH_AUDIENCE="$PUBLIC_BASE_URL/mcp"
+export OAUTH_AUTHORIZATION_SERVER="$PUBLIC_BASE_URL"
+export OAUTH_JWT_SECRET="long-random-jwt-secret"
+export OAUTH_AUTH_PASSWORD="private-human-authorization-password"
+export OAUTH_SCOPES="vault:read"
+```
 
 ## Build
 
@@ -161,6 +194,15 @@ SMOKE_EXPECT_OAUTH=true \
 npm run smoke:remote
 ```
 
+For the self-hosted OAuth flow, verify dynamic client registration, PKCE authorization-code exchange, refresh tokens, and the MCP remote smoke in one pass:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_OAUTH_PASSWORD="$OAUTH_AUTH_PASSWORD" \
+MCP_SYNC_TOKEN="$MCP_SYNC_TOKEN" \
+npm run smoke:oauth-flow
+```
+
 ## OAuth Protected Resource Metadata
 
 The server exposes:
@@ -172,7 +214,10 @@ GET /.well-known/oauth-protected-resource/mcp
 
 Unauthenticated MCP requests return `401` with `WWW-Authenticate: Bearer resource_metadata="..."`.
 
-The app is a resource server. It validates tokens issued by your OAuth/OIDC provider; it does not issue authorization codes, refresh tokens, or client credentials itself.
+The app can run in either of two OAuth modes:
+
+- external provider mode: validate tokens from `OAUTH_JWKS_URL`
+- self-hosted mode: issue and validate HMAC-signed access tokens with `OAUTH_JWT_SECRET`, dynamic client registration, PKCE authorization codes, and refresh tokens
 
 ## CORS and Origin Protection
 
