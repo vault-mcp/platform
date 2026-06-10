@@ -76,6 +76,18 @@ const fetchedByPath = await mcp(31, "tools/call", {
 });
 assert(fetchedByPath.result.structuredContent.obsidian_uri?.startsWith("obsidian://open"), "expected path fetch to include obsidian_uri");
 
+const deniedScopeList = await mcp(32, "tools/call", {
+  name: "list_notes",
+  arguments: { scope: "02 Daily/", limit: 5 },
+});
+assert(deniedScopeList.result.structuredContent.notes.length === 0, "expected denied daily scope to be unavailable");
+
+const deniedPath = await mcp(33, "tools/call", {
+  name: "fetch_note_by_path",
+  arguments: { path: "02 Daily/2026-06-10.md" },
+});
+assert(deniedPath.result.isError === true, "expected denied path fetch to fail");
+
 const guessed = await mcp(4, "tools/call", {
   name: "fetch",
   arguments: { id: "guessed-denied-id" },
