@@ -48,7 +48,7 @@ describe("server MCP contract", () => {
     expect(await response.text()).toContain("Vault MCP Connector Wiki");
   });
 
-  it("syncs documents and exposes read-only search/fetch over authenticated MCP", async () => {
+  it("syncs documents and exposes read-only vault tools over authenticated MCP", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
     const server = await listen(createApp(config, store));
@@ -104,11 +104,29 @@ describe("server MCP contract", () => {
     });
     expect(listed.result.structuredContent.notes[0].path).toBe("20 Projects/Vault MCP Connector/Project Home.md");
 
+    const deniedScopeList = await mcp(baseUrl, accessToken, 24, "tools/call", {
+      name: "list_notes",
+      arguments: { scope: "02 Daily/", limit: 5 },
+    });
+    expect(deniedScopeList.result.structuredContent.notes).toEqual([]);
+
+    const deniedScopeSearch = await mcp(baseUrl, accessToken, 25, "tools/call", {
+      name: "search",
+      arguments: { query: "remote MCP", scope: "02 Daily/", limit: 5 },
+    });
+    expect(deniedScopeSearch.result.structuredContent.results).toEqual([]);
+
     const byPath = await mcp(baseUrl, accessToken, 22, "tools/call", {
       name: "fetch_note_by_path",
       arguments: { path: "20 Projects/Vault MCP Connector/Project Home.md" },
     });
     expect(byPath.result.structuredContent.title).toBe("Vault MCP Connector");
+
+    const deniedByPath = await mcp(baseUrl, accessToken, 26, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: "02 Daily/2026-06-10.md" },
+    });
+    expect(deniedByPath.result.isError).toBe(true);
 
     const status = await mcp(baseUrl, accessToken, 23, "tools/call", {
       name: "get_index_status",

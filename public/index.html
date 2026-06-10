@@ -804,7 +804,7 @@
           <div class="eyebrow">Private remote MCP for Obsidian</div>
           <h1>Vault context, wired for AI clients.</h1>
           <p class="hero-copy">
-            A read-only MCP server that turns selected Obsidian notes into safe search and fetch tools for ChatGPT, Claude, Codex, and any compatible client.
+            A read-only MCP server that turns selected Obsidian notes into safe discovery, search, and fetch tools for ChatGPT, Claude, Codex, and any compatible client.
           </p>
           <div class="hero-actions">
             <a class="button primary" href="/wiki/">Read the wiki</a>
@@ -821,7 +821,7 @@
           </div>
           <div class="signal-line">
             <span>Tools</span>
-            <strong>search + fetch</strong>
+            <strong>10 read-only tools</strong>
           </div>
           <div class="signal-line">
             <span>Mode</span>
@@ -852,8 +852,8 @@
             <span>Markdown notes denied by rule, status, or source policy.</span>
           </div>
           <div class="metric">
-            <strong>2</strong>
-            <span>MCP tools exposed to clients: search and fetch.</span>
+            <strong>10</strong>
+            <span>read-only MCP tools for discovery, search, diagnostics, and fetch.</span>
           </div>
           <div class="metric">
             <strong>0</strong>
@@ -908,8 +908,8 @@
           <div class="beam" aria-hidden="true"></div>
           <div class="pipeline-step">
             <span>MCP</span>
-            <h3>Clients call search and fetch.</h3>
-            <p>The server validates auth, handles MCP JSON-RPC, and returns only allowlisted chunks.</p>
+            <h3>Clients call read-only tools.</h3>
+            <p>The server validates auth, handles MCP JSON-RPC, and returns only allowlisted notes, chunks, status, and diagnostics.</p>
           </div>
         </div>
       </section>
@@ -936,7 +936,7 @@
           <div>
             <h2>The endpoint is the product.</h2>
             <p>
-              The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive exactly two tools: <strong>search</strong> for discovery and <strong>fetch</strong> for reading a selected chunk.
+              The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive a read-only tool set for note discovery, section search, active project lookup, status diagnostics, and controlled fetches.
             </p>
             <div class="capability-list endpoint-list">
               <div class="capability">

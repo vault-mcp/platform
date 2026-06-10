@@ -224,7 +224,7 @@
         <div class="grid two">
           <div class="card">
             <h3>What this project does</h3>
-            <p>It lets approved AI tools search and fetch selected notes from an Obsidian vault. It is read-only. It does not edit notes. It does not expose the whole vault. It serves a controlled index that was built from allowlisted notes.</p>
+            <p>It lets approved AI tools discover, search, diagnose, and fetch selected notes from an Obsidian vault. It is read-only. It does not edit notes. It does not expose the whole vault. It serves a controlled index that was built from allowlisted notes.</p>
           </div>
           <div class="card">
             <h3>What this project does not do</h3>
@@ -233,7 +233,7 @@
         </div>
 
         <h3>The simplest useful sentence</h3>
-        <p><strong>A local indexer scans only approved Markdown files, sends approved chunks to a hosted server, and the hosted server exposes only two MCP tools: <code>search</code> and <code>fetch</code>.</strong></p>
+        <p><strong>A local indexer scans only approved Markdown files, sends approved chunks to a hosted server, and the hosted server exposes read-only MCP tools for note discovery, section search, active project lookup, diagnostics, and controlled fetches.</strong></p>
 
         <h3>The three big parts</h3>
         <table>
@@ -260,7 +260,7 @@
           <li>The hosted server does not need direct filesystem access to the vault.</li>
           <li>The source policy runs before data is uploaded.</li>
           <li>Denied notes never become remotely fetchable.</li>
-          <li>Clients can only call <code>search</code> and <code>fetch</code>.</li>
+          <li>Clients can only call read-only tools; no edit, write, delete, or filesystem-browse tools exist.</li>
           <li>Every fetched item has a private citation URL and metadata showing where it came from.</li>
         </ul>
 
@@ -393,8 +393,9 @@
               <tr><td>1-5</td><td>Imports MCP SDK classes, Express types, Zod schemas, and the store interface.</td></tr>
               <tr><td>7-12</td><td>Defines instructions shown to MCP clients. These warn clients not to treat note text as instructions.</td></tr>
               <tr><td>14-25</td><td>Creates an MCP server named <code>vault-mcp-connector</code>.</td></tr>
-              <tr><td>27-68</td><td>Registers the read-only <code>search</code> tool, its input/output schemas, and its implementation.</td></tr>
-              <tr><td>70-113</td><td>Registers the read-only <code>fetch</code> tool. Missing ids return a tool error instead of data.</td></tr>
+              <tr><td>27-172</td><td>Registers read-only discovery and search tools: <code>search</code>, <code>search_notes</code>, <code>search_sections</code>, <code>list_notes</code>, <code>recent_notes</code>, and <code>active_projects</code>.</td></tr>
+              <tr><td>174-224</td><td>Registers controlled fetch tools: <code>fetch</code> by returned id and <code>fetch_note_by_path</code> by exact allowlisted path. Missing or denied ids/paths return a tool error instead of data.</td></tr>
+              <tr><td>226-263</td><td>Registers safe diagnostics: <code>get_index_status</code> and <code>debug_search</code>.</td></tr>
               <tr><td>117-136</td><td>Creates a stateless Streamable HTTP transport for each request and closes it when the response ends.</td></tr>
             </table>
           </div>
@@ -405,7 +406,7 @@
           <div class="file-body">
             <p>The server can store the index in a JSON file locally or Postgres in production. Both stores implement the same <code>IndexStore</code> interface.</p>
             <table class="line-map">
-              <tr><td>1-5</td><td>Imports filesystem/path, Postgres, shared types, and search/fetch helpers.</td></tr>
+              <tr><td>1-5</td><td>Imports filesystem/path, Postgres, shared types, and read-only vault search/list/fetch helpers.</td></tr>
               <tr><td>7-11</td><td>Defines health data returned by <code>/healthz</code>.</td></tr>
               <tr><td>13-19</td><td>Defines how OAuth dynamic client registrations are stored.</td></tr>
               <tr><td>21-32</td><td>Defines the store interface all storage backends must follow.</td></tr>
@@ -534,7 +535,7 @@
             <tr><td><code>scripts/smoke-local.mjs</code></td><td>Builds local server, syncs copied vault, checks health, auth, MCP tools, search, fetch, guessed-id denial.</td><td>Before trusting local changes.</td></tr>
             <tr><td><code>scripts/smoke-oauth-local.mjs</code></td><td>Runs local server in OAuth-only validation mode with a locally signed token.</td><td>Before production OAuth changes.</td></tr>
             <tr><td><code>scripts/smoke-oauth-flow.mjs</code></td><td>Exercises self-hosted OAuth: registration, PKCE code, token, refresh, replay denial, remote smoke.</td><td>After OAuth deploys.</td></tr>
-            <tr><td><code>scripts/smoke-postgres-local.mjs</code></td><td>Runs server against a provided Postgres URL and verifies search/fetch.</td><td>When testing storage path.</td></tr>
+            <tr><td><code>scripts/smoke-postgres-local.mjs</code></td><td>Runs server against a provided Postgres URL and verifies expanded read-only MCP tools.</td><td>When testing storage path.</td></tr>
             <tr><td><code>scripts/smoke-remote.mjs</code></td><td>Checks a deployed endpoint with an access token and optional sync token.</td><td>After deploys.</td></tr>
             <tr><td><code>scripts/vercel-production-deploy.mjs</code></td><td>Links Vercel project, upserts env vars, pulls project settings, deploys production, optionally runs smoke.</td><td>For controlled production deploys.</td></tr>
           </tbody>

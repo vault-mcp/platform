@@ -43,7 +43,7 @@ Bearer dev-access-token
 
 ## Notes
 
-- This server exposes only `search` and `fetch`.
+- This server exposes read-only discovery and fetch tools: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, and `debug_search`.
 - ChatGPT embedded UI is intentionally deferred.
 - The local build is suitable for MCP contract testing. Production deployment still requires a real domain, TLS, Postgres, and OAuth provider configuration.
 

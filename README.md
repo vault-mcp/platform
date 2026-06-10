@@ -2,6 +2,23 @@
 
 Private, read-only MCP connector for selected Obsidian vault context.
 
+## MCP Tools
+
+The server currently exposes these read-only MCP tools:
+
+- `search` - compatibility search; defaults to section-level results.
+- `search_notes` - search and return one result per indexed note.
+- `search_sections` - search heading-level sections and chunks.
+- `list_notes` - list indexed/readable notes with optional scope and metadata filters.
+- `recent_notes` - list recently updated indexed notes.
+- `active_projects` - list active project notes from the allowlisted index.
+- `fetch` - fetch an indexed chunk by id returned from search.
+- `fetch_note_by_path` - fetch full indexed note content by exact allowlisted vault path.
+- `get_index_status` - return safe index counts, policy scopes, and freshness metadata.
+- `debug_search` - explain query normalization and why a search may return few or no results.
+
+All tools are read-only. Denied or non-indexed paths remain unavailable even if a client guesses an id or exact path.
+
 ## Wiki
 
 A plain-English project wiki is hosted from `public/wiki/index.html` and is intended
@@ -12,7 +29,7 @@ https://vault-mcp-connector.vercel.app/wiki/
 ```
 
 The wiki explains the mental model, request flow, repository map, source-policy
-boundary, and file-by-file walkthroughs for the hand-authored project code.
+boundary, MCP tools, and file-by-file walkthroughs for the hand-authored project code.
 
 V1 exposes an allowlisted derived index through:
 

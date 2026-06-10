@@ -24,8 +24,10 @@
 - Local server defaults to `127.0.0.1`.
 - Origin validation is enforced for `/mcp`.
 - Note text is explicitly described as untrusted data in server instructions.
+- The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.
+- Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
 
 ## Current Gaps
 
-- The app validates OAuth access tokens but does not issue tokens; provider configuration remains external.
-- Public deployment, TLS termination, and refresh-token handling still need production configuration.
+- Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.
+- ChatGPT-specific UI has not been implemented yet; current clients use the MCP tool surface directly.

@@ -406,7 +406,7 @@ function renderAuthorizeForm(req: Request): string {
 </head>
 <body>
   <h1>Authorize Vault MCP Connector</h1>
-  <p>This grants read-only search and fetch access to the selected vault index.</p>
+  <p>This grants read-only discovery, search, diagnostics, and fetch access to the selected vault index.</p>
   <form method="post" action="/oauth/authorize">
     ${hiddenFields}
     <label for="password">Connector password</label>

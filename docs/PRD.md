@@ -2,14 +2,14 @@
 
 ## Goal
 
-Build a private, portable, read-only MCP connector that lets approved AI clients search and fetch selected Obsidian vault context.
+Build a private, portable, read-only MCP connector that lets approved AI clients discover, search, diagnose, and fetch selected Obsidian vault context.
 
 ## V1 Scope
 
 - Local indexer scans a vault snapshot or live vault path.
 - Source policy filters notes before anything is synced.
 - Only selected technical/reference subfolders under `40 Reference/` are indexed in V1; unselected reference folders are denied by default.
-- Remote server stores a derived index in local JSON for development or Postgres full-text search for production, then exposes MCP `search` and `fetch`.
+- Remote server stores a derived index in local JSON for development or Postgres full-text search for production, then exposes read-only MCP discovery, search, diagnostics, and fetch tools.
 - Responses include citation URLs and Obsidian URIs.
 - No vault writes, note editing, task creation, or broad filesystem access.
 
@@ -23,7 +23,7 @@ Build a private, portable, read-only MCP connector that lets approved AI clients
 
 ## MCP Tools
 
-`search({ query, limit?, scope? })`
+`search({ query, mode?, limit?, scope?, tags?, status?, type? })`
 
 Returns:
 
@@ -41,6 +41,10 @@ Returns:
 }
 ```
 
+`list_notes({ scope?, tag?, status?, type?, limit?, cursor? })`
+
+Returns indexed/readable note summaries and an optional cursor.
+
 `fetch({ id })`
 
 Returns:
@@ -54,6 +58,16 @@ Returns:
   "metadata": {}
 }
 ```
+
+Additional read-only tools:
+
+- `search_notes`
+- `search_sections`
+- `recent_notes`
+- `active_projects`
+- `fetch_note_by_path`
+- `get_index_status`
+- `debug_search`
 
 ## Acceptance
 

@@ -84,10 +84,13 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 ```
 
 3. Provide an `Authorization: Bearer ...` header.
-4. Confirm `tools/list` returns only `search` and `fetch`.
+4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, and `debug_search`.
 5. Call `search` with `Vault MCP Connector`.
-6. Call `fetch` with the first returned id.
-7. Call `fetch` with `guessed-denied-id` and confirm it returns a tool error.
+6. Call `list_notes` with scope `20 Projects/Vault MCP Connector/`.
+7. Call `fetch` with the first returned id.
+8. Call `fetch_note_by_path` with `20 Projects/Vault MCP Connector/Project Home.md`.
+9. Call `fetch` with `guessed-denied-id` and confirm it returns a tool error.
+10. Call `fetch_note_by_path` with a denied path such as `02 Daily/2026-06-10.md` and confirm it returns a tool error.
 
 ## ChatGPT
 
@@ -97,7 +100,7 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 4. Configure OAuth according to the provider backing `OAUTH_*`.
    - For self-hosted OAuth, the provider URL is the same as the MCP host, `https://vault-mcp.example.com`.
    - Use the connector password set in `OAUTH_AUTH_PASSWORD` when the authorization page opens.
-5. Scan tools and confirm only `search` and `fetch` appear.
+5. Scan tools and confirm only the read-only vault tools appear; no write/edit tools should be present.
 6. Prompt: `Search my vault for the Vault MCP Connector project and fetch the relevant note.`
 7. Confirm the returned citation URL is under `/notes/:id`.
 8. Confirm metadata includes `obsidian_uri`.
@@ -122,6 +125,6 @@ Do not consider V1 complete until the project has:
 - build/test/smoke logs
 - remote smoke output
 - MCP Inspector confirmation
-- ChatGPT search/fetch confirmation
-- Claude search/fetch confirmation
+- ChatGPT read-only discovery/fetch confirmation
+- Claude read-only discovery/fetch confirmation
 - denied-path/guessed-id confirmation

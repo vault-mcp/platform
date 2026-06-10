@@ -10,6 +10,18 @@ const accessToken = process.env.MCP_ACCESS_TOKEN ?? "dev-access-token";
 const syncToken = process.env.MCP_SYNC_TOKEN ?? "dev-sync-token";
 const vaultRoot = process.env.VAULT_ROOT ?? "/Users/tjt/Documents/Tristan's Personal vault copy";
 const vaultName = process.env.VAULT_NAME ?? "Tristan's Personal vault copy";
+const expectedTools = [
+  "search",
+  "search_notes",
+  "search_sections",
+  "list_notes",
+  "recent_notes",
+  "active_projects",
+  "fetch",
+  "fetch_note_by_path",
+  "get_index_status",
+  "debug_search",
+];
 
 const server = spawn("node", ["apps/server/dist/index.js"], {
   cwd: root,
@@ -42,7 +54,7 @@ try {
   assert(health.stats?.denied_markdown > 0, "expected sync stats with denied notes");
 
   const tools = await mcp(1, "tools/list", {});
-  assert(tools.result.tools.map((tool) => tool.name).join(",") === "search,fetch", "expected search/fetch tools");
+  assert(tools.result.tools.map((tool) => tool.name).join(",") === expectedTools.join(","), "expected expanded read-only vault tools");
 
   const search = await mcp(2, "tools/call", {
     name: "search",
@@ -56,6 +68,24 @@ try {
     arguments: { id: first.id },
   });
   assert(fetched.result.structuredContent.title.includes("Vault MCP Connector"), "expected fetched Vault MCP Connector chunk");
+
+  const listed = await mcp(30, "tools/call", {
+    name: "list_notes",
+    arguments: { scope: "20 Projects/Vault MCP Connector/", limit: 1 },
+  });
+  assert(listed.result.structuredContent.notes[0]?.path === "20 Projects/Vault MCP Connector/Project Home.md", "expected list_notes to find project home");
+
+  const deniedScopeList = await mcp(31, "tools/call", {
+    name: "list_notes",
+    arguments: { scope: "02 Daily/", limit: 5 },
+  });
+  assert(deniedScopeList.result.structuredContent.notes.length === 0, "expected denied daily scope to be unavailable");
+
+  const deniedPath = await mcp(32, "tools/call", {
+    name: "fetch_note_by_path",
+    arguments: { path: "02 Daily/2026-06-10.md" },
+  });
+  assert(deniedPath.result.isError === true, "expected denied path fetch to fail");
 
   const guessed = await mcp(4, "tools/call", {
     name: "fetch",
