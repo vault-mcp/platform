@@ -8,7 +8,8 @@ import type { SyncPayload } from "@vault-mcp/vault-core";
 
 export function createApp(config: ServerConfig, store: IndexStore) {
   const app = express();
-  app.use(applyCors(config.allowedOrigins));
+  const allowedOrigins = uniqueOrigins([...config.allowedOrigins, config.publicBaseUrl]);
+  app.use(applyCors(allowedOrigins));
   app.use(express.json({ limit: "25mb" }));
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
   app.use((req, _res, next) => {
@@ -81,8 +82,8 @@ export function createApp(config: ServerConfig, store: IndexStore) {
     }
   };
 
-  app.post("/mcp", requireAllowedOrigin(config.allowedOrigins), requireUserAuth(config), handleMcp);
-  app.get("/mcp", requireAllowedOrigin(config.allowedOrigins), requireUserAuth(config), (req: Request, res: Response) => {
+  app.post("/mcp", requireAllowedOrigin(allowedOrigins), requireUserAuth(config), handleMcp);
+  app.get("/mcp", requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (req: Request, res: Response) => {
     const accept = req.get("accept") ?? "";
     if (!accept.includes("text/event-stream")) {
       res.status(406).json({
@@ -113,7 +114,7 @@ export function createApp(config: ServerConfig, store: IndexStore) {
     });
   });
 
-  app.delete("/mcp", requireAllowedOrigin(config.allowedOrigins), requireUserAuth(config), (_req: Request, res: Response) => {
+  app.delete("/mcp", requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (_req: Request, res: Response) => {
     res.status(405).set("Allow", "GET, POST").json({
       jsonrpc: "2.0",
       error: {
@@ -125,4 +126,8 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   });
 
   return app;
+}
+
+function uniqueOrigins(origins: string[]): string[] {
+  return [...new Set(origins.map((origin) => origin.replace(/\/$/, "")))];
 }

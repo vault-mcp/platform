@@ -52,12 +52,19 @@ export function loadConfig(env = process.env): ServerConfig {
     databaseUrl: env.DATABASE_URL ?? null,
     accessToken,
     syncToken,
-    allowedOrigins: (env.ALLOWED_ORIGINS ?? "http://127.0.0.1,http://localhost")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
+    allowedOrigins: uniqueOrigins([
+      ...(env.ALLOWED_ORIGINS ?? "http://127.0.0.1,http://localhost")
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean),
+      publicBaseUrl,
+    ]),
     oauth,
   };
+}
+
+function uniqueOrigins(origins: string[]): string[] {
+  return [...new Set(origins.map((origin) => origin.replace(/\/$/, "")))];
 }
 
 function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {

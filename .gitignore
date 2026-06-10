@@ -9,3 +9,4 @@ apps/*/data/*.json
 coverage/
 *.tsbuildinfo
 .env*
+.vercel

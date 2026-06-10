@@ -177,6 +177,26 @@ describe("server MCP contract", () => {
     expect(await denied.json()).toEqual({ error: "forbidden_origin" });
   });
 
+  it("allows the configured public origin for self-hosted OAuth pages", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, {
+      publicBaseUrl: "https://vault.example.test",
+      allowedOrigins: ["https://chatgpt.com"],
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/oauth/authorize`, {
+      headers: {
+        Origin: "https://vault.example.test",
+      },
+    });
+
+    expect(response.status).not.toBe(403);
+    expect(response.headers.get("access-control-allow-origin")).toBe("https://vault.example.test");
+    expect(await response.json()).not.toEqual({ error: "forbidden_origin" });
+  });
+
   it("advertises protected-resource metadata and accepts configured OAuth JWTs", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile, {
