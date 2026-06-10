@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from "express";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ServerConfig } from "./config.js";
 import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
@@ -7,12 +8,15 @@ import { attachOAuthStore, registerOAuthRoutes } from "./oauth.js";
 import type { IndexStore } from "./store.js";
 import type { SyncPayload } from "@vault-mcp/vault-core";
 
+const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public");
+
 export function createApp(config: ServerConfig, store: IndexStore) {
   const app = express();
   const allowedOrigins = uniqueOrigins([...config.allowedOrigins, config.publicBaseUrl]);
   app.use(applyCors(allowedOrigins));
   app.use(express.json({ limit: "25mb" }));
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
+  app.use("/assets", express.static(path.join(publicDir, "assets"), { index: false }));
   app.use((req, _res, next) => {
     attachOAuthStore(req, store);
     next();
@@ -20,8 +24,12 @@ export function createApp(config: ServerConfig, store: IndexStore) {
 
   registerOAuthRoutes(app, config);
 
+  app.get("/", (_req: Request, res: Response) => {
+    res.sendFile(path.join(publicDir, "index.html"));
+  });
+
   app.get(["/wiki", "/wiki/"], (_req: Request, res: Response) => {
-    res.sendFile(path.join(process.cwd(), "public", "wiki", "index.html"));
+    res.sendFile(path.join(publicDir, "wiki", "index.html"));
   });
 
   app.get("/healthz", async (_req: Request, res: Response) => {

@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vault MCP Connector</title>
+  <meta name="description" content="A private, read-only MCP server that turns selected Obsidian vault context into safe, searchable tools for AI clients.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #05141f;
+      --bg-deep: #02070e;
+      --panel: rgba(8, 26, 38, 0.78);
+      --panel-strong: rgba(13, 40, 55, 0.92);
+      --line: rgba(111, 231, 255, 0.28);
+      --cyan: #77edff;
+      --cyan-strong: #27d8ff;
+      --green: #83ffb1;
+      --violet: #c18aff;
+      --pink: #ff86df;
+      --text: #f4fbff;
+      --muted: #adc3d1;
+      --soft: #6f8797;
+      --max: 1180px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg-deep);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(178, 104, 255, 0.24), transparent 30rem),
+        radial-gradient(circle at 78% 18%, rgba(73, 239, 184, 0.18), transparent 28rem),
+        linear-gradient(180deg, #061827 0%, #03101a 50%, #02070e 100%);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-shell {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .site-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(119, 237, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(119, 237, 255, 0.07) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(180deg, black, transparent 78%);
+      opacity: 0.65;
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      border-bottom: 1px solid rgba(119, 237, 255, 0.18);
+      background: rgba(2, 7, 14, 0.72);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      width: min(var(--max), calc(100% - 40px));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(131, 255, 177, 0.75);
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(39, 216, 255, 0.16), rgba(131, 255, 177, 0.2));
+      box-shadow: 0 0 22px rgba(119, 237, 255, 0.28);
+    }
+
+    .brand-mark svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav-links a {
+      padding: 10px 12px;
+      border: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      border-color: rgba(119, 237, 255, 0.3);
+      background: rgba(119, 237, 255, 0.06);
+    }
+
+    .hero {
+      min-height: 92vh;
+      position: relative;
+      display: grid;
+      align-items: end;
+      padding: 92px 0 0;
+      isolation: isolate;
+      border-bottom: 1px solid rgba(119, 237, 255, 0.2);
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image: url("/assets/mcp-vault-server.png");
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.01);
+      filter: saturate(1.08) contrast(1.03);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(2, 7, 14, 0.98) 0%, rgba(2, 7, 14, 0.82) 34%, rgba(2, 7, 14, 0.38) 68%, rgba(2, 7, 14, 0.6) 100%),
+        linear-gradient(180deg, rgba(2, 7, 14, 0.24) 0%, rgba(2, 7, 14, 0.55) 70%, #02070e 100%);
+    }
+
+    .hero-inner {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.55fr);
+      gap: 48px;
+      align-items: end;
+      padding: 66px 0 52px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 48px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      box-shadow: 0 0 16px rgba(131, 255, 177, 0.6);
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 24px 0 22px;
+      font-size: 6.2rem;
+      line-height: 0.92;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 38px rgba(39, 216, 255, 0.22);
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      color: #d5e7f0;
+      font-size: 1.22rem;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border: 1px solid rgba(119, 237, 255, 0.38);
+      color: var(--text);
+      background: rgba(8, 27, 39, 0.72);
+      box-shadow: 0 0 22px rgba(39, 216, 255, 0.12);
+      font-weight: 800;
+    }
+
+    .button.primary {
+      border-color: rgba(131, 255, 177, 0.8);
+      background: linear-gradient(135deg, rgba(39, 216, 255, 0.28), rgba(131, 255, 177, 0.28));
+      box-shadow: 0 0 30px rgba(131, 255, 177, 0.2);
+    }
+
+    .button:hover {
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+
+    .signal-panel {
+      border: 1px solid rgba(119, 237, 255, 0.35);
+      background:
+        linear-gradient(180deg, rgba(3, 15, 24, 0.84), rgba(5, 24, 34, 0.64)),
+        radial-gradient(circle at top right, rgba(131, 255, 177, 0.17), transparent 18rem);
+      box-shadow: 0 0 40px rgba(39, 216, 255, 0.14), inset 0 0 40px rgba(119, 237, 255, 0.04);
+      padding: 22px;
+      backdrop-filter: blur(14px);
+    }
+
+    .signal-title {
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .signal-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(119, 237, 255, 0.18);
+      color: var(--muted);
+    }
+
+    .signal-line strong {
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92rem;
+      text-align: right;
+    }
+
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      color: var(--green);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+    }
+
+    .live-dot::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(180deg, #02070e 0%, #061521 100%);
+    }
+
+    .section {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 86px 0;
+      border-bottom: 1px solid rgba(119, 237, 255, 0.14);
+    }
+
+    .section:first-child {
+      padding-top: 42px;
+    }
+
+    .section-heading {
+      max-width: 780px;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 3.8rem;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .section-heading p,
+    .split p,
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.02rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature {
+      min-height: 238px;
+      border: 1px solid rgba(119, 237, 255, 0.22);
+      background: linear-gradient(180deg, rgba(11, 34, 49, 0.74), rgba(4, 14, 23, 0.8));
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--violet), var(--cyan), var(--green));
+    }
+
+    .feature-number {
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      margin-bottom: 28px;
+    }
+
+    .feature h3 {
+      margin: 0 0 12px;
+      font-size: 1.35rem;
+      letter-spacing: 0;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 14px;
+    }
+
+    .pipeline-step {
+      border: 1px solid rgba(119, 237, 255, 0.28);
+      background: var(--panel);
+      padding: 22px;
+      min-height: 178px;
+    }
+
+    .pipeline-step span {
+      color: var(--green);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+    }
+
+    .pipeline-step h3 {
+      margin: 20px 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .pipeline-step p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .beam {
+      align-self: center;
+      width: 62px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--violet), var(--green));
+      box-shadow: 0 0 18px rgba(131, 255, 177, 0.55);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(320px, 0.58fr);
+      gap: 42px;
+      align-items: start;
+    }
+
+    .endpoint {
+      border: 1px solid rgba(131, 255, 177, 0.34);
+      background: linear-gradient(180deg, rgba(13, 43, 43, 0.74), rgba(5, 19, 26, 0.9));
+      padding: 26px;
+    }
+
+    .endpoint code {
+      display: block;
+      padding: 14px;
+      margin: 16px 0;
+      border: 1px solid rgba(119, 237, 255, 0.2);
+      background: rgba(0, 0, 0, 0.26);
+      color: var(--green);
+      overflow-wrap: anywhere;
+    }
+
+    .endpoint ul,
+    .rules ul {
+      margin: 18px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .rules {
+      border-left: 3px solid var(--pink);
+      background: rgba(255, 134, 223, 0.07);
+      padding: 22px 24px;
+    }
+
+    .footer {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 36px 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 920px) {
+      .nav-inner {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        min-height: 820px;
+      }
+
+      .hero::before {
+        background:
+          linear-gradient(180deg, rgba(2, 7, 14, 0.96) 0%, rgba(2, 7, 14, 0.7) 48%, rgba(2, 7, 14, 0.88) 100%);
+      }
+
+      .hero-inner,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        width: calc(100% - 28px);
+        padding: 54px 0 46px;
+        gap: 34px;
+      }
+
+      h1 {
+        font-size: 2.95rem;
+        line-height: 0.98;
+      }
+
+      h2 {
+        font-size: 2.05rem;
+        line-height: 1.05;
+      }
+
+      .hero-copy {
+        font-size: 1rem;
+      }
+
+      .button {
+        min-height: 44px;
+        padding: 0 15px;
+      }
+
+      .signal-panel {
+        padding: 16px;
+      }
+
+      .signal-line {
+        padding: 9px 0;
+      }
+
+      .section {
+        width: calc(100% - 28px);
+        padding: 62px 0;
+      }
+
+      .section:first-child {
+        padding-top: 14px;
+      }
+
+      .grid,
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+
+      .beam {
+        width: 2px;
+        height: 40px;
+        justify-self: center;
+        background: linear-gradient(180deg, var(--violet), var(--green));
+      }
+
+      .footer {
+        width: calc(100% - 28px);
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-shell">
+    <nav class="nav" aria-label="Primary navigation">
+      <div class="nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M10 28c7-18 17-18 24 0" fill="none" stroke="#83ffb1" stroke-width="6" stroke-linecap="round"/>
+              <path d="M14 34c8-14 14-14 22 0" fill="none" stroke="#77edff" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span>Vault MCP Connector</span>
+        </a>
+        <div class="nav-links">
+          <a href="#how">How it works</a>
+          <a href="#security">Security</a>
+          <a href="/wiki/">Wiki</a>
+          <a href="/healthz">Health</a>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-media" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow">Private remote MCP for Obsidian</div>
+          <h1>Vault context, wired for AI clients.</h1>
+          <p class="hero-copy">
+            A read-only MCP server that turns selected Obsidian notes into safe search and fetch tools for ChatGPT, Claude, Codex, and any compatible client.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="/wiki/">Read the wiki</a>
+            <a class="button" href="#endpoint">View endpoint</a>
+            <a class="button" href="/.well-known/oauth-protected-resource">OAuth metadata</a>
+          </div>
+        </div>
+
+        <aside class="signal-panel" aria-label="Connector status summary">
+          <div class="signal-title">Production signal</div>
+          <div class="signal-line">
+            <span>Transport</span>
+            <strong>Streamable HTTP</strong>
+          </div>
+          <div class="signal-line">
+            <span>Tools</span>
+            <strong>search + fetch</strong>
+          </div>
+          <div class="signal-line">
+            <span>Mode</span>
+            <strong>read-only</strong>
+          </div>
+          <div class="signal-line">
+            <span>Auth</span>
+            <strong>OAuth</strong>
+          </div>
+          <div class="live-dot">remote connector online</div>
+        </aside>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="section" id="how">
+        <div class="section-heading">
+          <h2>Built like a firewall between your vault and the model.</h2>
+          <p>
+            The server never gives an AI client broad filesystem access. It exposes a filtered, rebuildable index made from notes that pass the source policy.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="feature">
+            <div class="feature-number">01 / SOURCE POLICY</div>
+            <h3>Only approved notes enter the index.</h3>
+            <p>Project homes, the Task Hub, and selected technical references are eligible. Sensitive areas, raw daily notes, finance, identity, credentials, and archived material stay out.</p>
+          </article>
+          <article class="feature">
+            <div class="feature-number">02 / PRIVATE CITATIONS</div>
+            <h3>Results point back to controlled chunks.</h3>
+            <p>Search returns concise matches with private citation URLs, metadata, headings, and Obsidian links so the answer can stay grounded.</p>
+          </article>
+          <article class="feature">
+            <div class="feature-number">03 / CLIENT READY</div>
+            <h3>One remote MCP surface for many clients.</h3>
+            <p>ChatGPT, Claude, Codex, and other MCP clients can talk to the same hosted endpoint through OAuth and Streamable HTTP.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>From Obsidian graph to hosted MCP server.</h2>
+          <p>
+            The system is intentionally simple: scan the vault copy, filter aggressively, sync approved chunks, then answer MCP tool calls.
+          </p>
+        </div>
+        <div class="pipeline" aria-label="Connector pipeline">
+          <div class="pipeline-step">
+            <span>LOCAL</span>
+            <h3>Indexer scans the vault snapshot.</h3>
+            <p>Markdown files are parsed locally, split into useful chunks, and checked against the allowlist and denylist.</p>
+          </div>
+          <div class="beam" aria-hidden="true"></div>
+          <div class="pipeline-step">
+            <span>SYNC</span>
+            <h3>Approved context is uploaded.</h3>
+            <p>The remote database receives a full replacement index. Deleted or denied notes disappear on the next sync.</p>
+          </div>
+          <div class="beam" aria-hidden="true"></div>
+          <div class="pipeline-step">
+            <span>MCP</span>
+            <h3>Clients call search and fetch.</h3>
+            <p>The server validates auth, handles MCP JSON-RPC, and returns only allowlisted chunks.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="endpoint">
+        <div class="split">
+          <div>
+            <h2>The endpoint is the product.</h2>
+            <p>
+              The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive exactly two tools: <strong>search</strong> for discovery and <strong>fetch</strong> for reading a selected chunk.
+            </p>
+          </div>
+          <aside class="endpoint">
+            <strong>MCP endpoint</strong>
+            <code>https://vault-mcp-connector.vercel.app/mcp</code>
+            <ul>
+              <li><strong>POST</strong> handles MCP JSON-RPC requests.</li>
+              <li><strong>GET</strong> supports authenticated SSE.</li>
+              <li><strong>/wiki/</strong> explains every major file and flow.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="security">
+        <div class="split">
+          <div>
+            <h2>Designed to keep the vault as the source of truth.</h2>
+            <p>
+              The remote server is not a second vault. It is a controlled read surface backed by a derived index. If the policy changes or a note is removed, the index can be rebuilt from the local source.
+            </p>
+          </div>
+          <div class="rules">
+            <strong>Hard boundaries</strong>
+            <ul>
+              <li>No note editing through MCP.</li>
+              <li>No guessed filesystem paths.</li>
+              <li>No raw daily notes or credentials.</li>
+              <li>No finance, legal, identity, or review-gated material.</li>
+              <li>No broad vault browsing.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Vault MCP Connector</span>
+      <span>Private Obsidian context for approved AI clients.</span>
+    </footer>
+  </div>
+</body>
+</html>
