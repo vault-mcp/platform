@@ -131,7 +131,7 @@
     }
 
     .hero {
-      min-height: 92vh;
+      min-height: 900px;
       position: relative;
       display: grid;
       align-items: end;
@@ -291,6 +291,30 @@
       box-shadow: 0 0 18px var(--green);
     }
 
+    .signal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .mini-button {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(119, 237, 255, 0.28);
+      color: var(--muted);
+      background: rgba(119, 237, 255, 0.05);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .mini-button:hover {
+      color: var(--text);
+      border-color: var(--green);
+    }
+
     .content {
       position: relative;
       z-index: 2;
@@ -305,7 +329,39 @@
     }
 
     .section:first-child {
-      padding-top: 42px;
+      padding-top: 28px;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid rgba(119, 237, 255, 0.22);
+      background: rgba(119, 237, 255, 0.18);
+      margin-bottom: 70px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(8, 26, 38, 0.95), rgba(4, 13, 22, 0.96)),
+        linear-gradient(90deg, rgba(119, 237, 255, 0.08), transparent);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 1.8rem;
+      line-height: 1;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
     }
 
     .section-heading {
@@ -366,6 +422,113 @@
       margin: 0 0 12px;
       font-size: 1.35rem;
       letter-spacing: 0;
+    }
+
+    .feature:hover {
+      border-color: rgba(131, 255, 177, 0.5);
+      background: linear-gradient(180deg, rgba(12, 45, 58, 0.78), rgba(4, 14, 23, 0.88));
+    }
+
+    .interface-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.65fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .terminal {
+      border: 1px solid rgba(119, 237, 255, 0.28);
+      background: #02080f;
+      box-shadow: inset 0 0 40px rgba(119, 237, 255, 0.04);
+      overflow: hidden;
+    }
+
+    .terminal-bar {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(119, 237, 255, 0.18);
+      background: rgba(119, 237, 255, 0.06);
+      color: var(--soft);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+    }
+
+    .terminal-dots {
+      display: inline-flex;
+      gap: 7px;
+    }
+
+    .terminal-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--soft);
+    }
+
+    .terminal-dots span:nth-child(1) {
+      background: var(--pink);
+    }
+
+    .terminal-dots span:nth-child(2) {
+      background: var(--green);
+    }
+
+    .terminal-dots span:nth-child(3) {
+      background: var(--cyan);
+    }
+
+    .terminal pre {
+      margin: 0;
+      padding: 24px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #d9f7ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.95rem;
+      line-height: 1.75;
+    }
+
+    .terminal .prompt {
+      color: var(--green);
+    }
+
+    .terminal .key {
+      color: var(--cyan);
+    }
+
+    .terminal .value {
+      color: var(--violet);
+    }
+
+    .capability-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .endpoint-list {
+      margin-top: 24px;
+    }
+
+    .capability {
+      border: 1px solid rgba(119, 237, 255, 0.22);
+      background: rgba(8, 26, 38, 0.68);
+      padding: 18px;
+    }
+
+    .capability strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .capability p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+      font-size: 0.96rem;
     }
 
     .pipeline {
@@ -444,6 +607,61 @@
       padding: 22px 24px;
     }
 
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .rule-card {
+      border: 1px solid rgba(119, 237, 255, 0.22);
+      background: rgba(6, 20, 31, 0.72);
+      padding: 18px;
+    }
+
+    .rule-card strong {
+      display: block;
+      color: var(--green);
+      margin-bottom: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+    }
+
+    .rule-card span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .cta-band {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 76px;
+    }
+
+    .cta-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: center;
+      border: 1px solid rgba(131, 255, 177, 0.34);
+      background:
+        linear-gradient(90deg, rgba(10, 42, 43, 0.8), rgba(6, 19, 29, 0.9)),
+        linear-gradient(135deg, rgba(119, 237, 255, 0.16), transparent);
+      padding: 28px;
+    }
+
+    .cta-inner h2 {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+
+    .cta-inner p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
     .footer {
       width: min(var(--max), calc(100% - 40px));
       margin: 0 auto;
@@ -475,7 +693,9 @@
       }
 
       .hero-inner,
-      .split {
+      .split,
+      .interface-grid,
+      .cta-inner {
         grid-template-columns: 1fr;
       }
 
@@ -522,8 +742,14 @@
       }
 
       .grid,
-      .pipeline {
+      .pipeline,
+      .metric-strip,
+      .rules-grid {
         grid-template-columns: 1fr;
+      }
+
+      .metric-strip {
+        margin-bottom: 46px;
       }
 
       .beam {
@@ -537,6 +763,14 @@
         width: calc(100% - 28px);
         flex-direction: column;
         align-items: flex-start;
+      }
+
+      .cta-band {
+        width: calc(100% - 28px);
+      }
+
+      .cta-inner h2 {
+        font-size: 1.85rem;
       }
     }
   </style>
@@ -598,12 +832,35 @@
             <strong>OAuth</strong>
           </div>
           <div class="live-dot">remote connector online</div>
+          <div class="signal-actions">
+            <a class="mini-button" href="/healthz">Health</a>
+            <a class="mini-button" href="/wiki/">Docs</a>
+          </div>
         </aside>
       </div>
     </header>
 
     <main class="content">
       <section class="section" id="how">
+        <div class="metric-strip" aria-label="Connector facts">
+          <div class="metric">
+            <strong>240</strong>
+            <span>approved chunks currently indexed from the vault snapshot.</span>
+          </div>
+          <div class="metric">
+            <strong>437</strong>
+            <span>Markdown notes denied by rule, status, or source policy.</span>
+          </div>
+          <div class="metric">
+            <strong>2</strong>
+            <span>MCP tools exposed to clients: search and fetch.</span>
+          </div>
+          <div class="metric">
+            <strong>0</strong>
+            <span>write operations available through the connector.</span>
+          </div>
+        </div>
+
         <div class="section-heading">
           <h2>Built like a firewall between your vault and the model.</h2>
           <p>
@@ -658,22 +915,44 @@
       </section>
 
       <section class="section" id="endpoint">
-        <div class="split">
+        <div class="interface-grid">
+          <div class="terminal" aria-label="MCP endpoint example">
+            <div class="terminal-bar">
+              <span>mcp-client.session</span>
+              <span class="terminal-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            </div>
+            <pre><span class="prompt">$</span> connect https://vault-mcp-connector.vercel.app/mcp
+
+<span class="key">auth</span>: <span class="value">OAuth protected resource</span>
+<span class="key">transport</span>: <span class="value">Streamable HTTP</span>
+<span class="key">tools</span>: <span class="value">search, fetch</span>
+
+<span class="prompt">&gt;</span> search "deployment checklist"
+<span class="key">returns</span>: approved chunks, headings, citations
+
+<span class="prompt">&gt;</span> fetch "selected-document-id"
+<span class="key">returns</span>: one controlled note chunk</pre>
+          </div>
           <div>
             <h2>The endpoint is the product.</h2>
             <p>
               The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive exactly two tools: <strong>search</strong> for discovery and <strong>fetch</strong> for reading a selected chunk.
             </p>
+            <div class="capability-list endpoint-list">
+              <div class="capability">
+                <strong>Search first.</strong>
+                <p>Clients ask for relevant vault context without receiving a folder listing or arbitrary file paths.</p>
+              </div>
+              <div class="capability">
+                <strong>Fetch only selected chunks.</strong>
+                <p>After search returns an approved id, fetch retrieves that one citation-backed chunk.</p>
+              </div>
+              <div class="capability">
+                <strong>Keep setup inspectable.</strong>
+                <p>The wiki and OAuth metadata are public so client configuration can be debugged without exposing vault content.</p>
+              </div>
+            </div>
           </div>
-          <aside class="endpoint">
-            <strong>MCP endpoint</strong>
-            <code>https://vault-mcp-connector.vercel.app/mcp</code>
-            <ul>
-              <li><strong>POST</strong> handles MCP JSON-RPC requests.</li>
-              <li><strong>GET</strong> supports authenticated SSE.</li>
-              <li><strong>/wiki/</strong> explains every major file and flow.</li>
-            </ul>
-          </aside>
         </div>
       </section>
 
@@ -685,16 +964,34 @@
               The remote server is not a second vault. It is a controlled read surface backed by a derived index. If the policy changes or a note is removed, the index can be rebuilt from the local source.
             </p>
           </div>
-          <div class="rules">
-            <strong>Hard boundaries</strong>
-            <ul>
-              <li>No note editing through MCP.</li>
-              <li>No guessed filesystem paths.</li>
-              <li>No raw daily notes or credentials.</li>
-              <li>No finance, legal, identity, or review-gated material.</li>
-              <li>No broad vault browsing.</li>
-            </ul>
+          <div class="rules-grid">
+            <div class="rule-card">
+              <strong>READ ONLY</strong>
+              <span>No note edits, task creation, filesystem writes, or mutation tools are exposed.</span>
+            </div>
+            <div class="rule-card">
+              <strong>DENYLIST WINS</strong>
+              <span>Raw daily notes, credentials, finance, legal, identity, and review-gated material are excluded before sync.</span>
+            </div>
+            <div class="rule-card">
+              <strong>DERIVED INDEX</strong>
+              <span>The hosted data is rebuildable from the vault source and can be replaced on every sync.</span>
+            </div>
+            <div class="rule-card">
+              <strong>CLIENT AUTH</strong>
+              <span>OAuth protects MCP access while public metadata keeps setup and inspection predictable.</span>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section class="cta-band" aria-label="Documentation call to action">
+        <div class="cta-inner">
+          <div>
+            <h2>Need the full wiring diagram?</h2>
+            <p>The hosted wiki explains the server, indexer, vault policy, generated files, deployment scripts, and every major source file in plain English.</p>
+          </div>
+          <a class="button primary" href="/wiki/">Open the wiki</a>
         </div>
       </section>
     </main>
