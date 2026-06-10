@@ -16,6 +16,7 @@ program
   .option("--vault-name <name>", "Obsidian vault name used for obsidian:// URIs", process.env.VAULT_NAME)
   .option("--public-base-url <url>", "Private note URL base exposed in MCP metadata", process.env.PUBLIC_BASE_URL ?? "https://vault-mcp.local")
   .option("--out <path>", "Write index JSON to this file")
+  .option("--report <path>", "Write a Markdown index report, relative to the vault root unless absolute")
   .option("--server <url>", "Server base URL to sync to, for example http://127.0.0.1:3333")
   .option("--sync-token <token>", "Admin sync token; defaults to MCP_SYNC_TOKEN env")
   .parse(process.argv);
@@ -25,6 +26,7 @@ const options = program.opts<{
   vaultName?: string;
   publicBaseUrl: string;
   out?: string;
+  report?: string;
   server?: string;
   syncToken?: string;
 }>();
@@ -33,6 +35,7 @@ const index = await buildVaultIndex({
   vaultRoot: options.vault,
   vaultName: options.vaultName,
   publicBaseUrl: options.publicBaseUrl,
+  reportPath: options.report,
 });
 
 if (options.out) {

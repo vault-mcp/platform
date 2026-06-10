@@ -3,6 +3,8 @@ import type { SourcePolicyDecision } from "./types.js";
 const DENY_PREFIXES = [
   "00 System/Credentials/",
   "02 Daily/",
+  "Daily Notes/",
+  "Credentials/",
   "50 Areas/Finance/",
   "50 Areas/Identity/",
   "50 Areas/Legal/",
@@ -45,6 +47,7 @@ const ALLOW_REFERENCE_PREFIXES = [
   "40 Reference/OCR/",
   "40 Reference/Obsidian/",
   "40 Reference/Regex/",
+  "40 Reference/Recipes/",
   "40 Reference/Self Hosting/",
   "40 Reference/Terminal/",
   "40 Reference/Web Design/",

@@ -4,6 +4,7 @@ import { chunkMarkdown, parseMarkdownNote } from "./markdown.js";
 import { evaluateSourcePolicy } from "./source-policy.js";
 import { sha256, shortStableId } from "./hash.js";
 import { obsidianUri, privateNoteUrl, relativeVaultPath } from "./paths.js";
+import { redactSensitiveContent } from "./redaction.js";
 import type { IndexStats, VaultDocument, VaultIndex } from "./types.js";
 
 export type BuildVaultIndexOptions = {
@@ -11,6 +12,7 @@ export type BuildVaultIndexOptions = {
   vaultName?: string;
   publicBaseUrl?: string;
   now?: Date;
+  reportPath?: string;
 };
 
 export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<VaultIndex> {
@@ -25,6 +27,8 @@ export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<
     allowed_documents: 0,
     denied_markdown: 0,
     denied_by_rule: {},
+    redacted_documents: 0,
+    redactions_by_pattern: {},
   };
 
   for (const filePath of markdownFiles) {
@@ -36,7 +40,15 @@ export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<
     }
 
     const markdown = await fs.readFile(filePath, "utf8");
-    const parsed = safeParseMarkdown(markdown, relativePath);
+    const redacted = redactSensitiveContent(markdown);
+    if (redacted.redactionCount > 0) {
+      stats.redacted_documents = (stats.redacted_documents ?? 0) + 1;
+      for (const [pattern, count] of Object.entries(redacted.redactionsByPattern)) {
+        stats.redactions_by_pattern![pattern] = (stats.redactions_by_pattern![pattern] ?? 0) + count;
+      }
+    }
+
+    const parsed = safeParseMarkdown(redacted.text, relativePath);
     if (!parsed) {
       recordDenied(stats, "frontmatter-error");
       continue;
@@ -50,7 +62,7 @@ export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<
     }
 
     const fileStat = await fs.stat(filePath);
-    const contentHash = sha256(markdown);
+    const contentHash = sha256(redacted.text);
     const chunks = chunkMarkdown(parsed);
 
     for (const [chunkIndex, chunk] of chunks.entries()) {
@@ -63,6 +75,8 @@ export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<
         metadata: {
           path: relativePath,
           heading: chunk.heading,
+          note_title: parsed.title,
+          chunk_index: chunkIndex,
           tags: parsed.tags,
           status: parsed.status,
           updated_at: fileStat.mtime.toISOString(),
@@ -80,12 +94,18 @@ export async function buildVaultIndex(options: BuildVaultIndexOptions): Promise<
 
   stats.allowed_documents = documents.length;
 
-  return {
+  const index = {
     generated_at: now.toISOString(),
     vault_root: vaultRoot,
     documents,
     stats,
   };
+
+  if (options.reportPath) {
+    await writeIndexReport(options.reportPath, index);
+  }
+
+  return index;
 }
 
 function isPathOnlyDeny(rule: string): boolean {
@@ -123,4 +143,52 @@ async function listMarkdownFiles(root: string): Promise<string[]> {
   }
 
   return files.sort();
+}
+
+async function writeIndexReport(reportPath: string, index: VaultIndex): Promise<void> {
+  const outputPath = path.isAbsolute(reportPath)
+    ? reportPath
+    : path.join(index.vault_root, reportPath);
+  const notePaths = new Set(index.documents.map((document) => document.metadata.path));
+  const report = [
+    "# Vault MCP Index Report",
+    "",
+    "## Summary",
+    "",
+    `- Indexed notes: ${notePaths.size}`,
+    `- Indexed sections: ${index.documents.length}`,
+    `- Last indexed: ${index.generated_at}`,
+    "- Index version: vault-mcp-index-v2",
+    "",
+    "## Included Scopes",
+    "",
+    "- 00 System/Task Hub.md",
+    "- 20 Projects/",
+    "- 40 Reference/",
+    "",
+    "## Excluded Scopes",
+    "",
+    "- 02 Daily/",
+    "- Daily Notes/",
+    "- 50 Areas/Finance/",
+    "- 50 Areas/Identity/",
+    "- 50 Areas/Legal/",
+    "- 00 System/Credentials/",
+    "- Credentials/",
+    "- 90 Archive/",
+    "",
+    "## Skipped Notes",
+    "",
+    ...Object.entries(index.stats.denied_by_rule).sort(([a], [b]) => a.localeCompare(b)).map(([rule, count]) => `- ${rule}: ${count}`),
+    "",
+    "## Warnings",
+    "",
+    `- Notes with credential-like strings redacted before indexing: ${index.stats.redacted_documents ?? 0}`,
+    ...Object.entries(index.stats.redactions_by_pattern ?? {}).sort(([a], [b]) => a.localeCompare(b)).map(([pattern, count]) => `- Redactions for ${pattern}: ${count}`),
+    "- Notes skipped due to denylist rules are reported by count only.",
+    "",
+  ].join("\n");
+
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.writeFile(outputPath, report, "utf8");
 }

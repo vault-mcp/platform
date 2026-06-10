@@ -1,8 +1,32 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import pg from "pg";
-import type { IndexStats, SearchResponse, SyncPayload, VaultDocument, VaultIndex } from "@vault-mcp/vault-core";
-import { fetchDocument, searchDocuments } from "@vault-mcp/vault-core";
+import type {
+  DebugSearchResponse,
+  IndexStats,
+  IndexStatusResponse,
+  ListNotesOptions,
+  ListNotesResponse,
+  NoteSummary,
+  SearchOptions,
+  SearchResponse,
+  SyncPayload,
+  VaultDocument,
+  VaultIndex,
+} from "@vault-mcp/vault-core";
+import {
+  activeProjects,
+  debugSearch,
+  fetchDocument,
+  fetchDocumentByPath,
+  getIndexStatus,
+  listNotes,
+  recentNotes,
+  searchDocuments,
+  searchNotes,
+  searchSections,
+  searchVault,
+} from "@vault-mcp/vault-core";
 
 export type IndexHealth = {
   document_count: number;
@@ -24,7 +48,16 @@ export interface IndexStore {
   replace(payload: SyncPayload): Promise<void>;
   health(): IndexHealth | Promise<IndexHealth>;
   search(query: string, limit?: number, scope?: string): SearchResponse | Promise<SearchResponse>;
+  searchNotes(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
+  searchSections(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
+  searchVault(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
   fetch(id: string): VaultDocument | null | Promise<VaultDocument | null>;
+  fetchByPath(path: string): VaultDocument | null | Promise<VaultDocument | null>;
+  listNotes(options: ListNotesOptions): ListNotesResponse | Promise<ListNotesResponse>;
+  recentNotes(scope?: string, limit?: number): { notes: NoteSummary[] } | Promise<{ notes: NoteSummary[] }>;
+  activeProjects(limit?: number, cursor?: string): ListNotesResponse | Promise<ListNotesResponse>;
+  indexStatus(): IndexStatusResponse | Promise<IndexStatusResponse>;
+  debugSearch(query: string, scope?: string): DebugSearchResponse | Promise<DebugSearchResponse>;
   saveOAuthClient(client: StoredOAuthClient): void | Promise<void>;
   getOAuthClient(clientId: string): StoredOAuthClient | null | Promise<StoredOAuthClient | null>;
   consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean | Promise<boolean>;
@@ -73,8 +106,44 @@ export class JsonIndexStore implements IndexStore {
     return searchDocuments(this.documents, query, limit, scope);
   }
 
+  searchNotes(options: SearchOptions) {
+    return searchNotes(this.documents, options);
+  }
+
+  searchSections(options: SearchOptions) {
+    return searchSections(this.documents, options);
+  }
+
+  searchVault(options: SearchOptions) {
+    return searchVault(this.documents, options);
+  }
+
   fetch(id: string) {
     return fetchDocument(this.documents, id);
+  }
+
+  fetchByPath(notePath: string) {
+    return fetchDocumentByPath(this.documents, notePath);
+  }
+
+  listNotes(options: ListNotesOptions) {
+    return listNotes(this.documents, options);
+  }
+
+  recentNotes(scope?: string, limit?: number) {
+    return recentNotes(this.documents, scope, limit);
+  }
+
+  activeProjects(limit?: number, cursor?: string) {
+    return activeProjects(this.documents, limit, cursor);
+  }
+
+  indexStatus() {
+    return getIndexStatus(this.documents, this.stats, this.generatedAt);
+  }
+
+  debugSearch(query: string, scope?: string) {
+    return debugSearch(this.documents, query, scope, this.generatedAt);
   }
 
   saveOAuthClient(client: StoredOAuthClient): void {
@@ -223,32 +292,7 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async search(query: string, limit = 10, scope?: string): Promise<SearchResponse> {
-    const normalizedLimit = Math.max(1, Math.min(limit, 25));
-    const rows = await this.pool.query<{
-      id: string;
-      title: string;
-      text: string;
-      url: string;
-      metadata: VaultDocument["metadata"];
-    }>(
-      `select id, title, text, url, metadata
-       from vault_documents
-       where search_vector @@ plainto_tsquery('english', $1)
-       and ($3::text is null or metadata->>'path' like $3 || '%')
-       order by ts_rank(search_vector, plainto_tsquery('english', $1)) desc, metadata->>'path' asc
-       limit $2`,
-      [query, normalizedLimit, scope ?? null],
-    );
-
-    return {
-      results: rows.rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        url: row.url,
-        text_snippet: row.text.replace(/\s+/g, " ").slice(0, 280),
-        metadata: row.metadata,
-      })),
-    };
+    return searchDocuments(await this.allDocuments(), query, limit, scope);
   }
 
   async fetch(id: string): Promise<VaultDocument | null> {
@@ -264,7 +308,46 @@ export class PostgresIndexStore implements IndexStore {
       return null;
     }
 
-    return row.rows[0];
+    return {
+      ...row.rows[0],
+      obsidian_uri: row.rows[0].metadata.obsidian_uri,
+    };
+  }
+
+  async searchNotes(options: SearchOptions): Promise<SearchResponse> {
+    return searchNotes(await this.allDocuments(), options);
+  }
+
+  async searchSections(options: SearchOptions): Promise<SearchResponse> {
+    return searchSections(await this.allDocuments(), options);
+  }
+
+  async searchVault(options: SearchOptions): Promise<SearchResponse> {
+    return searchVault(await this.allDocuments(), options);
+  }
+
+  async fetchByPath(notePath: string): Promise<VaultDocument | null> {
+    return fetchDocumentByPath(await this.allDocuments(), notePath);
+  }
+
+  async listNotes(options: ListNotesOptions): Promise<ListNotesResponse> {
+    return listNotes(await this.allDocuments(), options);
+  }
+
+  async recentNotes(scope?: string, limit?: number): Promise<{ notes: NoteSummary[] }> {
+    return recentNotes(await this.allDocuments(), scope, limit);
+  }
+
+  async activeProjects(limit?: number, cursor?: string): Promise<ListNotesResponse> {
+    return activeProjects(await this.allDocuments(), limit, cursor);
+  }
+
+  async indexStatus(): Promise<IndexStatusResponse> {
+    return getIndexStatus(await this.allDocuments(), this.stats, this.generatedAt);
+  }
+
+  async debugSearch(query: string, scope?: string): Promise<DebugSearchResponse> {
+    return debugSearch(await this.allDocuments(), query, scope, this.generatedAt);
   }
 
   async saveOAuthClient(client: StoredOAuthClient): Promise<void> {
@@ -313,5 +396,24 @@ export class PostgresIndexStore implements IndexStore {
       [jti, kind, expiresAt.toISOString()],
     );
     return result.rowCount === 1;
+  }
+
+  private async allDocuments(): Promise<VaultDocument[]> {
+    const rows = await this.pool.query<{
+      id: string;
+      title: string;
+      text: string;
+      url: string;
+      metadata: VaultDocument["metadata"];
+    }>(
+      `select id, title, text, url, metadata
+       from vault_documents
+       order by metadata->>'path' asc, coalesce((metadata->>'chunk_index')::int, 0) asc, id asc`,
+    );
+
+    return rows.rows.map((row) => ({
+      ...row,
+      obsidian_uri: row.metadata.obsidian_uri,
+    }));
   }
 }

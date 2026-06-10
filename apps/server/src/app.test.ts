@@ -10,6 +10,18 @@ import { JsonIndexStore } from "./store.js";
 import type { VaultDocument } from "@vault-mcp/vault-core";
 
 const servers: http.Server[] = [];
+const expectedTools = [
+  "search",
+  "search_notes",
+  "search_sections",
+  "list_notes",
+  "recent_notes",
+  "active_projects",
+  "fetch",
+  "fetch_note_by_path",
+  "get_index_status",
+  "debug_search",
+];
 
 describe("server MCP contract", () => {
   it("serves the public landing page without authentication", async () => {
@@ -69,7 +81,7 @@ describe("server MCP contract", () => {
 
     const accessToken = config.accessToken ?? "";
     const tools = await mcp(baseUrl, accessToken, 1, "tools/list", {});
-    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
     await expectMcpSseProbe(baseUrl, accessToken);
 
     const search = await mcp(baseUrl, accessToken, 2, "tools/call", {
@@ -77,6 +89,33 @@ describe("server MCP contract", () => {
       arguments: { query: "remote MCP", limit: 1 },
     });
     expect(search.result.structuredContent.results[0].id).toBe("doc-1");
+    expect(search.result.structuredContent.results[0].type).toBe("section");
+    expect(search.result.structuredContent.results[0].obsidian_uri).toContain("obsidian://open");
+
+    const noteSearch = await mcp(baseUrl, accessToken, 20, "tools/call", {
+      name: "search_notes",
+      arguments: { query: "remote MCP", limit: 1 },
+    });
+    expect(noteSearch.result.structuredContent.results[0].type).toBe("note");
+
+    const listed = await mcp(baseUrl, accessToken, 21, "tools/call", {
+      name: "list_notes",
+      arguments: { scope: "20 Projects/", limit: 1 },
+    });
+    expect(listed.result.structuredContent.notes[0].path).toBe("20 Projects/Vault MCP Connector/Project Home.md");
+
+    const byPath = await mcp(baseUrl, accessToken, 22, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: "20 Projects/Vault MCP Connector/Project Home.md" },
+    });
+    expect(byPath.result.structuredContent.title).toBe("Vault MCP Connector");
+
+    const status = await mcp(baseUrl, accessToken, 23, "tools/call", {
+      name: "get_index_status",
+      arguments: {},
+    });
+    expect(status.result.structuredContent.indexed_note_count).toBe(1);
+    expect(status.result.structuredContent.excluded_scopes).toContain("02 Daily/");
 
     const fetched = await mcp(baseUrl, accessToken, 3, "tools/call", {
       name: "fetch",
@@ -255,7 +294,7 @@ describe("server MCP contract", () => {
       .sign(new TextEncoder().encode("test-oauth-secret"));
 
     const tools = await mcp(baseUrl, jwt, 1, "tools/list", {});
-    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
   });
 
   it("supports self-hosted OAuth dynamic registration, PKCE code exchange, and refresh", async () => {
@@ -369,7 +408,7 @@ describe("server MCP contract", () => {
     expect(replayedCode.status).toBe(400);
 
     const tools = await mcp(baseUrl, tokenBody.access_token, 1, "tools/list", {});
-    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(["search", "fetch"]);
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
 
     const refresh = await fetch(`${baseUrl}/oauth/token`, {
       method: "POST",
