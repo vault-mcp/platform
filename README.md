@@ -2,6 +2,18 @@
 
 Private, read-only MCP connector for selected Obsidian vault context.
 
+## Wiki
+
+A plain-English project wiki is hosted from `public/wiki/index.html` and is intended
+for readers with no coding background. In production it is available at:
+
+```text
+https://vault-mcp-connector.vercel.app/wiki/
+```
+
+The wiki explains the mental model, request flow, repository map, source-policy
+boundary, and file-by-file walkthroughs for the hand-authored project code.
+
 V1 exposes an allowlisted derived index through:
 
 - `POST /mcp` - MCP Streamable HTTP JSON-RPC endpoint.

@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --navy: #21323b;
+      --blue: #2367a6;
+      --blue-soft: #e5f0fb;
+      --green: #1f765f;
+      --green-soft: #dff2ec;
+      --amber: #a86212;
+      --amber-soft: #fff0d7;
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--surface); color: var(--ink); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+
+    header {
+      padding: 42px clamp(18px, 5vw, 72px) 34px;
+      border-bottom: 1px solid var(--line);
+      background: #eaf1f3;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0 0 14px;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 880px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 26px clamp(18px, 4vw, 44px) 72px;
+    }
+
+    nav {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    nav strong { display: block; margin-bottom: 10px; }
+    nav a {
+      display: block;
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    nav a:hover { background: var(--blue-soft); text-decoration: none; }
+
+    main { min-width: 0; }
+
+    section {
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    section:last-child { border-bottom: 0; }
+
+    h2 { margin: 0 0 12px; font-size: 30px; line-height: 1.15; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 20px; letter-spacing: 0; }
+    h4 { margin: 18px 0 6px; font-size: 16px; letter-spacing: 0; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    ul, ol { color: var(--muted); }
+    li { margin: 5px 0; }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .callout {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .callout::before { content: ""; width: 10px; border-radius: 99px; background: var(--blue); }
+    .callout.warning::before { background: var(--amber); }
+    .callout.good::before { background: var(--green); }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    .file {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .file summary {
+      cursor: pointer;
+      padding: 13px 14px;
+      background: #edf3f5;
+      font-weight: 800;
+    }
+    .file-body { padding: 14px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+
+    pre {
+      overflow-x: auto;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: #102027;
+      color: #edf6f7;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .line-map td:first-child { white-space: nowrap; width: 120px; color: var(--blue); font-weight: 800; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; max-height: none; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Vault MCP Connector Wiki</p>
+    <h1>Read-only Obsidian vault context for AI clients.</h1>
+    <p class="lead">This wiki explains the whole project for a non-programmer first, then drills down into the files. It is intentionally plain: what each file is for, why it exists, how requests move through the system, and what the important lines of code do.</p>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="Wiki navigation">
+      <strong>Contents</strong>
+      <a href="#plain-english">Plain-English Overview</a>
+      <a href="#mental-model">Mental Model</a>
+      <a href="#request-flow">Request Flow</a>
+      <a href="#repo-map">Repository Map</a>
+      <a href="#server-files">Server Files</a>
+      <a href="#vault-core-files">Vault Core Files</a>
+      <a href="#indexer-files">Indexer Files</a>
+      <a href="#scripts-files">Scripts And Deploy</a>
+      <a href="#config-files">Config Files</a>
+      <a href="#generated-files">Generated Files</a>
+      <a href="#glossary">Glossary</a>
+      <a href="#how-to-extend">How To Extend This Wiki</a>
+    </nav>
+
+    <main>
+      <section id="plain-english">
+        <h2>Plain-English Overview</h2>
+        <div class="grid two">
+          <div class="card">
+            <h3>What this project does</h3>
+            <p>It lets approved AI tools search and fetch selected notes from an Obsidian vault. It is read-only. It does not edit notes. It does not expose the whole vault. It serves a controlled index that was built from allowlisted notes.</p>
+          </div>
+          <div class="card">
+            <h3>What this project does not do</h3>
+            <p>It does not let AI browse the filesystem. It does not read the live vault on every request. It does not allow guessed note paths. It does not expose raw daily notes, credentials, finance, legal, identity, or archived sensitive material.</p>
+          </div>
+        </div>
+
+        <h3>The simplest useful sentence</h3>
+        <p><strong>A local indexer scans only approved Markdown files, sends approved chunks to a hosted server, and the hosted server exposes only two MCP tools: <code>search</code> and <code>fetch</code>.</strong></p>
+
+        <h3>The three big parts</h3>
+        <table>
+          <thead><tr><th>Part</th><th>Plain-English job</th><th>Main files</th></tr></thead>
+          <tbody>
+            <tr><td>Indexer</td><td>Walks through the vault copy, reads Markdown, applies allow/deny policy, creates searchable chunks.</td><td><code>apps/indexer/src/index.ts</code>, <code>packages/vault-core/src/indexer.ts</code></td></tr>
+            <tr><td>Server</td><td>Hosts the API, validates auth, stores the index, and answers MCP requests.</td><td><code>apps/server/src/app.ts</code>, <code>apps/server/src/mcp.ts</code>, <code>apps/server/src/store.ts</code></td></tr>
+            <tr><td>Auth</td><td>Protects the server using OAuth for clients and a separate sync token for admin sync.</td><td><code>apps/server/src/auth.ts</code>, <code>apps/server/src/oauth.ts</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mental-model">
+        <h2>Mental Model</h2>
+        <div class="callout good">
+          <div>
+            <strong>Think of the hosted index as a photocopied binder, not the vault itself.</strong>
+            <p>The Obsidian vault is the source of truth. The server only receives a derived, rebuildable, filtered index.</p>
+          </div>
+        </div>
+
+        <h3>Why this design is safer</h3>
+        <ul>
+          <li>The hosted server does not need direct filesystem access to the vault.</li>
+          <li>The source policy runs before data is uploaded.</li>
+          <li>Denied notes never become remotely fetchable.</li>
+          <li>Clients can only call <code>search</code> and <code>fetch</code>.</li>
+          <li>Every fetched item has a private citation URL and metadata showing where it came from.</li>
+        </ul>
+
+        <h3>Current operating state</h3>
+        <table>
+          <tbody>
+            <tr><th>Production URL</th><td><code>https://vault-mcp-connector.vercel.app</code></td></tr>
+            <tr><th>MCP endpoint</th><td><code>https://vault-mcp-connector.vercel.app/mcp</code></td></tr>
+            <tr><th>Current index source</th><td>Copied test vault, not live vault.</td></tr>
+            <tr><th>Expected tool list</th><td><code>search</code>, <code>fetch</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="request-flow">
+        <h2>Request Flow</h2>
+        <h3>Indexing flow</h3>
+        <ol>
+          <li>You run the indexer and point it at the vault copy.</li>
+          <li>The indexer finds Markdown files.</li>
+          <li>Each file path is checked against quick deny rules before reading content.</li>
+          <li>Allowed candidate files are parsed for frontmatter, tags, status, title, links, and tasks.</li>
+          <li>The full source policy decides whether the note is allowed.</li>
+          <li>Allowed notes are split into heading-based chunks.</li>
+          <li>Each chunk gets a stable id, title, text, URL, and metadata.</li>
+          <li>The finished index is written locally or posted to <code>/admin/sync</code>.</li>
+        </ol>
+
+        <h3>Client request flow</h3>
+        <ol>
+          <li>ChatGPT, Claude, Codex, or MCP Inspector calls <code>/mcp</code>.</li>
+          <li>The server checks the request origin if an <code>Origin</code> header exists.</li>
+          <li>The server checks the bearer token or OAuth token.</li>
+          <li>The MCP SDK receives the JSON-RPC request.</li>
+          <li>If the client asks for <code>search</code>, the store searches the index.</li>
+          <li>If the client asks for <code>fetch</code>, the store fetches by id.</li>
+          <li>If no document matches the id, the tool returns an error instead of data.</li>
+        </ol>
+      </section>
+
+      <section id="repo-map">
+        <h2>Repository Map</h2>
+        <table>
+          <thead><tr><th>Path</th><th>What it contains</th><th>Hand-authored?</th></tr></thead>
+          <tbody>
+            <tr><td><code>api/</code></td><td>Vercel Function entrypoint.</td><td>Yes</td></tr>
+            <tr><td><code>apps/indexer/</code></td><td>Command-line app that builds/syncs the vault index.</td><td>Yes</td></tr>
+            <tr><td><code>apps/server/</code></td><td>Express server, MCP routes, auth, OAuth, storage, tests.</td><td>Yes</td></tr>
+            <tr><td><code>packages/vault-core/</code></td><td>Pure vault logic: parsing, policy, hashing, search, types.</td><td>Yes</td></tr>
+            <tr><td><code>scripts/</code></td><td>Smoke tests and deployment automation.</td><td>Yes</td></tr>
+            <tr><td><code>docs/</code></td><td>Planning, deployment, acceptance, and threat-model docs.</td><td>Yes</td></tr>
+            <tr><td><code>public/wiki/</code></td><td>This hosted wiki.</td><td>Yes</td></tr>
+            <tr><td><code>data/index.json</code></td><td>Generated local index snapshot.</td><td>No, generated</td></tr>
+            <tr><td><code>package-lock.json</code></td><td>NPM dependency lock file.</td><td>No, generated by npm</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="server-files">
+        <h2>Server Files</h2>
+
+        <details class="file" open>
+          <summary><code>apps/server/src/app.ts</code> - Express routes and request wiring</summary>
+          <div class="file-body">
+            <p>This file creates the web app. It does not contain the low-level search logic; it connects routes to helpers.</p>
+            <table class="line-map">
+              <tr><td>1-7</td><td>Import Express types, project config, auth helpers, MCP handler, OAuth routes, store types, and sync payload type.</td></tr>
+              <tr><td>9</td><td>Defines <code>createApp</code>, the function that builds the Express app from config and a storage backend.</td></tr>
+              <tr><td>10</td><td>Creates the Express application object.</td></tr>
+              <tr><td>11</td><td>Merges configured allowed origins with the app's own public URL. This prevents the OAuth page from blocking its own form submit.</td></tr>
+              <tr><td>12</td><td>Installs CORS/origin protection globally.</td></tr>
+              <tr><td>13-14</td><td>Allows JSON and HTML form bodies up to 25 MB.</td></tr>
+              <tr><td>15-18</td><td>Attaches the index store to each request so OAuth handlers can save/read client registrations and token-use records.</td></tr>
+              <tr><td>20</td><td>Registers OAuth discovery, registration, authorization, and token routes.</td></tr>
+              <tr><td>22-27</td><td><code>GET /healthz</code> returns service health and index stats.</td></tr>
+              <tr><td>29-35</td><td>OAuth protected-resource metadata routes tell clients where auth lives.</td></tr>
+              <tr><td>37-54</td><td><code>POST /admin/sync</code> replaces the stored index. It requires the admin sync token.</td></tr>
+              <tr><td>56-67</td><td><code>GET /notes/:id</code> returns a private citation document for an authenticated user or 404.</td></tr>
+              <tr><td>69-83</td><td>Wraps MCP request handling in a try/catch so unexpected failures return JSON-RPC server errors.</td></tr>
+              <tr><td>85</td><td><code>POST /mcp</code> is the main Streamable HTTP JSON-RPC MCP endpoint.</td></tr>
+              <tr><td>86-116</td><td><code>GET /mcp</code> supports authenticated SSE connection probing when clients accept <code>text/event-stream</code>.</td></tr>
+              <tr><td>118-128</td><td><code>DELETE /mcp</code> is explicitly rejected with method-not-allowed.</td></tr>
+              <tr><td>130-133</td><td>Removes duplicate origins and trailing slashes.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/auth.ts</code> - bearer auth, OAuth token verification, CORS</summary>
+          <div class="file-body">
+            <p>This file decides whether a request is allowed to continue.</p>
+            <table class="line-map">
+              <tr><td>1-3</td><td>Imports Express request/response types, JWT verification helpers from <code>jose</code>, and server config types.</td></tr>
+              <tr><td>5-11</td><td>Lists request headers that browser clients may send during CORS requests.</td></tr>
+              <tr><td>13-26</td><td><code>requireBearerToken</code> protects admin sync by requiring the exact sync token.</td></tr>
+              <tr><td>28-47</td><td><code>requireUserAuth</code> accepts either legacy static bearer auth or OAuth token auth, depending on config.</td></tr>
+              <tr><td>49-56</td><td><code>protectedResourceMetadata</code> builds OAuth metadata for MCP clients.</td></tr>
+              <tr><td>58-75</td><td><code>requireAllowedOrigin</code> blocks browser-origin requests from unknown origins.</td></tr>
+              <tr><td>77-101</td><td><code>applyCors</code> sets CORS headers or rejects forbidden origins before routes run.</td></tr>
+              <tr><td>103-105</td><td>Extracts a bearer token from the <code>Authorization</code> header.</td></tr>
+              <tr><td>107-109</td><td>Checks exact origin match or localhost-style prefix match.</td></tr>
+              <tr><td>111-121</td><td>Safely appends <code>Origin</code> to the <code>Vary</code> response header.</td></tr>
+              <tr><td>123-143</td><td>Verifies OAuth JWTs using either a local shared secret or remote JWKS.</td></tr>
+              <tr><td>145-157</td><td>Returns <code>401</code> plus a <code>WWW-Authenticate</code> header pointing clients to metadata.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/config.ts</code> - environment variables into typed config</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1-2</td><td>Imports path helpers so paths can be resolved relative to the repo.</td></tr>
+              <tr><td>4-16</td><td>Defines the full server configuration shape.</td></tr>
+              <tr><td>18-27</td><td>Defines the OAuth-specific configuration shape.</td></tr>
+              <tr><td>29-39</td><td>Starts config loading and rejects startup if neither user auth nor sync token is configured.</td></tr>
+              <tr><td>41-46</td><td>Finds the repo root and local index file.</td></tr>
+              <tr><td>47</td><td>Normalizes <code>PUBLIC_BASE_URL</code> by removing a trailing slash.</td></tr>
+              <tr><td>49-68</td><td>Returns config values from environment variables, including origins and OAuth settings.</td></tr>
+              <tr><td>71-73</td><td>Deduplicates origin strings.</td></tr>
+              <tr><td>75-98</td><td>Loads OAuth config only when OAuth env vars are present; validates required combinations.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/mcp.ts</code> - MCP tool definitions</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1-5</td><td>Imports MCP SDK classes, Express types, Zod schemas, and the store interface.</td></tr>
+              <tr><td>7-12</td><td>Defines instructions shown to MCP clients. These warn clients not to treat note text as instructions.</td></tr>
+              <tr><td>14-25</td><td>Creates an MCP server named <code>vault-mcp-connector</code>.</td></tr>
+              <tr><td>27-68</td><td>Registers the read-only <code>search</code> tool, its input/output schemas, and its implementation.</td></tr>
+              <tr><td>70-113</td><td>Registers the read-only <code>fetch</code> tool. Missing ids return a tool error instead of data.</td></tr>
+              <tr><td>117-136</td><td>Creates a stateless Streamable HTTP transport for each request and closes it when the response ends.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/store.ts</code> - JSON and Postgres storage</summary>
+          <div class="file-body">
+            <p>The server can store the index in a JSON file locally or Postgres in production. Both stores implement the same <code>IndexStore</code> interface.</p>
+            <table class="line-map">
+              <tr><td>1-5</td><td>Imports filesystem/path, Postgres, shared types, and search/fetch helpers.</td></tr>
+              <tr><td>7-11</td><td>Defines health data returned by <code>/healthz</code>.</td></tr>
+              <tr><td>13-19</td><td>Defines how OAuth dynamic client registrations are stored.</td></tr>
+              <tr><td>21-32</td><td>Defines the store interface all storage backends must follow.</td></tr>
+              <tr><td>34-107</td><td><code>JsonIndexStore</code> keeps data in memory and writes a local JSON file.</td></tr>
+              <tr><td>109-317</td><td><code>PostgresIndexStore</code> creates tables, syncs documents transactionally, searches with full-text search, fetches by id, and persists OAuth clients/token replays.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/oauth.ts</code> - self-hosted OAuth server</summary>
+          <div class="file-body">
+            <p>This is the largest server file. It implements enough OAuth for clients to dynamically register, authorize with PKCE, exchange codes, refresh tokens, and prevent replay.</p>
+            <table class="line-map">
+              <tr><td>1-20</td><td>Imports crypto, JWT signing/verifying helpers, Express types, config types, and store types.</td></tr>
+              <tr><td>22-43</td><td>Defines constants for token lifetime and request parsing.</td></tr>
+              <tr><td>45-86</td><td>Registers OAuth metadata and dynamic client registration routes.</td></tr>
+              <tr><td>87-123</td><td>Handles the authorization page: GET renders the password form; POST checks password, validates PKCE request, and redirects with an authorization code.</td></tr>
+              <tr><td>125-190</td><td>Handles token exchange for authorization codes and refresh tokens.</td></tr>
+              <tr><td>192-278</td><td>Validates request parameters, redirect URIs, scopes, and client registrations.</td></tr>
+              <tr><td>280-365</td><td>Signs, verifies, and consumes authorization codes and refresh tokens.</td></tr>
+              <tr><td>367-433</td><td>Renders the simple password form and error responses.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>apps/server/src/bootstrap.ts</code> and <code>index.ts</code> - startup</summary>
+          <div class="file-body">
+            <p><code>bootstrap.ts</code> loads config, chooses JSON or Postgres storage, loads storage, and creates the Express app. <code>index.ts</code> starts listening on the configured host and port when running as a normal Node server.</p>
+          </div>
+        </details>
+      </section>
+
+      <section id="vault-core-files">
+        <h2>Vault Core Files</h2>
+
+        <details class="file" open>
+          <summary><code>packages/vault-core/src/indexer.ts</code> - build the vault index</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1-6</td><td>Imports filesystem/path helpers and vault-core modules for parsing, policy, hashing, URLs, and types.</td></tr>
+              <tr><td>8-13</td><td>Defines options accepted by <code>buildVaultIndex</code>.</td></tr>
+              <tr><td>15-29</td><td>Normalizes inputs, lists Markdown files, and initializes stats.</td></tr>
+              <tr><td>31-45</td><td>Loops through files, checks quick path-only deny rules, reads Markdown, and safely parses it.</td></tr>
+              <tr><td>47-52</td><td>Runs full source policy using path, tags, and status.</td></tr>
+              <tr><td>54-80</td><td>Chunks allowed notes and creates <code>VaultDocument</code> objects with stable ids and metadata.</td></tr>
+              <tr><td>82-87</td><td>Returns the final generated index.</td></tr>
+              <tr><td>90-122</td><td>Helper functions for quick denies, parse safety, denied stats, and recursive Markdown file listing.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>packages/vault-core/src/markdown.ts</code> - parse and chunk Markdown</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1-2</td><td>Imports path and gray-matter frontmatter parser.</td></tr>
+              <tr><td>4-13</td><td>Defines parsed note fields.</td></tr>
+              <tr><td>15-32</td><td>Parses frontmatter/body, title, tags, status, headings, wikilinks, and tasks.</td></tr>
+              <tr><td>34-52</td><td>Chunks Markdown by heading and maximum character count.</td></tr>
+              <tr><td>54-103</td><td>Helper functions extract titles, tags, headings, wikilinks, tasks, and heading sections.</td></tr>
+              <tr><td>105-107</td><td>Normalizes tags by trimming and removing leading <code>#</code>.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>packages/vault-core/src/source-policy.ts</code> - allowlist and denylist</summary>
+          <div class="file-body">
+            <p>This file is the main safety boundary before content enters the remote index.</p>
+            <table class="line-map">
+              <tr><td>1</td><td>Imports the policy decision type.</td></tr>
+              <tr><td>3-11</td><td>Defines denied path prefixes such as credentials, daily notes, finance, identity, legal, and archive.</td></tr>
+              <tr><td>13-15</td><td>Defines exact denied paths.</td></tr>
+              <tr><td>17-27</td><td>Defines sensitive tag fragments that deny a note.</td></tr>
+              <tr><td>29-51</td><td>Defines selected reference notes/folders that are allowed.</td></tr>
+              <tr><td>53-96</td><td>Applies the policy in order: non-Markdown, exact deny, prefix deny, tag deny, status deny, task hub allow, active project-home allow, selected-reference allow, unselected-reference deny, default deny.</td></tr>
+              <tr><td>98-108</td><td>Small helpers return allow/deny decisions and normalize tags.</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="file">
+          <summary><code>search.ts</code>, <code>types.ts</code>, <code>paths.ts</code>, <code>hash.ts</code>, <code>index.ts</code></summary>
+          <div class="file-body">
+            <table>
+              <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><code>search.ts</code></td><td>Scores documents by query terms in title, path, and text; returns snippets; fetches documents by id.</td></tr>
+                <tr><td><code>types.ts</code></td><td>Defines shared TypeScript shapes for documents, metadata, search responses, index stats, and sync payloads.</td></tr>
+                <tr><td><code>paths.ts</code></td><td>Converts filesystem paths to vault-style paths, creates Obsidian URIs, and creates private note URLs.</td></tr>
+                <tr><td><code>hash.ts</code></td><td>Creates SHA-256 hashes and 24-character stable ids.</td></tr>
+                <tr><td><code>index.ts</code></td><td>Re-exports vault-core modules so apps can import from one package entrypoint.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section id="indexer-files">
+        <h2>Indexer Files</h2>
+        <details class="file" open>
+          <summary><code>apps/indexer/src/index.ts</code> - command-line index builder</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1</td><td>Shebang so the file can run as a command after build.</td></tr>
+              <tr><td>2-6</td><td>Imports filesystem/path helpers, Commander, and <code>buildVaultIndex</code>.</td></tr>
+              <tr><td>8</td><td>Finds the repo root.</td></tr>
+              <tr><td>10-22</td><td>Defines command options for vault path, vault name, public URL, output file, server URL, and sync token.</td></tr>
+              <tr><td>24-31</td><td>Types the parsed command options.</td></tr>
+              <tr><td>33-37</td><td>Builds the index from the selected vault.</td></tr>
+              <tr><td>39-43</td><td>If <code>--out</code> is provided, writes index JSON locally.</td></tr>
+              <tr><td>45-67</td><td>If <code>--server</code> is provided, posts the index to <code>/admin/sync</code> using the sync token.</td></tr>
+              <tr><td>69-73</td><td>Prints generated time, vault root, and stats.</td></tr>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section id="scripts-files">
+        <h2>Scripts And Deploy</h2>
+        <table>
+          <thead><tr><th>File</th><th>What it does</th><th>When to use</th></tr></thead>
+          <tbody>
+            <tr><td><code>scripts/smoke-local.mjs</code></td><td>Builds local server, syncs copied vault, checks health, auth, MCP tools, search, fetch, guessed-id denial.</td><td>Before trusting local changes.</td></tr>
+            <tr><td><code>scripts/smoke-oauth-local.mjs</code></td><td>Runs local server in OAuth-only validation mode with a locally signed token.</td><td>Before production OAuth changes.</td></tr>
+            <tr><td><code>scripts/smoke-oauth-flow.mjs</code></td><td>Exercises self-hosted OAuth: registration, PKCE code, token, refresh, replay denial, remote smoke.</td><td>After OAuth deploys.</td></tr>
+            <tr><td><code>scripts/smoke-postgres-local.mjs</code></td><td>Runs server against a provided Postgres URL and verifies search/fetch.</td><td>When testing storage path.</td></tr>
+            <tr><td><code>scripts/smoke-remote.mjs</code></td><td>Checks a deployed endpoint with an access token and optional sync token.</td><td>After deploys.</td></tr>
+            <tr><td><code>scripts/vercel-production-deploy.mjs</code></td><td>Links Vercel project, upserts env vars, pulls project settings, deploys production, optionally runs smoke.</td><td>For controlled production deploys.</td></tr>
+          </tbody>
+        </table>
+
+        <details class="file">
+          <summary><code>scripts/vercel-production-deploy.mjs</code> line map</summary>
+          <div class="file-body">
+            <table class="line-map">
+              <tr><td>1-3</td><td>Runs as Node and imports child-process/process helpers.</td></tr>
+              <tr><td>5-14</td><td>Reads CLI flags and deployment identity defaults.</td></tr>
+              <tr><td>16-36</td><td>Defines required environment variables for shared, OAuth, and static auth modes.</td></tr>
+              <tr><td>38-65</td><td>Validates required env vars and handles check-only mode.</td></tr>
+              <tr><td>67-95</td><td>Links Vercel, updates env vars, pulls settings, deploys production.</td></tr>
+              <tr><td>105-120</td><td>Optionally runs remote smoke after deploy.</td></tr>
+              <tr><td>122-160</td><td>Adds or updates Vercel env vars noninteractively.</td></tr>
+              <tr><td>162-209</td><td>Runs child commands and captures stdout/stderr.</td></tr>
+              <tr><td>211-214</td><td>Extracts a deployment URL from Vercel output.</td></tr>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section id="config-files">
+        <h2>Config Files</h2>
+        <table>
+          <thead><tr><th>File</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>package.json</code></td><td>Root workspace definition, scripts, dependencies, and dev dependencies.</td></tr>
+            <tr><td><code>package-lock.json</code></td><td>Exact dependency versions installed by npm. Generated; do not hand-edit.</td></tr>
+            <tr><td><code>tsconfig.json</code></td><td>Root TypeScript project references.</td></tr>
+            <tr><td><code>tsconfig.base.json</code></td><td>Shared TypeScript compiler settings.</td></tr>
+            <tr><td><code>apps/*/tsconfig.json</code></td><td>Per-app TypeScript build settings.</td></tr>
+            <tr><td><code>packages/vault-core/tsconfig.json</code></td><td>Package TypeScript build settings.</td></tr>
+            <tr><td><code>vitest.config.ts</code></td><td>Test runner configuration.</td></tr>
+            <tr><td><code>vercel.json</code></td><td>Vercel build command, function timeout, and rewrite all requests into the function.</td></tr>
+            <tr><td><code>api/index.ts</code></td><td>Vercel Function entrypoint that creates the configured Express app.</td></tr>
+            <tr><td><code>Dockerfile</code></td><td>Alternative container build for non-Vercel hosts.</td></tr>
+            <tr><td><code>.github/workflows/ci.yml</code></td><td>GitHub Actions workflow for build, API check, and tests.</td></tr>
+            <tr><td><code>.env.example</code></td><td>Template environment variables with no real secrets.</td></tr>
+            <tr><td><code>.env.local</code>, <code>.env.oauth.local</code>, <code>.env.production.local</code></td><td>Local secret/config files. Ignored by Git. Do not document values.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="generated-files">
+        <h2>Generated Files</h2>
+        <div class="callout warning">
+          <div>
+            <strong>Not every file should be explained line-by-line by hand.</strong>
+            <p>Generated files should be explained by structure and purpose. Editing them manually can break reproducibility.</p>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>File</th><th>How to understand it</th></tr></thead>
+          <tbody>
+            <tr><td><code>data/index.json</code></td><td>Generated local vault index. It contains <code>generated_at</code>, <code>vault_root</code>, <code>documents</code>, and <code>stats</code>. Each document has <code>id</code>, <code>title</code>, <code>text</code>, <code>url</code>, and <code>metadata</code>.</td></tr>
+            <tr><td><code>package-lock.json</code></td><td>NPM lock file. Each entry pins dependency versions and integrity hashes.</td></tr>
+            <tr><td><code>.vercel/</code></td><td>Local Vercel project-link metadata. It is ignored by Git and should not be committed.</td></tr>
+            <tr><td><code>*.tsbuildinfo</code></td><td>TypeScript incremental build cache. Ignored by Git.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="glossary">
+        <h2>Glossary</h2>
+        <table>
+          <tbody>
+            <tr><th>MCP</th><td>Model Context Protocol. A standard way for AI clients to call external tools.</td></tr>
+            <tr><th>Tool</th><td>A callable function exposed to an AI client. This server exposes <code>search</code> and <code>fetch</code>.</td></tr>
+            <tr><th>OAuth</th><td>A protocol for authorizing clients without sharing long-lived passwords with them.</td></tr>
+            <tr><th>PKCE</th><td>A safety extension for OAuth authorization-code flows used by public clients.</td></tr>
+            <tr><th>JWT</th><td>A signed token format. This server signs/verifies access, refresh, and authorization-code tokens.</td></tr>
+            <tr><th>JTI</th><td>A token id. The server records used JTIs to prevent replay.</td></tr>
+            <tr><th>CORS</th><td>Browser origin protection. It controls which websites may call this server from a browser.</td></tr>
+            <tr><th>Allowlist</th><td>Rules that say what can enter the remote index.</td></tr>
+            <tr><th>Denylist</th><td>Rules that say what must never enter the remote index.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="how-to-extend">
+        <h2>How To Extend This Wiki</h2>
+        <p>This is the first server-hosted wiki pass. The next useful additions are:</p>
+        <ul>
+          <li>Add dedicated pages for every test file with test-by-test explanation.</li>
+          <li>Add a complete line map for <code>oauth.ts</code> after splitting it into smaller sections.</li>
+          <li>Add screenshots for Inspector, ChatGPT, Claude, Vercel, and Neon flows.</li>
+          <li>Add a generated file index that lists every route, every environment variable, and every npm script.</li>
+          <li>Add a "change one thing safely" tutorial for non-coders.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
