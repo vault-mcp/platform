@@ -12,6 +12,18 @@ import type { VaultDocument } from "@vault-mcp/vault-core";
 const servers: http.Server[] = [];
 
 describe("server MCP contract", () => {
+  it("serves the public wiki without authentication", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/wiki/`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(await response.text()).toContain("Vault MCP Connector Wiki");
+  });
+
   it("syncs documents and exposes read-only search/fetch over authenticated MCP", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);

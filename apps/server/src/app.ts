@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from "express";
+import path from "node:path";
 import type { ServerConfig } from "./config.js";
 import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
@@ -18,6 +19,10 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   });
 
   registerOAuthRoutes(app, config);
+
+  app.get(["/wiki", "/wiki/"], (_req: Request, res: Response) => {
+    res.sendFile(path.join(process.cwd(), "public", "wiki", "index.html"));
+  });
 
   app.get("/healthz", async (_req: Request, res: Response) => {
     res.json({
