@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>docs/threat-model.md - Line Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Line-by-line file reference</p>
+        <h1><code>docs/threat-model.md</code></h1>
+        <p class="lead">Human documentation for setup, deployment, acceptance, or project requirements.</p>
+        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+      </section>
+
+      <section>
+        <h2>How to read this file</h2>
+        <div class="card">
+          <p>Read this file from top to bottom. Imports and constants usually set up dependencies first; functions or configuration blocks then define the actual behavior.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Every line explained</h2>
+        <table class="line-table">
+          <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="line-number" id="L1"><a href="#L1">1</a></td>
+              <td class="source"><pre># Threat Model</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L2"><a href="#L2">2</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L3"><a href="#L3">3</a></td>
+              <td class="source"><pre>## Assets</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L4"><a href="#L4">4</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L5"><a href="#L5">5</a></td>
+              <td class="source"><pre>- Live Obsidian vault contents.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L6"><a href="#L6">6</a></td>
+              <td class="source"><pre>- Sensitive/review-gated notes, credentials, finance, legal, identity, and raw daily notes.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L7"><a href="#L7">7</a></td>
+              <td class="source"><pre>- Derived MCP index.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L8"><a href="#L8">8</a></td>
+              <td class="source"><pre>- MCP access and sync tokens.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L9"><a href="#L9">9</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L10"><a href="#L10">10</a></td>
+              <td class="source"><pre>## Trust Boundaries</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="source"><pre>- The indexer is local and reads the vault.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="source"><pre>- The server does not read the vault; it serves only synced documents.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="source"><pre>- MCP clients receive untrusted note content for context and citation only.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="source"><pre>## Controls</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="source"><pre>- Denylist rules run before allowlist rules.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="source"><pre>- V1 selects only specific technical/reference subfolders under `40 Reference/`; prompt archives, business-development references, client/process archives, and other unselected reference folders are denied by default.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="source"><pre>- V1 is read-only.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="source"><pre>- `/mcp` and `/notes/:id` require either `MCP_ACCESS_TOKEN` for local development or a valid OAuth JWT in production.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>- `/admin/sync` requires separate `MCP_SYNC_TOKEN`.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre>- OAuth protected-resource metadata is exposed for MCP clients.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="source"><pre>- Local server defaults to `127.0.0.1`.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="source"><pre>- Origin validation is enforced for `/mcp`.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="source"><pre>- Note text is explicitly described as untrusted data in server instructions.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="source"><pre>- The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="source"><pre>- Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="source"><pre>## Current Gaps</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="source"><pre>- Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre>- ChatGPT-specific UI has not been implemented yet; current clients use the MCP tool surface directly.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr></tbody>
+        </table>
+      </section>
+    
+  </main>
+</body>
+</html>

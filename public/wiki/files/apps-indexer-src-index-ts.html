@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>apps/indexer/src/index.ts - Line Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Line-by-line file reference</p>
+        <h1><code>apps/indexer/src/index.ts</code></h1>
+        <p class="lead">CLI for building and optionally syncing the vault index.</p>
+        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+      </section>
+
+      <section>
+        <h2>How to read this file</h2>
+        <div class="card">
+          <p>Read this file from top to bottom. Imports and constants usually set up dependencies first; functions or configuration blocks then define the actual behavior.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Every line explained</h2>
+        <table class="line-table">
+          <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="line-number" id="L1"><a href="#L1">1</a></td>
+              <td class="source"><pre>#!/usr/bin/env node</pre></td>
+              <td>Shebang line: lets the operating system run this script with the named interpreter.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L2"><a href="#L2">2</a></td>
+              <td class="source"><pre>import fs from &quot;node:fs/promises&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L3"><a href="#L3">3</a></td>
+              <td class="source"><pre>import path from &quot;node:path&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L4"><a href="#L4">4</a></td>
+              <td class="source"><pre>import { fileURLToPath } from &quot;node:url&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L5"><a href="#L5">5</a></td>
+              <td class="source"><pre>import { Command } from &quot;commander&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L6"><a href="#L6">6</a></td>
+              <td class="source"><pre>import { buildVaultIndex } from &quot;@vault-mcp/vault-core&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L7"><a href="#L7">7</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L8"><a href="#L8">8</a></td>
+              <td class="source"><pre>const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), &quot;../../..&quot;);</pre></td>
+              <td>Declares repoRoot, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L9"><a href="#L9">9</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L10"><a href="#L10">10</a></td>
+              <td class="source"><pre>const program = new Command();</pre></td>
+              <td>Declares program, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="source"><pre>program</pre></td>
+              <td>Line 12 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="source"><pre>  .name(&quot;vault-mcp-indexer&quot;)</pre></td>
+              <td>Line 13 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="source"><pre>  .description(&quot;Build or sync a read-only Vault MCP index from an allowlisted Obsidian vault.&quot;)</pre></td>
+              <td>Line 14 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="source"><pre>  .option(&quot;--vault &lt;path&gt;&quot;, &quot;Vault root to scan&quot;, process.env.VAULT_ROOT ?? &quot;/Users/tjt/Documents/Tristan's Personal vault copy&quot;)</pre></td>
+              <td>Line 15 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="source"><pre>  .option(&quot;--vault-name &lt;name&gt;&quot;, &quot;Obsidian vault name used for obsidian:// URIs&quot;, process.env.VAULT_NAME)</pre></td>
+              <td>Line 16 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="source"><pre>  .option(&quot;--public-base-url &lt;url&gt;&quot;, &quot;Private note URL base exposed in MCP metadata&quot;, process.env.PUBLIC_BASE_URL ?? &quot;https://vault-mcp.local&quot;)</pre></td>
+              <td>Line 17 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="source"><pre>  .option(&quot;--out &lt;path&gt;&quot;, &quot;Write index JSON to this file&quot;)</pre></td>
+              <td>Line 18 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="source"><pre>  .option(&quot;--report &lt;path&gt;&quot;, &quot;Write a Markdown index report, relative to the vault root unless absolute&quot;)</pre></td>
+              <td>Line 19 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="source"><pre>  .option(&quot;--server &lt;url&gt;&quot;, &quot;Server base URL to sync to, for example http://127.0.0.1:3333&quot;)</pre></td>
+              <td>Line 20 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="source"><pre>  .option(&quot;--sync-token &lt;token&gt;&quot;, &quot;Admin sync token; defaults to MCP_SYNC_TOKEN env&quot;)</pre></td>
+              <td>Line 21 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>  .parse(process.argv);</pre></td>
+              <td>Line 22 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="source"><pre>const options = program.opts&lt;{</pre></td>
+              <td>Declares options, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="source"><pre>  vault: string;</pre></td>
+              <td>Line 25 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="source"><pre>  vaultName?: string;</pre></td>
+              <td>Line 26 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="source"><pre>  publicBaseUrl: string;</pre></td>
+              <td>Line 27 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="source"><pre>  out?: string;</pre></td>
+              <td>Line 28 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre>  report?: string;</pre></td>
+              <td>Line 29 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="source"><pre>  server?: string;</pre></td>
+              <td>Line 30 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="source"><pre>  syncToken?: string;</pre></td>
+              <td>Line 31 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="source"><pre>}&gt;();</pre></td>
+              <td>Line 32 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="source"><pre>const index = await buildVaultIndex({</pre></td>
+              <td>Declares index, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="source"><pre>  vaultRoot: options.vault,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="source"><pre>  vaultName: options.vaultName,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="source"><pre>  publicBaseUrl: options.publicBaseUrl,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="source"><pre>  reportPath: options.report,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="source"><pre>});</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="source"><pre>if (options.out) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="source"><pre>  const outputPath = path.resolve(repoRoot, options.out);</pre></td>
+              <td>Declares outputPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="source"><pre>  await fs.mkdir(path.dirname(outputPath), { recursive: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="source"><pre>  await fs.writeFile(outputPath, `${JSON.stringify(index, null, 2)}\n`, &quot;utf8&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="source"><pre>if (options.server) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="source"><pre>  const token = options.syncToken ?? process.env.MCP_SYNC_TOKEN;</pre></td>
+              <td>Declares token, a token-related value used for authentication or authorization.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>  if (!token) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre>    throw new Error(&quot;--sync-token or MCP_SYNC_TOKEN is required when --server is used.&quot;);</pre></td>
+              <td>Line 50 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>  const response = await fetch(`${options.server.replace(/\/$/, &quot;&quot;)}/admin/sync`, {</pre></td>
+              <td>Declares response, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>    method: &quot;POST&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>    headers: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>      &quot;Authorization&quot;: `Bearer ${token}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;application/json&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>    body: JSON.stringify({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="source"><pre>      documents: index.documents,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="source"><pre>      generated_at: index.generated_at,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre>      stats: index.stats,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre>    }),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="source"><pre>  if (!response.ok) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>    throw new Error(`Sync failed with ${response.status}: ${await response.text()}`);</pre></td>
+              <td>Line 67 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>console.log(JSON.stringify({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>  generated_at: index.generated_at,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>  vault_root: index.vault_root,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>  stats: index.stats,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>}, null, 2));</pre></td>
+              <td>Line 75 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr></tbody>
+        </table>
+      </section>
+    
+  </main>
+</body>
+</html>

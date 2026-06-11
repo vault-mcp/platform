@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Line-by-Line Source Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Vault MCP Connector Wiki</p>
+        <h1>Line-by-line source reference.</h1>
+        <p class="lead">This section is generated from the current repository. It covers 50 authored text files and 8,163 lines with plain-English explanations next to the exact source line.</p>
+        <p><a href="/wiki/">Back to the conceptual wiki</a></p>
+      </section>
+
+      <section>
+        <h2>How to use this reference</h2>
+        <div class="grid two">
+          <div class="card">
+            <h3>Start with the concept page</h3>
+            <p>The main wiki explains the system as a story. Use this source reference when you want to inspect a specific file or line.</p>
+          </div>
+          <div class="card">
+            <h3>Read source and explanation together</h3>
+            <p>Each row has the line number, the exact code, and a plain-English note explaining why that line exists.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Important paths through the code</h2>
+        <div class="grid three">
+        <article class="card">
+          <h3>Server app</h3>
+          <p>Express routes for landing page, wiki, health, OAuth metadata, admin sync, note citation fetches, and MCP transport.</p>
+          <a href="apps-server-src-app-ts.html"><code>apps/server/src/app.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>MCP tools</h3>
+          <p>Registers the read-only MCP tool surface and converts store responses into MCP tool results.</p>
+          <a href="apps-server-src-mcp-ts.html"><code>apps/server/src/mcp.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Auth</h3>
+          <p>Validates bearer tokens, OAuth JWTs, CORS origins, and protected-resource metadata.</p>
+          <a href="apps-server-src-auth-ts.html"><code>apps/server/src/auth.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>OAuth</h3>
+          <p>Self-hosted authorization server: metadata, dynamic client registration, authorize form, token exchange, refresh rotation, and replay protection.</p>
+          <a href="apps-server-src-oauth-ts.html"><code>apps/server/src/oauth.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Storage</h3>
+          <p>Shared storage interface plus JSON and Postgres implementations.</p>
+          <a href="apps-server-src-store-ts.html"><code>apps/server/src/store.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Indexer</h3>
+          <p>Walks the vault, applies policy, redacts secrets, chunks Markdown, and builds the derived index.</p>
+          <a href="packages-vault-core-src-indexer-ts.html"><code>packages/vault-core/src/indexer.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Search</h3>
+          <p>Search, listing, active project discovery, status, diagnostics, and controlled fetch helpers.</p>
+          <a href="packages-vault-core-src-search-ts.html"><code>packages/vault-core/src/search.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Source policy</h3>
+          <p>Allowlist and denylist rules that decide what can enter the index.</p>
+          <a href="packages-vault-core-src-source-policy-ts.html"><code>packages/vault-core/src/source-policy.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Markdown parsing</h3>
+          <p>Frontmatter parsing and heading-based chunking.</p>
+          <a href="packages-vault-core-src-markdown-ts.html"><code>packages/vault-core/src/markdown.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Smoke gates</h3>
+          <p>Local end-to-end gate for sync, auth, tools/list, search, fetch, and denied guesses.</p>
+          <a href="scripts-smoke-local-mjs.html"><code>scripts/smoke-local.mjs</code></a>
+        </article>
+        <article class="card">
+          <h3>Remote gate</h3>
+          <p>Production/remote gate for OAuth-protected deployed endpoints.</p>
+          <a href="scripts-smoke-remote-mjs.html"><code>scripts/smoke-remote.mjs</code></a>
+        </article></div>
+      </section>
+
+      <section>
+        <h2>Authored file coverage</h2>
+        <table>
+          <thead><tr><th>File</th><th>Lines</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="api-index-ts.html"><code>api/index.ts</code></a></td>
+              <td>5</td>
+              <td>Vercel Function entrypoint that creates the configured Express app.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-indexer-package-json.html"><code>apps/indexer/package.json</code></a></td>
+              <td>19</td>
+              <td>Package metadata, dependencies, and npm scripts.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-indexer-src-index-ts.html"><code>apps/indexer/src/index.ts</code></a></td>
+              <td>75</td>
+              <td>CLI for building and optionally syncing the vault index.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-indexer-tsconfig-json.html"><code>apps/indexer/tsconfig.json</code></a></td>
+              <td>12</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-package-json.html"><code>apps/server/package.json</code></a></td>
+              <td>18</td>
+              <td>Package metadata, dependencies, and npm scripts.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-app-test-ts.html"><code>apps/server/src/app.test.ts</code></a></td>
+              <td>594</td>
+              <td>Automated tests that document and verify expected behavior.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-app-ts.html"><code>apps/server/src/app.ts</code></a></td>
+              <td>147</td>
+              <td>Express application and HTTP routes for the deployed service.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-auth-ts.html"><code>apps/server/src/auth.ts</code></a></td>
+              <td>157</td>
+              <td>Bearer token, OAuth JWT, CORS, and protected-resource helpers.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-bootstrap-ts.html"><code>apps/server/src/bootstrap.ts</code></a></td>
+              <td>17</td>
+              <td>Loads config, chooses JSON or Postgres storage, and creates the app.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-config-ts.html"><code>apps/server/src/config.ts</code></a></td>
+              <td>98</td>
+              <td>Environment variable parsing and runtime configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-index-ts.html"><code>apps/server/src/index.ts</code></a></td>
+              <td>17</td>
+              <td>Node server startup and shutdown handling.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-mcp-ts.html"><code>apps/server/src/mcp.ts</code></a></td>
+              <td>319</td>
+              <td>MCP server, tool definitions, schemas, and Streamable HTTP transport.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-oauth-ts.html"><code>apps/server/src/oauth.ts</code></a></td>
+              <td>464</td>
+              <td>Self-hosted OAuth registration, authorization, token, refresh, and replay protection routes.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-store-ts.html"><code>apps/server/src/store.ts</code></a></td>
+              <td>419</td>
+              <td>Storage interface plus JSON and Postgres index stores.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-tsconfig-json.html"><code>apps/server/tsconfig.json</code></a></td>
+              <td>12</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="docs-prd-md.html"><code>docs/PRD.md</code></a></td>
+              <td>81</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="docs-acceptance-md.html"><code>docs/acceptance.md</code></a></td>
+              <td>130</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="docs-connector-setup-md.html"><code>docs/connector-setup.md</code></a></td>
+              <td>50</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="docs-deployment-md.html"><code>docs/deployment.md</code></a></td>
+              <td>235</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="docs-threat-model-md.html"><code>docs/threat-model.md</code></a></td>
+              <td>33</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="package-json.html"><code>package.json</code></a></td>
+              <td>44</td>
+              <td>Package metadata, dependencies, and npm scripts.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-package-json.html"><code>packages/vault-core/package.json</code></a></td>
+              <td>12</td>
+              <td>Package metadata, dependencies, and npm scripts.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-hash-ts.html"><code>packages/vault-core/src/hash.ts</code></a></td>
+              <td>9</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-index-ts.html"><code>packages/vault-core/src/index.ts</code></a></td>
+              <td>8</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-indexer-test-ts.html"><code>packages/vault-core/src/indexer.test.ts</code></a></td>
+              <td>211</td>
+              <td>Automated tests that document and verify expected behavior.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-indexer-ts.html"><code>packages/vault-core/src/indexer.ts</code></a></td>
+              <td>194</td>
+              <td>Vault scanner, source policy application, redaction, chunking, metadata, and report output.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-markdown-test-ts.html"><code>packages/vault-core/src/markdown.test.ts</code></a></td>
+              <td>44</td>
+              <td>Automated tests that document and verify expected behavior.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-markdown-ts.html"><code>packages/vault-core/src/markdown.ts</code></a></td>
+              <td>132</td>
+              <td>Markdown frontmatter parsing and heading chunking.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-paths-ts.html"><code>packages/vault-core/src/paths.ts</code></a></td>
+              <td>17</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-redaction-ts.html"><code>packages/vault-core/src/redaction.ts</code></a></td>
+              <td>46</td>
+              <td>Credential-like string redaction before indexing.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-search-ts.html"><code>packages/vault-core/src/search.ts</code></a></td>
+              <td>545</td>
+              <td>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-source-policy-test-ts.html"><code>packages/vault-core/src/source-policy.test.ts</code></a></td>
+              <td>65</td>
+              <td>Automated tests that document and verify expected behavior.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-source-policy-ts.html"><code>packages/vault-core/src/source-policy.ts</code></a></td>
+              <td>113</td>
+              <td>V1 allowlist and denylist rules.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-src-types-ts.html"><code>packages/vault-core/src/types.ts</code></a></td>
+              <td>139</td>
+              <td>Shared TypeScript types for index documents, search results, and stats.</td>
+            </tr>
+            <tr>
+              <td><a href="packages-vault-core-tsconfig-json.html"><code>packages/vault-core/tsconfig.json</code></a></td>
+              <td>9</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="public-index-html.html"><code>public/index.html</code></a></td>
+              <td>1005</td>
+              <td>Public landing page for the connector.</td>
+            </tr>
+            <tr>
+              <td><a href="public-wiki-index-html.html"><code>public/wiki/index.html</code></a></td>
+              <td>661</td>
+              <td>Conceptual wiki landing page.</td>
+            </tr>
+            <tr>
+              <td><a href="readme-md.html"><code>README.md</code></a></td>
+              <td>144</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
+              <td>617</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-local-mjs.html"><code>scripts/smoke-local.mjs</code></a></td>
+              <td>214</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-oauth-flow-mjs.html"><code>scripts/smoke-oauth-flow.mjs</code></a></td>
+              <td>156</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-oauth-local-mjs.html"><code>scripts/smoke-oauth-local.mjs</code></a></td>
+              <td>212</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-postgres-local-mjs.html"><code>scripts/smoke-postgres-local.mjs</code></a></td>
+              <td>194</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-remote-mjs.html"><code>scripts/smoke-remote.mjs</code></a></td>
+              <td>182</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-vercel-production-deploy-mjs.html"><code>scripts/vercel-production-deploy.mjs</code></a></td>
+              <td>215</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="tsconfig-base-json.html"><code>tsconfig.base.json</code></a></td>
+              <td>16</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="tsconfig-json.html"><code>tsconfig.json</code></a></td>
+              <td>8</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="vercel-json.html"><code>vercel.json</code></a></td>
+              <td>15</td>
+              <td>Vercel deployment configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="vitest-config-ts.html"><code>vitest.config.ts</code></a></td>
+              <td>7</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="dockerfile.html"><code>Dockerfile</code></a></td>
+              <td>27</td>
+              <td>Container image build instructions.</td>
+            </tr></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Generated, fixture, or binary files</h2>
+        <p>These are still part of the project, but they are not hand-authored application code in the same sense as the files above.</p>
+        <table>
+          <thead><tr><th>Path</th><th>How to understand it</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>package-lock.json</code></td>
+              <td>Generated npm dependency lockfile. It records exact dependency versions and integrity hashes; do not edit it by hand.</td>
+            </tr>
+            <tr>
+              <td><code>public/assets/mcp-vault-server.png</code></td>
+              <td>Binary landing-page image asset. It is referenced by public/index.html and cannot be explained line-by-line as text.</td>
+            </tr>
+            <tr>
+              <td><code>data/.gitkeep</code></td>
+              <td>Empty placeholder so the data directory exists in git.</td>
+            </tr>
+            <tr>
+              <td><code>public/.gitkeep</code></td>
+              <td>Empty placeholder so the public directory existed before the landing page and wiki assets were added.</td>
+            </tr>
+            <tr>
+              <td><code>fixtures/vault/**</code></td>
+              <td>Fixture markdown files used by tests. They are explained through the indexer/search test pages that consume them.</td>
+            </tr></tbody>
+        </table>
+      </section>
+    
+  </main>
+</body>
+</html>
