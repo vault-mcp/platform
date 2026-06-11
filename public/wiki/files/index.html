@@ -60,7 +60,7 @@
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
         <h1>Line-by-line source reference.</h1>
-        <p class="lead">This section is generated from the current repository. It covers 50 authored text files and 8,163 lines with plain-English explanations next to the exact source line.</p>
+        <p class="lead">This section is generated from the current repository. It covers 50 authored text files and 8,308 lines with plain-English explanations next to the exact source line.</p>
         <p><a href="/wiki/">Back to the conceptual wiki</a></p>
       </section>
 
@@ -135,6 +135,42 @@
           <h3>Remote gate</h3>
           <p>Production/remote gate for OAuth-protected deployed endpoints.</p>
           <a href="scripts-smoke-remote-mjs.html"><code>scripts/smoke-remote.mjs</code></a>
+        </article></div>
+      </section>
+
+      <section id="curated-deep-dives">
+        <h2>Curated deep dives</h2>
+        <p>These core runtime files now have file-specific explanation ranges for their major blocks, not only generic line heuristics.</p>
+        <div class="grid two">
+        <article class="card">
+          <h3><code>apps/server/src/mcp.ts</code></h3>
+          <p>MCP server, tool definitions, schemas, and Streamable HTTP transport.</p>
+          <p>19 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-mcp-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/oauth.ts</code></h3>
+          <p>Self-hosted OAuth registration, authorization, token, refresh, and replay protection routes.</p>
+          <p>20 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-oauth-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/store.ts</code></h3>
+          <p>Storage interface plus JSON and Postgres index stores.</p>
+          <p>16 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-store-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/search.ts</code></h3>
+          <p>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</p>
+          <p>29 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-search-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/indexer.ts</code></h3>
+          <p>Vault scanner, source policy application, redaction, chunking, metadata, and report output.</p>
+          <p>12 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-indexer-ts.html">Open curated file reference</a>
         </article></div>
       </section>
 
@@ -325,7 +361,7 @@
             </tr>
             <tr>
               <td><a href="public-wiki-index-html.html"><code>public/wiki/index.html</code></a></td>
-              <td>661</td>
+              <td>663</td>
               <td>Conceptual wiki landing page.</td>
             </tr>
             <tr>
@@ -335,7 +371,7 @@
             </tr>
             <tr>
               <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
-              <td>617</td>
+              <td>760</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>

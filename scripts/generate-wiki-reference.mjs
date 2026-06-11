@@ -81,6 +81,123 @@ const sectionSummaries = [
   ["Remote gate", "scripts/smoke-remote.mjs", "Production/remote gate for OAuth-protected deployed endpoints."],
 ];
 
+const curatedDeepDiveFiles = [
+  "apps/server/src/mcp.ts",
+  "apps/server/src/oauth.ts",
+  "apps/server/src/store.ts",
+  "packages/vault-core/src/search.ts",
+  "packages/vault-core/src/indexer.ts",
+];
+
+const curatedRanges = {
+  "apps/server/src/mcp.ts": [
+    [7, 12, "This line is part of the instruction text sent to MCP clients. It tells the client the server is read-only, the vault text is untrusted context, and guessed paths should not work."],
+    [14, 23, "This line belongs to the note-summary output schema, the small shape used by list-style tools when they return note cards instead of full note text."],
+    [25, 44, "This line belongs to the search-result schema. It defines the fields every search result may return: id, type, path, snippets, metadata, score, and why the result matched."],
+    [46, 53, "This line belongs to the fetch output schema. Fetch tools return full indexed text plus citation URL, Obsidian URI, and metadata."],
+    [55, 64, "This line creates the MCP server object, names it, gives it the shared instructions, and declares that logging is available."],
+    [66, 85, "This line is part of the compatibility search tool. It accepts a query plus optional filters, defaults to section results, calls store.searchVault, and wraps the response for MCP."],
+    [87, 105, "This line is part of the note-level search tool. It groups matches by note path so the user sees one result per note instead of one result per heading chunk."],
+    [107, 125, "This line is part of the section-level search tool. It searches heading chunks, which is better when the user needs the exact section where a phrase appears."],
+    [127, 146, "This line is part of the list_notes tool. It lets clients browse indexed notes by scope, tag, status, type, limit, and cursor without requiring a keyword search."],
+    [148, 162, "This line is part of the recent_notes tool. It returns recently updated indexed notes, optionally narrowed to a path scope."],
+    [164, 179, "This line is part of the active_projects tool. It exposes active project notes from the allowlisted index and supports pagination."],
+    [181, 197, "This line is part of the fetch-by-id tool. It only returns documents already present in the index; unknown or denied ids return the standard unavailable response."],
+    [199, 215, "This line is part of the fetch-by-path tool. It accepts an exact vault-relative path, but still only succeeds when that path is already indexed and allowlisted."],
+    [217, 234, "This line is part of the index-status tool. It gives safe counts, freshness, and policy scopes without exposing note contents."],
+    [236, 256, "This line is part of the debug_search tool. It explains query normalization and likely reasons for few or zero results, without bypassing the allowlist."],
+    [261, 280, "This line handles one stateless MCP HTTP request. It creates a fresh MCP server and streamable transport, connects them, handles the request body, then closes resources on completion or error."],
+    [282, 289, "This line defines shared annotations for every tool: read-only, non-destructive, idempotent, and not open-world. Clients can use these hints when deciding how safely to call tools."],
+    [291, 301, "This line converts structured tool data into MCP's dual format: machine-readable structuredContent plus text JSON for clients that display text."],
+    [303, 319, "This line defines the safe not-found response used when a requested id or path is not indexed or not available under the source policy."],
+  ],
+  "packages/vault-core/src/search.ts": [
+    [15, 37, "This line is part of the search constants: default limits, the public index version, safe policy scope labels, and small synonym expansions used during search."],
+    [39, 41, "This compatibility function keeps older callers working by sending basic search requests to section search."],
+    [43, 58, "This line is part of note-level search: normalize the query, expand synonyms, group chunks into notes, score each note, filter, sort, limit, and format results."],
+    [60, 76, "This line is part of section-level search: normalize the query, filter candidate chunks, score each chunk, sort best matches first, limit, and format section results."],
+    [78, 82, "This function chooses note search or section search based on the caller's requested mode. Missing mode defaults to section search."],
+    [84, 87, "This fetches one indexed chunk by id. If no indexed document has that id, it returns null instead of reading the filesystem."],
+    [89, 106, "This fetches a whole indexed note by exact path by collecting all indexed chunks with that path, sorting them, and joining their text back together."],
+    [108, 122, "This line is part of list_notes: group chunks into notes, apply metadata/path filters, sort by path, page with a cursor, and return summaries."],
+    [124, 132, "This line is part of recent_notes: group by note, optionally filter by scope, sort newest first, limit, and return summaries."],
+    [134, 146, "This line is part of active_projects: group by note, keep active project notes, sort newest first, and paginate."],
+    [148, 158, "This line builds the safe index-status response: note count, section count, freshness, allowed/excluded scope labels, index version, and no embedding model."],
+    [160, 181, "This line builds the debug-search response. It normalizes and expands the query, runs a small search, and returns likely explanations without exposing denied content."],
+    [183, 193, "These local types define internal search shapes: one grouped note and one expanded query with exact terms, synonym terms, and original phrase."],
+    [195, 220, "This line groups indexed chunks by vault path, sorts each note's chunks into order, and creates one summary object per note."],
+    [222, 283, "This line scores a note-level result. It rewards title, path, tag, expanded-term, best-chunk, and recency matches, then keeps the best chunk for snippets."],
+    [285, 347, "This line scores an individual section chunk. It checks title, note title, path, tags, heading, exact text terms, expanded terms, and recency."],
+    [349, 363, "This line formats a note-level search result for clients, using the best matching chunk for the snippet while returning note-level metadata."],
+    [365, 382, "This line formats a section-level search result for clients, preserving section heading, note title, score, match reasons, snippets, and metadata."],
+    [384, 391, "This line expands a normalized query into exact terms plus configured synonym terms, then stores both the phrase and combined term list."],
+    [393, 408, "This line applies note filters: path scope, tag, tags array, status, and type. A note must pass every requested filter."],
+    [410, 421, "This line converts a chunk into a temporary note summary and reuses the note filter logic for section search."],
+    [423, 426, "This line decides whether a note counts as an active project based on path/type/project tag and active status."],
+    [428, 440, "These helpers normalize tags, extract type and status from metadata or tags, and make filter comparisons consistent."],
+    [442, 448, "This helper recovers the note title from a chunk title. Heading chunks are titled like 'Note - Heading', so the heading suffix is removed."],
+    [450, 462, "These helpers keep chunk order stable, clamp list/search limits, and parse cursor strings into numeric offsets."],
+    [464, 473, "This helper creates a readable snippet around the first matching term instead of returning an arbitrary start of the note."],
+    [475, 485, "This helper counts repeated term occurrences in text so repeated matches can add score without unlimited growth."],
+    [487, 495, "This helper adds a small freshness boost for recently updated notes while keeping older notes searchable."],
+    [497, 511, "These final helpers round scores, normalize strings, expose the Obsidian URI at the top level, and escape heading text used in a regular expression."],
+  ],
+  "packages/vault-core/src/indexer.ts": [
+    [10, 16, "This type defines the inputs for building an index: vault folder, display vault name, public server URL, clock override for tests, and optional report path."],
+    [18, 32, "This line initializes an index build: normalize paths, choose defaults, list Markdown files, prepare the output document array, and initialize stats."],
+    [34, 40, "This line starts the per-file loop and applies quick path-only deny checks before reading file contents, preventing obvious denied paths from being processed."],
+    [42, 49, "This line reads a candidate Markdown file and redacts credential-like content before parsing or indexing it, while recording redaction counts."],
+    [51, 55, "This line safely parses the redacted Markdown. Notes with invalid frontmatter are denied and counted instead of crashing the whole index run."],
+    [57, 62, "This line applies the full source policy using path, tags, and status. Denied notes are counted and never become indexed documents."],
+    [64, 67, "This line gathers file metadata, hashes the redacted content, and splits the parsed note into heading-based chunks."],
+    [68, 92, "This line creates one VaultDocument per chunk, including a stable id, title, text, private citation URL, vault path, tags, status, content hash, Obsidian URI, and source-policy evidence."],
+    [95, 108, "This line finalizes the index object, optionally writes a Markdown report, and returns the derived index to the caller."],
+    [111, 126, "These helpers classify path-only denies, safely parse Markdown, and increment denied-note statistics by rule."],
+    [128, 146, "This helper recursively lists Markdown files while skipping hidden folders and node_modules, then sorts paths for deterministic output."],
+    [148, 194, "This line writes a human-readable index report with included scopes, excluded scopes, skipped-note counts, and redaction warnings."],
+  ],
+  "apps/server/src/store.ts": [
+    [31, 64, "This line defines storage contracts shared by both implementations: health, search, fetch, list, status, debug search, OAuth client storage, and OAuth replay protection."],
+    [66, 73, "This line starts the local JSON store and its in-memory state. It is used for local development and tests."],
+    [75, 87, "This line loads a local JSON index file if it exists. Missing files are allowed so a fresh local server can start empty."],
+    [89, 95, "This line replaces the local JSON index and writes a pretty JSON snapshot to disk, making sync a full replacement instead of an append."],
+    [97, 147, "These methods expose health, search, fetch, listing, status, and debug operations by delegating to pure vault-core functions over the in-memory document array."],
+    [149, 172, "These methods store OAuth client registrations and consume authorization-code or refresh-token ids in memory so local OAuth flows can prevent replay."],
+    [174, 187, "This helper creates the JSON snapshot written to disk, filling in fallback stats if the sync payload did not include them."],
+    [189, 196, "This line starts the Postgres-backed store used in production and creates a connection pool from DATABASE_URL."],
+    [198, 249, "This line creates or verifies the production tables and indexes: metadata, vault documents, full-text search vector, OAuth token-use ledger, and OAuth client registrations."],
+    [251, 253, "This closes the Postgres connection pool when the server shuts down or tests clean up."],
+    [255, 283, "This line performs production sync as one transaction: delete existing documents, insert the new complete set, update metadata, commit, or roll back on failure."],
+    [285, 292, "This line reports production health by counting indexed documents and returning the latest generated_at and stats values."],
+    [294, 350, "These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse vault-core logic so JSON and Postgres behavior stay aligned."],
+    [353, 388, "These methods persist and retrieve dynamic OAuth client registrations in Postgres so clients keep stable client ids across serverless invocations."],
+    [390, 399, "This method prevents OAuth replay in production by deleting expired token-use rows, inserting the current jti, and returning false if that jti was already used."],
+    [401, 418, "This helper loads all indexed documents from Postgres in path and chunk order and restores the top-level Obsidian URI expected by MCP clients."],
+  ],
+  "apps/server/src/oauth.ts": [
+    [7, 24, "These types define the private payloads stored inside signed authorization codes and refresh tokens. They keep client id, scope, resource, subject, and PKCE data together."],
+    [26, 29, "These constants set token audiences and lifetimes: authorization codes are separate from refresh tokens, access tokens last one hour, and refresh tokens last 30 days."],
+    [31, 43, "This line registers OAuth discovery metadata routes so ChatGPT, Claude, MCP Inspector, and other clients can discover authorization and token endpoints."],
+    [44, 85, "This line handles dynamic client registration. It validates redirect URIs and scopes, creates a compact client id, persists it, and returns OAuth registration metadata."],
+    [87, 94, "This GET route validates an authorization request and renders the password form that the human owner uses to approve read-only vault access."],
+    [96, 125, "This POST route checks the connector password, validates the OAuth request again, signs a short-lived authorization code, and redirects back to the client with code and state."],
+    [127, 145, "This token endpoint routes grant requests to either authorization-code exchange or refresh-token rotation, rejecting unsupported grant types."],
+    [147, 160, "This function builds authorization-server metadata: issuer, authorize/token/register endpoints, supported grants, PKCE method, scopes, and documentation URL."],
+    [162, 164, "This attaches the current IndexStore to the Express request so OAuth route handlers can save clients and token-use records without importing a global store."],
+    [166, 204, "This line exchanges an authorization code for tokens. It validates client id, redirect URI, code verifier, resource, signed code contents, and one-time code use."],
+    [206, 225, "This line rotates a refresh token. It verifies the signed token, checks the resource, consumes the token id once, and returns a fresh access/refresh pair."],
+    [227, 250, "This line creates the token response: a signed one-hour access token plus a new refresh token and the granted scope."],
+    [252, 289, "This line validates authorization requests before showing or accepting the password form: response type, client, redirect URI, PKCE, resource, and scope must all match."],
+    [291, 315, "These functions sign and verify short-lived authorization codes with a JWT id so each code can be consumed only once."],
+    [317, 341, "These functions sign and verify refresh tokens with a JWT id so refresh tokens can rotate and replay attempts can be rejected."],
+    [343, 358, "These helpers require self-hosted OAuth config and normalize requested scopes against the supported scope list."],
+    [360, 386, "These helpers compare granted/requested scopes, read string parameters from body or query, retrieve the request-attached store, and validate safe redirect URI schemes."],
+    [388, 418, "This line renders the simple authorization form, preserving OAuth request parameters as hidden fields and asking only for the connector password."],
+    [420, 445, "These low-level helpers compute PKCE challenges, encode the JWT secret, compare passwords safely, and escape HTML in the authorization form."],
+    [447, 464, "These error helpers turn expected OAuth failures into JSON errors and unexpected failures into server_error responses."],
+  ],
+};
+
 await fs.rm(outputRoot, { recursive: true, force: true });
 await fs.mkdir(outputRoot, { recursive: true });
 
@@ -133,6 +250,16 @@ async function writeIndexPage(records) {
           <p>${escapeHtml(summary)}</p>
           <a href="${escapeHtml(slugFor(filePath))}.html"><code>${escapeHtml(filePath)}</code></a>
         </article>`).join("");
+  const curatedCards = curatedDeepDiveFiles.map((filePath) => {
+    const rangeCount = curatedRanges[filePath]?.length ?? 0;
+    return `
+        <article class="card">
+          <h3><code>${escapeHtml(filePath)}</code></h3>
+          <p>${escapeHtml(summaryFor(filePath))}</p>
+          <p>${rangeCount} curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="${escapeHtml(slugFor(filePath))}.html">Open curated file reference</a>
+        </article>`;
+  }).join("");
 
   const html = pageShell({
     title: "Line-by-Line Source Reference",
@@ -161,6 +288,12 @@ async function writeIndexPage(records) {
       <section>
         <h2>Important paths through the code</h2>
         <div class="grid three">${sectionCards}</div>
+      </section>
+
+      <section id="curated-deep-dives">
+        <h2>Curated deep dives</h2>
+        <p>These core runtime files now have file-specific explanation ranges for their major blocks, not only generic line heuristics.</p>
+        <div class="grid two">${curatedCards}</div>
       </section>
 
       <section>
@@ -293,6 +426,10 @@ function pageShell({ title, body }) {
 
 function explainLine(file, line, lineNumber) {
   const trimmed = line.trim();
+  const curated = curatedExplanation(file.path, lineNumber);
+  if (curated) {
+    return curated;
+  }
   if (!trimmed) {
     return "Blank line used to visually separate related blocks so the file is easier to scan.";
   }
@@ -396,6 +533,12 @@ function explainLine(file, line, lineNumber) {
     return explainDockerLine(trimmed);
   }
   return genericExplanation(trimmed, lineNumber);
+}
+
+function curatedExplanation(filePath, lineNumber) {
+  const ranges = curatedRanges[filePath] ?? [];
+  const match = ranges.find(([start, end]) => lineNumber >= start && lineNumber <= end);
+  return match?.[2] ?? null;
 }
 
 function explainImport(line) {
