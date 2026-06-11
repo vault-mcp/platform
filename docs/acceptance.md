@@ -104,7 +104,9 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 6. Prompt: `Search my vault for the Vault MCP Connector project and fetch the relevant note.`
 7. Confirm the returned citation URL is under `/notes/:id`.
 8. Confirm metadata includes `obsidian_uri`.
-9. Prompt with a denied area request, such as raw daily notes or credentials, and confirm no denied path is returned.
+9. Confirm search/list/fetch responses are readable in the conversation, not just raw JSON.
+10. If the ChatGPT client renders MCP output templates, confirm the vault results card appears from `ui://vault-mcp/results.html`.
+11. Prompt with a denied area request, such as raw daily notes or credentials, and confirm no denied path is returned.
 
 ## Claude
 

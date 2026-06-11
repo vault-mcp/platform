@@ -44,7 +44,8 @@ Bearer dev-access-token
 ## Notes
 
 - This server exposes read-only discovery and fetch tools: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, and `debug_search`.
-- ChatGPT embedded UI is intentionally deferred.
+- Search, list, fetch, status, and diagnostics tools now return ChatGPT-friendly text summaries in addition to structured JSON.
+- High-value tools advertise the `ui://vault-mcp/results.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact result cards; clients that do not support it still receive readable text and `structuredContent`.
 - The local build is suitable for MCP contract testing. Production deployment still requires a real domain, TLS, Postgres, and OAuth provider configuration.
 
 See [acceptance.md](acceptance.md) for the final MCP Inspector, ChatGPT, and Claude acceptance runbook.

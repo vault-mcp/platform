@@ -397,7 +397,7 @@
             <tr><td><code>packages/vault-core/src/search.ts</code></td><td>Search, list, fetch, and diagnose indexed documents.</td></tr>
             <tr><td><code>apps/indexer/src/index.ts</code></td><td>Expose indexing as a CLI and sync command.</td></tr>
             <tr><td><code>apps/server/src/store.ts</code></td><td>Provide JSON and Postgres storage behind one interface.</td></tr>
-            <tr><td><code>apps/server/src/mcp.ts</code></td><td>Register the MCP tools and wire them to storage.</td></tr>
+            <tr><td><code>apps/server/src/mcp.ts</code></td><td>Register MCP tools, wire them to storage, return readable tool summaries, and advertise the ChatGPT result component.</td></tr>
             <tr><td><code>apps/server/src/oauth.ts</code></td><td>Implement self-hosted OAuth.</td></tr>
             <tr><td><code>apps/server/src/app.ts</code></td><td>Connect routes, auth, static pages, sync, notes, and MCP.</td></tr>
           </tbody>
@@ -407,7 +407,7 @@
 
       <section id="next">
         <h2>What To Build Next</h2>
-        <p>The read-only V1 server is intentionally conservative. The long-term read/write version should be designed as a separate layer with scoped write operations, approval UI, audit logs, conflict checks, backups, and rollback. Do not turn this V1 read-only server into a raw remote filesystem editor.</p>
+        <p>The read-only V1 server now has a first ChatGPT display layer: readable summaries, output-template metadata, and a compact result component. The long-term read/write version should be designed as a separate layer with scoped write operations, approval UI, audit logs, conflict checks, backups, and rollback. Do not turn this V1 read-only server into a raw remote filesystem editor.</p>
       </section>
     </main>
   </div>

@@ -26,8 +26,9 @@
 - Note text is explicitly described as untrusted data in server instructions.
 - The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.
 - Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
+- ChatGPT-facing UI metadata and the `ui://vault-mcp/results.html` component only render existing read-only tool results; they do not add a separate data path or vault access path.
 
 ## Current Gaps
 
 - Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.
-- ChatGPT-specific UI has not been implemented yet; current clients use the MCP tool surface directly.
+- The current ChatGPT UI pass is read-only and result-display focused. Future write-capable UI still needs separate design, confirmation, audit, backup, conflict-resolution, and rollback controls.

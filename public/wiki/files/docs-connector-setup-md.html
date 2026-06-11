@@ -308,21 +308,26 @@
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>- ChatGPT embedded UI is intentionally deferred.</pre></td>
+              <td class="source"><pre>- Search, list, fetch, status, and diagnostics tools now return ChatGPT-friendly text summaries in addition to structured JSON.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>- The local build is suitable for MCP contract testing. Production deployment still requires a real domain, TLS, Postgres, and OAuth provider configuration.</pre></td>
+              <td class="source"><pre>- High-value tools advertise the `ui://vault-mcp/results.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact result cards; clients that do not support it still receive readable text and `structuredContent`.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>- The local build is suitable for MCP contract testing. Production deployment still requires a real domain, TLS, Postgres, and OAuth provider configuration.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
               <td class="source"><pre>See [acceptance.md](acceptance.md) for the final MCP Inspector, ChatGPT, and Claude acceptance runbook.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr></tbody>

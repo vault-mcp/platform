@@ -19,6 +19,21 @@ The server currently exposes these read-only MCP tools:
 
 All tools are read-only. Denied or non-indexed paths remain unavailable even if a client guesses an id or exact path.
 
+## ChatGPT UI Surface
+
+The MCP tools return both machine-readable `structuredContent` and human-readable
+text summaries. Search and list tools include next-action hints such as which id
+or path to fetch next, and fetch results include citation URLs plus an explicit
+reminder that vault note content is untrusted reference material.
+
+High-value tools also advertise a ChatGPT-compatible output template at
+`ui://vault-mcp/results.html` through `_meta.ui.resourceUri` and the compatibility
+`openai/outputTemplate` field. Clients that support Apps-style MCP components can
+read that `text/html;profile=mcp-app` resource and render search results, note
+lists, diagnostics, and fetched notes as compact cards. Clients that do not
+support embedded components still get the same structured JSON and readable text
+payloads.
+
 ## Wiki
 
 A plain-English project wiki is hosted from `public/wiki/index.html` and is intended

@@ -350,7 +350,7 @@
         <div class="callout good">
           <div>
             <strong>The generated file reference is an appendix, not the tutorial.</strong>
-            <p>Open it when you want exact source lookup beside explanatory notes. The current generated pass covers 51 authored text files and 8,882 lines.</p>
+            <p>Open it when you want exact source lookup beside explanatory notes. The current generated pass covers 51 authored text files and 9,236 lines.</p>
           </div>
         </div>
         <div class="grid two">
@@ -658,6 +658,8 @@
           <tbody>
             <tr><th>MCP</th><td>Model Context Protocol. A standard way for AI clients to call external tools.</td></tr>
             <tr><th>Tool</th><td>A callable function exposed to an AI client. This server exposes ten read-only tools for search, listing, recent notes, active projects, fetches, index status, and diagnostics.</td></tr>
+            <tr><th>Output template</th><td>ChatGPT-compatible MCP metadata that points a tool result at a small HTML component. This project uses <code>_meta.ui.resourceUri</code> plus <code>openai/outputTemplate</code> to point at <code>ui://vault-mcp/results.html</code>.</td></tr>
+            <tr><th>Structured content</th><td>Machine-readable JSON returned beside human-readable text. ChatGPT can reason over it while a UI component can render it.</td></tr>
             <tr><th>OAuth</th><td>A protocol for authorizing clients without sharing long-lived passwords with them.</td></tr>
             <tr><th>PKCE</th><td>A safety extension for OAuth authorization-code flows used by public clients.</td></tr>
             <tr><th>JWT</th><td>A signed token format. This server signs/verifies access, refresh, and authorization-code tokens.</td></tr>
@@ -674,7 +676,7 @@
         <p>This is the first server-hosted wiki pass. The next useful additions are:</p>
         <ul>
           <li>Replace generic generated explanations with more file-specific prose for the longest files.</li>
-          <li>Add dedicated tutorial pages for OAuth, sync, source policy, and ChatGPT/Claude acceptance.</li>
+          <li>Add dedicated tutorial pages for OAuth, sync, source policy, ChatGPT UI metadata, and ChatGPT/Claude acceptance.</li>
           <li>Add screenshots for Inspector, ChatGPT, Claude, Vercel, and Neon flows.</li>
           <li>Add generated indexes that list every route, every environment variable, and every npm script.</li>
           <li>Add a "change one thing safely" tutorial for non-coders.</li>
