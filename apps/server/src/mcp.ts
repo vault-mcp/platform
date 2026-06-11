@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 import * as z from "zod/v4";
 import type { IndexStore } from "./store.js";
 
-const CHATGPT_RESULTS_TEMPLATE_URI = "ui://vault-mcp/results.html";
+const CHATGPT_RESULTS_TEMPLATE_URI = "ui://vault-mcp/results-v2.html";
 
 const SERVER_INSTRUCTIONS = [
   "This server exposes read-only discovery, search, diagnostics, and fetch over an allowlisted Obsidian vault index.",
@@ -362,6 +362,7 @@ function jsonToolResult(structuredContent: object, summary = JSON.stringify(stru
   return {
     structuredContent: structuredContent as Record<string, unknown>,
     _meta: {
+      "vault-mcp/structuredContent": structuredContent,
       "vault-mcp/resultSummary": summary,
       "openai/outputTemplate": CHATGPT_RESULTS_TEMPLATE_URI,
     },
@@ -546,19 +547,39 @@ function chatGptResultsComponentHtml(): string {
   <style>
     :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     body { margin: 0; padding: 14px; background: transparent; color: CanvasText; }
-    .shell { border: 1px solid color-mix(in srgb, CanvasText 16%, transparent); border-radius: 8px; padding: 12px; background: color-mix(in srgb, Canvas 92%, CanvasText 8%); }
-    .top { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .shell { border: 1px solid color-mix(in srgb, CanvasText 14%, transparent); border-radius: 10px; overflow: hidden; background: color-mix(in srgb, Canvas 94%, CanvasText 6%); box-shadow: 0 10px 28px color-mix(in srgb, black 18%, transparent); }
+    .top { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent); background: color-mix(in srgb, Canvas 88%, CanvasText 12%); }
     h1 { font-size: 14px; line-height: 1.25; margin: 0; }
-    .badge { font-size: 11px; padding: 3px 7px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 999px; white-space: nowrap; }
+    .badge { font-size: 11px; padding: 3px 8px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 999px; white-space: nowrap; }
+    .content { padding: 14px; }
     .muted { color: color-mix(in srgb, CanvasText 62%, transparent); }
-    .card { border-top: 1px solid color-mix(in srgb, CanvasText 12%, transparent); padding: 10px 0; }
-    .card:first-of-type { border-top: 0; }
-    .title { font-weight: 650; margin-bottom: 3px; }
-    .path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; word-break: break-word; }
-    .snippet { margin-top: 6px; font-size: 13px; line-height: 1.45; }
-    .actions { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { font-size: 11px; border-radius: 999px; border: 1px solid color-mix(in srgb, CanvasText 16%, transparent); padding: 3px 7px; }
-    pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .count { margin: 0 0 10px; font-size: 13px; }
+    .grid { display: grid; gap: 10px; }
+    .card { border: 1px solid color-mix(in srgb, CanvasText 11%, transparent); border-radius: 8px; padding: 11px; background: color-mix(in srgb, Canvas 97%, CanvasText 3%); }
+    .card-title { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
+    .path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.35; word-break: break-word; color: color-mix(in srgb, CanvasText 78%, transparent); }
+    .snippet { margin-top: 8px; font-size: 13px; line-height: 1.5; color: color-mix(in srgb, CanvasText 86%, transparent); }
+    .chips { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { font-size: 11px; border-radius: 999px; border: 1px solid color-mix(in srgb, CanvasText 15%, transparent); padding: 3px 7px; color: color-mix(in srgb, CanvasText 82%, transparent); }
+    .note-head { display: grid; gap: 8px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid color-mix(in srgb, CanvasText 12%, transparent); }
+    .note-title { font-size: 18px; font-weight: 760; line-height: 1.2; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 7px; }
+    .link-button { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: CanvasText; border: 1px solid color-mix(in srgb, CanvasText 16%, transparent); border-radius: 7px; padding: 5px 8px; font-size: 12px; background: color-mix(in srgb, Canvas 90%, CanvasText 10%); }
+    .reader { font-size: 14px; line-height: 1.62; }
+    .reader h1, .reader h2, .reader h3, .reader h4 { line-height: 1.25; margin: 16px 0 7px; }
+    .reader h1 { font-size: 20px; }
+    .reader h2 { font-size: 17px; }
+    .reader h3 { font-size: 15px; }
+    .reader p { margin: 8px 0; }
+    .reader ul, .reader ol { margin: 8px 0 8px 20px; padding: 0; }
+    .reader li { margin: 4px 0; }
+    .reader blockquote { margin: 10px 0; padding-left: 11px; border-left: 3px solid color-mix(in srgb, CanvasText 20%, transparent); color: color-mix(in srgb, CanvasText 72%, transparent); }
+    .reader code { font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; border-radius: 5px; padding: 1px 4px; background: color-mix(in srgb, CanvasText 12%, transparent); }
+    .reader pre { margin: 10px 0; padding: 10px; border-radius: 8px; overflow: auto; white-space: pre; background: color-mix(in srgb, black 34%, Canvas); border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); }
+    .reader pre code { padding: 0; background: transparent; border-radius: 0; display: block; white-space: pre; }
+    .reader a { color: LinkText; text-decoration-thickness: 1px; }
+    .taskbox { vertical-align: -2px; margin-right: 6px; }
+    .empty { padding: 12px; color: color-mix(in srgb, CanvasText 62%, transparent); }
   </style>
 </head>
 <body>
@@ -567,13 +588,13 @@ function chatGptResultsComponentHtml(): string {
       <h1>Vault MCP Results</h1>
       <span class="badge">read-only</span>
     </div>
-    <div id="content">
+    <div class="content" id="content">
       <p class="muted">Waiting for the vault tool result from ChatGPT. Structured data is still returned for citations and follow-up tool calls.</p>
     </div>
   </div>
   <script>
-    const app = document.getElementById("app");
     const content = document.getElementById("content");
+    const tick = String.fromCharCode(96);
 
     function el(tag, className, text) {
       const node = document.createElement(tag);
@@ -583,19 +604,22 @@ function chatGptResultsComponentHtml(): string {
     }
 
     function renderItems(items, kind) {
-      content.append(el("p", "muted", items.length + " " + kind + (items.length === 1 ? "" : "s")));
+      content.append(el("p", "count muted", items.length + " " + kind + (items.length === 1 ? "" : "s")));
+      const grid = el("div", "grid");
       for (const item of items.slice(0, 10)) {
-        const card = el("section", "card");
-        card.append(el("div", "title", item.title || item.note_title || "Untitled"));
+        const card = el("article", "card");
+        card.append(el("div", "card-title", item.title || item.note_title || "Untitled"));
         card.append(el("div", "path", item.path || item.metadata?.path || ""));
         if (item.text_snippet || item.snippet) card.append(el("div", "snippet", item.text_snippet || item.snippet));
-        const actions = el("div", "actions");
+        const actions = el("div", "chips");
         if (item.id) actions.append(el("span", "chip", "fetch id: " + item.id));
         if (item.status) actions.append(el("span", "chip", "status: " + item.status));
         if (item.type) actions.append(el("span", "chip", "type: " + item.type));
+        if (item.updated_at) actions.append(el("span", "chip", "updated: " + item.updated_at));
         card.append(actions);
-        content.append(card);
+        grid.append(card);
       }
+      content.append(grid);
     }
 
     function extractStructuredContent() {
@@ -603,8 +627,12 @@ function chatGptResultsComponentHtml(): string {
       const metadata = openai.toolResponseMetadata || {};
       return openai.toolOutput
         || openai.toolResponse?.structuredContent
+        || openai.toolResponse?._meta?.["vault-mcp/structuredContent"]
+        || metadata["vault-mcp/structuredContent"]
         || metadata.mcp_tool_result?.structuredContent
+        || metadata.mcp_tool_result?._meta?.["vault-mcp/structuredContent"]
         || metadata.call_tool_result?.structuredContent
+        || metadata.call_tool_result?._meta?.["vault-mcp/structuredContent"]
         || null;
     }
 
@@ -612,9 +640,171 @@ function chatGptResultsComponentHtml(): string {
       const openai = window.openai || {};
       const metadata = openai.toolResponseMetadata || {};
       return openai.toolResponse?._meta?.["vault-mcp/resultSummary"]
+        || metadata["vault-mcp/resultSummary"]
         || metadata.mcp_tool_result?._meta?.["vault-mcp/resultSummary"]
         || metadata.call_tool_result?._meta?.["vault-mcp/resultSummary"]
         || null;
+    }
+
+    function renderFetchedNote(data) {
+      const head = el("section", "note-head");
+      head.append(el("div", "note-title", data.title || "Untitled note"));
+      head.append(el("div", "path", data.metadata?.path || ""));
+      const chips = el("div", "chips");
+      if (data.metadata?.status) chips.append(el("span", "chip", "status: " + data.metadata.status));
+      if (data.metadata?.heading) chips.append(el("span", "chip", "heading: " + data.metadata.heading));
+      if (data.metadata?.updated_at) chips.append(el("span", "chip", "updated: " + data.metadata.updated_at));
+      if (Array.isArray(data.metadata?.tags)) {
+        for (const tag of data.metadata.tags.slice(0, 8)) chips.append(el("span", "chip", tag));
+      }
+      head.append(chips);
+      const toolbar = el("div", "toolbar");
+      if (data.url) toolbar.append(anchor(data.url, "Citation"));
+      if (data.obsidian_uri) toolbar.append(anchor(data.obsidian_uri, "Open in Obsidian"));
+      head.append(toolbar);
+      content.append(head);
+
+      const reader = el("article", "reader");
+      renderMarkdown(data.text || "", reader);
+      content.append(reader);
+    }
+
+    function anchor(href, label) {
+      const link = el("a", "link-button", label);
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      return link;
+    }
+
+    function renderMarkdown(markdown, target) {
+      const lines = markdown.replace(/\\r\\n?/g, "\\n").split("\\n");
+      let i = 0;
+      if (lines[0] === "---") {
+        i = 1;
+        while (i < lines.length && lines[i] !== "---") i++;
+        if (i < lines.length) i++;
+      }
+
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line.trim()) { i++; continue; }
+
+        const fencePrefix = tick + tick + tick;
+        const fence = line.startsWith(fencePrefix);
+        if (fence) {
+          const fenceLang = line.slice(fencePrefix.length).trim();
+          const codeLines = [];
+          i++;
+          while (i < lines.length && !lines[i].startsWith(fencePrefix)) {
+            codeLines.push(lines[i]);
+            i++;
+          }
+          if (i < lines.length) i++;
+          const pre = el("pre");
+          const code = el("code", "", codeLines.join("\\n"));
+          if (fenceLang) code.dataset.lang = fenceLang;
+          pre.append(code);
+          target.append(pre);
+          continue;
+        }
+
+        const heading = line.match(/^(#{1,4})\\s+(.+)$/);
+        if (heading) {
+          const node = el("h" + heading[1].length);
+          appendInline(node, heading[2]);
+          target.append(node);
+          i++;
+          continue;
+        }
+
+        if (/^>\\s?/.test(line)) {
+          const block = el("blockquote");
+          while (i < lines.length && /^>\\s?/.test(lines[i])) {
+            const p = el("p");
+            appendInline(p, lines[i].replace(/^>\\s?/, ""));
+            block.append(p);
+            i++;
+          }
+          target.append(block);
+          continue;
+        }
+
+        if (/^\\s*[-*]\\s+/.test(line) || /^\\s*- \\[[ xX]\\]\\s+/.test(line)) {
+          const list = el("ul");
+          while (i < lines.length && (/^\\s*[-*]\\s+/.test(lines[i]) || /^\\s*- \\[[ xX]\\]\\s+/.test(lines[i]))) {
+            const raw = lines[i].replace(/^\\s*[-*]\\s+/, "");
+            const li = el("li");
+            const task = raw.match(/^\\[([ xX])\\]\\s+(.*)$/);
+            if (task) {
+              const box = document.createElement("input");
+              box.type = "checkbox";
+              box.disabled = true;
+              box.checked = task[1].toLowerCase() === "x";
+              box.className = "taskbox";
+              li.append(box);
+              appendInline(li, task[2]);
+            } else {
+              appendInline(li, raw);
+            }
+            list.append(li);
+            i++;
+          }
+          target.append(list);
+          continue;
+        }
+
+        if (/^\\s*\\d+[.)]\\s+/.test(line)) {
+          const list = el("ol");
+          while (i < lines.length && /^\\s*\\d+[.)]\\s+/.test(lines[i])) {
+            const li = el("li");
+            appendInline(li, lines[i].replace(/^\\s*\\d+[.)]\\s+/, ""));
+            list.append(li);
+            i++;
+          }
+          target.append(list);
+          continue;
+        }
+
+        const parts = [line.trim()];
+        i++;
+        while (i < lines.length && lines[i].trim() && !/^(#{1,4})\\s+/.test(lines[i]) && !lines[i].startsWith(fencePrefix) && !/^>\\s?/.test(lines[i]) && !/^\\s*[-*]\\s+/.test(lines[i]) && !/^\\s*\\d+[.)]\\s+/.test(lines[i])) {
+          parts.push(lines[i].trim());
+          i++;
+        }
+        const p = el("p");
+        appendInline(p, parts.join(" "));
+        target.append(p);
+      }
+    }
+
+    function appendInline(parent, text) {
+      const pattern = /(\\[([^\\]]+)\\]\\(([^)]+)\\))|(\\[\\[([^\\]]+)\\]\\])|(\\*\\*([^*]+)\\*\\*)/g;
+      let last = 0;
+      let match;
+      while ((match = pattern.exec(text))) {
+        appendCodeAwareText(parent, text.slice(last, match.index));
+        if (match[2] && match[3]) {
+          parent.append(anchor(match[3], match[2]));
+        } else if (match[5]) {
+          parent.append(el("code", "", "[[" + match[5] + "]]"));
+        } else if (match[7]) {
+          const strong = el("strong");
+          appendCodeAwareText(strong, match[7]);
+          parent.append(strong);
+        }
+        last = pattern.lastIndex;
+      }
+      appendCodeAwareText(parent, text.slice(last));
+    }
+
+    function appendCodeAwareText(parent, text) {
+      const pieces = text.split(tick);
+      for (let index = 0; index < pieces.length; index++) {
+        if (!pieces[index]) continue;
+        if (index % 2 === 1) parent.append(el("code", "", pieces[index]));
+        else parent.append(document.createTextNode(pieces[index]));
+      }
     }
 
     function render() {
@@ -627,11 +817,7 @@ function chatGptResultsComponentHtml(): string {
       } else if (data?.notes) {
         renderItems(data.notes, "note");
       } else if (data?.title && data?.text) {
-        const card = el("section", "card");
-        card.append(el("div", "title", data.title));
-        card.append(el("div", "path", data.metadata?.path || ""));
-        card.append(el("div", "snippet", data.text));
-        content.append(card);
+        renderFetchedNote(data);
       } else if (data) {
         const pre = el("pre");
         pre.textContent = JSON.stringify(data, null, 2);

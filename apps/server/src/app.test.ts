@@ -115,19 +115,21 @@ describe("server MCP contract", () => {
     const tools = await mcp(baseUrl, accessToken, 1, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
     const searchTool = tools.result.tools?.find((tool) => tool.name === "search");
-    expect(searchTool?._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results.html");
-    expect((searchTool?._meta?.ui as { resourceUri?: string } | undefined)?.resourceUri).toBe("ui://vault-mcp/results.html");
+    expect(searchTool?._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results-v2.html");
+    expect((searchTool?._meta?.ui as { resourceUri?: string } | undefined)?.resourceUri).toBe("ui://vault-mcp/results-v2.html");
     await expectMcpSseProbe(baseUrl, accessToken);
 
     const resources = await mcp(baseUrl, accessToken, 30, "resources/list", {});
     expect(resources.result.contents).toBeUndefined();
-    expect(resources.result.resources?.[0].uri).toBe("ui://vault-mcp/results.html");
+    expect(resources.result.resources?.[0].uri).toBe("ui://vault-mcp/results-v2.html");
 
     const component = await mcp(baseUrl, accessToken, 31, "resources/read", {
-      uri: "ui://vault-mcp/results.html",
+      uri: "ui://vault-mcp/results-v2.html",
     });
     expect(component.result.contents?.[0].mimeType).toBe("text/html;profile=mcp-app");
     expect(component.result.contents?.[0].text).toContain("Vault MCP Results");
+    expect(component.result.contents?.[0].text).toContain("renderMarkdown");
+    expect(component.result.contents?.[0].text).toContain("vault-mcp/structuredContent");
     expect(component.result.contents?.[0].text).toContain("openai:set_globals");
     expect(component.result.contents?.[0].text).toContain("toolResponseMetadata");
     expect(component.result.contents?.[0].text).toContain("content.replaceChildren");
@@ -139,6 +141,7 @@ describe("server MCP contract", () => {
     expect(search.result.structuredContent.results[0].id).toBe("doc-1");
     expect(search.result.structuredContent.results[0].type).toBe("section");
     expect(search.result.structuredContent.results[0].obsidian_uri).toContain("obsidian://open");
+    expect(search.result._meta?.["vault-mcp/structuredContent"]).toEqual(search.result.structuredContent);
     expect(search.result.content?.[0].text).toContain("Search results for \"remote MCP\"");
     expect(search.result.content?.[0].text).toContain("Next action: use fetch");
 
@@ -565,6 +568,7 @@ type JsonRpcTestResponse = {
   result: {
     tools?: Array<{ name: string; _meta?: Record<string, unknown> }>;
     structuredContent?: any;
+    _meta?: Record<string, unknown>;
     content?: Array<{ type: string; text?: string }>;
     isError?: boolean;
     resources?: Array<{ uri: string; mimeType?: string; name?: string }>;
