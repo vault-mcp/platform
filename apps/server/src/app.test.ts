@@ -128,6 +128,9 @@ describe("server MCP contract", () => {
     });
     expect(component.result.contents?.[0].mimeType).toBe("text/html;profile=mcp-app");
     expect(component.result.contents?.[0].text).toContain("Vault MCP Results");
+    expect(component.result.contents?.[0].text).toContain("openai:set_globals");
+    expect(component.result.contents?.[0].text).toContain("toolResponseMetadata");
+    expect(component.result.contents?.[0].text).toContain("content.replaceChildren");
 
     const search = await mcp(baseUrl, accessToken, 2, "tools/call", {
       name: "search",

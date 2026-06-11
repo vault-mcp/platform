@@ -567,12 +567,13 @@ function chatGptResultsComponentHtml(): string {
       <h1>Vault MCP Results</h1>
       <span class="badge">read-only</span>
     </div>
-    <p class="muted">Run this tool in ChatGPT to render vault results. Structured data is still returned for citations and follow-up tool calls.</p>
+    <div id="content">
+      <p class="muted">Waiting for the vault tool result from ChatGPT. Structured data is still returned for citations and follow-up tool calls.</p>
+    </div>
   </div>
   <script>
     const app = document.getElementById("app");
-    const data = window.openai?.toolOutput ?? window.openai?.toolResponse?.structuredContent ?? null;
-    const metaSummary = window.openai?.toolResponse?._meta?.["vault-mcp/resultSummary"] ?? null;
+    const content = document.getElementById("content");
 
     function el(tag, className, text) {
       const node = document.createElement(tag);
@@ -582,7 +583,7 @@ function chatGptResultsComponentHtml(): string {
     }
 
     function renderItems(items, kind) {
-      app.append(el("p", "muted", items.length + " " + kind + (items.length === 1 ? "" : "s")));
+      content.append(el("p", "muted", items.length + " " + kind + (items.length === 1 ? "" : "s")));
       for (const item of items.slice(0, 10)) {
         const card = el("section", "card");
         card.append(el("div", "title", item.title || item.note_title || "Untitled"));
@@ -593,29 +594,67 @@ function chatGptResultsComponentHtml(): string {
         if (item.status) actions.append(el("span", "chip", "status: " + item.status));
         if (item.type) actions.append(el("span", "chip", "type: " + item.type));
         card.append(actions);
-        app.append(card);
+        content.append(card);
       }
     }
 
-    if (data?.results) {
-      renderItems(data.results, "result");
-    } else if (data?.notes) {
-      renderItems(data.notes, "note");
-    } else if (data?.title && data?.text) {
-      const card = el("section", "card");
-      card.append(el("div", "title", data.title));
-      card.append(el("div", "path", data.metadata?.path || ""));
-      card.append(el("div", "snippet", data.text));
-      app.append(card);
-    } else if (data) {
-      const pre = el("pre");
-      pre.textContent = JSON.stringify(data, null, 2);
-      app.append(pre);
-    } else if (metaSummary) {
-      const pre = el("pre");
-      pre.textContent = metaSummary;
-      app.append(pre);
+    function extractStructuredContent() {
+      const openai = window.openai || {};
+      const metadata = openai.toolResponseMetadata || {};
+      return openai.toolOutput
+        || openai.toolResponse?.structuredContent
+        || metadata.mcp_tool_result?.structuredContent
+        || metadata.call_tool_result?.structuredContent
+        || null;
     }
+
+    function extractSummary() {
+      const openai = window.openai || {};
+      const metadata = openai.toolResponseMetadata || {};
+      return openai.toolResponse?._meta?.["vault-mcp/resultSummary"]
+        || metadata.mcp_tool_result?._meta?.["vault-mcp/resultSummary"]
+        || metadata.call_tool_result?._meta?.["vault-mcp/resultSummary"]
+        || null;
+    }
+
+    function render() {
+      const data = extractStructuredContent();
+      const metaSummary = extractSummary();
+      content.replaceChildren();
+
+      if (data?.results) {
+        renderItems(data.results, "result");
+      } else if (data?.notes) {
+        renderItems(data.notes, "note");
+      } else if (data?.title && data?.text) {
+        const card = el("section", "card");
+        card.append(el("div", "title", data.title));
+        card.append(el("div", "path", data.metadata?.path || ""));
+        card.append(el("div", "snippet", data.text));
+        content.append(card);
+      } else if (data) {
+        const pre = el("pre");
+        pre.textContent = JSON.stringify(data, null, 2);
+        content.append(pre);
+      } else if (metaSummary) {
+        const pre = el("pre");
+        pre.textContent = metaSummary;
+        content.append(pre);
+      } else {
+        content.append(el("p", "muted", "Waiting for the vault tool result from ChatGPT. If this stays empty, ask ChatGPT to rerun the vault tool."));
+      }
+
+      window.openai?.notifyIntrinsicHeight?.();
+    }
+
+    window.addEventListener("openai:set_globals", (event) => {
+      if (event.detail?.globals && window.openai) {
+        Object.assign(window.openai, event.detail.globals);
+      }
+      render();
+    });
+
+    render();
   </script>
 </body>
 </html>`;

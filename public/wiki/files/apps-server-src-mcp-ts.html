@@ -2923,243 +2923,243 @@
             </tr>
             <tr>
               <td class="line-number" id="L570"><a href="#L570">570</a></td>
-              <td class="source"><pre>    &lt;p class=&quot;muted&quot;&gt;Run this tool in ChatGPT to render vault results. Structured data is still returned for citations and follow-up tool calls.&lt;/p&gt;</pre></td>
+              <td class="source"><pre>    &lt;div id=&quot;content&quot;&gt;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L571"><a href="#L571">571</a></td>
-              <td class="source"><pre>  &lt;/div&gt;</pre></td>
+              <td class="source"><pre>      &lt;p class=&quot;muted&quot;&gt;Waiting for the vault tool result from ChatGPT. Structured data is still returned for citations and follow-up tool calls.&lt;/p&gt;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L572"><a href="#L572">572</a></td>
-              <td class="source"><pre>  &lt;script&gt;</pre></td>
+              <td class="source"><pre>    &lt;/div&gt;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L573"><a href="#L573">573</a></td>
-              <td class="source"><pre>    const app = document.getElementById(&quot;app&quot;);</pre></td>
+              <td class="source"><pre>  &lt;/div&gt;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L574"><a href="#L574">574</a></td>
-              <td class="source"><pre>    const data = window.openai?.toolOutput ?? window.openai?.toolResponse?.structuredContent ?? null;</pre></td>
+              <td class="source"><pre>  &lt;script&gt;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L575"><a href="#L575">575</a></td>
-              <td class="source"><pre>    const metaSummary = window.openai?.toolResponse?._meta?.[&quot;vault-mcp/resultSummary&quot;] ?? null;</pre></td>
+              <td class="source"><pre>    const app = document.getElementById(&quot;app&quot;);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L576"><a href="#L576">576</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>    const content = document.getElementById(&quot;content&quot;);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L577"><a href="#L577">577</a></td>
-              <td class="source"><pre>    function el(tag, className, text) {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L578"><a href="#L578">578</a></td>
-              <td class="source"><pre>      const node = document.createElement(tag);</pre></td>
+              <td class="source"><pre>    function el(tag, className, text) {</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L579"><a href="#L579">579</a></td>
-              <td class="source"><pre>      if (className) node.className = className;</pre></td>
+              <td class="source"><pre>      const node = document.createElement(tag);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L580"><a href="#L580">580</a></td>
-              <td class="source"><pre>      if (text !== undefined) node.textContent = text;</pre></td>
+              <td class="source"><pre>      if (className) node.className = className;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L581"><a href="#L581">581</a></td>
-              <td class="source"><pre>      return node;</pre></td>
+              <td class="source"><pre>      if (text !== undefined) node.textContent = text;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L582"><a href="#L582">582</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>      return node;</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L583"><a href="#L583">583</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>    }</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L584"><a href="#L584">584</a></td>
-              <td class="source"><pre>    function renderItems(items, kind) {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L585"><a href="#L585">585</a></td>
-              <td class="source"><pre>      app.append(el(&quot;p&quot;, &quot;muted&quot;, items.length + &quot; &quot; + kind + (items.length === 1 ? &quot;&quot; : &quot;s&quot;)));</pre></td>
+              <td class="source"><pre>    function renderItems(items, kind) {</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L586"><a href="#L586">586</a></td>
-              <td class="source"><pre>      for (const item of items.slice(0, 10)) {</pre></td>
+              <td class="source"><pre>      content.append(el(&quot;p&quot;, &quot;muted&quot;, items.length + &quot; &quot; + kind + (items.length === 1 ? &quot;&quot; : &quot;s&quot;)));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L587"><a href="#L587">587</a></td>
-              <td class="source"><pre>        const card = el(&quot;section&quot;, &quot;card&quot;);</pre></td>
+              <td class="source"><pre>      for (const item of items.slice(0, 10)) {</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L588"><a href="#L588">588</a></td>
-              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;title&quot;, item.title || item.note_title || &quot;Untitled&quot;));</pre></td>
+              <td class="source"><pre>        const card = el(&quot;section&quot;, &quot;card&quot;);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L589"><a href="#L589">589</a></td>
-              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;path&quot;, item.path || item.metadata?.path || &quot;&quot;));</pre></td>
+              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;title&quot;, item.title || item.note_title || &quot;Untitled&quot;));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L590"><a href="#L590">590</a></td>
-              <td class="source"><pre>        if (item.text_snippet || item.snippet) card.append(el(&quot;div&quot;, &quot;snippet&quot;, item.text_snippet || item.snippet));</pre></td>
+              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;path&quot;, item.path || item.metadata?.path || &quot;&quot;));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L591"><a href="#L591">591</a></td>
-              <td class="source"><pre>        const actions = el(&quot;div&quot;, &quot;actions&quot;);</pre></td>
+              <td class="source"><pre>        if (item.text_snippet || item.snippet) card.append(el(&quot;div&quot;, &quot;snippet&quot;, item.text_snippet || item.snippet));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L592"><a href="#L592">592</a></td>
-              <td class="source"><pre>        if (item.id) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;fetch id: &quot; + item.id));</pre></td>
+              <td class="source"><pre>        const actions = el(&quot;div&quot;, &quot;actions&quot;);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L593"><a href="#L593">593</a></td>
-              <td class="source"><pre>        if (item.status) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;status: &quot; + item.status));</pre></td>
+              <td class="source"><pre>        if (item.id) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;fetch id: &quot; + item.id));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L594"><a href="#L594">594</a></td>
-              <td class="source"><pre>        if (item.type) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;type: &quot; + item.type));</pre></td>
+              <td class="source"><pre>        if (item.status) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;status: &quot; + item.status));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L595"><a href="#L595">595</a></td>
-              <td class="source"><pre>        card.append(actions);</pre></td>
+              <td class="source"><pre>        if (item.type) actions.append(el(&quot;span&quot;, &quot;chip&quot;, &quot;type: &quot; + item.type));</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L596"><a href="#L596">596</a></td>
-              <td class="source"><pre>        app.append(card);</pre></td>
+              <td class="source"><pre>        card.append(actions);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L597"><a href="#L597">597</a></td>
-              <td class="source"><pre>      }</pre></td>
+              <td class="source"><pre>        content.append(card);</pre></td>
               <td>This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown.</td>
             </tr>
             <tr>
               <td class="line-number" id="L598"><a href="#L598">598</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>      }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L599"><a href="#L599">599</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L600"><a href="#L600">600</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L600"><a href="#L600">600</a></td>
-              <td class="source"><pre>    if (data?.results) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L601"><a href="#L601">601</a></td>
-              <td class="source"><pre>      renderItems(data.results, &quot;result&quot;);</pre></td>
-              <td>Line 601 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    function extractStructuredContent() {</pre></td>
+              <td>Defines extractStructuredContent, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
               <td class="line-number" id="L602"><a href="#L602">602</a></td>
-              <td class="source"><pre>    } else if (data?.notes) {</pre></td>
-              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+              <td class="source"><pre>      const openai = window.openai || {};</pre></td>
+              <td>Declares openai, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L603"><a href="#L603">603</a></td>
-              <td class="source"><pre>      renderItems(data.notes, &quot;note&quot;);</pre></td>
-              <td>Line 603 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      const metadata = openai.toolResponseMetadata || {};</pre></td>
+              <td>Declares metadata, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L604"><a href="#L604">604</a></td>
-              <td class="source"><pre>    } else if (data?.title &amp;&amp; data?.text) {</pre></td>
-              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+              <td class="source"><pre>      return openai.toolOutput</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L605"><a href="#L605">605</a></td>
-              <td class="source"><pre>      const card = el(&quot;section&quot;, &quot;card&quot;);</pre></td>
-              <td>Declares card, a local value used later in this file.</td>
+              <td class="source"><pre>        || openai.toolResponse?.structuredContent</pre></td>
+              <td>Line 605 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L606"><a href="#L606">606</a></td>
-              <td class="source"><pre>      card.append(el(&quot;div&quot;, &quot;title&quot;, data.title));</pre></td>
-              <td>Line 606 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>        || metadata.mcp_tool_result?.structuredContent</pre></td>
+              <td>Line 606 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L607"><a href="#L607">607</a></td>
-              <td class="source"><pre>      card.append(el(&quot;div&quot;, &quot;path&quot;, data.metadata?.path || &quot;&quot;));</pre></td>
-              <td>Line 607 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>        || metadata.call_tool_result?.structuredContent</pre></td>
+              <td>Line 607 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L608"><a href="#L608">608</a></td>
-              <td class="source"><pre>      card.append(el(&quot;div&quot;, &quot;snippet&quot;, data.text));</pre></td>
-              <td>Line 608 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>        || null;</pre></td>
+              <td>Line 608 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L609"><a href="#L609">609</a></td>
-              <td class="source"><pre>      app.append(card);</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L610"><a href="#L610">610</a></td>
-              <td class="source"><pre>    } else if (data) {</pre></td>
-              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L611"><a href="#L611">611</a></td>
-              <td class="source"><pre>      const pre = el(&quot;pre&quot;);</pre></td>
-              <td>Declares pre, a local value used later in this file.</td>
+              <td class="source"><pre>    function extractSummary() {</pre></td>
+              <td>Defines extractSummary, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
               <td class="line-number" id="L612"><a href="#L612">612</a></td>
-              <td class="source"><pre>      pre.textContent = JSON.stringify(data, null, 2);</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
+              <td class="source"><pre>      const openai = window.openai || {};</pre></td>
+              <td>Declares openai, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L613"><a href="#L613">613</a></td>
-              <td class="source"><pre>      app.append(pre);</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>      const metadata = openai.toolResponseMetadata || {};</pre></td>
+              <td>Declares metadata, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L614"><a href="#L614">614</a></td>
-              <td class="source"><pre>    } else if (metaSummary) {</pre></td>
-              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+              <td class="source"><pre>      return openai.toolResponse?._meta?.[&quot;vault-mcp/resultSummary&quot;]</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L615"><a href="#L615">615</a></td>
-              <td class="source"><pre>      const pre = el(&quot;pre&quot;);</pre></td>
-              <td>Declares pre, a local value used later in this file.</td>
+              <td class="source"><pre>        || metadata.mcp_tool_result?._meta?.[&quot;vault-mcp/resultSummary&quot;]</pre></td>
+              <td>Line 615 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L616"><a href="#L616">616</a></td>
-              <td class="source"><pre>      pre.textContent = metaSummary;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
+              <td class="source"><pre>        || metadata.call_tool_result?._meta?.[&quot;vault-mcp/resultSummary&quot;]</pre></td>
+              <td>Line 616 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L617"><a href="#L617">617</a></td>
-              <td class="source"><pre>      app.append(pre);</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>        || null;</pre></td>
+              <td>Line 617 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L618"><a href="#L618">618</a></td>
@@ -3168,21 +3168,216 @@
             </tr>
             <tr>
               <td class="line-number" id="L619"><a href="#L619">619</a></td>
-              <td class="source"><pre>  &lt;/script&gt;</pre></td>
-              <td>Line 619 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L620"><a href="#L620">620</a></td>
-              <td class="source"><pre>&lt;/body&gt;</pre></td>
-              <td>Line 620 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    function render() {</pre></td>
+              <td>Defines render, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
               <td class="line-number" id="L621"><a href="#L621">621</a></td>
-              <td class="source"><pre>&lt;/html&gt;`;</pre></td>
-              <td>Line 621 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      const data = extractStructuredContent();</pre></td>
+              <td>Declares data, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L622"><a href="#L622">622</a></td>
+              <td class="source"><pre>      const metaSummary = extractSummary();</pre></td>
+              <td>Declares metaSummary, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L623"><a href="#L623">623</a></td>
+              <td class="source"><pre>      content.replaceChildren();</pre></td>
+              <td>Line 623 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L624"><a href="#L624">624</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L625"><a href="#L625">625</a></td>
+              <td class="source"><pre>      if (data?.results) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L626"><a href="#L626">626</a></td>
+              <td class="source"><pre>        renderItems(data.results, &quot;result&quot;);</pre></td>
+              <td>Line 626 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L627"><a href="#L627">627</a></td>
+              <td class="source"><pre>      } else if (data?.notes) {</pre></td>
+              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L628"><a href="#L628">628</a></td>
+              <td class="source"><pre>        renderItems(data.notes, &quot;note&quot;);</pre></td>
+              <td>Line 628 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L629"><a href="#L629">629</a></td>
+              <td class="source"><pre>      } else if (data?.title &amp;&amp; data?.text) {</pre></td>
+              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L630"><a href="#L630">630</a></td>
+              <td class="source"><pre>        const card = el(&quot;section&quot;, &quot;card&quot;);</pre></td>
+              <td>Declares card, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L631"><a href="#L631">631</a></td>
+              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;title&quot;, data.title));</pre></td>
+              <td>Line 631 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L632"><a href="#L632">632</a></td>
+              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;path&quot;, data.metadata?.path || &quot;&quot;));</pre></td>
+              <td>Line 632 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L633"><a href="#L633">633</a></td>
+              <td class="source"><pre>        card.append(el(&quot;div&quot;, &quot;snippet&quot;, data.text));</pre></td>
+              <td>Line 633 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L634"><a href="#L634">634</a></td>
+              <td class="source"><pre>        content.append(card);</pre></td>
+              <td>Line 634 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L635"><a href="#L635">635</a></td>
+              <td class="source"><pre>      } else if (data) {</pre></td>
+              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L636"><a href="#L636">636</a></td>
+              <td class="source"><pre>        const pre = el(&quot;pre&quot;);</pre></td>
+              <td>Declares pre, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L637"><a href="#L637">637</a></td>
+              <td class="source"><pre>        pre.textContent = JSON.stringify(data, null, 2);</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L638"><a href="#L638">638</a></td>
+              <td class="source"><pre>        content.append(pre);</pre></td>
+              <td>Line 638 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L639"><a href="#L639">639</a></td>
+              <td class="source"><pre>      } else if (metaSummary) {</pre></td>
+              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L640"><a href="#L640">640</a></td>
+              <td class="source"><pre>        const pre = el(&quot;pre&quot;);</pre></td>
+              <td>Declares pre, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L641"><a href="#L641">641</a></td>
+              <td class="source"><pre>        pre.textContent = metaSummary;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L642"><a href="#L642">642</a></td>
+              <td class="source"><pre>        content.append(pre);</pre></td>
+              <td>Line 642 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L643"><a href="#L643">643</a></td>
+              <td class="source"><pre>      } else {</pre></td>
+              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L644"><a href="#L644">644</a></td>
+              <td class="source"><pre>        content.append(el(&quot;p&quot;, &quot;muted&quot;, &quot;Waiting for the vault tool result from ChatGPT. If this stays empty, ask ChatGPT to rerun the vault tool.&quot;));</pre></td>
+              <td>Line 644 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L645"><a href="#L645">645</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L646"><a href="#L646">646</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L647"><a href="#L647">647</a></td>
+              <td class="source"><pre>      window.openai?.notifyIntrinsicHeight?.();</pre></td>
+              <td>Line 647 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L648"><a href="#L648">648</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L649"><a href="#L649">649</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L650"><a href="#L650">650</a></td>
+              <td class="source"><pre>    window.addEventListener(&quot;openai:set_globals&quot;, (event) =&gt; {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L651"><a href="#L651">651</a></td>
+              <td class="source"><pre>      if (event.detail?.globals &amp;&amp; window.openai) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L652"><a href="#L652">652</a></td>
+              <td class="source"><pre>        Object.assign(window.openai, event.detail.globals);</pre></td>
+              <td>Line 652 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L653"><a href="#L653">653</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L654"><a href="#L654">654</a></td>
+              <td class="source"><pre>      render();</pre></td>
+              <td>Line 654 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L655"><a href="#L655">655</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L656"><a href="#L656">656</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L657"><a href="#L657">657</a></td>
+              <td class="source"><pre>    render();</pre></td>
+              <td>Line 657 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L658"><a href="#L658">658</a></td>
+              <td class="source"><pre>  &lt;/script&gt;</pre></td>
+              <td>Line 658 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L659"><a href="#L659">659</a></td>
+              <td class="source"><pre>&lt;/body&gt;</pre></td>
+              <td>Line 659 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L660"><a href="#L660">660</a></td>
+              <td class="source"><pre>&lt;/html&gt;`;</pre></td>
+              <td>Line 660 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L661"><a href="#L661">661</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>
