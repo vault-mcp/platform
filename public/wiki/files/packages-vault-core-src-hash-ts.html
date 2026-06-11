@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>packages/vault-core/src/hash.ts</code></h1>
         <p class="lead">Authored project file.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,14 +72,14 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
             <tr>
               <td class="line-number" id="L1"><a href="#L1">1</a></td>
               <td class="source"><pre>import { createHash } from &quot;node:crypto&quot;;</pre></td>
-              <td>Imports code from another module so this file can reuse it.</td>
+              <td>This imports Node's crypto hash function so the indexer can create content hashes and stable ids.</td>
             </tr>
             <tr>
               <td class="line-number" id="L2"><a href="#L2">2</a></td>
@@ -89,17 +89,17 @@
             <tr>
               <td class="line-number" id="L3"><a href="#L3">3</a></td>
               <td class="source"><pre>export function sha256(input: string): string {</pre></td>
-              <td>Defines sha256, a reusable block of behavior called by other code.</td>
+              <td>This returns a full SHA-256 hex digest for text, used as a content hash for indexed note text.</td>
             </tr>
             <tr>
               <td class="line-number" id="L4"><a href="#L4">4</a></td>
               <td class="source"><pre>  return createHash(&quot;sha256&quot;).update(input).digest(&quot;hex&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This returns a full SHA-256 hex digest for text, used as a content hash for indexed note text.</td>
             </tr>
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This returns a full SHA-256 hex digest for text, used as a content hash for indexed note text.</td>
             </tr>
             <tr>
               <td class="line-number" id="L6"><a href="#L6">6</a></td>
@@ -109,17 +109,17 @@
             <tr>
               <td class="line-number" id="L7"><a href="#L7">7</a></td>
               <td class="source"><pre>export function shortStableId(input: string): string {</pre></td>
-              <td>Defines shortStableId, a reusable block of behavior called by other code.</td>
+              <td>This creates a shorter stable id by hashing a deterministic string and keeping the first 24 hex characters.</td>
             </tr>
             <tr>
               <td class="line-number" id="L8"><a href="#L8">8</a></td>
               <td class="source"><pre>  return sha256(input).slice(0, 24);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This creates a shorter stable id by hashing a deterministic string and keeping the first 24 hex characters.</td>
             </tr>
             <tr>
               <td class="line-number" id="L9"><a href="#L9">9</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This creates a shorter stable id by hashing a deterministic string and keeping the first 24 hex characters.</td>
             </tr></tbody>
         </table>
       </section>

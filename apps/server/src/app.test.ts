@@ -48,6 +48,20 @@ describe("server MCP contract", () => {
     expect(await response.text()).toContain("Vault MCP Connector Wiki");
   });
 
+  it("serves the rebuild tutorial without authentication", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/wiki/tutorial.html`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    const html = await response.text();
+    expect(html).toContain("Rebuild the connector from scratch");
+    expect(html).toContain("Build The Indexer");
+  });
+
   it("serves generated wiki source-reference pages without authentication", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
@@ -57,13 +71,13 @@ describe("server MCP contract", () => {
     const indexResponse = await fetch(`${baseUrl}/wiki/files/`);
     expect(indexResponse.status).toBe(200);
     expect(indexResponse.headers.get("content-type")).toContain("text/html");
-    expect(await indexResponse.text()).toContain("Line-by-Line Source Reference");
+    expect(await indexResponse.text()).toContain("Source Appendix");
 
     const appPageResponse = await fetch(`${baseUrl}/wiki/files/apps-server-src-app-ts.html`);
     expect(appPageResponse.status).toBe(200);
     const appPage = await appPageResponse.text();
     expect(appPage).toContain("apps/server/src/app.ts");
-    expect(appPage).toContain("Every line explained");
+    expect(appPage).toContain("Source with explanatory notes");
   });
 
   it("syncs documents and exposes read-only vault tools over authenticated MCP", async () => {

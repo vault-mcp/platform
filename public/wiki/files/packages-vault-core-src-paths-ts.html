@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>packages/vault-core/src/paths.ts</code></h1>
         <p class="lead">Authored project file.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,14 +72,14 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
             <tr>
               <td class="line-number" id="L1"><a href="#L1">1</a></td>
               <td class="source"><pre>import path from &quot;node:path&quot;;</pre></td>
-              <td>Imports code from another module so this file can reuse it.</td>
+              <td>This imports Node path helpers so filesystem paths can be converted into vault-style paths.</td>
             </tr>
             <tr>
               <td class="line-number" id="L2"><a href="#L2">2</a></td>
@@ -89,17 +89,17 @@
             <tr>
               <td class="line-number" id="L3"><a href="#L3">3</a></td>
               <td class="source"><pre>export function normalizeVaultPath(input: string): string {</pre></td>
-              <td>Defines normalizeVaultPath, a reusable block of behavior called by other code.</td>
+              <td>This converts OS-specific path separators into forward slashes, matching Obsidian vault path style.</td>
             </tr>
             <tr>
               <td class="line-number" id="L4"><a href="#L4">4</a></td>
               <td class="source"><pre>  return input.split(path.sep).join(&quot;/&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This converts OS-specific path separators into forward slashes, matching Obsidian vault path style.</td>
             </tr>
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This converts OS-specific path separators into forward slashes, matching Obsidian vault path style.</td>
             </tr>
             <tr>
               <td class="line-number" id="L6"><a href="#L6">6</a></td>
@@ -109,17 +109,17 @@
             <tr>
               <td class="line-number" id="L7"><a href="#L7">7</a></td>
               <td class="source"><pre>export function relativeVaultPath(vaultRoot: string, absolutePath: string): string {</pre></td>
-              <td>Defines relativeVaultPath, a reusable block of behavior called by other code.</td>
+              <td>This converts an absolute file path into a vault-relative path suitable for policy checks and metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L8"><a href="#L8">8</a></td>
               <td class="source"><pre>  return normalizeVaultPath(path.relative(vaultRoot, absolutePath));</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This converts an absolute file path into a vault-relative path suitable for policy checks and metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L9"><a href="#L9">9</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This converts an absolute file path into a vault-relative path suitable for policy checks and metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L10"><a href="#L10">10</a></td>
@@ -129,17 +129,17 @@
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
               <td class="source"><pre>export function obsidianUri(vaultName: string, relativePath: string): string {</pre></td>
-              <td>Defines obsidianUri, a reusable block of behavior called by other code.</td>
+              <td>This builds an obsidian://open URI that can open the source note in the named Obsidian vault.</td>
             </tr>
             <tr>
               <td class="line-number" id="L12"><a href="#L12">12</a></td>
               <td class="source"><pre>  return `obsidian://open?vault=${encodeURIComponent(vaultName)}&amp;file=${encodeURIComponent(relativePath)}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This builds an obsidian://open URI that can open the source note in the named Obsidian vault.</td>
             </tr>
             <tr>
               <td class="line-number" id="L13"><a href="#L13">13</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This builds an obsidian://open URI that can open the source note in the named Obsidian vault.</td>
             </tr>
             <tr>
               <td class="line-number" id="L14"><a href="#L14">14</a></td>
@@ -149,17 +149,17 @@
             <tr>
               <td class="line-number" id="L15"><a href="#L15">15</a></td>
               <td class="source"><pre>export function privateNoteUrl(baseUrl: string, id: string): string {</pre></td>
-              <td>Defines privateNoteUrl, a reusable block of behavior called by other code.</td>
+              <td>This builds the private /notes/:id citation URL served by the hosted connector.</td>
             </tr>
             <tr>
               <td class="line-number" id="L16"><a href="#L16">16</a></td>
               <td class="source"><pre>  return `${baseUrl.replace(/\/$/, &quot;&quot;)}/notes/${encodeURIComponent(id)}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This builds the private /notes/:id citation URL served by the hosted connector.</td>
             </tr>
             <tr>
               <td class="line-number" id="L17"><a href="#L17">17</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This builds the private /notes/:id citation URL served by the hosted connector.</td>
             </tr></tbody>
         </table>
       </section>

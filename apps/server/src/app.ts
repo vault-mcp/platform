@@ -17,6 +17,7 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   app.use(express.json({ limit: "25mb" }));
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
   app.use("/assets", express.static(path.join(publicDir, "assets"), { index: false }));
+  app.use("/wiki", express.static(path.join(publicDir, "wiki"), { index: false }));
   app.use("/wiki/files", express.static(path.join(publicDir, "wiki", "files"), { index: "index.html" }));
   app.use((req, _res, next) => {
     attachOAuthStore(req, store);

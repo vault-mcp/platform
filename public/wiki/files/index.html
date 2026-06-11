@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Line-by-Line Source Reference - Vault MCP Connector Wiki</title>
+  <title>Source Appendix - Vault MCP Connector Wiki</title>
   <style>
     :root {
       color-scheme: light;
@@ -59,21 +59,21 @@
   <main>
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
-        <h1>Line-by-line source reference.</h1>
-        <p class="lead">This section is generated from the current repository. It covers 50 authored text files and 8,308 lines with plain-English explanations next to the exact source line.</p>
-        <p><a href="/wiki/">Back to the conceptual wiki</a></p>
+        <h1>Source appendix.</h1>
+        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 51 authored text files and 8,882 lines with explanatory notes beside source lines.</p>
+        <p><a href="/wiki/tutorial.html">Start with the rebuild tutorial</a> · <a href="/wiki/">Back to the wiki home</a></p>
       </section>
 
       <section>
-        <h2>How to use this reference</h2>
+        <h2>How to use this appendix</h2>
         <div class="grid two">
           <div class="card">
-            <h3>Start with the concept page</h3>
-            <p>The main wiki explains the system as a story. Use this source reference when you want to inspect a specific file or line.</p>
+            <h3>Read the tutorial first</h3>
+            <p>The rebuild tutorial explains the system in build order. Use this appendix when you want to inspect a specific file after that.</p>
           </div>
           <div class="card">
-            <h3>Read source and explanation together</h3>
-            <p>Each row has the line number, the exact code, and a plain-English note explaining why that line exists.</p>
+            <h3>Look up exact source</h3>
+            <p>Each row has the line number, exact source, and an explanatory note. Closing brackets and punctuation are included for complete source lookup, not because they are the best learning path.</p>
           </div>
         </div>
       </section>
@@ -143,6 +143,48 @@
         <p>These core runtime files now have file-specific explanation ranges for their major blocks, not only generic line heuristics.</p>
         <div class="grid two">
         <article class="card">
+          <h3><code>api/index.ts</code></h3>
+          <p>Vercel Function entrypoint that creates the configured Express app.</p>
+          <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="api-index-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/indexer/src/index.ts</code></h3>
+          <p>CLI for building and optionally syncing the vault index.</p>
+          <p>8 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-indexer-src-index-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/app.ts</code></h3>
+          <p>Express application and HTTP routes for the deployed service.</p>
+          <p>11 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-app-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/auth.ts</code></h3>
+          <p>Bearer token, OAuth JWT, CORS, and protected-resource helpers.</p>
+          <p>9 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-auth-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/bootstrap.ts</code></h3>
+          <p>Loads config, chooses JSON or Postgres storage, and creates the app.</p>
+          <p>2 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-bootstrap-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/config.ts</code></h3>
+          <p>Environment variable parsing and runtime configuration.</p>
+          <p>7 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-config-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/index.ts</code></h3>
+          <p>Node server startup and shutdown handling.</p>
+          <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-index-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
           <h3><code>apps/server/src/mcp.ts</code></h3>
           <p>MCP server, tool definitions, schemas, and Streamable HTTP transport.</p>
           <p>19 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
@@ -161,16 +203,52 @@
           <a href="apps-server-src-store-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/search.ts</code></h3>
-          <p>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</p>
-          <p>29 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-search-ts.html">Open curated file reference</a>
+          <h3><code>packages/vault-core/src/hash.ts</code></h3>
+          <p>Authored project file.</p>
+          <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-hash-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
           <h3><code>packages/vault-core/src/indexer.ts</code></h3>
           <p>Vault scanner, source policy application, redaction, chunking, metadata, and report output.</p>
           <p>12 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
           <a href="packages-vault-core-src-indexer-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/markdown.ts</code></h3>
+          <p>Markdown frontmatter parsing and heading chunking.</p>
+          <p>8 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-markdown-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/paths.ts</code></h3>
+          <p>Authored project file.</p>
+          <p>5 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-paths-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/redaction.ts</code></h3>
+          <p>Credential-like string redaction before indexing.</p>
+          <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-redaction-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/search.ts</code></h3>
+          <p>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</p>
+          <p>29 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-search-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/source-policy.ts</code></h3>
+          <p>V1 allowlist and denylist rules.</p>
+          <p>10 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-source-policy-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>packages/vault-core/src/types.ts</code></h3>
+          <p>Shared TypeScript types for index documents, search results, and stats.</p>
+          <p>9 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="packages-vault-core-src-types-ts.html">Open curated file reference</a>
         </article></div>
       </section>
 
@@ -206,12 +284,12 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-app-test-ts.html"><code>apps/server/src/app.test.ts</code></a></td>
-              <td>594</td>
+              <td>608</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
               <td><a href="apps-server-src-app-ts.html"><code>apps/server/src/app.ts</code></a></td>
-              <td>147</td>
+              <td>148</td>
               <td>Express application and HTTP routes for the deployed service.</td>
             </tr>
             <tr>
@@ -361,8 +439,13 @@
             </tr>
             <tr>
               <td><a href="public-wiki-index-html.html"><code>public/wiki/index.html</code></a></td>
-              <td>663</td>
+              <td>686</td>
               <td>Conceptual wiki landing page.</td>
+            </tr>
+            <tr>
+              <td><a href="public-wiki-tutorial-html.html"><code>public/wiki/tutorial.html</code></a></td>
+              <td>415</td>
+              <td>Authored project file.</td>
             </tr>
             <tr>
               <td><a href="readme-md.html"><code>README.md</code></a></td>
@@ -371,7 +454,7 @@
             </tr>
             <tr>
               <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
-              <td>760</td>
+              <td>881</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>

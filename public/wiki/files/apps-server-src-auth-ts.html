@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>apps/server/src/auth.ts</code></h1>
         <p class="lead">Bearer token, OAuth JWT, CORS, and protected-resource helpers.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,7 +72,7 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
@@ -99,37 +99,37 @@
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
               <td class="source"><pre>const CORS_HEADERS = [</pre></td>
-              <td>Declares CORS_HEADERS, a local value used later in this file.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L6"><a href="#L6">6</a></td>
               <td class="source"><pre>  &quot;Authorization&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L7"><a href="#L7">7</a></td>
               <td class="source"><pre>  &quot;Content-Type&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L8"><a href="#L8">8</a></td>
               <td class="source"><pre>  &quot;Accept&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L9"><a href="#L9">9</a></td>
               <td class="source"><pre>  &quot;MCP-Protocol-Version&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L10"><a href="#L10">10</a></td>
               <td class="source"><pre>  &quot;Mcp-Session-Id&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
               <td class="source"><pre>];</pre></td>
-              <td>Line 11 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L12"><a href="#L12">12</a></td>
@@ -139,67 +139,67 @@
             <tr>
               <td class="line-number" id="L13"><a href="#L13">13</a></td>
               <td class="source"><pre>export function requireBearerToken(expectedToken: string) {</pre></td>
-              <td>Defines requireBearerToken, a reusable block of behavior called by other code.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L14"><a href="#L14">14</a></td>
               <td class="source"><pre>  return (req: Request, res: Response, next: NextFunction) =&gt; {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L15"><a href="#L15">15</a></td>
               <td class="source"><pre>    const header = req.header(&quot;Authorization&quot;);</pre></td>
-              <td>Declares header, a local value used later in this file.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L16"><a href="#L16">16</a></td>
               <td class="source"><pre>    const token = header?.match(/^Bearer\s+(.+)$/i)?.[1];</pre></td>
-              <td>Declares token, a token-related value used for authentication or authorization.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L17"><a href="#L17">17</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L18"><a href="#L18">18</a></td>
               <td class="source"><pre>    if (token !== expectedToken) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L19"><a href="#L19">19</a></td>
               <td class="source"><pre>      res.status(401).json({ error: &quot;unauthorized&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 20 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L22"><a href="#L22">22</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L23"><a href="#L23">23</a></td>
               <td class="source"><pre>    next();</pre></td>
-              <td>Line 23 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L24"><a href="#L24">24</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L25"><a href="#L25">25</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong.</td>
             </tr>
             <tr>
               <td class="line-number" id="L26"><a href="#L26">26</a></td>
@@ -209,117 +209,117 @@
             <tr>
               <td class="line-number" id="L27"><a href="#L27">27</a></td>
               <td class="source"><pre>export function requireUserAuth(config: ServerConfig) {</pre></td>
-              <td>Defines requireUserAuth, a reusable block of behavior called by other code.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L28"><a href="#L28">28</a></td>
               <td class="source"><pre>  return async (req: Request, res: Response, next: NextFunction) =&gt; {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L29"><a href="#L29">29</a></td>
               <td class="source"><pre>    const token = bearerToken(req);</pre></td>
-              <td>Declares token, a token-related value used for authentication or authorization.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L30"><a href="#L30">30</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L31"><a href="#L31">31</a></td>
               <td class="source"><pre>    if (token &amp;&amp; config.accessToken &amp;&amp; token === config.accessToken) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L32"><a href="#L32">32</a></td>
               <td class="source"><pre>      next();</pre></td>
-              <td>Line 32 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 33 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
               <td class="source"><pre>    if (token &amp;&amp; config.oauth) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
               <td class="source"><pre>      try {</pre></td>
-              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
               <td class="source"><pre>        await verifyOAuthToken(token, config);</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
               <td class="source"><pre>        next();</pre></td>
-              <td>Line 39 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
               <td class="source"><pre>        return;</pre></td>
-              <td>Line 40 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>      } catch {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre>        unauthorized(res, config, &quot;invalid_token&quot;);</pre></td>
-              <td>Line 42 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>        return;</pre></td>
-              <td>Line 43 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>    unauthorized(res, config);</pre></td>
-              <td>Line 47 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
@@ -329,47 +329,47 @@
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
               <td class="source"><pre>export function protectedResourceMetadata(config: ServerConfig) {</pre></td>
-              <td>Defines protectedResourceMetadata, a reusable block of behavior called by other code.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L52"><a href="#L52">52</a></td>
               <td class="source"><pre>  return {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
               <td class="source"><pre>    resource: config.mcpResourceUrl,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
               <td class="source"><pre>    authorization_servers: config.oauth ? [config.oauth.authorizationServer] : [],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L55"><a href="#L55">55</a></td>
               <td class="source"><pre>    scopes_supported: config.oauth?.scopes ?? [&quot;vault:read&quot;],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L56"><a href="#L56">56</a></td>
               <td class="source"><pre>    bearer_methods_supported: [&quot;header&quot;],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L57"><a href="#L57">57</a></td>
               <td class="source"><pre>    resource_documentation: `${config.publicBaseUrl}/healthz`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
@@ -379,82 +379,82 @@
             <tr>
               <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre>export function requireAllowedOrigin(allowedOrigins: string[]) {</pre></td>
-              <td>Defines requireAllowedOrigin, a reusable block of behavior called by other code.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L62"><a href="#L62">62</a></td>
               <td class="source"><pre>  return (req: Request, res: Response, next: NextFunction) =&gt; {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L63"><a href="#L63">63</a></td>
               <td class="source"><pre>    const origin = req.header(&quot;Origin&quot;);</pre></td>
-              <td>Declares origin, a local value used later in this file.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L64"><a href="#L64">64</a></td>
               <td class="source"><pre>    if (!origin) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>      next();</pre></td>
-              <td>Line 65 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 66 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L68"><a href="#L68">68</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L69"><a href="#L69">69</a></td>
               <td class="source"><pre>    if (allowedOrigins.some((allowed) =&gt; origin === allowed || origin.startsWith(`${allowed}:`))) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L70"><a href="#L70">70</a></td>
               <td class="source"><pre>      next();</pre></td>
-              <td>Line 70 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L71"><a href="#L71">71</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 71 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L72"><a href="#L72">72</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L73"><a href="#L73">73</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L74"><a href="#L74">74</a></td>
               <td class="source"><pre>    res.status(403).json({ error: &quot;forbidden_origin&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L75"><a href="#L75">75</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L76"><a href="#L76">76</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins.</td>
             </tr>
             <tr>
               <td class="line-number" id="L77"><a href="#L77">77</a></td>
@@ -464,137 +464,137 @@
             <tr>
               <td class="line-number" id="L78"><a href="#L78">78</a></td>
               <td class="source"><pre>export function applyCors(allowedOrigins: string[]) {</pre></td>
-              <td>Defines applyCors, a reusable block of behavior called by other code.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
               <td class="source"><pre>  return (req: Request, res: Response, next: NextFunction) =&gt; {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L80"><a href="#L80">80</a></td>
               <td class="source"><pre>    const origin = req.header(&quot;Origin&quot;);</pre></td>
-              <td>Declares origin, a local value used later in this file.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
               <td class="source"><pre>    if (!origin) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
               <td class="source"><pre>      next();</pre></td>
-              <td>Line 82 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 83 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L84"><a href="#L84">84</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L85"><a href="#L85">85</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L86"><a href="#L86">86</a></td>
               <td class="source"><pre>    if (!isAllowedOrigin(origin, allowedOrigins)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L87"><a href="#L87">87</a></td>
               <td class="source"><pre>      res.status(403).json({ error: &quot;forbidden_origin&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 88 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L89"><a href="#L89">89</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre>    res.set(&quot;Access-Control-Allow-Origin&quot;, origin);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
               <td class="source"><pre>    res.set(&quot;Access-Control-Allow-Methods&quot;, &quot;GET,POST,DELETE,OPTIONS&quot;);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L93"><a href="#L93">93</a></td>
               <td class="source"><pre>    res.set(&quot;Access-Control-Allow-Headers&quot;, CORS_HEADERS.join(&quot;,&quot;));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L94"><a href="#L94">94</a></td>
               <td class="source"><pre>    res.set(&quot;Access-Control-Expose-Headers&quot;, &quot;WWW-Authenticate,Mcp-Session-Id&quot;);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L95"><a href="#L95">95</a></td>
               <td class="source"><pre>    res.set(&quot;Vary&quot;, appendVary(res.get(&quot;Vary&quot;), &quot;Origin&quot;));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L96"><a href="#L96">96</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L97"><a href="#L97">97</a></td>
               <td class="source"><pre>    if (req.method === &quot;OPTIONS&quot;) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L98"><a href="#L98">98</a></td>
               <td class="source"><pre>      res.status(204).end();</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L99"><a href="#L99">99</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 99 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L102"><a href="#L102">102</a></td>
               <td class="source"><pre>    next();</pre></td>
-              <td>Line 102 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L103"><a href="#L103">103</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L104"><a href="#L104">104</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS.</td>
             </tr>
             <tr>
               <td class="line-number" id="L105"><a href="#L105">105</a></td>
@@ -604,92 +604,92 @@
             <tr>
               <td class="line-number" id="L106"><a href="#L106">106</a></td>
               <td class="source"><pre>function bearerToken(req: Request): string | null {</pre></td>
-              <td>Defines bearerToken, a reusable block of behavior called by other code.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L107"><a href="#L107">107</a></td>
               <td class="source"><pre>  const header = req.header(&quot;Authorization&quot;);</pre></td>
-              <td>Declares header, a local value used later in this file.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L108"><a href="#L108">108</a></td>
               <td class="source"><pre>  return header?.match(/^Bearer\s+(.+)$/i)?.[1] ?? null;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L109"><a href="#L109">109</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L110"><a href="#L110">110</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L111"><a href="#L111">111</a></td>
               <td class="source"><pre>function isAllowedOrigin(origin: string, allowedOrigins: string[]): boolean {</pre></td>
-              <td>Defines isAllowedOrigin, a reusable block of behavior called by other code.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L112"><a href="#L112">112</a></td>
               <td class="source"><pre>  return allowedOrigins.some((allowed) =&gt; origin === allowed || origin.startsWith(`${allowed}:`));</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L113"><a href="#L113">113</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L114"><a href="#L114">114</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L115"><a href="#L115">115</a></td>
               <td class="source"><pre>function appendVary(current: string | string[] | undefined, value: string): string {</pre></td>
-              <td>Defines appendVary, a reusable block of behavior called by other code.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L116"><a href="#L116">116</a></td>
               <td class="source"><pre>  const existing = Array.isArray(current) ? current.join(&quot;,&quot;) : current;</pre></td>
-              <td>Declares existing, a local value used later in this file.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L117"><a href="#L117">117</a></td>
               <td class="source"><pre>  if (!existing) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L118"><a href="#L118">118</a></td>
               <td class="source"><pre>    return value;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L119"><a href="#L119">119</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L120"><a href="#L120">120</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L121"><a href="#L121">121</a></td>
               <td class="source"><pre>  return existing.split(&quot;,&quot;).map((part) =&gt; part.trim()).includes(value)</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L122"><a href="#L122">122</a></td>
               <td class="source"><pre>    ? existing</pre></td>
-              <td>Line 122 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L123"><a href="#L123">123</a></td>
               <td class="source"><pre>    : `${existing}, ${value}`;</pre></td>
-              <td>Line 123 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L124"><a href="#L124">124</a></td>
@@ -704,97 +704,97 @@
             <tr>
               <td class="line-number" id="L126"><a href="#L126">126</a></td>
               <td class="source"><pre>async function verifyOAuthToken(token: string, config: ServerConfig): Promise&lt;void&gt; {</pre></td>
-              <td>Defines verifyOAuthToken, a reusable block of behavior called by other code.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L127"><a href="#L127">127</a></td>
               <td class="source"><pre>  const oauth = config.oauth;</pre></td>
-              <td>Declares oauth, a local value used later in this file.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L128"><a href="#L128">128</a></td>
               <td class="source"><pre>  if (!oauth) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L129"><a href="#L129">129</a></td>
               <td class="source"><pre>    throw new Error(&quot;OAuth is not configured.&quot;);</pre></td>
-              <td>Line 129 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L130"><a href="#L130">130</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L131"><a href="#L131">131</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L132"><a href="#L132">132</a></td>
               <td class="source"><pre>  if (oauth.jwtSecret) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L133"><a href="#L133">133</a></td>
               <td class="source"><pre>    await jwtVerify(token, new TextEncoder().encode(oauth.jwtSecret), {</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L134"><a href="#L134">134</a></td>
               <td class="source"><pre>      issuer: oauth.issuer,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L135"><a href="#L135">135</a></td>
               <td class="source"><pre>      audience: oauth.audience,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L136"><a href="#L136">136</a></td>
               <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L137"><a href="#L137">137</a></td>
               <td class="source"><pre>    return;</pre></td>
-              <td>Line 137 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L138"><a href="#L138">138</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L139"><a href="#L139">139</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L140"><a href="#L140">140</a></td>
               <td class="source"><pre>  await jwtVerify(token, createRemoteJWKSet(new URL(oauth.jwksUrl ?? &quot;&quot;)), {</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L141"><a href="#L141">141</a></td>
               <td class="source"><pre>    issuer: oauth.issuer,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L142"><a href="#L142">142</a></td>
               <td class="source"><pre>    audience: oauth.audience,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L143"><a href="#L143">143</a></td>
               <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L144"><a href="#L144">144</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers.</td>
             </tr>
             <tr>
               <td class="line-number" id="L145"><a href="#L145">145</a></td>
@@ -804,62 +804,62 @@
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
               <td class="source"><pre>function unauthorized(res: Response, config: ServerConfig, error?: string): void {</pre></td>
-              <td>Defines unauthorized, a reusable block of behavior called by other code.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L147"><a href="#L147">147</a></td>
               <td class="source"><pre>  const metadataUrl = `${config.publicBaseUrl}/.well-known/oauth-protected-resource`;</pre></td>
-              <td>Declares metadataUrl, a local value used later in this file.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L148"><a href="#L148">148</a></td>
               <td class="source"><pre>  const parts = [`resource_metadata=&quot;${metadataUrl}&quot;`];</pre></td>
-              <td>Declares parts, a local value used later in this file.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L149"><a href="#L149">149</a></td>
               <td class="source"><pre>  if (error) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L150"><a href="#L150">150</a></td>
               <td class="source"><pre>    parts.push(`error=&quot;${error}&quot;`);</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L151"><a href="#L151">151</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L152"><a href="#L152">152</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L153"><a href="#L153">153</a></td>
               <td class="source"><pre>  res</pre></td>
-              <td>Line 153 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L154"><a href="#L154">154</a></td>
               <td class="source"><pre>    .status(401)</pre></td>
-              <td>Line 154 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L155"><a href="#L155">155</a></td>
               <td class="source"><pre>    .set(&quot;WWW-Authenticate&quot;, `Bearer ${parts.join(&quot;, &quot;)}`)</pre></td>
-              <td>Line 155 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L156"><a href="#L156">156</a></td>
               <td class="source"><pre>    .json({ error: &quot;unauthorized&quot; });</pre></td>
-              <td>Line 156 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr>
             <tr>
               <td class="line-number" id="L157"><a href="#L157">157</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata.</td>
             </tr></tbody>
         </table>
       </section>

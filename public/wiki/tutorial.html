@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rebuild Tutorial - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --blue-soft: #e5f0fb;
+      --green: #1f765f;
+      --green-soft: #dff2ec;
+      --amber: #a86212;
+      --amber-soft: #fff0d7;
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.62; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    header {
+      padding: 42px 44px 34px;
+      border-bottom: 1px solid var(--line);
+      background: #eaf1f3;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 { max-width: 980px; margin: 0 0 14px; font-size: 54px; line-height: 1.04; letter-spacing: 0; }
+    .lead { max-width: 940px; margin: 0; color: var(--muted); font-size: 18px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 26px 44px 80px;
+    }
+    nav {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    nav strong { display: block; margin-bottom: 10px; }
+    nav a {
+      display: block;
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    nav a:hover { background: var(--blue-soft); text-decoration: none; }
+    main { min-width: 0; }
+    section { padding: 28px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    h2 { margin: 0 0 12px; font-size: 30px; line-height: 1.15; letter-spacing: 0; }
+    h3 { margin: 24px 0 8px; font-size: 20px; letter-spacing: 0; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    li { margin: 6px 0; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    pre {
+      overflow-x: auto;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: #102027;
+      color: #edf6f7;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .callout {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .callout::before { content: ""; width: 10px; border-radius: 99px; background: var(--blue); }
+    .callout.good::before { background: var(--green); }
+    .callout.warning::before { background: var(--amber); }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      margin: 12px 0;
+    }
+    .num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 800;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    @media (max-width: 980px) {
+      header { padding: 32px 20px 28px; }
+      h1 { font-size: 34px; }
+      .layout { grid-template-columns: 1fr; padding: 22px 18px 64px; }
+      nav { position: static; max-height: none; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Vault MCP Connector Wiki</p>
+    <h1>Rebuild the connector from scratch.</h1>
+    <p class="lead">This is the human tutorial path. It explains the system in build order, why each piece exists, how the pieces connect, and what you would recreate if you started with an empty folder.</p>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="Tutorial navigation">
+      <strong>Rebuild Path</strong>
+      <a href="/wiki/">Back To Wiki Home</a>
+      <a href="#goal">Goal</a>
+      <a href="#shape">System Shape</a>
+      <a href="#data-model">Data Model</a>
+      <a href="#source-policy">Source Policy</a>
+      <a href="#indexer">Build The Indexer</a>
+      <a href="#storage">Build Storage</a>
+      <a href="#server">Build The Server</a>
+      <a href="#mcp">Expose MCP Tools</a>
+      <a href="#oauth">Add OAuth</a>
+      <a href="#tests">Prove It Works</a>
+      <a href="#deploy">Deploy It</a>
+      <a href="#files">File Map</a>
+      <a href="#next">What To Build Next</a>
+    </nav>
+
+    <main>
+      <section id="goal">
+        <h2>Goal</h2>
+        <div class="callout good">
+          <div>
+            <strong>Build a private read-only bridge from an Obsidian vault to AI clients.</strong>
+            <p>The bridge scans selected vault notes, creates a safe derived index, hosts that index behind authentication, and exposes read-only MCP tools so clients can search and fetch context without touching the vault filesystem.</p>
+          </div>
+        </div>
+        <p>The important design choice is separation: the live Obsidian vault remains the source of truth, while the hosted server only stores a filtered copy of selected content. That makes the remote system easier to reason about and easier to shut off or rebuild.</p>
+      </section>
+
+      <section id="shape">
+        <h2>System Shape</h2>
+        <div class="grid three">
+          <div class="card">
+            <h3>1. Vault scanner</h3>
+            <p>Runs locally against a vault copy. It reads Markdown files, rejects unsafe paths, parses metadata, redacts secrets, chunks notes, and creates index documents.</p>
+          </div>
+          <div class="card">
+            <h3>2. Hosted server</h3>
+            <p>Runs on Vercel. It accepts admin syncs, stores the index, answers health checks, handles OAuth, and exposes MCP over HTTP.</p>
+          </div>
+          <div class="card">
+            <h3>3. AI clients</h3>
+            <p>ChatGPT, Claude, Codex, or Inspector authenticate, call MCP tools, receive structured search results, and fetch only indexed documents.</p>
+          </div>
+        </div>
+        <h3>The full request loop</h3>
+        <ol>
+          <li>The local indexer scans the approved vault snapshot.</li>
+          <li>The indexer posts a replacement index to <code>/admin/sync</code>.</li>
+          <li>The server stores documents in JSON locally or Postgres in production.</li>
+          <li>A client authenticates through OAuth or a development bearer token.</li>
+          <li>The client calls <code>/mcp</code> with a JSON-RPC tool request.</li>
+          <li>The MCP layer calls storage methods such as <code>searchVault</code> or <code>fetch</code>.</li>
+          <li>The client receives structured results with path, snippet, score, citation URL, and Obsidian URI.</li>
+        </ol>
+      </section>
+
+      <section id="data-model">
+        <h2>Data Model</h2>
+        <p>If you understand the data model, the rest of the system gets easier. Everything revolves around <code>VaultDocument</code>.</p>
+        <table>
+          <thead><tr><th>Field</th><th>Why it exists</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>Stable id for one indexed chunk. Search returns this id; fetch uses it.</td></tr>
+            <tr><td><code>title</code></td><td>Readable title for the note or section.</td></tr>
+            <tr><td><code>text</code></td><td>The redacted Markdown text that the AI client is allowed to see.</td></tr>
+            <tr><td><code>url</code></td><td>Private citation URL on the hosted server, shaped like <code>/notes/:id</code>.</td></tr>
+            <tr><td><code>metadata.path</code></td><td>Vault-relative path. Used for policy, filtering, grouping chunks, and exact path fetches.</td></tr>
+            <tr><td><code>metadata.heading</code></td><td>Section heading for chunk-level search.</td></tr>
+            <tr><td><code>metadata.tags/status</code></td><td>Used for allow/deny policy and tool filters.</td></tr>
+            <tr><td><code>metadata.content_hash</code></td><td>Detects changed note content without exposing raw source outside the document.</td></tr>
+            <tr><td><code>metadata.source_policy</code></td><td>Stores evidence for why this document was allowed.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="source-policy">
+        <h2>Source Policy</h2>
+        <p>The source policy is the safety gate. It runs before a note becomes remotely searchable.</p>
+        <div class="grid two">
+          <div class="card">
+            <h3>Deny first</h3>
+            <p>Reject credentials, daily notes, finance, identity, legal, archives, review-gated notes, sensitive tags, and non-Markdown input before considering allow rules.</p>
+          </div>
+          <div class="card">
+            <h3>Allow narrowly</h3>
+            <p>Allow the Task Hub, active project homes, and selected technical/reference folders. Unselected reference folders are denied by default.</p>
+          </div>
+        </div>
+        <p>The rebuild lesson is simple: write the allowlist in code, test it directly, and record the matched rule in metadata so every indexed chunk can explain why it exists.</p>
+      </section>
+
+      <section id="indexer">
+        <h2>Build The Indexer</h2>
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <h3>List Markdown files</h3>
+            <p>Walk the vault folder recursively, skip hidden folders and <code>node_modules</code>, keep only <code>.md</code> files, and sort the list for deterministic output.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <h3>Reject obvious paths before reading</h3>
+            <p>Run path-only policy checks before opening files. That reduces accidental exposure because denied folders do not even need content parsing.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <h3>Read, redact, parse</h3>
+            <p>Read Markdown, replace credential-like patterns with <code>[REDACTED:name]</code>, parse frontmatter with <code>gray-matter</code>, and extract title, tags, status, headings, wikilinks, and tasks.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <div>
+            <h3>Apply full policy</h3>
+            <p>Use path, tags, and status to decide whether the note is allowed. Denied notes increment stats and stop there.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">5</div>
+          <div>
+            <h3>Create chunks</h3>
+            <p>Split the note by headings. Oversized sections are sliced into smaller chunks. Each chunk becomes one <code>VaultDocument</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">6</div>
+          <div>
+            <h3>Emit the index</h3>
+            <p>The finished index has <code>generated_at</code>, <code>vault_root</code>, <code>documents</code>, and <code>stats</code>. It can be written to JSON locally or synced to the server.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="storage">
+        <h2>Build Storage</h2>
+        <p>The server uses one interface with two implementations. That is why local tests and production behave the same way.</p>
+        <table>
+          <thead><tr><th>Implementation</th><th>When used</th><th>How it works</th></tr></thead>
+          <tbody>
+            <tr><td><code>JsonIndexStore</code></td><td>Local development and tests</td><td>Keeps documents in memory and writes a JSON snapshot to disk on sync.</td></tr>
+            <tr><td><code>PostgresIndexStore</code></td><td>Production</td><td>Creates tables for metadata, documents, OAuth clients, and token-use records. Sync runs as one transaction.</td></tr>
+          </tbody>
+        </table>
+        <p>Both stores expose the same methods: <code>replace</code>, <code>health</code>, <code>searchVault</code>, <code>searchNotes</code>, <code>searchSections</code>, <code>fetch</code>, <code>fetchByPath</code>, <code>listNotes</code>, <code>recentNotes</code>, <code>activeProjects</code>, <code>indexStatus</code>, and <code>debugSearch</code>.</p>
+      </section>
+
+      <section id="server">
+        <h2>Build The Server</h2>
+        <p>The Express app is mostly a routing table. Each route has a narrow job.</p>
+        <table>
+          <thead><tr><th>Route</th><th>Purpose</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /</code></td><td>Public landing page.</td><td>None</td></tr>
+            <tr><td><code>GET /wiki/</code></td><td>Human documentation.</td><td>None</td></tr>
+            <tr><td><code>GET /healthz</code></td><td>Index health and counts.</td><td>None</td></tr>
+            <tr><td><code>POST /admin/sync</code></td><td>Replace the stored index with a fresh generated index.</td><td>Sync token</td></tr>
+            <tr><td><code>GET /notes/:id</code></td><td>Fetch one indexed document for citation.</td><td>User auth</td></tr>
+            <tr><td><code>POST /mcp</code></td><td>Main MCP JSON-RPC endpoint.</td><td>User auth and origin check</td></tr>
+            <tr><td><code>GET /mcp</code></td><td>SSE compatibility endpoint for Streamable HTTP clients.</td><td>User auth and origin check</td></tr>
+            <tr><td><code>/oauth/*</code></td><td>Self-hosted OAuth registration, authorize, and token routes.</td><td>OAuth flow</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mcp">
+        <h2>Expose MCP Tools</h2>
+        <p>MCP tools are the public API for AI clients. The server currently exposes ten read-only tools.</p>
+        <div class="grid two">
+          <div class="card"><h3>Discovery</h3><p><code>list_notes</code>, <code>recent_notes</code>, and <code>active_projects</code> let a client browse known safe notes without guessing paths.</p></div>
+          <div class="card"><h3>Search</h3><p><code>search</code>, <code>search_notes</code>, and <code>search_sections</code> return note-level or section-level matches with snippets and match reasons.</p></div>
+          <div class="card"><h3>Fetch</h3><p><code>fetch</code> and <code>fetch_note_by_path</code> return indexed text only when the id or path already exists in the allowlisted index.</p></div>
+          <div class="card"><h3>Diagnostics</h3><p><code>get_index_status</code> and <code>debug_search</code> explain freshness, scope boundaries, and why a query may not find results.</p></div>
+        </div>
+      </section>
+
+      <section id="oauth">
+        <h2>Add OAuth</h2>
+        <p>OAuth exists so real clients do not need a shared static password as their long-term API token. The self-hosted OAuth server supports dynamic registration, authorization code + PKCE, refresh tokens, and replay protection.</p>
+        <ol>
+          <li>The client discovers metadata from <code>/.well-known/oauth-authorization-server</code>.</li>
+          <li>The client registers redirect URIs at <code>/oauth/register</code>.</li>
+          <li>The human owner authorizes through <code>/oauth/authorize</code> with the connector password.</li>
+          <li>The server returns an authorization code to the client redirect URI.</li>
+          <li>The client exchanges the code and PKCE verifier at <code>/oauth/token</code>.</li>
+          <li>The server signs a one-hour access token and a refresh token.</li>
+          <li>Authorization codes and refresh tokens are consumed once by recording their JWT ids.</li>
+        </ol>
+      </section>
+
+      <section id="tests">
+        <h2>Prove It Works</h2>
+        <p>The project is easier to rebuild because the verification gates tell you whether each layer still behaves correctly.</p>
+        <table>
+          <thead><tr><th>Command</th><th>What it proves</th></tr></thead>
+          <tbody>
+            <tr><td><code>npm run build</code></td><td>All TypeScript project references compile.</td></tr>
+            <tr><td><code>npm run check:api</code></td><td>The Vercel function entrypoint type-checks under production-style compiler settings.</td></tr>
+            <tr><td><code>npm test</code></td><td>Unit and server contract tests pass.</td></tr>
+            <tr><td><code>npm run smoke:local</code></td><td>Local static-token server can sync, list tools, search, fetch, and deny guesses.</td></tr>
+            <tr><td><code>npm run smoke:oauth-local</code></td><td>Local OAuth/JWT auth path works without a static user token.</td></tr>
+            <tr><td><code>npm run smoke:remote</code></td><td>Production endpoint works against the copied vault index.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="deploy">
+        <h2>Deploy It</h2>
+        <p>The deployed shape is Vercel for the Express Function and Neon Postgres for the index plus OAuth persistence.</p>
+        <ol>
+          <li>Create/link the Vercel project.</li>
+          <li>Provision Postgres and set <code>DATABASE_URL</code>.</li>
+          <li>Set <code>PUBLIC_BASE_URL</code>, <code>MCP_SYNC_TOKEN</code>, OAuth issuer/audience/secret/password/scopes, and allowed origins.</li>
+          <li>Deploy with <code>vercel deploy --prod -y</code>.</li>
+          <li>Run the remote OAuth smoke test.</li>
+          <li>Connect clients to <code>https://vault-mcp-connector.vercel.app/mcp</code>.</li>
+        </ol>
+      </section>
+
+      <section id="files">
+        <h2>File Map</h2>
+        <table>
+          <thead><tr><th>Path</th><th>Role in the rebuild</th></tr></thead>
+          <tbody>
+            <tr><td><code>packages/vault-core/src/types.ts</code></td><td>Define the data shapes first.</td></tr>
+            <tr><td><code>packages/vault-core/src/source-policy.ts</code></td><td>Write the allow/deny boundary.</td></tr>
+            <tr><td><code>packages/vault-core/src/markdown.ts</code></td><td>Parse and chunk notes.</td></tr>
+            <tr><td><code>packages/vault-core/src/indexer.ts</code></td><td>Turn vault files into index documents.</td></tr>
+            <tr><td><code>packages/vault-core/src/search.ts</code></td><td>Search, list, fetch, and diagnose indexed documents.</td></tr>
+            <tr><td><code>apps/indexer/src/index.ts</code></td><td>Expose indexing as a CLI and sync command.</td></tr>
+            <tr><td><code>apps/server/src/store.ts</code></td><td>Provide JSON and Postgres storage behind one interface.</td></tr>
+            <tr><td><code>apps/server/src/mcp.ts</code></td><td>Register the MCP tools and wire them to storage.</td></tr>
+            <tr><td><code>apps/server/src/oauth.ts</code></td><td>Implement self-hosted OAuth.</td></tr>
+            <tr><td><code>apps/server/src/app.ts</code></td><td>Connect routes, auth, static pages, sync, notes, and MCP.</td></tr>
+          </tbody>
+        </table>
+        <p>Use the <a href="/wiki/files/">source appendix</a> when you want exact code lookup after reading this tutorial.</p>
+      </section>
+
+      <section id="next">
+        <h2>What To Build Next</h2>
+        <p>The read-only V1 server is intentionally conservative. The long-term read/write version should be designed as a separate layer with scoped write operations, approval UI, audit logs, conflict checks, backups, and rollback. Do not turn this V1 read-only server into a raw remote filesystem editor.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

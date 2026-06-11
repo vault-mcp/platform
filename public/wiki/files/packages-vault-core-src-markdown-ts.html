@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>packages/vault-core/src/markdown.ts</code></h1>
         <p class="lead">Markdown frontmatter parsing and heading chunking.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,7 +72,7 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
@@ -94,52 +94,52 @@
             <tr>
               <td class="line-number" id="L4"><a href="#L4">4</a></td>
               <td class="source"><pre>export type ParsedMarkdownNote = {</pre></td>
-              <td>Exports a TypeScript type so other files can use this data shape at compile time.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
               <td class="source"><pre>  frontmatter: Record&lt;string, unknown&gt;;</pre></td>
-              <td>Line 5 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L6"><a href="#L6">6</a></td>
               <td class="source"><pre>  body: string;</pre></td>
-              <td>Line 6 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L7"><a href="#L7">7</a></td>
               <td class="source"><pre>  title: string;</pre></td>
-              <td>Line 7 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L8"><a href="#L8">8</a></td>
               <td class="source"><pre>  tags: string[];</pre></td>
-              <td>Line 8 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L9"><a href="#L9">9</a></td>
               <td class="source"><pre>  status: string | null;</pre></td>
-              <td>Line 9 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L10"><a href="#L10">10</a></td>
               <td class="source"><pre>  headings: string[];</pre></td>
-              <td>Line 10 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
               <td class="source"><pre>  wikilinks: string[];</pre></td>
-              <td>Line 11 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L12"><a href="#L12">12</a></td>
               <td class="source"><pre>  tasks: string[];</pre></td>
-              <td>Line 12 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L13"><a href="#L13">13</a></td>
               <td class="source"><pre>};</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L14"><a href="#L14">14</a></td>
@@ -149,97 +149,97 @@
             <tr>
               <td class="line-number" id="L15"><a href="#L15">15</a></td>
               <td class="source"><pre>export function parseMarkdownNote(markdown: string, relativePath: string): ParsedMarkdownNote {</pre></td>
-              <td>Defines parseMarkdownNote, a reusable block of behavior called by other code.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L16"><a href="#L16">16</a></td>
               <td class="source"><pre>  const parsed = matter(markdown);</pre></td>
-              <td>Declares parsed, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L17"><a href="#L17">17</a></td>
               <td class="source"><pre>  const body = parsed.content.trim();</pre></td>
-              <td>Declares body, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L18"><a href="#L18">18</a></td>
               <td class="source"><pre>  const frontmatter = parsed.data as Record&lt;string, unknown&gt;;</pre></td>
-              <td>Declares frontmatter, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L19"><a href="#L19">19</a></td>
               <td class="source"><pre>  const title = extractTitle(body, relativePath);</pre></td>
-              <td>Declares title, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
               <td class="source"><pre>  const tags = extractTags(frontmatter, body);</pre></td>
-              <td>Declares tags, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
               <td class="source"><pre>  const status = typeof frontmatter.status === &quot;string&quot; ? frontmatter.status : null;</pre></td>
-              <td>Declares status, a local value used later in this file.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L22"><a href="#L22">22</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L23"><a href="#L23">23</a></td>
               <td class="source"><pre>  return {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L24"><a href="#L24">24</a></td>
               <td class="source"><pre>    frontmatter,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L25"><a href="#L25">25</a></td>
               <td class="source"><pre>    body,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L26"><a href="#L26">26</a></td>
               <td class="source"><pre>    title,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L27"><a href="#L27">27</a></td>
               <td class="source"><pre>    tags,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L28"><a href="#L28">28</a></td>
               <td class="source"><pre>    status,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L29"><a href="#L29">29</a></td>
               <td class="source"><pre>    headings: extractHeadings(body),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L30"><a href="#L30">30</a></td>
               <td class="source"><pre>    wikilinks: extractWikilinks(body),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L31"><a href="#L31">31</a></td>
               <td class="source"><pre>    tasks: extractTasks(body),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L32"><a href="#L32">32</a></td>
               <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
@@ -249,102 +249,102 @@
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
               <td class="source"><pre>export function chunkMarkdown(parsed: ParsedMarkdownNote, maxChars = 4_000): Array&lt;{ heading: string | null; text: string }&gt; {</pre></td>
-              <td>Defines chunkMarkdown, a reusable block of behavior called by other code.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
               <td class="source"><pre>  const sections = splitIntoHeadingSections(parsed.body);</pre></td>
-              <td>Declares sections, a local value used later in this file.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
               <td class="source"><pre>  const chunks: Array&lt;{ heading: string | null; text: string }&gt; = [];</pre></td>
-              <td>Declares chunks, a local value used later in this file.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
               <td class="source"><pre>  for (const section of sections) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
               <td class="source"><pre>    if (section.text.length &lt;= maxChars) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>      chunks.push(section);</pre></td>
-              <td>Line 41 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre>      continue;</pre></td>
-              <td>Line 42 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre>    for (let start = 0; start &lt; section.text.length; start += maxChars) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
               <td class="source"><pre>      chunks.push({</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>        heading: section.heading,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
               <td class="source"><pre>        text: section.text.slice(start, start + maxChars).trim(),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
               <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L52"><a href="#L52">52</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
               <td class="source"><pre>  return chunks.filter((chunk) =&gt; chunk.text.length &gt; 0);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks.</td>
             </tr>
             <tr>
               <td class="line-number" id="L55"><a href="#L55">55</a></td>
@@ -354,42 +354,42 @@
             <tr>
               <td class="line-number" id="L56"><a href="#L56">56</a></td>
               <td class="source"><pre>function extractTitle(body: string, relativePath: string): string {</pre></td>
-              <td>Defines extractTitle, a reusable block of behavior called by other code.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L57"><a href="#L57">57</a></td>
               <td class="source"><pre>  const heading = body.match(/^#\s+(.+)$/m);</pre></td>
-              <td>Declares heading, a local value used later in this file.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
               <td class="source"><pre>  if (heading?.[1]) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
               <td class="source"><pre>    return heading[1].trim();</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L62"><a href="#L62">62</a></td>
               <td class="source"><pre>  return path.basename(relativePath, &quot;.md&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L63"><a href="#L63">63</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name.</td>
             </tr>
             <tr>
               <td class="line-number" id="L64"><a href="#L64">64</a></td>
@@ -399,122 +399,122 @@
             <tr>
               <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>function extractTags(frontmatter: Record&lt;string, unknown&gt;, body: string): string[] {</pre></td>
-              <td>Defines extractTags, a reusable block of behavior called by other code.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>  const tags = new Set&lt;string&gt;();</pre></td>
-              <td>Declares tags, a local value used later in this file.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre>  const rawTags = frontmatter.tags;</pre></td>
-              <td>Declares rawTags, a local value used later in this file.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L68"><a href="#L68">68</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L69"><a href="#L69">69</a></td>
               <td class="source"><pre>  if (Array.isArray(rawTags)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L70"><a href="#L70">70</a></td>
               <td class="source"><pre>    for (const tag of rawTags) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L71"><a href="#L71">71</a></td>
               <td class="source"><pre>      if (typeof tag === &quot;string&quot;) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L72"><a href="#L72">72</a></td>
               <td class="source"><pre>        tags.add(normalizeTag(tag));</pre></td>
-              <td>Line 72 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L73"><a href="#L73">73</a></td>
               <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L74"><a href="#L74">74</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L75"><a href="#L75">75</a></td>
               <td class="source"><pre>  } else if (typeof rawTags === &quot;string&quot;) {</pre></td>
-              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L76"><a href="#L76">76</a></td>
               <td class="source"><pre>    for (const tag of rawTags.split(/[,\s]+/)) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L77"><a href="#L77">77</a></td>
               <td class="source"><pre>      if (tag.trim()) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L78"><a href="#L78">78</a></td>
               <td class="source"><pre>        tags.add(normalizeTag(tag));</pre></td>
-              <td>Line 78 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
               <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L80"><a href="#L80">80</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
               <td class="source"><pre>  for (const match of body.matchAll(/(?:^|\s)#([A-Za-z0-9][A-Za-z0-9/_-]*)/g)) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L84"><a href="#L84">84</a></td>
               <td class="source"><pre>    tags.add(match[1]);</pre></td>
-              <td>Line 84 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L85"><a href="#L85">85</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L86"><a href="#L86">86</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L87"><a href="#L87">87</a></td>
               <td class="source"><pre>  return [...tags].sort();</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them.</td>
             </tr>
             <tr>
               <td class="line-number" id="L89"><a href="#L89">89</a></td>
@@ -524,57 +524,57 @@
             <tr>
               <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre>function extractHeadings(body: string): string[] {</pre></td>
-              <td>Defines extractHeadings, a reusable block of behavior called by other code.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre>  return [...body.matchAll(/^#{1,6}\s+(.+)$/gm)].map((match) =&gt; match[1].trim());</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L93"><a href="#L93">93</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L94"><a href="#L94">94</a></td>
               <td class="source"><pre>function extractWikilinks(body: string): string[] {</pre></td>
-              <td>Defines extractWikilinks, a reusable block of behavior called by other code.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L95"><a href="#L95">95</a></td>
               <td class="source"><pre>  return [...body.matchAll(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]/g)].map((match) =&gt; match[1].trim());</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L96"><a href="#L96">96</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L97"><a href="#L97">97</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L98"><a href="#L98">98</a></td>
               <td class="source"><pre>function extractTasks(body: string): string[] {</pre></td>
-              <td>Defines extractTasks, a reusable block of behavior called by other code.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L99"><a href="#L99">99</a></td>
               <td class="source"><pre>  return [...body.matchAll(/^\s*-\s+\[[ xX/-]\]\s+(.+)$/gm)].map((match) =&gt; match[1].trim());</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body.</td>
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
@@ -584,137 +584,137 @@
             <tr>
               <td class="line-number" id="L102"><a href="#L102">102</a></td>
               <td class="source"><pre>function splitIntoHeadingSections(body: string): Array&lt;{ heading: string | null; text: string }&gt; {</pre></td>
-              <td>Defines splitIntoHeadingSections, a reusable block of behavior called by other code.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L103"><a href="#L103">103</a></td>
               <td class="source"><pre>  const lines = body.split(/\r?\n/);</pre></td>
-              <td>Declares lines, a local value used later in this file.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L104"><a href="#L104">104</a></td>
               <td class="source"><pre>  const sections: Array&lt;{ heading: string | null; lines: string[] }&gt; = [];</pre></td>
-              <td>Declares sections, a local value used later in this file.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L105"><a href="#L105">105</a></td>
               <td class="source"><pre>  let current: { heading: string | null; lines: string[] } = { heading: null, lines: [] };</pre></td>
-              <td>Declares current, a local value used later in this file.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L106"><a href="#L106">106</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L107"><a href="#L107">107</a></td>
               <td class="source"><pre>  for (const line of lines) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L108"><a href="#L108">108</a></td>
               <td class="source"><pre>    const heading = line.match(/^(#{1,6})\s+(.+)$/);</pre></td>
-              <td>Declares heading, a local value used later in this file.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L109"><a href="#L109">109</a></td>
               <td class="source"><pre>    if (heading &amp;&amp; current.lines.length &gt; 0) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L110"><a href="#L110">110</a></td>
               <td class="source"><pre>      sections.push(current);</pre></td>
-              <td>Line 110 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L111"><a href="#L111">111</a></td>
               <td class="source"><pre>      current = { heading: heading[2].trim(), lines: [line] };</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L112"><a href="#L112">112</a></td>
               <td class="source"><pre>    } else {</pre></td>
-              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L113"><a href="#L113">113</a></td>
               <td class="source"><pre>      if (heading) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L114"><a href="#L114">114</a></td>
               <td class="source"><pre>        current.heading = heading[2].trim();</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L115"><a href="#L115">115</a></td>
               <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L116"><a href="#L116">116</a></td>
               <td class="source"><pre>      current.lines.push(line);</pre></td>
-              <td>Line 116 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L117"><a href="#L117">117</a></td>
               <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L118"><a href="#L118">118</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L119"><a href="#L119">119</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L120"><a href="#L120">120</a></td>
               <td class="source"><pre>  if (current.lines.length &gt; 0) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L121"><a href="#L121">121</a></td>
               <td class="source"><pre>    sections.push(current);</pre></td>
-              <td>Line 121 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L122"><a href="#L122">122</a></td>
               <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L123"><a href="#L123">123</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L124"><a href="#L124">124</a></td>
               <td class="source"><pre>  return sections.map((section) =&gt; ({</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L125"><a href="#L125">125</a></td>
               <td class="source"><pre>    heading: section.heading,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L126"><a href="#L126">126</a></td>
               <td class="source"><pre>    text: section.lines.join(&quot;\n&quot;).trim(),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L127"><a href="#L127">127</a></td>
               <td class="source"><pre>  }));</pre></td>
-              <td>Line 127 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L128"><a href="#L128">128</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading.</td>
             </tr>
             <tr>
               <td class="line-number" id="L129"><a href="#L129">129</a></td>
@@ -724,17 +724,17 @@
             <tr>
               <td class="line-number" id="L130"><a href="#L130">130</a></td>
               <td class="source"><pre>function normalizeTag(tag: string): string {</pre></td>
-              <td>Defines normalizeTag, a reusable block of behavior called by other code.</td>
+              <td>This helper trims a tag and removes a leading # so tags from frontmatter and inline text compare the same way.</td>
             </tr>
             <tr>
               <td class="line-number" id="L131"><a href="#L131">131</a></td>
               <td class="source"><pre>  return tag.trim().replace(/^#/, &quot;&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td>This helper trims a tag and removes a leading # so tags from frontmatter and inline text compare the same way.</td>
             </tr>
             <tr>
               <td class="line-number" id="L132"><a href="#L132">132</a></td>
               <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td>This helper trims a tag and removes a leading # so tags from frontmatter and inline text compare the same way.</td>
             </tr></tbody>
         </table>
       </section>

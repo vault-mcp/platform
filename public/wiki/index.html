@@ -199,17 +199,18 @@
   <header>
     <p class="eyebrow">Vault MCP Connector Wiki</p>
     <h1>Read-only Obsidian vault context for AI clients.</h1>
-    <p class="lead">This wiki explains the whole project for a non-programmer first, then drills down into the files. It is intentionally plain: what each file is for, why it exists, how requests move through the system, and what the important lines of code do.</p>
+    <p class="lead">This wiki is meant to teach the project well enough that you could rebuild it yourself. Start with the rebuild tutorial, then use the source appendix when you want exact file lookup.</p>
   </header>
 
   <div class="layout">
     <nav aria-label="Wiki navigation">
       <strong>Contents</strong>
       <a href="#plain-english">Plain-English Overview</a>
+      <a href="#rebuild-tutorial">Rebuild Tutorial</a>
       <a href="#mental-model">Mental Model</a>
       <a href="#request-flow">Request Flow</a>
       <a href="#repo-map">Repository Map</a>
-      <a href="#source-reference">Line-by-Line Reference</a>
+      <a href="#source-reference">Source Appendix</a>
       <a href="#server-files">Server Files</a>
       <a href="#vault-core-files">Vault Core Files</a>
       <a href="#indexer-files">Indexer Files</a>
@@ -246,6 +247,28 @@
             <tr><td>Auth</td><td>Protects the server using OAuth for clients and a separate sync token for admin sync.</td><td><code>apps/server/src/auth.ts</code>, <code>apps/server/src/oauth.ts</code></td></tr>
           </tbody>
         </table>
+      </section>
+
+      <section id="rebuild-tutorial">
+        <h2>Rebuild Tutorial</h2>
+        <div class="callout good">
+          <div>
+            <strong>This is the recommended reading path.</strong>
+            <p>The tutorial explains the connector in build order: data model, source policy, indexer, storage, server routes, MCP tools, OAuth, tests, and deployment. It is written for rebuilding the system, not for inspecting punctuation.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Read this first</h3>
+            <p>Use the tutorial when you want to understand what each part does, why it exists, and how it connects to the rest of the project.</p>
+            <p><a href="/wiki/tutorial.html">Open the rebuild tutorial</a></p>
+          </div>
+          <div class="card">
+            <h3>Use source pages second</h3>
+            <p>The source appendix remains useful when you want exact code lookup, but it is no longer the primary learning path.</p>
+            <p><a href="/wiki/files/">Open the source appendix</a></p>
+          </div>
+        </div>
       </section>
 
       <section id="mental-model">
@@ -323,22 +346,22 @@
       </section>
 
       <section id="source-reference">
-        <h2>Line-by-Line Source Reference</h2>
+        <h2>Source Appendix</h2>
         <div class="callout good">
           <div>
-            <strong>The detailed file reference is generated from the current repository.</strong>
-            <p>Open the source reference when you want exact source lines beside plain-English explanations. The current generated pass covers 50 authored text files and 8,308 lines.</p>
+            <strong>The generated file reference is an appendix, not the tutorial.</strong>
+            <p>Open it when you want exact source lookup beside explanatory notes. The current generated pass covers 51 authored text files and 8,882 lines.</p>
           </div>
         </div>
         <div class="grid two">
           <div class="card">
-            <h3>Use this page first</h3>
-            <p>The conceptual wiki explains the system in normal reading order: what the connector is, how data moves, which files matter, and which generated files should not be hand-edited.</p>
+            <h3>Use the tutorial first</h3>
+            <p>The rebuild tutorial explains the system in normal build order: what the connector is, how data moves, which files matter, and what to recreate first.</p>
           </div>
           <div class="card">
-            <h3>Use the reference for exact lines</h3>
-            <p>The generated source reference has one page per authored file. Each row shows the line number, the exact code or prose, and a plain-English explanation.</p>
-            <p><a href="/wiki/files/">Open the line-by-line source reference</a></p>
+            <h3>Use the appendix for exact source</h3>
+            <p>The generated source appendix has one page per authored file. It is best for lookup after you understand the architecture.</p>
+            <p><a href="/wiki/files/">Open the source appendix</a></p>
           </div>
         </div>
         <h3>Where to start in the reference</h3>

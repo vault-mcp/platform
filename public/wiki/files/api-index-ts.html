@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>api/index.ts</code></h1>
         <p class="lead">Vercel Function entrypoint that creates the configured Express app.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,14 +72,14 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
             <tr>
               <td class="line-number" id="L1"><a href="#L1">1</a></td>
               <td class="source"><pre>import { createConfiguredApp } from &quot;../apps/server/src/bootstrap.js&quot;;</pre></td>
-              <td>Imports code from another module so this file can reuse it.</td>
+              <td>This imports the shared server bootstrapper from the workspace app package so Vercel can create the same Express app used locally.</td>
             </tr>
             <tr>
               <td class="line-number" id="L2"><a href="#L2">2</a></td>
@@ -89,7 +89,7 @@
             <tr>
               <td class="line-number" id="L3"><a href="#L3">3</a></td>
               <td class="source"><pre>const { app } = await createConfiguredApp();</pre></td>
-              <td>Declares a local value used by the surrounding code.</td>
+              <td>This builds the configured Express app at module load time for Vercel's serverless function runtime.</td>
             </tr>
             <tr>
               <td class="line-number" id="L4"><a href="#L4">4</a></td>
@@ -99,7 +99,7 @@
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
               <td class="source"><pre>export default app;</pre></td>
-              <td>Line 5 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>This exports the Express app as the default Vercel Function handler.</td>
             </tr></tbody>
         </table>
       </section>

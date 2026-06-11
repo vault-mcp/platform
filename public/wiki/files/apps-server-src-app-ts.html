@@ -61,7 +61,7 @@
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>apps/server/src/app.ts</code></h1>
         <p class="lead">Express application and HTTP routes for the deployed service.</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -72,7 +72,7 @@
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>
@@ -129,7 +129,7 @@
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
               <td class="source"><pre>const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), &quot;../../../public&quot;);</pre></td>
-              <td>Declares publicDir, a local value used later in this file.</td>
+              <td>This resolves the repository public/ folder from the compiled server file location so static landing/wiki assets can be served.</td>
             </tr>
             <tr>
               <td class="line-number" id="L12"><a href="#L12">12</a></td>
@@ -139,675 +139,680 @@
             <tr>
               <td class="line-number" id="L13"><a href="#L13">13</a></td>
               <td class="source"><pre>export function createApp(config: ServerConfig, store: IndexStore) {</pre></td>
-              <td>Defines createApp, a reusable block of behavior called by other code.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L14"><a href="#L14">14</a></td>
               <td class="source"><pre>  const app = express();</pre></td>
-              <td>Declares app, a local value used later in this file.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L15"><a href="#L15">15</a></td>
               <td class="source"><pre>  const allowedOrigins = uniqueOrigins([...config.allowedOrigins, config.publicBaseUrl]);</pre></td>
-              <td>Declares allowedOrigins, a local value used later in this file.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L16"><a href="#L16">16</a></td>
               <td class="source"><pre>  app.use(applyCors(allowedOrigins));</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L17"><a href="#L17">17</a></td>
               <td class="source"><pre>  app.use(express.json({ limit: &quot;25mb&quot; }));</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L18"><a href="#L18">18</a></td>
               <td class="source"><pre>  app.use(express.urlencoded({ extended: false, limit: &quot;25mb&quot; }));</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L19"><a href="#L19">19</a></td>
               <td class="source"><pre>  app.use(&quot;/assets&quot;, express.static(path.join(publicDir, &quot;assets&quot;), { index: false }));</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
-              <td class="source"><pre>  app.use(&quot;/wiki/files&quot;, express.static(path.join(publicDir, &quot;wiki&quot;, &quot;files&quot;), { index: &quot;index.html&quot; }));</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>  app.use(&quot;/wiki&quot;, express.static(path.join(publicDir, &quot;wiki&quot;), { index: false }));</pre></td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
-              <td class="source"><pre>  app.use((req, _res, next) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>  app.use(&quot;/wiki/files&quot;, express.static(path.join(publicDir, &quot;wiki&quot;, &quot;files&quot;), { index: &quot;index.html&quot; }));</pre></td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L22"><a href="#L22">22</a></td>
-              <td class="source"><pre>    attachOAuthStore(req, store);</pre></td>
-              <td>Line 22 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  app.use((req, _res, next) =&gt; {</pre></td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L23"><a href="#L23">23</a></td>
-              <td class="source"><pre>    next();</pre></td>
-              <td>Line 23 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    attachOAuthStore(req, store);</pre></td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L24"><a href="#L24">24</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    next();</pre></td>
+              <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L25"><a href="#L25">25</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L26"><a href="#L26">26</a></td>
-              <td class="source"><pre>  registerOAuthRoutes(app, config);</pre></td>
-              <td>Line 26 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L27"><a href="#L27">27</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  registerOAuthRoutes(app, config);</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L28"><a href="#L28">28</a></td>
-              <td class="source"><pre>  app.get(&quot;/&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L29"><a href="#L29">29</a></td>
-              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;index.html&quot;));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>  app.get(&quot;/&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L30"><a href="#L30">30</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;index.html&quot;));</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L31"><a href="#L31">31</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L32"><a href="#L32">32</a></td>
-              <td class="source"><pre>  app.get([&quot;/wiki&quot;, &quot;/wiki/&quot;], (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
-              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;wiki&quot;, &quot;index.html&quot;));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>  app.get([&quot;/wiki&quot;, &quot;/wiki/&quot;], (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;wiki&quot;, &quot;index.html&quot;));</pre></td>
+              <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
-              <td class="source"><pre>  app.get(&quot;/healthz&quot;, async (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
-              <td class="source"><pre>    res.json({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>  app.get(&quot;/healthz&quot;, async (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
-              <td class="source"><pre>      ok: true,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    res.json({</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
-              <td class="source"><pre>      ...await store.health(),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      ok: true,</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      ...await store.health(),</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    });</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
-              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource/mcp&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource/mcp&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
+              <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
-              <td class="source"><pre>  app.post(&quot;/admin/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L52"><a href="#L52">52</a></td>
-              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
-              <td>Declares payload, a local value used later in this file.</td>
+              <td class="source"><pre>  app.post(&quot;/admin/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
-              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L55"><a href="#L55">55</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 55 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L56"><a href="#L56">56</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L57"><a href="#L57">57</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    }</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
-              <td class="source"><pre>    await store.replace({</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
-              <td class="source"><pre>      documents: payload.documents,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    await store.replace({</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
-              <td class="source"><pre>      generated_at: payload.generated_at,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      documents: payload.documents,</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L61"><a href="#L61">61</a></td>
-              <td class="source"><pre>      stats: payload.stats,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      generated_at: payload.generated_at,</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      stats: payload.stats,</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L63"><a href="#L63">63</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    });</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L64"><a href="#L64">64</a></td>
-              <td class="source"><pre>    res.json({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre>      ok: true,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    res.json({</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L66"><a href="#L66">66</a></td>
-              <td class="source"><pre>      ...await store.health(),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      ok: true,</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L67"><a href="#L67">67</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      ...await store.health(),</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L68"><a href="#L68">68</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    });</pre></td>
+              <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L69"><a href="#L69">69</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
-              <td class="source"><pre>  app.get(&quot;/notes/:id&quot;, requireUserAuth(config), async (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
-              <td class="source"><pre>    const id = typeof req.params.id === &quot;string&quot; ? req.params.id : &quot;&quot;;</pre></td>
-              <td>Declares id, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
-              <td class="source"><pre>    const document = await store.fetch(id);</pre></td>
-              <td>Declares document, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
-              <td class="source"><pre>    if (!document) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>      res.status(404).json({ error: &quot;not_found&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L75"><a href="#L75">75</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 75 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L77"><a href="#L77">77</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>    res.json(document);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L79"><a href="#L79">79</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>  app.get(&quot;/notes/:id&quot;, requireUserAuth(config), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>    const id = typeof req.params.id === &quot;string&quot; ? req.params.id : &quot;&quot;;</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>    const document = await store.fetch(id);</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>    if (!document) {</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>      res.status(404).json({ error: &quot;not_found&quot; });</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre>    res.json(document);</pre></td>
+              <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>  const handleMcp = async (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Declares handleMcp, a local value used later in this file.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>    try {</pre></td>
-              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+              <td class="source"><pre>  const handleMcp = async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
-              <td class="source"><pre>      await handleStatelessMcpRequest(req, res, store);</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td class="source"><pre>    try {</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L84"><a href="#L84">84</a></td>
-              <td class="source"><pre>    } catch (error) {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre>      await handleStatelessMcpRequest(req, res, store);</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>      console.error(&quot;Error handling MCP request:&quot;, error);</pre></td>
-              <td>Line 85 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    } catch (error) {</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>      if (!res.headersSent) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre>      console.error(&quot;Error handling MCP request:&quot;, error);</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>        res.status(500).json({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>      if (!res.headersSent) {</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>          jsonrpc: &quot;2.0&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>        res.status(500).json({</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L89"><a href="#L89">89</a></td>
-              <td class="source"><pre>          error: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre>          jsonrpc: &quot;2.0&quot;,</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L90"><a href="#L90">90</a></td>
-              <td class="source"><pre>            code: -32603,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>          error: {</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>            message: &quot;Internal server error&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>            code: -32603,</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>          },</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>            message: &quot;Internal server error&quot;,</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre>          id: null,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>          },</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L94"><a href="#L94">94</a></td>
-              <td class="source"><pre>        });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>          id: null,</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>        });</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      }</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
               <td class="source"><pre>  };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L99"><a href="#L99">99</a></td>
-              <td class="source"><pre>  app.post(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), handleMcp);</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This POST /mcp route is the main authenticated JSON-RPC MCP endpoint for tools/list and tools/call requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
-              <td class="source"><pre>  app.get(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre>  app.post(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), handleMcp);</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
-              <td class="source"><pre>    const accept = req.get(&quot;accept&quot;) ?? &quot;&quot;;</pre></td>
-              <td>Declares accept, a local value used later in this file.</td>
+              <td class="source"><pre>  app.get(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (req: Request, res: Response) =&gt; {</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L102"><a href="#L102">102</a></td>
-              <td class="source"><pre>    if (!accept.includes(&quot;text/event-stream&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre>    const accept = req.get(&quot;accept&quot;) ?? &quot;&quot;;</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L103"><a href="#L103">103</a></td>
-              <td class="source"><pre>      res.status(406).json({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    if (!accept.includes(&quot;text/event-stream&quot;)) {</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L104"><a href="#L104">104</a></td>
-              <td class="source"><pre>        jsonrpc: &quot;2.0&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      res.status(406).json({</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L105"><a href="#L105">105</a></td>
-              <td class="source"><pre>        error: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre>        jsonrpc: &quot;2.0&quot;,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>          code: -32000,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>        error: {</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L107"><a href="#L107">107</a></td>
-              <td class="source"><pre>          message: &quot;Not Acceptable: Client must accept text/event-stream.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>          code: -32000,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L108"><a href="#L108">108</a></td>
-              <td class="source"><pre>        },</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>          message: &quot;Not Acceptable: Client must accept text/event-stream.&quot;,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L109"><a href="#L109">109</a></td>
-              <td class="source"><pre>        id: null,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>        },</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L110"><a href="#L110">110</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>        id: null,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L111"><a href="#L111">111</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 111 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      });</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L112"><a href="#L112">112</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L113"><a href="#L113">113</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    }</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L114"><a href="#L114">114</a></td>
-              <td class="source"><pre>    res.status(200).set({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L115"><a href="#L115">115</a></td>
-              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;text/event-stream&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    res.status(200).set({</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L116"><a href="#L116">116</a></td>
-              <td class="source"><pre>      &quot;Cache-Control&quot;: &quot;no-cache, no-transform&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;text/event-stream&quot;,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L117"><a href="#L117">117</a></td>
-              <td class="source"><pre>      &quot;Connection&quot;: &quot;keep-alive&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      &quot;Cache-Control&quot;: &quot;no-cache, no-transform&quot;,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L118"><a href="#L118">118</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      &quot;Connection&quot;: &quot;keep-alive&quot;,</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L119"><a href="#L119">119</a></td>
-              <td class="source"><pre>    res.flushHeaders();</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    });</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L120"><a href="#L120">120</a></td>
-              <td class="source"><pre>    res.write(&quot;: connected\n\n&quot;);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    res.flushHeaders();</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L121"><a href="#L121">121</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    res.write(&quot;: connected\n\n&quot;);</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L122"><a href="#L122">122</a></td>
-              <td class="source"><pre>    const keepAlive = setInterval(() =&gt; {</pre></td>
-              <td>Declares keepAlive, a local value used later in this file.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L123"><a href="#L123">123</a></td>
-              <td class="source"><pre>      res.write(&quot;: keepalive\n\n&quot;);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    const keepAlive = setInterval(() =&gt; {</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L124"><a href="#L124">124</a></td>
-              <td class="source"><pre>    }, 15_000);</pre></td>
-              <td>Line 124 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      res.write(&quot;: keepalive\n\n&quot;);</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L125"><a href="#L125">125</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    }, 15_000);</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L126"><a href="#L126">126</a></td>
-              <td class="source"><pre>    req.on(&quot;close&quot;, () =&gt; {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre> </pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L127"><a href="#L127">127</a></td>
-              <td class="source"><pre>      clearInterval(keepAlive);</pre></td>
-              <td>Line 127 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    req.on(&quot;close&quot;, () =&gt; {</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L128"><a href="#L128">128</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      clearInterval(keepAlive);</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L129"><a href="#L129">129</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    });</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L130"><a href="#L130">130</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L131"><a href="#L131">131</a></td>
-              <td class="source"><pre>  app.delete(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L132"><a href="#L132">132</a></td>
-              <td class="source"><pre>    res.status(405).set(&quot;Allow&quot;, &quot;GET, POST&quot;).json({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre>      jsonrpc: &quot;2.0&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L134"><a href="#L134">134</a></td>
-              <td class="source"><pre>      error: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre>        code: -32000,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>        message: &quot;Method not allowed.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre>      },</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>      id: null,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L139"><a href="#L139">139</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L140"><a href="#L140">140</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>  return app;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>  app.delete(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>}</pre></td>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="source"><pre>    res.status(405).set(&quot;Allow&quot;, &quot;GET, POST&quot;).json({</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>      jsonrpc: &quot;2.0&quot;,</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>      error: {</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>        code: -32000,</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>        message: &quot;Method not allowed.&quot;,</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="source"><pre>      },</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="source"><pre>      id: null,</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
               <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="source"><pre>  return app;</pre></td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L145"><a href="#L145">145</a></td>
-              <td class="source"><pre>function uniqueOrigins(origins: string[]): string[] {</pre></td>
-              <td>Defines uniqueOrigins, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre> </pre></td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>  return [...new Set(origins.map((origin) =&gt; origin.replace(/\/$/, &quot;&quot;)))];</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>function uniqueOrigins(origins: string[]): string[] {</pre></td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>  return [...new Set(origins.map((origin) =&gt; origin.replace(/\/$/, &quot;&quot;)))];</pre></td>
+              <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>

@@ -44,6 +44,7 @@ const authoredFiles = [
   "packages/vault-core/tsconfig.json",
   "public/index.html",
   "public/wiki/index.html",
+  "public/wiki/tutorial.html",
   "README.md",
   "scripts/generate-wiki-reference.mjs",
   "scripts/smoke-local.mjs",
@@ -82,14 +83,84 @@ const sectionSummaries = [
 ];
 
 const curatedDeepDiveFiles = [
+  "api/index.ts",
+  "apps/indexer/src/index.ts",
+  "apps/server/src/app.ts",
+  "apps/server/src/auth.ts",
+  "apps/server/src/bootstrap.ts",
+  "apps/server/src/config.ts",
+  "apps/server/src/index.ts",
   "apps/server/src/mcp.ts",
   "apps/server/src/oauth.ts",
   "apps/server/src/store.ts",
-  "packages/vault-core/src/search.ts",
+  "packages/vault-core/src/hash.ts",
   "packages/vault-core/src/indexer.ts",
+  "packages/vault-core/src/markdown.ts",
+  "packages/vault-core/src/paths.ts",
+  "packages/vault-core/src/redaction.ts",
+  "packages/vault-core/src/search.ts",
+  "packages/vault-core/src/source-policy.ts",
+  "packages/vault-core/src/types.ts",
 ];
 
 const curatedRanges = {
+  "api/index.ts": [
+    [1, 1, "This imports the shared server bootstrapper from the workspace app package so Vercel can create the same Express app used locally."],
+    [3, 3, "This builds the configured Express app at module load time for Vercel's serverless function runtime."],
+    [5, 5, "This exports the Express app as the default Vercel Function handler."],
+  ],
+  "apps/indexer/src/index.ts": [
+    [1, 6, "These imports give the CLI filesystem/path access, command-line parsing, and the shared buildVaultIndex function from vault-core."],
+    [8, 10, "These lines locate the repository root and create the Commander program object that defines the CLI."],
+    [12, 22, "This block defines every command-line option: vault path, vault name, public URL, output path, report path, server URL, and sync token."],
+    [24, 32, "This type assertion tells TypeScript the shape of parsed CLI options so the rest of the file can use named option fields safely."],
+    [34, 39, "This calls buildVaultIndex with the chosen vault settings. At this point scanning, policy checks, redaction, chunking, and metadata creation happen in vault-core."],
+    [41, 45, "If --out was provided, this block writes the generated index JSON to disk, creating parent folders first."],
+    [47, 69, "If --server was provided, this block posts the generated documents, timestamp, and stats to the remote /admin/sync endpoint using the admin sync token."],
+    [71, 75, "This prints a compact JSON summary so a human or automation can see when the index was generated, which vault was scanned, and what the stats were."],
+  ],
+  "apps/server/src/app.ts": [
+    [11, 11, "This resolves the repository public/ folder from the compiled server file location so static landing/wiki assets can be served."],
+    [13, 24, "This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests."],
+    [26, 34, "These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication."],
+    [36, 49, "These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements."],
+    [51, 68, "This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health."],
+    [70, 79, "This private note route requires user auth and fetches a single indexed document by id for citation URLs."],
+    [81, 97, "This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent."],
+    [99, 99, "This POST /mcp route is the main authenticated JSON-RPC MCP endpoint for tools/list and tools/call requests."],
+    [100, 129, "This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives."],
+    [131, 140, "This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods."],
+    [142, 147, "These final lines return the configured app and de-duplicate origins after trimming trailing slashes."],
+  ],
+  "apps/server/src/auth.ts": [
+    [5, 11, "This list defines the request headers browser clients may send during CORS preflight, including MCP protocol/session headers."],
+    [13, 25, "This middleware protects admin sync with a static bearer token and returns 401 when the token is absent or wrong."],
+    [27, 49, "This middleware protects user-facing vault routes. It accepts either the temporary static access token or a valid OAuth token, otherwise it sends a protected-resource challenge."],
+    [51, 59, "This builds OAuth protected-resource metadata so clients know the MCP resource URL, authorization server, scopes, bearer method, and documentation URL."],
+    [61, 76, "This middleware checks Origin only when an Origin header exists, allowing server-to-server MCP calls while rejecting forbidden browser origins."],
+    [78, 104, "This CORS middleware handles browser preflight: reject unknown origins, set allow/expose headers, update Vary, and return 204 for OPTIONS."],
+    [106, 123, "These helpers parse bearer tokens, check origin membership, and append Origin to the Vary header without duplicating it."],
+    [126, 144, "This verifies OAuth access tokens. It uses the local HMAC secret for the self-hosted OAuth mode or a remote JWKS URL for external providers."],
+    [146, 157, "This sends an OAuth-style 401 challenge with a WWW-Authenticate header pointing clients to protected-resource metadata."],
+  ],
+  "apps/server/src/bootstrap.ts": [
+    [1, 3, "These imports bring together config loading, the two storage implementations, and Express app creation."],
+    [5, 17, "This function loads runtime config, chooses Postgres when DATABASE_URL exists or JSON storage otherwise, loads existing data if available, and returns app/config/store together."],
+  ],
+  "apps/server/src/config.ts": [
+    [4, 15, "This type describes the full runtime configuration the server needs: host, port, URLs, storage, auth tokens, origins, and OAuth settings."],
+    [17, 25, "This type describes OAuth resource-server settings: issuer, audience, authorization server, JWKS or HMAC secret, owner password, and scopes."],
+    [27, 39, "This begins config loading, reads static/OAuth auth inputs, and fails fast unless user auth and sync auth are both configured."],
+    [40, 45, "This resolves the repository root, chooses the local index file, and normalizes the public base URL by removing a trailing slash."],
+    [46, 64, "This returns the complete ServerConfig object, including derived /mcp resource URL, database URL, allowed origins, and OAuth config."],
+    [66, 68, "This helper de-duplicates allowed origins after normalizing trailing slashes."],
+    [70, 98, "This reads OAuth env vars, detects when OAuth is absent, validates required OAuth pieces when present, and returns normalized scopes."],
+  ],
+  "apps/server/src/index.ts": [
+    [1, 2, "The shebang and import make this file the Node CLI entrypoint for running the server outside Vercel."],
+    [4, 8, "This creates the configured app and starts listening on the configured host/port, then logs the local URL."],
+    [10, 17, "This handles SIGINT and SIGTERM by closing the HTTP server, closing the store if needed, and then exiting cleanly."],
+  ],
   "apps/server/src/mcp.ts": [
     [7, 12, "This line is part of the instruction text sent to MCP clients. It tells the client the server is read-only, the vault text is untrusted context, and guessed paths should not work."],
     [14, 23, "This line belongs to the note-summary output schema, the small shape used by list-style tools when they return note cards instead of full note text."],
@@ -196,6 +267,56 @@ const curatedRanges = {
     [420, 445, "These low-level helpers compute PKCE challenges, encode the JWT secret, compare passwords safely, and escape HTML in the authorization form."],
     [447, 464, "These error helpers turn expected OAuth failures into JSON errors and unexpected failures into server_error responses."],
   ],
+  "packages/vault-core/src/hash.ts": [
+    [1, 1, "This imports Node's crypto hash function so the indexer can create content hashes and stable ids."],
+    [3, 5, "This returns a full SHA-256 hex digest for text, used as a content hash for indexed note text."],
+    [7, 9, "This creates a shorter stable id by hashing a deterministic string and keeping the first 24 hex characters."],
+  ],
+  "packages/vault-core/src/markdown.ts": [
+    [4, 13, "This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks."],
+    [15, 33, "This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object."],
+    [35, 54, "This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks."],
+    [56, 63, "This helper chooses the note title from the first H1 heading when available, otherwise it falls back to the file name."],
+    [65, 88, "This helper collects tags from frontmatter arrays, frontmatter strings, and inline #tags, normalizes them, de-duplicates them, and sorts them."],
+    [90, 100, "These helpers extract headings, Obsidian wikilink targets, and Markdown task text from the note body."],
+    [102, 128, "This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading."],
+    [130, 132, "This helper trims a tag and removes a leading # so tags from frontmatter and inline text compare the same way."],
+  ],
+  "packages/vault-core/src/paths.ts": [
+    [1, 1, "This imports Node path helpers so filesystem paths can be converted into vault-style paths."],
+    [3, 5, "This converts OS-specific path separators into forward slashes, matching Obsidian vault path style."],
+    [7, 9, "This converts an absolute file path into a vault-relative path suitable for policy checks and metadata."],
+    [11, 13, "This builds an obsidian://open URI that can open the source note in the named Obsidian vault."],
+    [15, 17, "This builds the private /notes/:id citation URL served by the hosted connector."],
+  ],
+  "packages/vault-core/src/redaction.ts": [
+    [1, 5, "This type describes redaction output: the redacted text, total replacement count, and counts per pattern."],
+    [7, 28, "This list defines credential-like patterns removed before indexing, including private keys, bearer tokens, env secrets, password fields, and SSH public keys."],
+    [30, 46, "This function applies every sensitive pattern, replaces matches with [REDACTED:name], counts replacements by pattern, and returns the redacted note text."],
+  ],
+  "packages/vault-core/src/source-policy.ts": [
+    [3, 14, "These path prefixes are denied before content is indexed, covering credentials, daily notes, finance, identity, legal, vehicles, faith, and archives."],
+    [16, 18, "This exact-path denylist blocks individual sensitive or review-gated files that should never enter V1."],
+    [20, 30, "These tag fragments deny notes marked sensitive, credential-related, financial, legal, identity, review, or Excalidraw."],
+    [32, 55, "These exact and prefix allowlists define which selected reference notes are eligible for V1 indexing."],
+    [57, 60, "The policy first rejects non-Markdown inputs; only Markdown notes can become indexed documents."],
+    [62, 69, "These checks reject exact denied paths and denied prefixes before considering any allow rules."],
+    [71, 78, "These checks reject notes with sensitive tags or review/sensitive statuses."],
+    [80, 90, "These checks allow the Task Hub and active project home notes, while denying inactive project homes."],
+    [92, 100, "These final checks allow selected references, explicitly deny unselected 40 Reference notes, and deny everything else by default."],
+    [103, 113, "These helpers build allow/deny decision objects and normalize tags for case-insensitive tag checks."],
+  ],
+  "packages/vault-core/src/types.ts": [
+    [1, 11, "These types describe source-policy decisions and the policy metadata stored on every indexed document."],
+    [13, 24, "This metadata type records where an indexed chunk came from: path, heading, note title, chunk index, tags, status, timestamp, content hash, Obsidian URI, and policy evidence."],
+    [26, 33, "This type is the core indexed document shape: stable id, title, text, private citation URL, optional Obsidian URI, and metadata."],
+    [35, 54, "This type describes one search result returned to clients, including snippets, score, match reasons, expanded terms, and source metadata."],
+    [56, 60, "These small response aliases define search responses and fetch responses."],
+    [62, 85, "These types define note-summary list results and pagination options for list-style tools."],
+    [87, 97, "These types define search modes and search filter options."],
+    [99, 117, "These types define safe index-status and debug-search responses."],
+    [119, 139, "These types define indexing stats, the full generated vault index, and the payload accepted by /admin/sync."],
+  ],
 };
 
 await fs.rm(outputRoot, { recursive: true, force: true });
@@ -262,25 +383,25 @@ async function writeIndexPage(records) {
   }).join("");
 
   const html = pageShell({
-    title: "Line-by-Line Source Reference",
+    title: "Source Appendix",
     body: `
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
-        <h1>Line-by-line source reference.</h1>
-        <p class="lead">This section is generated from the current repository. It covers ${records.length} authored text files and ${totalLines.toLocaleString()} lines with plain-English explanations next to the exact source line.</p>
-        <p><a href="/wiki/">Back to the conceptual wiki</a></p>
+        <h1>Source appendix.</h1>
+        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers ${records.length} authored text files and ${totalLines.toLocaleString()} lines with explanatory notes beside source lines.</p>
+        <p><a href="/wiki/tutorial.html">Start with the rebuild tutorial</a> · <a href="/wiki/">Back to the wiki home</a></p>
       </section>
 
       <section>
-        <h2>How to use this reference</h2>
+        <h2>How to use this appendix</h2>
         <div class="grid two">
           <div class="card">
-            <h3>Start with the concept page</h3>
-            <p>The main wiki explains the system as a story. Use this source reference when you want to inspect a specific file or line.</p>
+            <h3>Read the tutorial first</h3>
+            <p>The rebuild tutorial explains the system in build order. Use this appendix when you want to inspect a specific file after that.</p>
           </div>
           <div class="card">
-            <h3>Read source and explanation together</h3>
-            <p>Each row has the line number, the exact code, and a plain-English note explaining why that line exists.</p>
+            <h3>Look up exact source</h3>
+            <p>Each row has the line number, exact source, and an explanatory note. Closing brackets and punctuation are included for complete source lookup, not because they are the best learning path.</p>
           </div>
         </div>
       </section>
@@ -336,7 +457,7 @@ async function writeFilePage(file) {
         <p class="eyebrow">Line-by-line file reference</p>
         <h1><code>${escapeHtml(file.path)}</code></h1>
         <p class="lead">${escapeHtml(file.summary)}</p>
-        <p><a href="index.html">Back to source reference index</a> · <a href="/wiki/">Back to main wiki</a></p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
       </section>
 
       <section>
@@ -347,7 +468,7 @@ async function writeFilePage(file) {
       </section>
 
       <section>
-        <h2>Every line explained</h2>
+        <h2>Source with explanatory notes</h2>
         <table class="line-table">
           <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
           <tbody>${rows}</tbody>
