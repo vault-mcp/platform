@@ -323,15 +323,15 @@ export class PostgresIndexStore implements IndexStore {
         primary key (tenant_id, vault_id, id)
       );
 
-      create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);
-      create index if not exists vault_documents_path_idx on vault_documents ((metadata->>'path'));
-      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);
-
       alter table vault_documents add column if not exists tenant_id text not null default 'default';
       alter table vault_documents add column if not exists vault_id text not null default 'default';
       alter table vault_documents add column if not exists installation_id text not null default 'local';
       alter table vault_documents drop constraint if exists vault_documents_pkey;
       alter table vault_documents add primary key (tenant_id, vault_id, id);
+
+      create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);
+      create index if not exists vault_documents_path_idx on vault_documents ((metadata->>'path'));
+      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);
 
       create table if not exists oauth_token_uses (
         jti text not null,
