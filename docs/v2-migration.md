@@ -27,8 +27,9 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 
 - Renamed `packages/vault-core` to `packages/core`.
 - Renamed `apps/indexer` to `apps/cli`.
-- Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, and a review queue view.
+- Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, one-click review approvals, and a review queue view.
 - Added `scripts/install-obsidian-plugin.mjs` and `npm run plugin:install-copy` for installing the built plugin into the copied development vault.
+- Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.
 - Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.
 - Added configurable index modes:
   - `rules_plus_approvals`

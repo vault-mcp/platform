@@ -25,6 +25,21 @@ type VaultMcpPluginSettings = {
   syncIntervalMinutes: number;
 };
 
+type SyncHistoryEntry = {
+  type: "preview" | "sync" | "approval" | "proposal-check" | "error";
+  message: string;
+  createdAt: string;
+  scanned?: number;
+  indexed?: number;
+  denied?: number;
+  reviewRequired?: number;
+  redacted?: number;
+};
+
+type VaultMcpPluginData = Partial<VaultMcpPluginSettings> & {
+  syncHistory?: SyncHistoryEntry[];
+};
+
 type SyncSummary = {
   scanned: number;
   indexed: number;
@@ -95,6 +110,7 @@ export default class VaultMcpPlugin extends Plugin {
   settings: VaultMcpPluginSettings = DEFAULT_SETTINGS;
   summary: SyncSummary = DEFAULT_SUMMARY;
   indexPreview: IndexPreview | null = null;
+  syncHistory: SyncHistoryEntry[] = [];
 
   async onload() {
     await this.loadSettings();
@@ -136,7 +152,7 @@ export default class VaultMcpPlugin extends Plugin {
   }
 
   async loadSettings() {
-    const saved = await this.loadData() as Partial<VaultMcpPluginSettings> | null;
+    const saved = await this.loadData() as VaultMcpPluginData | null;
     this.settings = {
       ...DEFAULT_SETTINGS,
       ...saved,
@@ -145,10 +161,14 @@ export default class VaultMcpPlugin extends Plugin {
       manualAllowPaths: saved?.manualAllowPaths ?? DEFAULT_SETTINGS.manualAllowPaths,
       manualAllowPrefixes: saved?.manualAllowPrefixes ?? DEFAULT_SETTINGS.manualAllowPrefixes,
     };
+    this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
 
   async saveSettings() {
-    await this.saveData(this.settings);
+    await this.saveData({
+      ...this.settings,
+      syncHistory: this.syncHistory.slice(0, 20),
+    });
   }
 
   async syncNow() {
@@ -183,10 +203,20 @@ export default class VaultMcpPlugin extends Plugin {
         lastError: null,
       };
       this.indexPreview = null;
+      await this.addHistory({
+        type: "sync",
+        message: `Synced ${payload.documents.length} document chunk${payload.documents.length === 1 ? "" : "s"}.`,
+        scanned: this.summary.scanned,
+        indexed: this.summary.indexed,
+        denied: this.summary.denied,
+        reviewRequired: this.summary.reviewRequired,
+        redacted: this.summary.redacted,
+      });
       new Notice(`Vault MCP synced ${payload.documents.length} approved document chunk${payload.documents.length === 1 ? "" : "s"}.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.summary = { ...this.summary, lastError: message };
+      await this.addHistory({ type: "error", message: `Sync failed: ${message}` });
       new Notice(`Vault MCP sync failed: ${message}`);
     }
   }
@@ -204,10 +234,19 @@ export default class VaultMcpPlugin extends Plugin {
         generatedAt: preview.generatedAt,
         lastError: null,
       };
+      await this.addHistory({
+        type: "preview",
+        message: `Previewed ${preview.scanned} note${preview.scanned === 1 ? "" : "s"}.`,
+        scanned: preview.scanned,
+        denied: preview.denied,
+        reviewRequired: preview.reviewRequired,
+        redacted: preview.redacted,
+      });
       new VaultMcpIndexPreviewModal(this.app, this, preview).open();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.summary = { ...this.summary, lastError: message };
+      await this.addHistory({ type: "error", message: `Preview failed: ${message}` });
       new Notice(`Vault MCP preview failed: ${message}`);
     }
   }
@@ -240,10 +279,32 @@ export default class VaultMcpPlugin extends Plugin {
         throw new Error(`Request failed with ${response.status}: ${response.text}`);
       }
       const parsed = JSON.parse(response.text) as { proposals?: unknown[] };
+      await this.addHistory({ type: "proposal-check", message: `Checked write proposals: ${parsed.proposals?.length ?? 0} found.` });
       new Notice(`Vault MCP has ${parsed.proposals?.length ?? 0} write proposal${parsed.proposals?.length === 1 ? "" : "s"} pending or recorded.`);
     } catch (error) {
+      await this.addHistory({ type: "error", message: `Proposal check failed: ${error instanceof Error ? error.message : String(error)}` });
       new Notice(`Vault MCP proposal check failed: ${error instanceof Error ? error.message : String(error)}`);
     }
+  }
+
+  async approveManualPath(path: string) {
+    if (!this.settings.manualAllowPaths.includes(path)) {
+      this.settings.manualAllowPaths = [...this.settings.manualAllowPaths, path].sort();
+    }
+    this.indexPreview = null;
+    await this.addHistory({ type: "approval", message: `Approved exact path: ${path}` });
+    await this.saveSettings();
+    new Notice(`Vault MCP approved exact path: ${path}`);
+  }
+
+  async approveManualPrefix(prefix: string) {
+    if (!this.settings.manualAllowPrefixes.includes(prefix)) {
+      this.settings.manualAllowPrefixes = [...this.settings.manualAllowPrefixes, prefix].sort();
+    }
+    this.indexPreview = null;
+    await this.addHistory({ type: "approval", message: `Approved prefix: ${prefix}` });
+    await this.saveSettings();
+    new Notice(`Vault MCP approved prefix: ${prefix}`);
   }
 
   private async buildIndexPreview(): Promise<IndexPreview> {
@@ -410,6 +471,14 @@ export default class VaultMcpPlugin extends Plugin {
       return { decision: "deny", reason: `Denied by excluded prefix: ${prefix}`, matchedRule: `exclude:${prefix}` };
     }
 
+    if (this.settings.manualAllowPaths.includes(path)) {
+      return { decision: "allow", reason: "Allowed by exact manual approval.", matchedRule: `manual-path:${path}` };
+    }
+    const manualPrefix = this.settings.manualAllowPrefixes.find((candidate) => path.startsWith(candidate));
+    if (manualPrefix) {
+      return { decision: "allow", reason: `Allowed by manual approval prefix: ${manualPrefix}`, matchedRule: `manual-prefix:${manualPrefix}` };
+    }
+
     const sensitive = tags.some((tag) => /sensitive|credential|finance|legal|identity|review/i.test(tag))
       || ["review", "needs-review", "sensitive"].includes((status ?? "").toLowerCase());
     if (sensitive) {
@@ -438,6 +507,11 @@ export default class VaultMcpPlugin extends Plugin {
 
   private serverBaseUrl(): string {
     return this.settings.serverUrl.replace(/\/$/, "");
+  }
+
+  private async addHistory(entry: Omit<SyncHistoryEntry, "createdAt">) {
+    this.syncHistory = [{ ...entry, createdAt: new Date().toISOString() }, ...this.syncHistory].slice(0, 20);
+    await this.saveSettings();
   }
 }
 
@@ -479,6 +553,7 @@ class VaultMcpDashboardModal extends Modal {
       .addButton((button) => button
         .setButtonText("Check write proposals")
         .onClick(() => void this.plugin.checkWriteProposals()));
+    addHistorySection(contentEl, this.plugin.syncHistory);
   }
 }
 
@@ -512,8 +587,11 @@ class VaultMcpIndexPreviewModal extends Modal {
         .setCta()
         .onClick(() => void this.plugin.syncNow()));
 
-    addPreviewSection(contentEl, "Needs review", this.preview.items.filter((item) => item.decision === "review"), true);
+    addReviewSection(contentEl, this.plugin, this.preview.items.filter((item) => item.decision === "review"));
     addPreviewSection(contentEl, "Allowed", this.preview.items.filter((item) => item.decision === "allow"), false);
+    if (this.plugin.settings.indexMode === "manual_only") {
+      addManualApprovalSection(contentEl, this.plugin, this.preview.items.filter((item) => item.matchedRule === "manual-only:missing-allow"));
+    }
     addPreviewSection(contentEl, "Denied", this.preview.items.filter((item) => item.decision === "deny"), false);
   }
 }
@@ -536,19 +614,19 @@ class VaultMcpReviewQueueModal extends Modal {
 
     new Setting(contentEl)
       .addButton((button) => button
-        .setButtonText("Open settings")
-        .setCta()
+        .setButtonText("Refresh preview")
         .onClick(() => {
           this.close();
-          const setting = (this.app as App & { setting: { open(): void; openTabById(id: string): void } }).setting;
-          setting.open();
-          setting.openTabById(this.plugin.manifest.id);
+          void this.plugin.openIndexPreview();
         }))
       .addButton((button) => button
-        .setButtonText("Refresh preview")
-        .onClick(() => void this.plugin.openIndexPreview()));
+        .setButtonText("Open settings")
+        .onClick(() => {
+          this.close();
+          openPluginSettings(this.app, this.plugin);
+        }));
 
-    addPreviewSection(contentEl, "Review required", queue, true);
+    addReviewSection(contentEl, this.plugin, queue);
   }
 }
 
@@ -682,6 +760,106 @@ function addPreviewSection(parent: HTMLElement, title: string, items: IndexPrevi
   }
 }
 
+function addReviewSection(parent: HTMLElement, plugin: VaultMcpPlugin, items: IndexPreviewItem[]) {
+  const details = parent.createEl("details", { cls: "vault-mcp-preview-section" });
+  details.open = true;
+  details.createEl("summary", { text: `Needs review (${items.length})` });
+  if (items.length === 0) {
+    details.createEl("p", { cls: "vault-mcp-muted", text: "No notes are waiting for review." });
+    return;
+  }
+
+  const list = details.createDiv({ cls: "vault-mcp-preview-list" });
+  for (const item of items) {
+    const card = list.createDiv({ cls: "vault-mcp-preview-card vault-mcp-preview-card--review" });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: item.title });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--review", text: "review" });
+    card.createDiv({ cls: "vault-mcp-preview-card__path", text: item.path });
+    const meta = card.createDiv({ cls: "vault-mcp-preview-card__meta" });
+    meta.createSpan({ text: `rule: ${item.matchedRule}` });
+    meta.createSpan({ text: `updated: ${formatDate(item.updatedAt)}` });
+    if (item.status) {
+      meta.createSpan({ text: `status: ${item.status}` });
+    }
+    if (item.tags.length > 0) {
+      const tags = card.createDiv({ cls: "vault-mcp-preview-card__tags" });
+      for (const tag of item.tags.slice(0, 12)) {
+        tags.createSpan({ cls: "vault-mcp-tag", text: `#${tag}` });
+      }
+      if (item.tags.length > 12) {
+        tags.createSpan({ cls: "vault-mcp-tag", text: `+${item.tags.length - 12}` });
+      }
+    }
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: item.reason });
+    const actions = card.createDiv({ cls: "vault-mcp-preview-card__actions" });
+    new Setting(actions)
+      .addButton((button) => button
+        .setButtonText("Approve exact path")
+        .setCta()
+        .onClick(() => void plugin.approveManualPath(item.path)))
+      .addButton((button) => button
+        .setButtonText(`Approve folder: ${parentPrefix(item.path)}`)
+        .onClick(() => void plugin.approveManualPrefix(parentPrefix(item.path))));
+  }
+}
+
+function addManualApprovalSection(parent: HTMLElement, plugin: VaultMcpPlugin, items: IndexPreviewItem[]) {
+  const details = parent.createEl("details", { cls: "vault-mcp-preview-section" });
+  details.open = items.length > 0;
+  details.createEl("summary", { text: `Manual approval candidates (${items.length})` });
+  details.createEl("p", {
+    cls: "vault-mcp-muted",
+    text: "These notes are denied only because manual-only mode requires an explicit path or prefix approval.",
+  });
+  if (items.length === 0) {
+    return;
+  }
+  const list = details.createDiv({ cls: "vault-mcp-preview-list" });
+  for (const item of items) {
+    const card = list.createDiv({ cls: "vault-mcp-preview-card" });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: item.title });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--deny", text: "manual" });
+    card.createDiv({ cls: "vault-mcp-preview-card__path", text: item.path });
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: item.reason });
+    const actions = card.createDiv({ cls: "vault-mcp-preview-card__actions" });
+    new Setting(actions)
+      .addButton((button) => button
+        .setButtonText("Approve exact path")
+        .setCta()
+        .onClick(() => void plugin.approveManualPath(item.path)))
+      .addButton((button) => button
+        .setButtonText(`Approve folder: ${parentPrefix(item.path)}`)
+        .onClick(() => void plugin.approveManualPrefix(parentPrefix(item.path))));
+  }
+}
+
+function addHistorySection(parent: HTMLElement, history: SyncHistoryEntry[]) {
+  const details = parent.createEl("details", { cls: "vault-mcp-preview-section vault-mcp-history" });
+  details.open = history.length > 0;
+  details.createEl("summary", { text: `Recent activity (${history.length})` });
+  if (history.length === 0) {
+    details.createEl("p", { cls: "vault-mcp-muted", text: "No plugin activity has been recorded yet." });
+    return;
+  }
+  const list = details.createDiv({ cls: "vault-mcp-history-list" });
+  for (const entry of history.slice(0, 8)) {
+    const row = list.createDiv({ cls: "vault-mcp-history-row" });
+    row.createDiv({ cls: `vault-mcp-chip vault-mcp-chip--${historyTone(entry.type)}`, text: entry.type });
+    const body = row.createDiv({ cls: "vault-mcp-history-row__body" });
+    body.createDiv({ cls: "vault-mcp-history-row__message", text: entry.message });
+    const metrics = [
+      entry.scanned === undefined ? null : `scanned ${entry.scanned}`,
+      entry.indexed === undefined ? null : `indexed ${entry.indexed}`,
+      entry.denied === undefined ? null : `denied ${entry.denied}`,
+      entry.reviewRequired === undefined ? null : `review ${entry.reviewRequired}`,
+      entry.redacted === undefined ? null : `redacted ${entry.redacted}`,
+    ].filter((value): value is string => Boolean(value));
+    body.createDiv({ cls: "vault-mcp-history-row__meta", text: [formatDate(entry.createdAt), ...metrics].join(" · ") });
+  }
+}
+
 function addListSetting(containerEl: HTMLElement, name: string, desc: string, value: string[], onSave: (values: string[]) => Promise<void>) {
   new Setting(containerEl)
     .setName(name)
@@ -693,6 +871,27 @@ function addListSetting(containerEl: HTMLElement, name: string, desc: string, va
           await onSave(next.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
         });
     });
+}
+
+function openPluginSettings(app: App, plugin: VaultMcpPlugin) {
+  const setting = (app as App & { setting: { open(): void; openTabById(id: string): void } }).setting;
+  setting.open();
+  setting.openTabById(plugin.manifest.id);
+}
+
+function parentPrefix(path: string): string {
+  const index = path.lastIndexOf("/");
+  return index === -1 ? path : path.slice(0, index + 1);
+}
+
+function historyTone(type: SyncHistoryEntry["type"]): "allow" | "deny" | "review" {
+  if (type === "error") {
+    return "deny";
+  }
+  if (type === "approval" || type === "sync") {
+    return "allow";
+  }
+  return "review";
 }
 
 function decisionSort(decision: IndexDecision): number {

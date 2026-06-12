@@ -76,6 +76,21 @@ describe("evaluateSourcePolicy", () => {
     expect(unapproved.matchedRule).toBe("manual-approval-required");
   });
 
+  it("lets manual approvals override sensitive metadata but not denied paths", () => {
+    const policy = {
+      ...defaultIndexPolicy("rules_plus_approvals"),
+      manual_allow_paths: ["40 Reference/JavaScript/Sensitive Token Notes.md", "02 Daily/2026-06-07.md"],
+    };
+
+    const sensitiveApproved = evaluateSourcePolicy("40 Reference/JavaScript/Sensitive Token Notes.md", ["sensitive"], "active", policy);
+    expect(sensitiveApproved.allowed).toBe(true);
+    expect(sensitiveApproved.matchedRule).toBe("manual-approval");
+
+    const deniedPath = evaluateSourcePolicy("02 Daily/2026-06-07.md", ["type/daily"], "active", policy);
+    expect(deniedPath.allowed).toBe(false);
+    expect(deniedPath.matchedRule).toBe("deny-prefix");
+  });
+
   it("routes review rules to the approval queue in rules-plus-approvals mode", () => {
     const policy = {
       ...defaultIndexPolicy("rules_plus_approvals"),

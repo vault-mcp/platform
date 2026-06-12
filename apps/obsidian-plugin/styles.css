@@ -54,6 +54,10 @@
   padding: 10px;
 }
 
+.vault-mcp-preview-card--review {
+  border-color: rgba(var(--color-orange-rgb), 0.45);
+}
+
 .vault-mcp-preview-card__header {
   align-items: center;
   display: flex;
@@ -75,7 +79,8 @@
 }
 
 .vault-mcp-preview-card__meta,
-.vault-mcp-preview-card__tags {
+.vault-mcp-preview-card__tags,
+.vault-mcp-preview-card__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -109,4 +114,35 @@
 
 .vault-mcp-chip--deny {
   background: rgba(var(--color-red-rgb), 0.16);
+}
+
+.vault-mcp-history-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.vault-mcp-history-row {
+  align-items: flex-start;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.vault-mcp-history-row__body {
+  min-width: 0;
+}
+
+.vault-mcp-history-row__message {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.vault-mcp-history-row__meta {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
 }

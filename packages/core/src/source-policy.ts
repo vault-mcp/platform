@@ -130,9 +130,17 @@ export function evaluateSourcePolicy(relativePath: string, tags: string[], statu
     return deny("non-markdown", "Only Markdown notes are indexed.");
   }
 
-  const denyRule = policy.rules.find((rule) => rule.action === "deny" && ruleMatches(rule, relativePath, tags, status));
+  const denyRule = policy.rules.find((rule) =>
+    rule.action === "deny"
+    && (rule.kind === "path_exact" || rule.kind === "path_prefix")
+    && ruleMatches(rule, relativePath, tags, status)
+  );
   if (denyRule) {
     return deny(normalizeRuleId(denyRule), denyRule.reason);
+  }
+
+  if (isManuallyAllowed(relativePath, policy)) {
+    return allow("manual-approval", "Allowed by explicit manual approval.");
   }
 
   if (status && ["review", "needs-review", "sensitive"].includes(status.toLowerCase())) {
@@ -141,6 +149,15 @@ export function evaluateSourcePolicy(relativePath: string, tags: string[], statu
 
   if (policy.mode === "manual_only" && !isManuallyAllowed(relativePath, policy)) {
     return deny("manual-approval-required", "Manual indexing mode requires this path or prefix to be approved before indexing.");
+  }
+
+  const denyTagRule = policy.rules.find((rule) =>
+    rule.action === "deny"
+    && rule.kind === "tag"
+    && ruleMatches(rule, relativePath, tags, status)
+  );
+  if (denyTagRule) {
+    return deny(normalizeRuleId(denyTagRule), denyTagRule.reason);
   }
 
   const reviewRule = policy.mode === "rules_plus_approvals"

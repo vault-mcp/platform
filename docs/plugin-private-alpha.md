@@ -8,6 +8,8 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Lets the user configure the remote Vault MCP server URL, sync token, vault id, index mode, write mode, include rules, exclude rules, and manual allow rules.
 - Previews index decisions before sync.
 - Shows why each note is allowed, denied, or held for review.
+- Lets the user approve a review-required note by exact path or approve its parent folder as a prefix.
+- Keeps a short local activity history for previews, syncs, approvals, proposal checks, and errors.
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
 - Checks server-side write proposals, but does not apply writes yet.
 
@@ -73,13 +75,20 @@ The preview shows:
 - matched rule
 - path, status, tags, updated time, and approximate note size
 
-Use `Review queue` to inspect notes that matched sensitive metadata. For this slice, approval is done by adding exact paths or prefixes in settings. One-click approval controls are still a next step.
+Use `Review queue` to inspect notes that matched sensitive metadata.
+
+Approval options:
+
+- `Approve exact path` adds only that note to manual allow paths.
+- `Approve folder` adds the note's parent folder to manual allow prefixes.
+
+In `manual_only` mode, the preview also shows manual approval candidates for notes that are denied only because they do not have an explicit path or prefix approval yet.
+
+Exclusions still win. If a note lives under an excluded prefix, approving it manually will not sync it until the exclusion is changed.
 
 ## Current Publishability Gaps
 
 - The plugin is not packaged for the Obsidian community plugin process.
-- There is no one-click approval button in the review queue yet.
 - Write proposals can be listed from the server, but cannot be approved, rejected, or applied in Obsidian yet.
 - Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
 - The installer is a local development script, not a release artifact.
-
