@@ -10,7 +10,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@vault-mcp/vault-core": "0.1.0"
+    "@vault-mcp/core": "0.1.0"
   },
   "devDependencies": {
     "tsx": "^4.21.0"

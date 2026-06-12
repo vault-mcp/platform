@@ -10,13 +10,21 @@ import type {
   NoteSummary,
   SearchOptions,
   SearchResponse,
+  SyncManifest,
   SyncPayload,
+  VaultStatus,
   VaultDocument,
   VaultIndex,
-} from "@vault-mcp/vault-core";
+  VaultSummary,
+  WriteProposal,
+  WriteProposalStatus,
+} from "@vault-mcp/core";
 import {
   activeProjects,
   debugSearch,
+  DEFAULT_INSTALLATION_ID,
+  DEFAULT_TENANT_ID,
+  DEFAULT_VAULT_ID,
   fetchDocument,
   fetchDocumentByPath,
   getIndexStatus,
@@ -26,7 +34,7 @@ import {
   searchNotes,
   searchSections,
   searchVault,
-} from "@vault-mcp/vault-core";
+} from "@vault-mcp/core";
 
 export type IndexHealth = {
   document_count: number;
@@ -45,19 +53,25 @@ export type StoredOAuthClient = {
 export interface IndexStore {
   load?(): Promise<void>;
   close?(): Promise<void>;
+  registerVault(manifest: SyncManifest): Promise<void>;
   replace(payload: SyncPayload): Promise<void>;
   health(): IndexHealth | Promise<IndexHealth>;
   search(query: string, limit?: number, scope?: string): SearchResponse | Promise<SearchResponse>;
   searchNotes(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
   searchSections(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
   searchVault(options: SearchOptions): SearchResponse | Promise<SearchResponse>;
-  fetch(id: string): VaultDocument | null | Promise<VaultDocument | null>;
-  fetchByPath(path: string): VaultDocument | null | Promise<VaultDocument | null>;
+  fetch(id: string, vaultId?: string): VaultDocument | null | Promise<VaultDocument | null>;
+  fetchByPath(path: string, vaultId?: string): VaultDocument | null | Promise<VaultDocument | null>;
   listNotes(options: ListNotesOptions): ListNotesResponse | Promise<ListNotesResponse>;
-  recentNotes(scope?: string, limit?: number): { notes: NoteSummary[] } | Promise<{ notes: NoteSummary[] }>;
-  activeProjects(limit?: number, cursor?: string): ListNotesResponse | Promise<ListNotesResponse>;
-  indexStatus(): IndexStatusResponse | Promise<IndexStatusResponse>;
-  debugSearch(query: string, scope?: string): DebugSearchResponse | Promise<DebugSearchResponse>;
+  recentNotes(scope?: string, limit?: number, vaultId?: string): { notes: NoteSummary[] } | Promise<{ notes: NoteSummary[] }>;
+  activeProjects(limit?: number, cursor?: string, vaultId?: string): ListNotesResponse | Promise<ListNotesResponse>;
+  indexStatus(vaultId?: string): IndexStatusResponse | Promise<IndexStatusResponse>;
+  debugSearch(query: string, scope?: string, vaultId?: string): DebugSearchResponse | Promise<DebugSearchResponse>;
+  listVaults(): VaultSummary[] | Promise<VaultSummary[]>;
+  vaultStatus(vaultId?: string): VaultStatus | Promise<VaultStatus>;
+  createWriteProposal(proposal: WriteProposal): WriteProposal | Promise<WriteProposal>;
+  listWriteProposals(vaultId?: string): WriteProposal[] | Promise<WriteProposal[]>;
+  updateWriteProposalStatus(id: string, status: WriteProposalStatus, actor: string, message: string): WriteProposal | null | Promise<WriteProposal | null>;
   saveOAuthClient(client: StoredOAuthClient): void | Promise<void>;
   getOAuthClient(clientId: string): StoredOAuthClient | null | Promise<StoredOAuthClient | null>;
   consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean | Promise<boolean>;
@@ -67,6 +81,8 @@ export class JsonIndexStore implements IndexStore {
   private documents: VaultDocument[] = [];
   private generatedAt: string | null = null;
   private stats: IndexStats | null = null;
+  private manifests = new Map<string, SyncPayload["manifest"]>();
+  private writeProposals = new Map<string, WriteProposal>();
   private oauthClients = new Map<string, StoredOAuthClient>();
   private consumedOAuthJtis = new Map<string, number>();
 
@@ -79,6 +95,15 @@ export class JsonIndexStore implements IndexStore {
       this.documents = Array.isArray(parsed.documents) ? parsed.documents : [];
       this.generatedAt = typeof parsed.generated_at === "string" ? parsed.generated_at : null;
       this.stats = parsed.stats ?? null;
+      if (parsed.manifest?.vault_id) {
+        this.manifests.set(parsed.manifest.vault_id, parsed.manifest);
+      }
+      for (const manifest of parsed.manifests ?? []) {
+        this.manifests.set(manifest.vault_id, manifest);
+      }
+      for (const proposal of parsed.write_proposals ?? []) {
+        this.writeProposals.set(proposal.id, proposal);
+      }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
@@ -86,10 +111,29 @@ export class JsonIndexStore implements IndexStore {
     }
   }
 
+  async registerVault(manifest: SyncManifest): Promise<void> {
+    this.manifests.set(manifest.vault_id, manifest);
+    await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
+    await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
+  }
+
   async replace(payload: SyncPayload): Promise<void> {
-    this.documents = payload.documents;
+    const tenantId = payload.tenant_id ?? payload.manifest?.tenant_id ?? DEFAULT_TENANT_ID;
+    const vaultId = payload.vault_id ?? payload.manifest?.vault_id ?? DEFAULT_VAULT_ID;
+    const installationId = payload.installation_id ?? payload.manifest?.installation_id ?? DEFAULT_INSTALLATION_ID;
+    const scopedDocuments = payload.documents.map((document) => withDocumentScope(document, tenantId, vaultId, installationId));
+    this.documents = payload.vault_id || payload.manifest?.vault_id
+      ? [
+          ...this.documents.filter((document) => (document.tenant_id ?? document.metadata.tenant_id ?? DEFAULT_TENANT_ID) !== tenantId
+            || (document.vault_id ?? document.metadata.vault_id ?? DEFAULT_VAULT_ID) !== vaultId),
+          ...scopedDocuments,
+        ]
+      : scopedDocuments;
     this.generatedAt = payload.generated_at ?? new Date().toISOString();
     this.stats = payload.stats ?? null;
+    if (payload.manifest) {
+      this.manifests.set(vaultId, payload.manifest);
+    }
     await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
     await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
   }
@@ -118,32 +162,84 @@ export class JsonIndexStore implements IndexStore {
     return searchVault(this.documents, options);
   }
 
-  fetch(id: string) {
-    return fetchDocument(this.documents, id);
+  fetch(id: string, vaultId?: string) {
+    return fetchDocument(this.documents, id, vaultId);
   }
 
-  fetchByPath(notePath: string) {
-    return fetchDocumentByPath(this.documents, notePath);
+  fetchByPath(notePath: string, vaultId?: string) {
+    return fetchDocumentByPath(this.documents, notePath, vaultId);
   }
 
   listNotes(options: ListNotesOptions) {
     return listNotes(this.documents, options);
   }
 
-  recentNotes(scope?: string, limit?: number) {
-    return recentNotes(this.documents, scope, limit);
+  recentNotes(scope?: string, limit?: number, vaultId?: string) {
+    return recentNotes(this.documents, scope, limit, vaultId);
   }
 
-  activeProjects(limit?: number, cursor?: string) {
-    return activeProjects(this.documents, limit, cursor);
+  activeProjects(limit?: number, cursor?: string, vaultId?: string) {
+    return activeProjects(this.documents, limit, cursor, vaultId);
   }
 
-  indexStatus() {
-    return getIndexStatus(this.documents, this.stats, this.generatedAt);
+  indexStatus(vaultId?: string) {
+    return getIndexStatus(this.documents, this.stats, this.generatedAt, vaultId);
   }
 
-  debugSearch(query: string, scope?: string) {
-    return debugSearch(this.documents, query, scope, this.generatedAt);
+  debugSearch(query: string, scope?: string, vaultId?: string) {
+    return debugSearch(this.documents, query, scope, this.generatedAt, vaultId);
+  }
+
+  listVaults() {
+    return summarizeVaults(this.documents, this.manifests, this.generatedAt);
+  }
+
+  vaultStatus(vaultId?: string): VaultStatus {
+    const status = this.indexStatus(vaultId);
+    const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    return {
+      ...status,
+      document_count: scopedDocuments.length,
+      generated_at: this.generatedAt,
+      stats: this.stats,
+    };
+  }
+
+  async createWriteProposal(proposal: WriteProposal): Promise<WriteProposal> {
+    this.writeProposals.set(proposal.id, proposal);
+    await this.persist();
+    return proposal;
+  }
+
+  listWriteProposals(vaultId?: string): WriteProposal[] {
+    return [...this.writeProposals.values()]
+      .filter((proposal) => !vaultId || proposal.vault_id === vaultId)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }
+
+  async updateWriteProposalStatus(id: string, status: WriteProposalStatus, actor: string, message: string): Promise<WriteProposal | null> {
+    const proposal = this.writeProposals.get(id);
+    if (!proposal) {
+      return null;
+    }
+    const now = new Date().toISOString();
+    const updated = {
+      ...proposal,
+      status,
+      updated_at: now,
+      audit: [
+        ...proposal.audit,
+        {
+          status,
+          actor,
+          message,
+          created_at: now,
+        },
+      ],
+    };
+    this.writeProposals.set(id, updated);
+    await this.persist();
+    return updated;
   }
 
   saveOAuthClient(client: StoredOAuthClient): void {
@@ -182,7 +278,15 @@ export class JsonIndexStore implements IndexStore {
         denied_markdown: 0,
         denied_by_rule: {},
       },
+      manifest: [...this.manifests.values()][0],
+      manifests: [...this.manifests.values()].filter((manifest): manifest is SyncManifest => Boolean(manifest)),
+      write_proposals: [...this.writeProposals.values()],
     };
+  }
+
+  private async persist(): Promise<void> {
+    await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
+    await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
   }
 }
 
@@ -203,7 +307,10 @@ export class PostgresIndexStore implements IndexStore {
       );
 
       create table if not exists vault_documents (
-        id text primary key,
+        id text not null,
+        tenant_id text not null default 'default',
+        vault_id text not null default 'default',
+        installation_id text not null default 'local',
         title text not null,
         text text not null,
         url text not null,
@@ -212,11 +319,19 @@ export class PostgresIndexStore implements IndexStore {
           setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
           setweight(to_tsvector('english', coalesce(metadata->>'path', '')), 'B') ||
           setweight(to_tsvector('english', coalesce(text, '')), 'C')
-        ) stored
+        ) stored,
+        primary key (tenant_id, vault_id, id)
       );
 
       create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);
       create index if not exists vault_documents_path_idx on vault_documents ((metadata->>'path'));
+      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);
+
+      alter table vault_documents add column if not exists tenant_id text not null default 'default';
+      alter table vault_documents add column if not exists vault_id text not null default 'default';
+      alter table vault_documents add column if not exists installation_id text not null default 'local';
+      alter table vault_documents drop constraint if exists vault_documents_pkey;
+      alter table vault_documents add primary key (tenant_id, vault_id, id);
 
       create table if not exists oauth_token_uses (
         jti text not null,
@@ -235,6 +350,25 @@ export class PostgresIndexStore implements IndexStore {
         scope text not null,
         created_at timestamptz not null
       );
+
+      create table if not exists vault_sync_manifests (
+        tenant_id text not null,
+        vault_id text not null,
+        manifest jsonb not null,
+        updated_at timestamptz not null default now(),
+        primary key (tenant_id, vault_id)
+      );
+
+      create table if not exists write_proposals (
+        id text primary key,
+        tenant_id text not null,
+        vault_id text not null,
+        proposal jsonb not null,
+        status text not null,
+        updated_at timestamptz not null
+      );
+
+      create index if not exists write_proposals_vault_idx on write_proposals (tenant_id, vault_id, status);
     `);
 
     const meta = await this.pool.query<{ key: string; value: unknown }>("select key, value from vault_index_meta");
@@ -252,15 +386,32 @@ export class PostgresIndexStore implements IndexStore {
     await this.pool.end();
   }
 
+  async registerVault(manifest: SyncManifest): Promise<void> {
+    await this.pool.query(
+      `insert into vault_sync_manifests (tenant_id, vault_id, manifest, updated_at)
+       values ($1, $2, $3::jsonb, now())
+       on conflict (tenant_id, vault_id) do update set manifest = excluded.manifest, updated_at = now()`,
+      [manifest.tenant_id, manifest.vault_id, JSON.stringify(manifest)],
+    );
+  }
+
   async replace(payload: SyncPayload): Promise<void> {
     const client = await this.pool.connect();
+    const tenantId = payload.tenant_id ?? payload.manifest?.tenant_id ?? DEFAULT_TENANT_ID;
+    const vaultId = payload.vault_id ?? payload.manifest?.vault_id ?? DEFAULT_VAULT_ID;
+    const installationId = payload.installation_id ?? payload.manifest?.installation_id ?? DEFAULT_INSTALLATION_ID;
     try {
       await client.query("begin");
-      await client.query("delete from vault_documents");
+      if (payload.vault_id || payload.manifest?.vault_id) {
+        await client.query("delete from vault_documents where tenant_id = $1 and vault_id = $2", [tenantId, vaultId]);
+      } else {
+        await client.query("delete from vault_documents");
+      }
       for (const document of payload.documents) {
+        const scopedDocument = withDocumentScope(document, tenantId, vaultId, installationId);
         await client.query(
-          "insert into vault_documents (id, title, text, url, metadata) values ($1, $2, $3, $4, $5::jsonb)",
-          [document.id, document.title, document.text, document.url, JSON.stringify(document.metadata)],
+          "insert into vault_documents (id, tenant_id, vault_id, installation_id, title, text, url, metadata) values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)",
+          [scopedDocument.id, tenantId, vaultId, installationId, scopedDocument.title, scopedDocument.text, scopedDocument.url, JSON.stringify(scopedDocument.metadata)],
         );
       }
 
@@ -273,6 +424,14 @@ export class PostgresIndexStore implements IndexStore {
         on conflict (key) do update set value = excluded.value`,
         [JSON.stringify(this.generatedAt), JSON.stringify(this.stats)],
       );
+      if (payload.manifest) {
+        await client.query(
+          `insert into vault_sync_manifests (tenant_id, vault_id, manifest, updated_at)
+           values ($1, $2, $3::jsonb, now())
+           on conflict (tenant_id, vault_id) do update set manifest = excluded.manifest, updated_at = now()`,
+          [tenantId, vaultId, JSON.stringify(payload.manifest)],
+        );
+      }
       await client.query("commit");
     } catch (error) {
       await client.query("rollback");
@@ -295,14 +454,22 @@ export class PostgresIndexStore implements IndexStore {
     return searchDocuments(await this.allDocuments(), query, limit, scope);
   }
 
-  async fetch(id: string): Promise<VaultDocument | null> {
+  async fetch(id: string, vaultId?: string): Promise<VaultDocument | null> {
     const row = await this.pool.query<{
       id: string;
+      tenant_id: string;
+      vault_id: string;
+      installation_id: string;
       title: string;
       text: string;
       url: string;
       metadata: VaultDocument["metadata"];
-    }>("select id, title, text, url, metadata from vault_documents where id = $1", [id]);
+    }>(
+      `select id, tenant_id, vault_id, installation_id, title, text, url, metadata
+       from vault_documents
+       where id = $1 and ($2::text is null or vault_id = $2)`,
+      [id, vaultId ?? null],
+    );
 
     if (!row.rows[0]) {
       return null;
@@ -326,28 +493,85 @@ export class PostgresIndexStore implements IndexStore {
     return searchVault(await this.allDocuments(), options);
   }
 
-  async fetchByPath(notePath: string): Promise<VaultDocument | null> {
-    return fetchDocumentByPath(await this.allDocuments(), notePath);
+  async fetchByPath(notePath: string, vaultId?: string): Promise<VaultDocument | null> {
+    return fetchDocumentByPath(await this.allDocuments(), notePath, vaultId);
   }
 
   async listNotes(options: ListNotesOptions): Promise<ListNotesResponse> {
     return listNotes(await this.allDocuments(), options);
   }
 
-  async recentNotes(scope?: string, limit?: number): Promise<{ notes: NoteSummary[] }> {
-    return recentNotes(await this.allDocuments(), scope, limit);
+  async recentNotes(scope?: string, limit?: number, vaultId?: string): Promise<{ notes: NoteSummary[] }> {
+    return recentNotes(await this.allDocuments(), scope, limit, vaultId);
   }
 
-  async activeProjects(limit?: number, cursor?: string): Promise<ListNotesResponse> {
-    return activeProjects(await this.allDocuments(), limit, cursor);
+  async activeProjects(limit?: number, cursor?: string, vaultId?: string): Promise<ListNotesResponse> {
+    return activeProjects(await this.allDocuments(), limit, cursor, vaultId);
   }
 
-  async indexStatus(): Promise<IndexStatusResponse> {
-    return getIndexStatus(await this.allDocuments(), this.stats, this.generatedAt);
+  async indexStatus(vaultId?: string): Promise<IndexStatusResponse> {
+    return getIndexStatus(await this.allDocuments(), this.stats, this.generatedAt, vaultId);
   }
 
-  async debugSearch(query: string, scope?: string): Promise<DebugSearchResponse> {
-    return debugSearch(await this.allDocuments(), query, scope, this.generatedAt);
+  async debugSearch(query: string, scope?: string, vaultId?: string): Promise<DebugSearchResponse> {
+    return debugSearch(await this.allDocuments(), query, scope, this.generatedAt, vaultId);
+  }
+
+  async listVaults(): Promise<VaultSummary[]> {
+    return summarizeVaults(await this.allDocuments(), await this.allManifests(), this.generatedAt);
+  }
+
+  async vaultStatus(vaultId?: string): Promise<VaultStatus> {
+    const status = await this.indexStatus(vaultId);
+    const documents = await this.allDocuments();
+    const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    return {
+      ...status,
+      document_count: scopedDocuments.length,
+      generated_at: this.generatedAt,
+      stats: this.stats,
+    };
+  }
+
+  async createWriteProposal(proposal: WriteProposal): Promise<WriteProposal> {
+    await this.pool.query(
+      `insert into write_proposals (id, tenant_id, vault_id, proposal, status, updated_at)
+       values ($1, $2, $3, $4::jsonb, $5, $6)
+       on conflict (id) do update set proposal = excluded.proposal, status = excluded.status, updated_at = excluded.updated_at`,
+      [proposal.id, proposal.tenant_id, proposal.vault_id, JSON.stringify(proposal), proposal.status, proposal.updated_at],
+    );
+    return proposal;
+  }
+
+  async listWriteProposals(vaultId?: string): Promise<WriteProposal[]> {
+    const result = await this.pool.query<{ proposal: WriteProposal }>(
+      `select proposal
+       from write_proposals
+       where ($1::text is null or vault_id = $1)
+       order by updated_at desc`,
+      [vaultId ?? null],
+    );
+    return result.rows.map((row) => row.proposal);
+  }
+
+  async updateWriteProposalStatus(id: string, status: WriteProposalStatus, actor: string, message: string): Promise<WriteProposal | null> {
+    const existing = await this.pool.query<{ proposal: WriteProposal }>("select proposal from write_proposals where id = $1", [id]);
+    const proposal = existing.rows[0]?.proposal;
+    if (!proposal) {
+      return null;
+    }
+    const now = new Date().toISOString();
+    const updated: WriteProposal = {
+      ...proposal,
+      status,
+      updated_at: now,
+      audit: [
+        ...proposal.audit,
+        { status, actor, message, created_at: now },
+      ],
+    };
+    await this.createWriteProposal(updated);
+    return updated;
   }
 
   async saveOAuthClient(client: StoredOAuthClient): Promise<void> {
@@ -401,12 +625,15 @@ export class PostgresIndexStore implements IndexStore {
   private async allDocuments(): Promise<VaultDocument[]> {
     const rows = await this.pool.query<{
       id: string;
+      tenant_id: string;
+      vault_id: string;
+      installation_id: string;
       title: string;
       text: string;
       url: string;
       metadata: VaultDocument["metadata"];
     }>(
-      `select id, title, text, url, metadata
+      `select id, tenant_id, vault_id, installation_id, title, text, url, metadata
        from vault_documents
        order by metadata->>'path' asc, coalesce((metadata->>'chunk_index')::int, 0) asc, id asc`,
     );
@@ -416,4 +643,70 @@ export class PostgresIndexStore implements IndexStore {
       obsidian_uri: row.metadata.obsidian_uri,
     }));
   }
+
+  private async allManifests(): Promise<Map<string, SyncPayload["manifest"]>> {
+    const rows = await this.pool.query<{ vault_id: string; manifest: SyncPayload["manifest"] }>("select vault_id, manifest from vault_sync_manifests");
+    return new Map(rows.rows.map((row) => [row.vault_id, row.manifest]));
+  }
+}
+
+function withDocumentScope(document: VaultDocument, tenantId: string, vaultId: string, installationId: string): VaultDocument {
+  return {
+    ...document,
+    tenant_id: document.tenant_id ?? tenantId,
+    vault_id: document.vault_id ?? vaultId,
+    installation_id: document.installation_id ?? installationId,
+    metadata: {
+      ...document.metadata,
+      tenant_id: document.metadata.tenant_id ?? tenantId,
+      vault_id: document.metadata.vault_id ?? vaultId,
+      installation_id: document.metadata.installation_id ?? installationId,
+    },
+  };
+}
+
+function summarizeVaults(documents: VaultDocument[], manifests: Map<string, SyncPayload["manifest"]>, generatedAt: string | null): VaultSummary[] {
+  const groups = new Map<string, VaultDocument[]>();
+  for (const document of documents) {
+    const tenantId = document.tenant_id ?? document.metadata.tenant_id ?? DEFAULT_TENANT_ID;
+    const vaultId = document.vault_id ?? document.metadata.vault_id ?? DEFAULT_VAULT_ID;
+    const key = `${tenantId}:${vaultId}`;
+    groups.set(key, [...(groups.get(key) ?? []), document]);
+  }
+
+  if (groups.size === 0 && manifests.size === 0) {
+    return [];
+  }
+
+  const summaries = [...groups.entries()].map(([key, vaultDocuments]) => {
+    const [tenantId, vaultId] = key.split(":");
+    const manifest = manifests.get(vaultId);
+    const first = vaultDocuments[0];
+    return {
+      tenant_id: tenantId || DEFAULT_TENANT_ID,
+      vault_id: vaultId || DEFAULT_VAULT_ID,
+      installation_id: manifest?.installation_id ?? first?.installation_id ?? first?.metadata.installation_id ?? null,
+      vault_name: manifest?.vault_name ?? first?.metadata.vault_id ?? vaultId ?? DEFAULT_VAULT_ID,
+      index_mode: manifest?.index_mode ?? first?.metadata.source_policy.index_mode ?? null,
+      document_count: vaultDocuments.length,
+      last_indexed_at: manifest?.generated_at ?? generatedAt,
+    };
+  });
+
+  for (const manifest of manifests.values()) {
+    if (!manifest || summaries.some((summary) => summary.vault_id === manifest.vault_id && summary.tenant_id === manifest.tenant_id)) {
+      continue;
+    }
+    summaries.push({
+      tenant_id: manifest.tenant_id,
+      vault_id: manifest.vault_id,
+      installation_id: manifest.installation_id,
+      vault_name: manifest.vault_name,
+      index_mode: manifest.index_mode,
+      document_count: 0,
+      last_indexed_at: manifest.generated_at,
+    });
+  }
+
+  return summaries.sort((a, b) => a.vault_id.localeCompare(b.vault_id));
 }

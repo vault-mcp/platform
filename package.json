@@ -8,13 +8,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && npm run build --workspace @vault-mcp/obsidian-plugin",
     "check:api": "tsc --noEmit --module NodeNext --moduleResolution NodeNext --target ES2022 --lib ES2022 --strict --esModuleInterop --skipLibCheck api/index.ts",
     "clean": "rm -rf apps/*/dist packages/*/dist",
     "deploy:vercel": "node scripts/vercel-production-deploy.mjs",
     "deploy:vercel:check": "node scripts/vercel-production-deploy.mjs --check",
     "dev:server": "npm run dev --workspace @vault-mcp/server",
-    "index": "npm run dev --workspace @vault-mcp/indexer --",
+    "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
+    "index": "npm run dev --workspace @vault-mcp/cli --",
     "wiki:generate": "node scripts/generate-wiki-reference.mjs",
     "smoke:remote": "node scripts/smoke-remote.mjs",
     "smoke:oauth-flow": "node scripts/smoke-oauth-flow.mjs",

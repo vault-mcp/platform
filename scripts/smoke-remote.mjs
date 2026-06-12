@@ -17,6 +17,8 @@ const expectedTools = [
   "fetch",
   "fetch_note_by_path",
   "get_index_status",
+  "list_vaults",
+  "get_vault_status",
   "debug_search",
 ];
 
@@ -103,7 +105,7 @@ console.log(JSON.stringify({
 }, null, 2));
 
 async function runSync() {
-  const { buildVaultIndex } = await import("../packages/vault-core/dist/index.js");
+  const { buildVaultIndex } = await import("../packages/core/dist/index.js");
   const index = await buildVaultIndex({
     vaultRoot,
     vaultName,

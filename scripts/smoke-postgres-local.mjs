@@ -20,6 +20,8 @@ const expectedTools = [
   "fetch",
   "fetch_note_by_path",
   "get_index_status",
+  "list_vaults",
+  "get_vault_status",
   "debug_search",
 ];
 
@@ -105,7 +107,7 @@ try {
 
 async function runIndexer() {
   await run("node", [
-    "apps/indexer/dist/index.js",
+    "apps/cli/dist/index.js",
     "--vault",
     vaultRoot,
     "--vault-name",

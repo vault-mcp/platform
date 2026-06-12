@@ -1,5 +1,6 @@
 node_modules/
 dist/
+apps/obsidian-plugin/main.js
 .vercel/
 data/*.json
 apps/*/data/*.json

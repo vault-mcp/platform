@@ -173,153 +173,153 @@
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
-              <td class="source"><pre>  &quot;debug_search&quot;,</pre></td>
+              <td class="source"><pre>  &quot;list_vaults&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
-              <td class="source"><pre>];</pre></td>
-              <td>Line 21 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  &quot;get_vault_status&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>  &quot;debug_search&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre>];</pre></td>
+              <td>Line 23 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
               <td class="source"><pre>if (syncToken) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
               <td class="source"><pre>  await runSync();</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
               <td class="source"><pre>const health = await json(`${baseUrl}/healthz`);</pre></td>
               <td>Declares health, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
               <td class="source"><pre>if (syncToken) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
               <td class="source"><pre>  assert(health.document_count &gt; 0, &quot;expected synced documents after remote sync&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
               <td class="source"><pre>const metadata = await json(`${baseUrl}/.well-known/oauth-protected-resource`);</pre></td>
               <td>Declares metadata, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
               <td class="source"><pre>assert(metadata.resource === `${baseUrl}/mcp`, &quot;expected metadata resource to match /mcp endpoint&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
               <td class="source"><pre>if (process.env.SMOKE_EXPECT_OAUTH === &quot;true&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
               <td class="source"><pre>  assert(metadata.authorization_servers?.length &gt; 0, &quot;expected OAuth authorization server metadata&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
               <td class="source"><pre>const noAuth = await fetch(`${baseUrl}/mcp`, {</pre></td>
               <td>Declares noAuth, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>  method: &quot;POST&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre>  headers: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>    &quot;Content-Type&quot;: &quot;application/json&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre>    Accept: &quot;application/json,text/event-stream&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre>  },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
               <td class="source"><pre>  body: &quot;{}&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
               <td class="source"><pre>assert(noAuth.status === 401, &quot;expected unauthenticated /mcp to return 401&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
               <td class="source"><pre>assert(noAuth.headers.get(&quot;www-authenticate&quot;)?.includes(&quot;resource_metadata=&quot;), &quot;expected WWW-Authenticate resource metadata&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>await mcpSseProbe();</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
@@ -328,667 +328,676 @@
             </tr>
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>await mcpSseProbe();</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
               <td class="source"><pre>const tools = await mcp(1, &quot;tools/list&quot;, {});</pre></td>
               <td>Declares tools, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
               <td class="source"><pre>assert(tools.result.tools.map((tool) =&gt; tool.name).join(&quot;,&quot;) === expectedTools.join(&quot;,&quot;), &quot;expected expanded read-only vault tools&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
               <td class="source"><pre>const search = await mcp(2, &quot;tools/call&quot;, {</pre></td>
               <td>Declares search, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
               <td class="source"><pre>  name: &quot;search&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
               <td class="source"><pre>  arguments: { query: &quot;Vault MCP Connector&quot;, limit: 1 },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
               <td class="source"><pre>const first = search.result.structuredContent.results[0];</pre></td>
               <td>Declares first, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre>assert(first?.metadata?.path === &quot;20 Projects/Vault MCP Connector/Project Home.md&quot;, &quot;expected Vault MCP Connector project search result&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
               <td class="source"><pre>const fetched = await mcp(3, &quot;tools/call&quot;, {</pre></td>
               <td>Declares fetched, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
               <td class="source"><pre>  name: &quot;fetch&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>  arguments: { id: first.id },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre>assert(fetched.result.structuredContent.title.includes(&quot;Vault MCP Connector&quot;), &quot;expected fetched Vault MCP Connector chunk&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
               <td class="source"><pre>const listed = await mcp(30, &quot;tools/call&quot;, {</pre></td>
               <td>Declares listed, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
               <td class="source"><pre>  name: &quot;list_notes&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
               <td class="source"><pre>  arguments: { scope: &quot;20 Projects/Vault MCP Connector/&quot;, limit: 1 },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
               <td class="source"><pre>assert(listed.result.structuredContent.notes[0]?.path === &quot;20 Projects/Vault MCP Connector/Project Home.md&quot;, &quot;expected list_notes to find project home&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
               <td class="source"><pre>const fetchedByPath = await mcp(31, &quot;tools/call&quot;, {</pre></td>
               <td>Declares fetchedByPath, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
               <td class="source"><pre>  name: &quot;fetch_note_by_path&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
               <td class="source"><pre>  arguments: { path: &quot;20 Projects/Vault MCP Connector/Project Home.md&quot; },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
               <td class="source"><pre>assert(fetchedByPath.result.structuredContent.obsidian_uri?.startsWith(&quot;obsidian://open&quot;), &quot;expected path fetch to include obsidian_uri&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
               <td class="source"><pre>const deniedScopeList = await mcp(32, &quot;tools/call&quot;, {</pre></td>
               <td>Declares deniedScopeList, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
               <td class="source"><pre>  name: &quot;list_notes&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
               <td class="source"><pre>  arguments: { scope: &quot;02 Daily/&quot;, limit: 5 },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
               <td class="source"><pre>assert(deniedScopeList.result.structuredContent.notes.length === 0, &quot;expected denied daily scope to be unavailable&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
               <td class="source"><pre>const deniedPath = await mcp(33, &quot;tools/call&quot;, {</pre></td>
               <td>Declares deniedPath, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>  name: &quot;fetch_note_by_path&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
               <td class="source"><pre>  arguments: { path: &quot;02 Daily/2026-06-10.md&quot; },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre>assert(deniedPath.result.isError === true, &quot;expected denied path fetch to fail&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
               <td class="source"><pre>const guessed = await mcp(4, &quot;tools/call&quot;, {</pre></td>
               <td>Declares guessed, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
               <td class="source"><pre>  name: &quot;fetch&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
               <td class="source"><pre>  arguments: { id: &quot;guessed-denied-id&quot; },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
               <td class="source"><pre>assert(guessed.result.isError === true, &quot;expected guessed denied id to fail&quot;);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
               <td class="source"><pre>console.log(JSON.stringify({</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
               <td class="source"><pre>  ok: true,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
               <td class="source"><pre>  auth_token_source: process.env.SMOKE_ACCESS_TOKEN ? &quot;SMOKE_ACCESS_TOKEN&quot; : &quot;MCP_ACCESS_TOKEN&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
               <td class="source"><pre>  document_count: health.document_count,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
               <td class="source"><pre>  first_result_path: first.metadata.path,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
               <td class="source"><pre>  metadata_resource: metadata.resource,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
               <td class="source"><pre>}, null, 2));</pre></td>
-              <td>Line 103 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>Line 105 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
               <td class="source"><pre>async function runSync() {</pre></td>
               <td>Defines runSync, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>  const { buildVaultIndex } = await import(&quot;../packages/vault-core/dist/index.js&quot;);</pre></td>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>  const { buildVaultIndex } = await import(&quot;../packages/core/dist/index.js&quot;);</pre></td>
               <td>Declares a local value used by the surrounding code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
               <td class="source"><pre>  const index = await buildVaultIndex({</pre></td>
               <td>Declares index, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
               <td class="source"><pre>    vaultRoot,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
               <td class="source"><pre>    vaultName,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
               <td class="source"><pre>    publicBaseUrl: baseUrl,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
               <td class="source"><pre>  const response = await fetch(`${baseUrl}/admin/sync`, {</pre></td>
               <td>Declares response, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L114"><a href="#L114">114</a></td>
-              <td class="source"><pre>    method: &quot;POST&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L115"><a href="#L115">115</a></td>
-              <td class="source"><pre>    headers: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L116"><a href="#L116">116</a></td>
-              <td class="source"><pre>      Authorization: `Bearer ${syncToken}`,</pre></td>
+              <td class="source"><pre>    method: &quot;POST&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L117"><a href="#L117">117</a></td>
-              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;application/json&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    headers: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L118"><a href="#L118">118</a></td>
-              <td class="source"><pre>    },</pre></td>
+              <td class="source"><pre>      Authorization: `Bearer ${syncToken}`,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L119"><a href="#L119">119</a></td>
-              <td class="source"><pre>    body: JSON.stringify({</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L120"><a href="#L120">120</a></td>
-              <td class="source"><pre>      documents: index.documents,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L121"><a href="#L121">121</a></td>
-              <td class="source"><pre>      generated_at: index.generated_at,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L122"><a href="#L122">122</a></td>
-              <td class="source"><pre>      stats: index.stats,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L123"><a href="#L123">123</a></td>
-              <td class="source"><pre>    }),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L124"><a href="#L124">124</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L125"><a href="#L125">125</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L126"><a href="#L126">126</a></td>
-              <td class="source"><pre>  const body = await response.text();</pre></td>
-              <td>Declares body, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L127"><a href="#L127">127</a></td>
-              <td class="source"><pre>  assert(response.ok, `remote sync failed: ${response.status} ${body}`);</pre></td>
-              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L128"><a href="#L128">128</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L129"><a href="#L129">129</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L130"><a href="#L130">130</a></td>
-              <td class="source"><pre>async function mcp(id, method, params) {</pre></td>
-              <td>Defines mcp, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L131"><a href="#L131">131</a></td>
-              <td class="source"><pre>  const response = await fetch(`${baseUrl}/mcp`, {</pre></td>
-              <td>Declares response, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L132"><a href="#L132">132</a></td>
-              <td class="source"><pre>    method: &quot;POST&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre>    headers: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L134"><a href="#L134">134</a></td>
-              <td class="source"><pre>      Authorization: `Bearer ${accessToken}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L135"><a href="#L135">135</a></td>
               <td class="source"><pre>      &quot;Content-Type&quot;: &quot;application/json&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>      Accept: &quot;application/json,text/event-stream&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
               <td class="source"><pre>    },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>    body: JSON.stringify({ jsonrpc: &quot;2.0&quot;, id, method, params }),</pre></td>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>    body: JSON.stringify({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>      documents: index.documents,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre>      generated_at: index.generated_at,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre>      stats: index.stats,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>    }),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
               <td class="source"><pre>  const body = await response.text();</pre></td>
               <td>Declares body, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>  assert(response.ok, `expected ${method} to succeed: ${response.status} ${body}`);</pre></td>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>  assert(response.ok, `remote sync failed: ${response.status} ${body}`);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>  return JSON.parse(body);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>async function mcpSseProbe() {</pre></td>
-              <td>Defines mcpSseProbe, a reusable block of behavior called by other code.</td>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>async function mcp(id, method, params) {</pre></td>
+              <td>Defines mcp, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>  const controller = new AbortController();</pre></td>
-              <td>Declares controller, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
               <td class="source"><pre>  const response = await fetch(`${baseUrl}/mcp`, {</pre></td>
               <td>Declares response, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>    method: &quot;GET&quot;,</pre></td>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>    method: &quot;POST&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>    signal: controller.signal,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
               <td class="source"><pre>    headers: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
               <td class="source"><pre>      Authorization: `Bearer ${accessToken}`,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L153"><a href="#L153">153</a></td>
-              <td class="source"><pre>      Accept: &quot;text/event-stream&quot;,</pre></td>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;application/json&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="source"><pre>      Accept: &quot;application/json,text/event-stream&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
               <td class="source"><pre>    },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="source"><pre>    body: JSON.stringify({ jsonrpc: &quot;2.0&quot;, id, method, params }),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L157"><a href="#L157">157</a></td>
-              <td class="source"><pre>  if (!response.ok) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>    throw new Error(`expected GET /mcp SSE probe to succeed: ${response.status} ${await response.text()}`);</pre></td>
-              <td>Line 158 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L160"><a href="#L160">160</a></td>
-              <td class="source"><pre>  assert(response.headers.get(&quot;content-type&quot;)?.includes(&quot;text/event-stream&quot;), &quot;expected GET /mcp to return an SSE content type&quot;);</pre></td>
-              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L161"><a href="#L161">161</a></td>
-              <td class="source"><pre>  controller.abort();</pre></td>
-              <td>Line 161 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L162"><a href="#L162">162</a></td>
-              <td class="source"><pre>  void response.body?.cancel().catch(() =&gt; undefined);</pre></td>
-              <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L163"><a href="#L163">163</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L164"><a href="#L164">164</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L165"><a href="#L165">165</a></td>
-              <td class="source"><pre>async function json(url) {</pre></td>
-              <td>Defines json, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L166"><a href="#L166">166</a></td>
-              <td class="source"><pre>  const response = await fetch(url);</pre></td>
-              <td>Declares response, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
               <td class="source"><pre>  const body = await response.text();</pre></td>
               <td>Declares body, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L168"><a href="#L168">168</a></td>
-              <td class="source"><pre>  assert(response.ok, `expected ${url} to succeed: ${response.status} ${body}`);</pre></td>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>  assert(response.ok, `expected ${method} to succeed: ${response.status} ${body}`);</pre></td>
               <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
               <td class="source"><pre>  return JSON.parse(body);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L172"><a href="#L172">172</a></td>
-              <td class="source"><pre>function required(name) {</pre></td>
-              <td>Defines required, a reusable block of behavior called by other code.</td>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="source"><pre>async function mcpSseProbe() {</pre></td>
+              <td>Defines mcpSseProbe, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L173"><a href="#L173">173</a></td>
-              <td class="source"><pre>  const value = process.env[name];</pre></td>
-              <td>Declares value, a local value used later in this file.</td>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
+              <td class="source"><pre>  const controller = new AbortController();</pre></td>
+              <td>Declares controller, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L174"><a href="#L174">174</a></td>
-              <td class="source"><pre>  assert(value, `${name} is required`);</pre></td>
-              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="source"><pre>  const response = await fetch(`${baseUrl}/mcp`, {</pre></td>
+              <td>Declares response, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L175"><a href="#L175">175</a></td>
-              <td class="source"><pre>  return value;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>    method: &quot;GET&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L176"><a href="#L176">176</a></td>
-              <td class="source"><pre>}</pre></td>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre>    signal: controller.signal,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre>    headers: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>      Authorization: `Bearer ${accessToken}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>      Accept: &quot;text/event-stream&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="line-number" id="L158"><a href="#L158">158</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L178"><a href="#L178">178</a></td>
-              <td class="source"><pre>function assert(condition, message) {</pre></td>
-              <td>Defines assert, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L179"><a href="#L179">179</a></td>
-              <td class="source"><pre>  if (!condition) {</pre></td>
+              <td class="line-number" id="L159"><a href="#L159">159</a></td>
+              <td class="source"><pre>  if (!response.ok) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L180"><a href="#L180">180</a></td>
-              <td class="source"><pre>    throw new Error(message);</pre></td>
-              <td>Line 180 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="line-number" id="L160"><a href="#L160">160</a></td>
+              <td class="source"><pre>    throw new Error(`expected GET /mcp SSE probe to succeed: ${response.status} ${await response.text()}`);</pre></td>
+              <td>Line 160 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre>  assert(response.headers.get(&quot;content-type&quot;)?.includes(&quot;text/event-stream&quot;), &quot;expected GET /mcp to return an SSE content type&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre>  controller.abort();</pre></td>
+              <td>Line 163 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>  void response.body?.cancel().catch(() =&gt; undefined);</pre></td>
+              <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>async function json(url) {</pre></td>
+              <td>Defines json, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>  const response = await fetch(url);</pre></td>
+              <td>Declares response, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>  const body = await response.text();</pre></td>
+              <td>Declares body, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>  assert(response.ok, `expected ${url} to succeed: ${response.status} ${body}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre>  return JSON.parse(body);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="source"><pre>function required(name) {</pre></td>
+              <td>Defines required, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="source"><pre>  const value = process.env[name];</pre></td>
+              <td>Declares value, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="source"><pre>  assert(value, `${name} is required`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="source"><pre>  return value;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="source"><pre>function assert(condition, message) {</pre></td>
+              <td>Defines assert, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="source"><pre>  if (!condition) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre>    throw new Error(message);</pre></td>
+              <td>Line 182 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>
         </table>
       </section>
-    
   </main>
 </body>
 </html>

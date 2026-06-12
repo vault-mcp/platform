@@ -390,12 +390,12 @@
         <table>
           <thead><tr><th>Path</th><th>Role in the rebuild</th></tr></thead>
           <tbody>
-            <tr><td><code>packages/vault-core/src/types.ts</code></td><td>Define the data shapes first.</td></tr>
-            <tr><td><code>packages/vault-core/src/source-policy.ts</code></td><td>Write the allow/deny boundary.</td></tr>
-            <tr><td><code>packages/vault-core/src/markdown.ts</code></td><td>Parse and chunk notes.</td></tr>
-            <tr><td><code>packages/vault-core/src/indexer.ts</code></td><td>Turn vault files into index documents.</td></tr>
-            <tr><td><code>packages/vault-core/src/search.ts</code></td><td>Search, list, fetch, and diagnose indexed documents.</td></tr>
-            <tr><td><code>apps/indexer/src/index.ts</code></td><td>Expose indexing as a CLI and sync command.</td></tr>
+            <tr><td><code>packages/core/src/types.ts</code></td><td>Define the data shapes first.</td></tr>
+            <tr><td><code>packages/core/src/source-policy.ts</code></td><td>Write the allow/deny boundary.</td></tr>
+            <tr><td><code>packages/core/src/markdown.ts</code></td><td>Parse and chunk notes.</td></tr>
+            <tr><td><code>packages/core/src/indexer.ts</code></td><td>Turn vault files into index documents.</td></tr>
+            <tr><td><code>packages/core/src/search.ts</code></td><td>Search, list, fetch, and diagnose indexed documents.</td></tr>
+            <tr><td><code>apps/cli/src/index.ts</code></td><td>Expose indexing as a CLI and sync command.</td></tr>
             <tr><td><code>apps/server/src/store.ts</code></td><td>Provide JSON and Postgres storage behind one interface.</td></tr>
             <tr><td><code>apps/server/src/mcp.ts</code></td><td>Register MCP tools, wire them to storage, return readable tool summaries, and advertise the ChatGPT result component.</td></tr>
             <tr><td><code>apps/server/src/oauth.ts</code></td><td>Implement self-hosted OAuth.</td></tr>

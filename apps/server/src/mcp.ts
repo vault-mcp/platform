@@ -15,6 +15,7 @@ const SERVER_INSTRUCTIONS = [
 
 const noteSummarySchema = z.object({
   id: z.string(),
+  vault_id: z.string().optional(),
   title: z.string(),
   path: z.string(),
   tags: z.array(z.string()),
@@ -24,8 +25,19 @@ const noteSummarySchema = z.object({
   obsidian_uri: z.string(),
 });
 
+const vaultSummarySchema = z.object({
+  tenant_id: z.string(),
+  vault_id: z.string(),
+  installation_id: z.string().nullable(),
+  vault_name: z.string(),
+  index_mode: z.string().nullable(),
+  document_count: z.number().int().nonnegative(),
+  last_indexed_at: z.string().nullable(),
+});
+
 const searchResultSchema = z.object({
   id: z.string(),
+  vault_id: z.string().optional(),
   type: z.enum(["note", "section"]),
   title: z.string(),
   note_title: z.string().optional(),
@@ -73,6 +85,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     inputSchema: {
       query: z.string().min(1).describe("Keyword query for allowed vault context."),
       mode: z.enum(["notes", "sections"]).optional().describe("Result mode. Defaults to sections."),
+      vault_id: z.string().optional().describe("Optional vault id. Omit when only one vault is connected."),
       limit: z.number().int().min(1).max(25).optional().describe("Maximum number of results. Defaults to 10."),
       scope: z.string().optional().describe("Optional path prefix scope, such as 40 Reference/."),
       tags: z.array(z.string()).optional().describe("Optional tags that must all be present."),
@@ -84,8 +97,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching vault"),
-  }, async ({ query, mode, limit, scope, tags, status, type }) => {
-    const structuredContent = await store.searchVault({ query, mode, limit, scope, tags, status, type });
+  }, async ({ query, mode, vault_id, limit, scope, tags, status, type }) => {
+    const structuredContent = await store.searchVault({ query, mode, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Search results for "${query}"`));
   });
 
@@ -94,6 +107,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "Search allowlisted Obsidian vault notes and return one result per note path.",
     inputSchema: {
       query: z.string().min(1),
+      vault_id: z.string().optional(),
       limit: z.number().int().min(1).max(25).optional(),
       scope: z.string().optional(),
       tags: z.array(z.string()).optional(),
@@ -105,8 +119,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching notes"),
-  }, async ({ query, limit, scope, tags, status, type }) => {
-    const structuredContent = await store.searchNotes({ query, limit, scope, tags, status, type });
+  }, async ({ query, vault_id, limit, scope, tags, status, type }) => {
+    const structuredContent = await store.searchNotes({ query, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Matching notes for "${query}"`));
   });
 
@@ -115,6 +129,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "Search allowlisted Obsidian vault heading-level sections and chunks.",
     inputSchema: {
       query: z.string().min(1),
+      vault_id: z.string().optional(),
       limit: z.number().int().min(1).max(25).optional(),
       scope: z.string().optional(),
       tags: z.array(z.string()).optional(),
@@ -126,8 +141,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching sections"),
-  }, async ({ query, limit, scope, tags, status, type }) => {
-    const structuredContent = await store.searchSections({ query, limit, scope, tags, status, type });
+  }, async ({ query, vault_id, limit, scope, tags, status, type }) => {
+    const structuredContent = await store.searchSections({ query, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Matching sections for "${query}"`));
   });
 
@@ -136,6 +151,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "List indexed/readable notes without requiring keyword search.",
     inputSchema: {
       scope: z.string().optional(),
+      vault_id: z.string().optional(),
       tag: z.string().optional(),
       status: z.string().optional(),
       type: z.string().optional(),
@@ -148,8 +164,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Listing notes"),
-  }, async ({ scope, tag, status, type, limit, cursor }) => {
-    const structuredContent = await store.listNotes({ scope, tag, status, type, limit, cursor });
+  }, async ({ scope, vault_id, tag, status, type, limit, cursor }) => {
+    const structuredContent = await store.listNotes({ scope, vault_id, tag, status, type, limit, cursor });
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Indexed vault notes", structuredContent.next_cursor));
   });
 
@@ -158,6 +174,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "List recently updated indexed/readable notes.",
     inputSchema: {
       scope: z.string().optional(),
+      vault_id: z.string().optional(),
       limit: z.number().int().min(1).max(100).optional(),
     },
     outputSchema: {
@@ -165,8 +182,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Finding recent notes"),
-  }, async ({ scope, limit }) => {
-    const structuredContent = await store.recentNotes(scope, limit);
+  }, async ({ scope, vault_id, limit }) => {
+    const structuredContent = await store.recentNotes(scope, limit, vault_id);
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Recently updated indexed notes"));
   });
 
@@ -176,6 +193,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     inputSchema: {
       limit: z.number().int().min(1).max(100).optional(),
       cursor: z.string().optional(),
+      vault_id: z.string().optional(),
     },
     outputSchema: {
       notes: z.array(noteSummarySchema),
@@ -183,8 +201,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Finding active projects"),
-  }, async ({ limit, cursor }) => {
-    const structuredContent = await store.activeProjects(limit, cursor);
+  }, async ({ limit, cursor, vault_id }) => {
+    const structuredContent = await store.activeProjects(limit, cursor, vault_id);
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Active vault projects", structuredContent.next_cursor));
   });
 
@@ -193,12 +211,13 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "Fetch an allowlisted vault document by id returned from search.",
     inputSchema: {
       id: z.string().min(1).describe("Document id from a search result."),
+      vault_id: z.string().optional().describe("Optional vault id when multiple vaults are connected."),
     },
     outputSchema: fetchOutputSchema,
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Fetching note"),
-  }, async ({ id }) => {
-    const document = await store.fetch(id);
+  }, async ({ id, vault_id }) => {
+    const document = await store.fetch(id, vault_id);
 
     if (!document) {
       return unavailableResult();
@@ -212,12 +231,13 @@ export function createMcpServer(store: IndexStore): McpServer {
     description: "Fetch full indexed note content by exact allowlisted vault path.",
     inputSchema: {
       path: z.string().min(1).describe("Exact vault-relative path, such as 40 Reference/Self Hosting/Home Server Playbook.md."),
+      vault_id: z.string().optional().describe("Optional vault id when multiple vaults are connected."),
     },
     outputSchema: fetchOutputSchema,
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Fetching note"),
-  }, async ({ path }) => {
-    const document = await store.fetchByPath(path);
+  }, async ({ path, vault_id }) => {
+    const document = await store.fetchByPath(path, vault_id);
 
     if (!document) {
       return unavailableResult();
@@ -229,20 +249,73 @@ export function createMcpServer(store: IndexStore): McpServer {
   server.registerTool("get_index_status", {
     title: "Get vault index status",
     description: "Return safe index counts, allowlist/denylist policy scopes, and freshness metadata.",
-    inputSchema: {},
+    inputSchema: {
+      vault_id: z.string().optional(),
+    },
     outputSchema: {
+      tenant_id: z.string().optional(),
+      vault_id: z.string().optional(),
+      installation_id: z.string().optional(),
+      vault_name: z.string().optional(),
       indexed_note_count: z.number().int().nonnegative(),
       indexed_section_count: z.number().int().nonnegative(),
       last_indexed_at: z.string().nullable(),
       allowed_scopes: z.array(z.string()),
       excluded_scopes: z.array(z.string()),
       index_version: z.string(),
+      policy_version: z.string().optional(),
+      index_mode: z.string().optional(),
       embedding_model: z.string().nullable(),
     },
     annotations: readOnlyAnnotations(),
-  }, async () => {
-    const structuredContent = await store.indexStatus();
+  }, async ({ vault_id }) => {
+    const structuredContent = await store.indexStatus(vault_id);
     return jsonToolResult(structuredContent, describeIndexStatus(structuredContent));
+  });
+
+  server.registerTool("list_vaults", {
+    title: "List connected vaults",
+    description: "List vaults that have synced an index to this MCP server.",
+    inputSchema: {},
+    outputSchema: {
+      vaults: z.array(vaultSummarySchema),
+    },
+    annotations: readOnlyAnnotations(),
+    _meta: chatGptToolMeta("Listing vaults"),
+  }, async () => {
+    const vaults = await store.listVaults();
+    return jsonToolResult({ vaults }, describeVaults(vaults));
+  });
+
+  server.registerTool("get_vault_status", {
+    title: "Get vault status",
+    description: "Return sync, policy, and document-count status for one connected vault or the default vault.",
+    inputSchema: {
+      vault_id: z.string().optional(),
+    },
+    outputSchema: {
+      tenant_id: z.string().optional(),
+      vault_id: z.string().optional(),
+      installation_id: z.string().optional(),
+      vault_name: z.string().optional(),
+      document_count: z.number().int().nonnegative(),
+      generated_at: z.string().nullable(),
+      stats: z.record(z.string(), z.unknown()).nullable(),
+      indexed_note_count: z.number().int().nonnegative(),
+      indexed_section_count: z.number().int().nonnegative(),
+      last_indexed_at: z.string().nullable(),
+      allowed_scopes: z.array(z.string()),
+      excluded_scopes: z.array(z.string()),
+      index_version: z.string(),
+      policy_version: z.string().optional(),
+      index_mode: z.string().optional(),
+      embedding_model: z.string().nullable(),
+    },
+    annotations: readOnlyAnnotations(),
+    _meta: chatGptToolMeta("Checking vault status"),
+  }, async ({ vault_id }) => {
+    const structuredContent = await store.vaultStatus(vault_id);
+    return jsonToolResult(structuredContent, describeVaultStatus(structuredContent));
   });
 
   server.registerTool("debug_search", {
@@ -251,6 +324,7 @@ export function createMcpServer(store: IndexStore): McpServer {
     inputSchema: {
       query: z.string().min(1),
       scope: z.string().optional(),
+      vault_id: z.string().optional(),
     },
     outputSchema: {
       query: z.string(),
@@ -263,8 +337,8 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Debugging search"),
-  }, async ({ query, scope }) => {
-    const structuredContent = await store.debugSearch(query, scope);
+  }, async ({ query, scope, vault_id }) => {
+    const structuredContent = await store.debugSearch(query, scope, vault_id);
     return jsonToolResult(structuredContent, describeSearchDebug(structuredContent));
   });
 
@@ -412,13 +486,23 @@ type FetchLikeResult = {
   };
 };
 type IndexStatusLike = {
+  vault_id?: string;
+  vault_name?: string;
   indexed_note_count: number;
   indexed_section_count: number;
   last_indexed_at: string | null;
   allowed_scopes: string[];
   excluded_scopes: string[];
   index_version: string;
+  policy_version?: string;
+  index_mode?: string;
   embedding_model: string | null;
+};
+type VaultSummaryLike = z.infer<typeof vaultSummarySchema>;
+type VaultStatusLike = IndexStatusLike & {
+  document_count: number;
+  generated_at: string | null;
+  stats: Record<string, unknown> | null;
 };
 type SearchDebugLike = {
   query: string;
@@ -495,16 +579,49 @@ function describeFetchedDocument(document: FetchLikeResult): string {
 
 function describeIndexStatus(status: IndexStatusLike): string {
   return [
-    "Vault index status",
+    `Vault index status${status.vault_id ? `: ${status.vault_id}` : ""}`,
     "",
     `Indexed notes: ${status.indexed_note_count}`,
     `Indexed sections: ${status.indexed_section_count}`,
     `Last indexed: ${status.last_indexed_at ?? "unknown"}`,
     `Index version: ${status.index_version}`,
+    `Policy: ${status.policy_version ?? "unknown"}${status.index_mode ? ` (${status.index_mode})` : ""}`,
     `Embeddings: ${status.embedding_model ?? "not configured"}`,
     "",
     `Allowed scopes: ${status.allowed_scopes.join(", ")}`,
     `Excluded scopes: ${status.excluded_scopes.join(", ")}`,
+  ].join("\n");
+}
+
+function describeVaults(vaults: VaultSummaryLike[]): string {
+  if (vaults.length === 0) {
+    return "Connected vaults\n\nNo vaults have synced to this MCP server yet.";
+  }
+
+  return [
+    "Connected vaults",
+    "",
+    ...vaults.flatMap((vault, index) => [
+      `${index + 1}. ${vault.vault_name}`,
+      `   Vault id: ${vault.vault_id}`,
+      `   Installation: ${vault.installation_id ?? "unknown"}`,
+      `   Mode: ${vault.index_mode ?? "unknown"}`,
+      `   Documents: ${vault.document_count}`,
+      `   Last indexed: ${vault.last_indexed_at ?? "unknown"}`,
+      "",
+    ]),
+    "Next action: pass vault_id to search/list/fetch tools when more than one vault is connected.",
+  ].join("\n").trim();
+}
+
+function describeVaultStatus(status: VaultStatusLike): string {
+  return [
+    describeIndexStatus(status),
+    "",
+    `Document count: ${status.document_count}`,
+    `Generated at: ${status.generated_at ?? "unknown"}`,
+    `Raw scanned files: ${typeof status.stats?.scanned_markdown === "number" ? status.stats.scanned_markdown : "unknown"}`,
+    `Denied files: ${typeof status.stats?.denied_markdown === "number" ? status.stats.denied_markdown : "unknown"}`,
   ].join("\n");
 }
 

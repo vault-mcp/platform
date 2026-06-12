@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { ServerConfig } from "./config.js";
 import { createApp } from "./app.js";
 import { JsonIndexStore } from "./store.js";
-import type { VaultDocument } from "@vault-mcp/vault-core";
+import type { VaultDocument } from "@vault-mcp/core";
 
 const servers: http.Server[] = [];
 const expectedTools = [
@@ -20,6 +20,8 @@ const expectedTools = [
   "fetch",
   "fetch_note_by_path",
   "get_index_status",
+  "list_vaults",
+  "get_vault_status",
   "debug_search",
 ];
 
@@ -281,6 +283,126 @@ describe("server MCP contract", () => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     expect(deletedFetch.status).toBe(404);
+  });
+
+  it("supports multi-vault sync, scoped MCP reads, and write proposal lifecycle", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const register = await fetch(`${baseUrl}/admin/vaults/register`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        vault_id: "vault-a",
+        vault_name: "Vault A",
+        installation_id: "install-a",
+        index_mode: "manual_only",
+      }),
+    });
+    expect(register.status).toBe(200);
+    const registerBody = await register.json() as { manifest: { vault_id: string; vault_name: string; index_mode: string } };
+    expect(registerBody.manifest).toMatchObject({
+      vault_id: "vault-a",
+      vault_name: "Vault A",
+      index_mode: "manual_only",
+    });
+
+    const vaultA = fixtureDocument({
+      id: "doc-a",
+      text: "Shared path content that belongs to Vault A only.",
+      contentHash: "hash-a",
+    });
+    const vaultB = fixtureDocument({
+      id: "doc-b",
+      text: "Shared path content that belongs to Vault B only.",
+      contentHash: "hash-b",
+    });
+
+    const syncA = await syncVault(baseUrl, config.syncToken, "vault-a", [vaultA]);
+    expect(syncA.status).toBe(200);
+    expect(syncA.body.vault.document_count).toBe(1);
+
+    const syncB = await syncVault(baseUrl, config.syncToken, "vault-b", [vaultB]);
+    expect(syncB.status).toBe(200);
+    expect(syncB.body.vault.document_count).toBe(1);
+
+    const vaults = await mcp(baseUrl, accessToken, 40, "tools/call", {
+      name: "list_vaults",
+      arguments: {},
+    });
+    expect(vaults.result.structuredContent.vaults.map((vault: { vault_id: string }) => vault.vault_id)).toEqual(["vault-a", "vault-b"]);
+
+    const scopedSearchA = await mcp(baseUrl, accessToken, 41, "tools/call", {
+      name: "search_notes",
+      arguments: { query: "shared path", vault_id: "vault-a", limit: 5 },
+    });
+    expect(scopedSearchA.result.structuredContent.results).toHaveLength(1);
+    expect(scopedSearchA.result.structuredContent.results[0].id).toBe("doc-a");
+    expect(scopedSearchA.result.structuredContent.results[0].vault_id).toBe("vault-a");
+
+    const crossVaultFetch = await mcp(baseUrl, accessToken, 42, "tools/call", {
+      name: "fetch",
+      arguments: { id: "doc-b", vault_id: "vault-a" },
+    });
+    expect(crossVaultFetch.result.isError).toBe(true);
+
+    const statusB = await mcp(baseUrl, accessToken, 43, "tools/call", {
+      name: "get_vault_status",
+      arguments: { vault_id: "vault-b" },
+    });
+    expect(statusB.result.structuredContent.vault_id).toBe("vault-b");
+    expect(statusB.result.structuredContent.document_count).toBe(1);
+
+    const createProposal = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        operation: "append_to_note",
+        target_path: "20 Projects/Vault MCP Connector/Project Home.md",
+        base_content_hash: "hash-a",
+        proposed_content: "\n- Proposed V2 note edit.",
+        requester: "test",
+      }),
+    });
+    expect(createProposal.status).toBe(201);
+    const proposalBody = await createProposal.json() as { proposal: { id: string; vault_id: string; status: string; audit: unknown[] } };
+    expect(proposalBody.proposal).toMatchObject({ vault_id: "vault-a", status: "pending" });
+    expect(proposalBody.proposal.audit).toHaveLength(1);
+
+    const approveProposal = await fetch(`${baseUrl}/admin/write-proposals/${proposalBody.proposal.id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: "approved",
+        actor: "plugin-test",
+        message: "Approved in test.",
+      }),
+    });
+    expect(approveProposal.status).toBe(200);
+    const approvedBody = await approveProposal.json() as { proposal: { status: string; audit: unknown[] } };
+    expect(approvedBody.proposal.status).toBe("approved");
+    expect(approvedBody.proposal.audit).toHaveLength(2);
+
+    const listedProposals = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(listedProposals.status).toBe(200);
+    const listedBody = await listedProposals.json() as { proposals: Array<{ id: string; status: string }> };
+    expect(listedBody.proposals.map((proposal) => ({ id: proposal.id, status: proposal.status }))).toEqual([
+      { id: proposalBody.proposal.id, status: "approved" },
+    ]);
   });
 
   it("handles allowed CORS preflight and rejects forbidden origins", async () => {
@@ -564,6 +686,21 @@ async function syncStatus(baseUrl: string, token: string, documents: VaultDocume
   return response.status;
 }
 
+async function syncVault(baseUrl: string, token: string, vaultId: string, documents: VaultDocument[]): Promise<{ status: number; body: any }> {
+  const response = await fetch(`${baseUrl}/admin/vaults/${vaultId}/sync`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ documents }),
+  });
+  return {
+    status: response.status,
+    body: await response.json(),
+  };
+}
+
 type JsonRpcTestResponse = {
   result: {
     tools?: Array<{ name: string; _meta?: Record<string, unknown> }>;
@@ -606,17 +743,20 @@ async function expectMcpSseProbe(baseUrl: string, token: string): Promise<void> 
 }
 
 function fixtureDocument(overrides: {
+  id?: string;
+  title?: string;
+  path?: string;
   contentHash?: string;
   text?: string;
   updatedAt?: string;
 } = {}): VaultDocument {
   return {
-    id: "doc-1",
-    title: "Vault MCP Connector",
+    id: overrides.id ?? "doc-1",
+    title: overrides.title ?? "Vault MCP Connector",
     text: overrides.text ?? "Remote MCP connector content with citations.",
     url: "https://example.test/notes/doc-1",
     metadata: {
-      path: "20 Projects/Vault MCP Connector/Project Home.md",
+      path: overrides.path ?? "20 Projects/Vault MCP Connector/Project Home.md",
       heading: null,
       tags: ["type/project", "status/active"],
       status: "active",

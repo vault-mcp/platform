@@ -1,0 +1,10 @@
+{
+  "id": "vault-mcp",
+  "name": "Vault MCP",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Sync approved Obsidian vault context to a private Vault MCP server.",
+  "author": "Vault MCP",
+  "authorUrl": "https://vault-mcp-connector.vercel.app",
+  "isDesktopOnly": true
+}

@@ -8,9 +8,14 @@ const outputRoot = path.join(repoRoot, "public", "wiki", "files");
 
 const authoredFiles = [
   "api/index.ts",
-  "apps/indexer/package.json",
-  "apps/indexer/src/index.ts",
-  "apps/indexer/tsconfig.json",
+  "apps/cli/package.json",
+  "apps/cli/src/index.ts",
+  "apps/cli/tsconfig.json",
+  "apps/obsidian-plugin/manifest.json",
+  "apps/obsidian-plugin/package.json",
+  "apps/obsidian-plugin/src/main.ts",
+  "apps/obsidian-plugin/styles.css",
+  "apps/obsidian-plugin/tsconfig.json",
   "apps/server/package.json",
   "apps/server/src/app.test.ts",
   "apps/server/src/app.ts",
@@ -27,21 +32,22 @@ const authoredFiles = [
   "docs/connector-setup.md",
   "docs/deployment.md",
   "docs/threat-model.md",
+  "docs/v2-migration.md",
   "package.json",
-  "packages/vault-core/package.json",
-  "packages/vault-core/src/hash.ts",
-  "packages/vault-core/src/index.ts",
-  "packages/vault-core/src/indexer.test.ts",
-  "packages/vault-core/src/indexer.ts",
-  "packages/vault-core/src/markdown.test.ts",
-  "packages/vault-core/src/markdown.ts",
-  "packages/vault-core/src/paths.ts",
-  "packages/vault-core/src/redaction.ts",
-  "packages/vault-core/src/search.ts",
-  "packages/vault-core/src/source-policy.test.ts",
-  "packages/vault-core/src/source-policy.ts",
-  "packages/vault-core/src/types.ts",
-  "packages/vault-core/tsconfig.json",
+  "packages/core/package.json",
+  "packages/core/src/hash.ts",
+  "packages/core/src/index.ts",
+  "packages/core/src/indexer.test.ts",
+  "packages/core/src/indexer.ts",
+  "packages/core/src/markdown.test.ts",
+  "packages/core/src/markdown.ts",
+  "packages/core/src/paths.ts",
+  "packages/core/src/redaction.ts",
+  "packages/core/src/search.ts",
+  "packages/core/src/source-policy.test.ts",
+  "packages/core/src/source-policy.ts",
+  "packages/core/src/types.ts",
+  "packages/core/tsconfig.json",
   "public/index.html",
   "public/wiki/index.html",
   "public/wiki/tutorial.html",
@@ -74,17 +80,19 @@ const sectionSummaries = [
   ["Auth", "apps/server/src/auth.ts", "Validates bearer tokens, OAuth JWTs, CORS origins, and protected-resource metadata."],
   ["OAuth", "apps/server/src/oauth.ts", "Self-hosted authorization server: metadata, dynamic client registration, authorize form, token exchange, refresh rotation, and replay protection."],
   ["Storage", "apps/server/src/store.ts", "Shared storage interface plus JSON and Postgres implementations."],
-  ["Indexer", "packages/vault-core/src/indexer.ts", "Walks the vault, applies policy, redacts secrets, chunks Markdown, and builds the derived index."],
-  ["Search", "packages/vault-core/src/search.ts", "Search, listing, active project discovery, status, diagnostics, and controlled fetch helpers."],
-  ["Source policy", "packages/vault-core/src/source-policy.ts", "Allowlist and denylist rules that decide what can enter the index."],
-  ["Markdown parsing", "packages/vault-core/src/markdown.ts", "Frontmatter parsing and heading-based chunking."],
+  ["Indexer", "packages/core/src/indexer.ts", "Walks the vault, applies policy, redacts secrets, chunks Markdown, and builds the derived index."],
+  ["Obsidian plugin", "apps/obsidian-plugin/src/main.ts", "Private-alpha plugin shell for indexing controls, sync, dashboard status, and future write approvals."],
+  ["Search", "packages/core/src/search.ts", "Search, listing, active project discovery, status, diagnostics, and controlled fetch helpers."],
+  ["Source policy", "packages/core/src/source-policy.ts", "Allowlist and denylist rules that decide what can enter the index."],
+  ["Markdown parsing", "packages/core/src/markdown.ts", "Frontmatter parsing and heading-based chunking."],
   ["Smoke gates", "scripts/smoke-local.mjs", "Local end-to-end gate for sync, auth, tools/list, search, fetch, and denied guesses."],
   ["Remote gate", "scripts/smoke-remote.mjs", "Production/remote gate for OAuth-protected deployed endpoints."],
 ];
 
 const curatedDeepDiveFiles = [
   "api/index.ts",
-  "apps/indexer/src/index.ts",
+  "apps/cli/src/index.ts",
+  "apps/obsidian-plugin/src/main.ts",
   "apps/server/src/app.ts",
   "apps/server/src/auth.ts",
   "apps/server/src/bootstrap.ts",
@@ -93,14 +101,14 @@ const curatedDeepDiveFiles = [
   "apps/server/src/mcp.ts",
   "apps/server/src/oauth.ts",
   "apps/server/src/store.ts",
-  "packages/vault-core/src/hash.ts",
-  "packages/vault-core/src/indexer.ts",
-  "packages/vault-core/src/markdown.ts",
-  "packages/vault-core/src/paths.ts",
-  "packages/vault-core/src/redaction.ts",
-  "packages/vault-core/src/search.ts",
-  "packages/vault-core/src/source-policy.ts",
-  "packages/vault-core/src/types.ts",
+  "packages/core/src/hash.ts",
+  "packages/core/src/indexer.ts",
+  "packages/core/src/markdown.ts",
+  "packages/core/src/paths.ts",
+  "packages/core/src/redaction.ts",
+  "packages/core/src/search.ts",
+  "packages/core/src/source-policy.ts",
+  "packages/core/src/types.ts",
 ];
 
 const curatedRanges = {
@@ -109,12 +117,12 @@ const curatedRanges = {
     [3, 3, "This builds the configured Express app at module load time for Vercel's serverless function runtime."],
     [5, 5, "This exports the Express app as the default Vercel Function handler."],
   ],
-  "apps/indexer/src/index.ts": [
-    [1, 6, "These imports give the CLI filesystem/path access, command-line parsing, and the shared buildVaultIndex function from vault-core."],
+  "apps/cli/src/index.ts": [
+    [1, 6, "These imports give the CLI filesystem/path access, command-line parsing, and the shared buildVaultIndex function from core."],
     [8, 10, "These lines locate the repository root and create the Commander program object that defines the CLI."],
     [12, 22, "This block defines every command-line option: vault path, vault name, public URL, output path, report path, server URL, and sync token."],
     [24, 32, "This type assertion tells TypeScript the shape of parsed CLI options so the rest of the file can use named option fields safely."],
-    [34, 39, "This calls buildVaultIndex with the chosen vault settings. At this point scanning, policy checks, redaction, chunking, and metadata creation happen in vault-core."],
+    [34, 39, "This calls buildVaultIndex with the chosen vault settings. At this point scanning, policy checks, redaction, chunking, and metadata creation happen in core."],
     [41, 45, "If --out was provided, this block writes the generated index JSON to disk, creating parent folders first."],
     [47, 69, "If --server was provided, this block posts the generated documents, timestamp, and stats to the remote /admin/sync endpoint using the admin sync token."],
     [71, 75, "This prints a compact JSON summary so a human or automation can see when the index was generated, which vault was scanned, and what the stats were."],
@@ -189,7 +197,7 @@ const curatedRanges = {
     [470, 512, "These helpers format index status, debug-search output, match reasons, and long text snippets for human-readable tool responses."],
     [515, 597, "This returns the embedded HTML component. It reads ChatGPT tool output, renders result/note/fetch cards, and falls back to JSON or summary text when the result shape is unknown."],
   ],
-  "packages/vault-core/src/search.ts": [
+  "packages/core/src/search.ts": [
     [15, 37, "This line is part of the search constants: default limits, the public index version, safe policy scope labels, and small synonym expansions used during search."],
     [39, 41, "This compatibility function keeps older callers working by sending basic search requests to section search."],
     [43, 58, "This line is part of note-level search: normalize the query, expand synonyms, group chunks into notes, score each note, filter, sort, limit, and format results."],
@@ -220,7 +228,7 @@ const curatedRanges = {
     [487, 495, "This helper adds a small freshness boost for recently updated notes while keeping older notes searchable."],
     [497, 511, "These final helpers round scores, normalize strings, expose the Obsidian URI at the top level, and escape heading text used in a regular expression."],
   ],
-  "packages/vault-core/src/indexer.ts": [
+  "packages/core/src/indexer.ts": [
     [10, 16, "This type defines the inputs for building an index: vault folder, display vault name, public server URL, clock override for tests, and optional report path."],
     [18, 32, "This line initializes an index build: normalize paths, choose defaults, list Markdown files, prepare the output document array, and initialize stats."],
     [34, 40, "This line starts the per-file loop and applies quick path-only deny checks before reading file contents, preventing obvious denied paths from being processed."],
@@ -239,7 +247,7 @@ const curatedRanges = {
     [66, 73, "This line starts the local JSON store and its in-memory state. It is used for local development and tests."],
     [75, 87, "This line loads a local JSON index file if it exists. Missing files are allowed so a fresh local server can start empty."],
     [89, 95, "This line replaces the local JSON index and writes a pretty JSON snapshot to disk, making sync a full replacement instead of an append."],
-    [97, 147, "These methods expose health, search, fetch, listing, status, and debug operations by delegating to pure vault-core functions over the in-memory document array."],
+    [97, 147, "These methods expose health, search, fetch, listing, status, and debug operations by delegating to pure core functions over the in-memory document array."],
     [149, 172, "These methods store OAuth client registrations and consume authorization-code or refresh-token ids in memory so local OAuth flows can prevent replay."],
     [174, 187, "This helper creates the JSON snapshot written to disk, filling in fallback stats if the sync payload did not include them."],
     [189, 196, "This line starts the Postgres-backed store used in production and creates a connection pool from DATABASE_URL."],
@@ -247,7 +255,7 @@ const curatedRanges = {
     [251, 253, "This closes the Postgres connection pool when the server shuts down or tests clean up."],
     [255, 283, "This line performs production sync as one transaction: delete existing documents, insert the new complete set, update metadata, commit, or roll back on failure."],
     [285, 292, "This line reports production health by counting indexed documents and returning the latest generated_at and stats values."],
-    [294, 350, "These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse vault-core logic so JSON and Postgres behavior stay aligned."],
+    [294, 350, "These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned."],
     [353, 388, "These methods persist and retrieve dynamic OAuth client registrations in Postgres so clients keep stable client ids across serverless invocations."],
     [390, 399, "This method prevents OAuth replay in production by deleting expired token-use rows, inserting the current jti, and returning false if that jti was already used."],
     [401, 418, "This helper loads all indexed documents from Postgres in path and chunk order and restores the top-level Obsidian URI expected by MCP clients."],
@@ -274,12 +282,12 @@ const curatedRanges = {
     [420, 445, "These low-level helpers compute PKCE challenges, encode the JWT secret, compare passwords safely, and escape HTML in the authorization form."],
     [447, 464, "These error helpers turn expected OAuth failures into JSON errors and unexpected failures into server_error responses."],
   ],
-  "packages/vault-core/src/hash.ts": [
+  "packages/core/src/hash.ts": [
     [1, 1, "This imports Node's crypto hash function so the indexer can create content hashes and stable ids."],
     [3, 5, "This returns a full SHA-256 hex digest for text, used as a content hash for indexed note text."],
     [7, 9, "This creates a shorter stable id by hashing a deterministic string and keeping the first 24 hex characters."],
   ],
-  "packages/vault-core/src/markdown.ts": [
+  "packages/core/src/markdown.ts": [
     [4, 13, "This type describes what the Markdown parser extracts from one note: frontmatter, body, title, tags, status, headings, wikilinks, and tasks."],
     [15, 33, "This function parses a Markdown note with gray-matter, trims the body, extracts title/tags/status/headings/wikilinks/tasks, and returns one normalized object."],
     [35, 54, "This function splits parsed Markdown into heading sections and further slices oversized sections into chunks so the MCP server returns manageable text blocks."],
@@ -289,19 +297,19 @@ const curatedRanges = {
     [102, 128, "This helper turns a note body into heading-based sections, preserving heading lines and associating following text with the current heading."],
     [130, 132, "This helper trims a tag and removes a leading # so tags from frontmatter and inline text compare the same way."],
   ],
-  "packages/vault-core/src/paths.ts": [
+  "packages/core/src/paths.ts": [
     [1, 1, "This imports Node path helpers so filesystem paths can be converted into vault-style paths."],
     [3, 5, "This converts OS-specific path separators into forward slashes, matching Obsidian vault path style."],
     [7, 9, "This converts an absolute file path into a vault-relative path suitable for policy checks and metadata."],
     [11, 13, "This builds an obsidian://open URI that can open the source note in the named Obsidian vault."],
     [15, 17, "This builds the private /notes/:id citation URL served by the hosted connector."],
   ],
-  "packages/vault-core/src/redaction.ts": [
+  "packages/core/src/redaction.ts": [
     [1, 5, "This type describes redaction output: the redacted text, total replacement count, and counts per pattern."],
     [7, 28, "This list defines credential-like patterns removed before indexing, including private keys, bearer tokens, env secrets, password fields, and SSH public keys."],
     [30, 46, "This function applies every sensitive pattern, replaces matches with [REDACTED:name], counts replacements by pattern, and returns the redacted note text."],
   ],
-  "packages/vault-core/src/source-policy.ts": [
+  "packages/core/src/source-policy.ts": [
     [3, 14, "These path prefixes are denied before content is indexed, covering credentials, daily notes, finance, identity, legal, vehicles, faith, and archives."],
     [16, 18, "This exact-path denylist blocks individual sensitive or review-gated files that should never enter V1."],
     [20, 30, "These tag fragments deny notes marked sensitive, credential-related, financial, legal, identity, review, or Excalidraw."],
@@ -313,7 +321,7 @@ const curatedRanges = {
     [92, 100, "These final checks allow selected references, explicitly deny unselected 40 Reference notes, and deny everything else by default."],
     [103, 113, "These helpers build allow/deny decision objects and normalize tags for case-insensitive tag checks."],
   ],
-  "packages/vault-core/src/types.ts": [
+  "packages/core/src/types.ts": [
     [1, 11, "These types describe source-policy decisions and the policy metadata stored on every indexed document."],
     [13, 24, "This metadata type records where an indexed chunk came from: path, heading, note title, chunk index, tags, status, timestamp, content hash, Obsidian URI, and policy evidence."],
     [26, 33, "This type is the core indexed document shape: stable id, title, text, private citation URL, optional Obsidian URI, and metadata."],
@@ -545,7 +553,7 @@ function pageShell({ title, body }) {
   </style>
 </head>
 <body>
-  <main>${body}
+  <main>${body.trimEnd()}
   </main>
 </body>
 </html>
@@ -827,13 +835,13 @@ function summaryFor(filePath) {
     ["apps/server/src/mcp.ts", "MCP server, tool definitions, schemas, and Streamable HTTP transport."],
     ["apps/server/src/oauth.ts", "Self-hosted OAuth registration, authorization, token, refresh, and replay protection routes."],
     ["apps/server/src/store.ts", "Storage interface plus JSON and Postgres index stores."],
-    ["apps/indexer/src/index.ts", "CLI for building and optionally syncing the vault index."],
-    ["packages/vault-core/src/indexer.ts", "Vault scanner, source policy application, redaction, chunking, metadata, and report output."],
-    ["packages/vault-core/src/search.ts", "Read-only search, list, recent, active project, fetch, status, and diagnostics helpers."],
-    ["packages/vault-core/src/source-policy.ts", "V1 allowlist and denylist rules."],
-    ["packages/vault-core/src/markdown.ts", "Markdown frontmatter parsing and heading chunking."],
-    ["packages/vault-core/src/redaction.ts", "Credential-like string redaction before indexing."],
-    ["packages/vault-core/src/types.ts", "Shared TypeScript types for index documents, search results, and stats."],
+    ["apps/cli/src/index.ts", "CLI for building and optionally syncing the vault index."],
+    ["packages/core/src/indexer.ts", "Vault scanner, source policy application, redaction, chunking, metadata, and report output."],
+    ["packages/core/src/search.ts", "Read-only search, list, recent, active project, fetch, status, and diagnostics helpers."],
+    ["packages/core/src/source-policy.ts", "V1 allowlist and denylist rules."],
+    ["packages/core/src/markdown.ts", "Markdown frontmatter parsing and heading chunking."],
+    ["packages/core/src/redaction.ts", "Credential-like string redaction before indexing."],
+    ["packages/core/src/types.ts", "Shared TypeScript types for index documents, search results, and stats."],
     ["public/index.html", "Public landing page for the connector."],
     ["public/wiki/index.html", "Conceptual wiki landing page."],
   ]);

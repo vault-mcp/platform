@@ -1,0 +1,19 @@
+{
+  "name": "@vault-mcp/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "vault-mcp-indexer": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "node --import tsx src/index.ts"
+  },
+  "dependencies": {
+    "@vault-mcp/core": "0.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

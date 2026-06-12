@@ -1,8 +1,9 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/vault-core" },
-    { "path": "./apps/indexer" },
+    { "path": "./packages/core" },
+    { "path": "./apps/cli" },
+    { "path": "./apps/obsidian-plugin" },
     { "path": "./apps/server" }
   ]
 }

@@ -98,12 +98,12 @@
             </tr>
             <tr>
               <td class="line-number" id="L5"><a href="#L5">5</a></td>
-              <td class="source"><pre>COPY apps/indexer/package.json apps/indexer/package.json</pre></td>
+              <td class="source"><pre>COPY apps/cli/package.json apps/cli/package.json</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
               <td class="line-number" id="L6"><a href="#L6">6</a></td>
-              <td class="source"><pre>COPY packages/vault-core/package.json packages/vault-core/package.json</pre></td>
+              <td class="source"><pre>COPY packages/core/package.json packages/core/package.json</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
@@ -173,12 +173,12 @@
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
-              <td class="source"><pre>COPY apps/indexer/package.json apps/indexer/package.json</pre></td>
+              <td class="source"><pre>COPY apps/cli/package.json apps/cli/package.json</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
-              <td class="source"><pre>COPY packages/vault-core/package.json packages/vault-core/package.json</pre></td>
+              <td class="source"><pre>COPY packages/core/package.json packages/core/package.json</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
@@ -193,12 +193,12 @@
             </tr>
             <tr>
               <td class="line-number" id="L24"><a href="#L24">24</a></td>
-              <td class="source"><pre>COPY --from=build /app/apps/indexer/dist apps/indexer/dist</pre></td>
+              <td class="source"><pre>COPY --from=build /app/apps/cli/dist apps/cli/dist</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
               <td class="line-number" id="L25"><a href="#L25">25</a></td>
-              <td class="source"><pre>COPY --from=build /app/packages/vault-core/dist packages/vault-core/dist</pre></td>
+              <td class="source"><pre>COPY --from=build /app/packages/core/dist packages/core/dist</pre></td>
               <td>Copies files from the repository into the container image.</td>
             </tr>
             <tr>
@@ -213,7 +213,6 @@
             </tr></tbody>
         </table>
       </section>
-    
   </main>
 </body>
 </html>

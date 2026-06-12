@@ -1,0 +1,20 @@
+.vault-mcp-dashboard {
+  display: grid;
+  gap: 12px;
+}
+
+.vault-mcp-dashboard__stat {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.vault-mcp-dashboard__label {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.vault-mcp-dashboard__value {
+  font-size: var(--font-ui-large);
+  font-weight: 700;
+}

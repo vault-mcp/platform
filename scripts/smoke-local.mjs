@@ -19,6 +19,8 @@ const expectedTools = [
   "fetch",
   "fetch_note_by_path",
   "get_index_status",
+  "list_vaults",
+  "get_vault_status",
   "debug_search",
 ];
 
@@ -69,6 +71,12 @@ try {
   const tools = await mcp(1, "tools/list", {});
   assert(tools.result.tools.map((tool) => tool.name).join(",") === expectedTools.join(","), "expected expanded read-only vault tools");
 
+  const vaults = await mcp(10, "tools/call", {
+    name: "list_vaults",
+    arguments: {},
+  });
+  assert(vaults.result.structuredContent.vaults[0]?.vault_id === "default", "expected default synced vault to be listed");
+
   const search = await mcp(2, "tools/call", {
     name: "search",
     arguments: { query: "Vault MCP Connector", limit: 1 },
@@ -112,7 +120,7 @@ try {
 
 async function runIndexer() {
   await run("node", [
-    "apps/indexer/dist/index.js",
+    "apps/cli/dist/index.js",
     "--vault",
     vaultRoot,
     "--vault-name",

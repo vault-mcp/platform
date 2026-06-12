@@ -212,7 +212,7 @@
       <a href="#repo-map">Repository Map</a>
       <a href="#source-reference">Source Appendix</a>
       <a href="#server-files">Server Files</a>
-      <a href="#vault-core-files">Vault Core Files</a>
+      <a href="#core-files">Vault Core Files</a>
       <a href="#indexer-files">Indexer Files</a>
       <a href="#scripts-files">Scripts And Deploy</a>
       <a href="#config-files">Config Files</a>
@@ -242,7 +242,7 @@
         <table>
           <thead><tr><th>Part</th><th>Plain-English job</th><th>Main files</th></tr></thead>
           <tbody>
-            <tr><td>Indexer</td><td>Walks through the vault copy, reads Markdown, applies allow/deny policy, creates searchable chunks.</td><td><code>apps/indexer/src/index.ts</code>, <code>packages/vault-core/src/indexer.ts</code></td></tr>
+            <tr><td>Indexer</td><td>Walks through the vault copy, reads Markdown, applies allow/deny policy, creates searchable chunks.</td><td><code>apps/cli/src/index.ts</code>, <code>packages/core/src/indexer.ts</code></td></tr>
             <tr><td>Server</td><td>Hosts the API, validates auth, stores the index, and answers MCP requests.</td><td><code>apps/server/src/app.ts</code>, <code>apps/server/src/mcp.ts</code>, <code>apps/server/src/store.ts</code></td></tr>
             <tr><td>Auth</td><td>Protects the server using OAuth for clients and a separate sync token for admin sync.</td><td><code>apps/server/src/auth.ts</code>, <code>apps/server/src/oauth.ts</code></td></tr>
           </tbody>
@@ -332,9 +332,9 @@
           <thead><tr><th>Path</th><th>What it contains</th><th>Hand-authored?</th></tr></thead>
           <tbody>
             <tr><td><code>api/</code></td><td>Vercel Function entrypoint.</td><td>Yes</td></tr>
-            <tr><td><code>apps/indexer/</code></td><td>Command-line app that builds/syncs the vault index.</td><td>Yes</td></tr>
+            <tr><td><code>apps/cli/</code></td><td>Command-line app that builds/syncs the vault index.</td><td>Yes</td></tr>
             <tr><td><code>apps/server/</code></td><td>Express server, MCP routes, auth, OAuth, storage, tests.</td><td>Yes</td></tr>
-            <tr><td><code>packages/vault-core/</code></td><td>Pure vault logic: parsing, policy, hashing, search, types.</td><td>Yes</td></tr>
+            <tr><td><code>packages/core/</code></td><td>Pure vault logic: parsing, policy, hashing, search, types.</td><td>Yes</td></tr>
             <tr><td><code>scripts/</code></td><td>Smoke tests and deployment automation.</td><td>Yes</td></tr>
             <tr><td><code>docs/</code></td><td>Planning, deployment, acceptance, and threat-model docs.</td><td>Yes</td></tr>
             <tr><td><code>public/wiki/index.html</code></td><td>This conceptual wiki page.</td><td>Yes</td></tr>
@@ -492,14 +492,14 @@
         </details>
       </section>
 
-      <section id="vault-core-files">
+      <section id="core-files">
         <h2>Vault Core Files</h2>
 
         <details class="file" open>
-          <summary><code>packages/vault-core/src/indexer.ts</code> - build the vault index</summary>
+          <summary><code>packages/core/src/indexer.ts</code> - build the vault index</summary>
           <div class="file-body">
             <table class="line-map">
-              <tr><td>1-6</td><td>Imports filesystem/path helpers and vault-core modules for parsing, policy, hashing, URLs, and types.</td></tr>
+              <tr><td>1-6</td><td>Imports filesystem/path helpers and core modules for parsing, policy, hashing, URLs, and types.</td></tr>
               <tr><td>8-13</td><td>Defines options accepted by <code>buildVaultIndex</code>.</td></tr>
               <tr><td>15-29</td><td>Normalizes inputs, lists Markdown files, and initializes stats.</td></tr>
               <tr><td>31-45</td><td>Loops through files, checks quick path-only deny rules, reads Markdown, and safely parses it.</td></tr>
@@ -512,7 +512,7 @@
         </details>
 
         <details class="file">
-          <summary><code>packages/vault-core/src/markdown.ts</code> - parse and chunk Markdown</summary>
+          <summary><code>packages/core/src/markdown.ts</code> - parse and chunk Markdown</summary>
           <div class="file-body">
             <table class="line-map">
               <tr><td>1-2</td><td>Imports path and gray-matter frontmatter parser.</td></tr>
@@ -526,7 +526,7 @@
         </details>
 
         <details class="file">
-          <summary><code>packages/vault-core/src/source-policy.ts</code> - allowlist and denylist</summary>
+          <summary><code>packages/core/src/source-policy.ts</code> - allowlist and denylist</summary>
           <div class="file-body">
             <p>This file is the main safety boundary before content enters the remote index.</p>
             <table class="line-map">
@@ -551,7 +551,7 @@
                 <tr><td><code>types.ts</code></td><td>Defines shared TypeScript shapes for documents, metadata, search responses, index stats, and sync payloads.</td></tr>
                 <tr><td><code>paths.ts</code></td><td>Converts filesystem paths to vault-style paths, creates Obsidian URIs, and creates private note URLs.</td></tr>
                 <tr><td><code>hash.ts</code></td><td>Creates SHA-256 hashes and 24-character stable ids.</td></tr>
-                <tr><td><code>index.ts</code></td><td>Re-exports vault-core modules so apps can import from one package entrypoint.</td></tr>
+                <tr><td><code>index.ts</code></td><td>Re-exports core modules so apps can import from one package entrypoint.</td></tr>
               </tbody>
             </table>
           </div>
@@ -561,7 +561,7 @@
       <section id="indexer-files">
         <h2>Indexer Files</h2>
         <details class="file" open>
-          <summary><code>apps/indexer/src/index.ts</code> - command-line index builder</summary>
+          <summary><code>apps/cli/src/index.ts</code> - command-line index builder</summary>
           <div class="file-body">
             <table class="line-map">
               <tr><td>1</td><td>Shebang so the file can run as a command after build.</td></tr>
@@ -620,7 +620,7 @@
             <tr><td><code>tsconfig.json</code></td><td>Root TypeScript project references.</td></tr>
             <tr><td><code>tsconfig.base.json</code></td><td>Shared TypeScript compiler settings.</td></tr>
             <tr><td><code>apps/*/tsconfig.json</code></td><td>Per-app TypeScript build settings.</td></tr>
-            <tr><td><code>packages/vault-core/tsconfig.json</code></td><td>Package TypeScript build settings.</td></tr>
+            <tr><td><code>packages/core/tsconfig.json</code></td><td>Package TypeScript build settings.</td></tr>
             <tr><td><code>vitest.config.ts</code></td><td>Test runner configuration.</td></tr>
             <tr><td><code>vercel.json</code></td><td>Vercel build command, function timeout, and rewrite all requests into the function.</td></tr>
             <tr><td><code>api/index.ts</code></td><td>Vercel Function entrypoint that creates the configured Express app.</td></tr>

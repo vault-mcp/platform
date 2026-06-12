@@ -60,7 +60,7 @@
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
         <h1>Source appendix.</h1>
-        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 51 authored text files and 9,468 lines with explanatory notes beside source lines.</p>
+        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 57 authored text files and 11,253 lines with explanatory notes beside source lines.</p>
         <p><a href="/wiki/tutorial.html">Start with the rebuild tutorial</a> · <a href="/wiki/">Back to the wiki home</a></p>
       </section>
 
@@ -109,22 +109,27 @@
         <article class="card">
           <h3>Indexer</h3>
           <p>Walks the vault, applies policy, redacts secrets, chunks Markdown, and builds the derived index.</p>
-          <a href="packages-vault-core-src-indexer-ts.html"><code>packages/vault-core/src/indexer.ts</code></a>
+          <a href="packages-core-src-indexer-ts.html"><code>packages/core/src/indexer.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Obsidian plugin</h3>
+          <p>Private-alpha plugin shell for indexing controls, sync, dashboard status, and future write approvals.</p>
+          <a href="apps-obsidian-plugin-src-main-ts.html"><code>apps/obsidian-plugin/src/main.ts</code></a>
         </article>
         <article class="card">
           <h3>Search</h3>
           <p>Search, listing, active project discovery, status, diagnostics, and controlled fetch helpers.</p>
-          <a href="packages-vault-core-src-search-ts.html"><code>packages/vault-core/src/search.ts</code></a>
+          <a href="packages-core-src-search-ts.html"><code>packages/core/src/search.ts</code></a>
         </article>
         <article class="card">
           <h3>Source policy</h3>
           <p>Allowlist and denylist rules that decide what can enter the index.</p>
-          <a href="packages-vault-core-src-source-policy-ts.html"><code>packages/vault-core/src/source-policy.ts</code></a>
+          <a href="packages-core-src-source-policy-ts.html"><code>packages/core/src/source-policy.ts</code></a>
         </article>
         <article class="card">
           <h3>Markdown parsing</h3>
           <p>Frontmatter parsing and heading-based chunking.</p>
-          <a href="packages-vault-core-src-markdown-ts.html"><code>packages/vault-core/src/markdown.ts</code></a>
+          <a href="packages-core-src-markdown-ts.html"><code>packages/core/src/markdown.ts</code></a>
         </article>
         <article class="card">
           <h3>Smoke gates</h3>
@@ -149,10 +154,16 @@
           <a href="api-index-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>apps/indexer/src/index.ts</code></h3>
+          <h3><code>apps/cli/src/index.ts</code></h3>
           <p>CLI for building and optionally syncing the vault index.</p>
           <p>8 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="apps-indexer-src-index-ts.html">Open curated file reference</a>
+          <a href="apps-cli-src-index-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/obsidian-plugin/src/main.ts</code></h3>
+          <p>Authored project file.</p>
+          <p>0 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-obsidian-plugin-src-main-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
           <h3><code>apps/server/src/app.ts</code></h3>
@@ -203,52 +214,52 @@
           <a href="apps-server-src-store-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/hash.ts</code></h3>
+          <h3><code>packages/core/src/hash.ts</code></h3>
           <p>Authored project file.</p>
           <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-hash-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-hash-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/indexer.ts</code></h3>
+          <h3><code>packages/core/src/indexer.ts</code></h3>
           <p>Vault scanner, source policy application, redaction, chunking, metadata, and report output.</p>
           <p>12 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-indexer-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-indexer-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/markdown.ts</code></h3>
+          <h3><code>packages/core/src/markdown.ts</code></h3>
           <p>Markdown frontmatter parsing and heading chunking.</p>
           <p>8 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-markdown-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-markdown-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/paths.ts</code></h3>
+          <h3><code>packages/core/src/paths.ts</code></h3>
           <p>Authored project file.</p>
           <p>5 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-paths-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-paths-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/redaction.ts</code></h3>
+          <h3><code>packages/core/src/redaction.ts</code></h3>
           <p>Credential-like string redaction before indexing.</p>
           <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-redaction-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-redaction-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/search.ts</code></h3>
+          <h3><code>packages/core/src/search.ts</code></h3>
           <p>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</p>
           <p>29 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-search-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-search-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/source-policy.ts</code></h3>
+          <h3><code>packages/core/src/source-policy.ts</code></h3>
           <p>V1 allowlist and denylist rules.</p>
           <p>10 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-source-policy-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-source-policy-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
-          <h3><code>packages/vault-core/src/types.ts</code></h3>
+          <h3><code>packages/core/src/types.ts</code></h3>
           <p>Shared TypeScript types for index documents, search results, and stats.</p>
           <p>9 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
-          <a href="packages-vault-core-src-types-ts.html">Open curated file reference</a>
+          <a href="packages-core-src-types-ts.html">Open curated file reference</a>
         </article></div>
       </section>
 
@@ -263,18 +274,43 @@
               <td>Vercel Function entrypoint that creates the configured Express app.</td>
             </tr>
             <tr>
-              <td><a href="apps-indexer-package-json.html"><code>apps/indexer/package.json</code></a></td>
+              <td><a href="apps-cli-package-json.html"><code>apps/cli/package.json</code></a></td>
               <td>19</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
-              <td><a href="apps-indexer-src-index-ts.html"><code>apps/indexer/src/index.ts</code></a></td>
-              <td>75</td>
+              <td><a href="apps-cli-src-index-ts.html"><code>apps/cli/src/index.ts</code></a></td>
+              <td>95</td>
               <td>CLI for building and optionally syncing the vault index.</td>
             </tr>
             <tr>
-              <td><a href="apps-indexer-tsconfig-json.html"><code>apps/indexer/tsconfig.json</code></a></td>
+              <td><a href="apps-cli-tsconfig-json.html"><code>apps/cli/tsconfig.json</code></a></td>
               <td>12</td>
+              <td>TypeScript compiler configuration.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-obsidian-plugin-manifest-json.html"><code>apps/obsidian-plugin/manifest.json</code></a></td>
+              <td>10</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-obsidian-plugin-package-json.html"><code>apps/obsidian-plugin/package.json</code></a></td>
+              <td>18</td>
+              <td>Package metadata, dependencies, and npm scripts.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-obsidian-plugin-src-main-ts.html"><code>apps/obsidian-plugin/src/main.ts</code></a></td>
+              <td>521</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-obsidian-plugin-styles-css.html"><code>apps/obsidian-plugin/styles.css</code></a></td>
+              <td>20</td>
+              <td>Authored project file.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-obsidian-plugin-tsconfig-json.html"><code>apps/obsidian-plugin/tsconfig.json</code></a></td>
+              <td>15</td>
               <td>TypeScript compiler configuration.</td>
             </tr>
             <tr>
@@ -284,12 +320,12 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-app-test-ts.html"><code>apps/server/src/app.test.ts</code></a></td>
-              <td>638</td>
+              <td>778</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
               <td><a href="apps-server-src-app-ts.html"><code>apps/server/src/app.ts</code></a></td>
-              <td>148</td>
+              <td>284</td>
               <td>Express application and HTTP routes for the deployed service.</td>
             </tr>
             <tr>
@@ -314,7 +350,7 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-mcp-ts.html"><code>apps/server/src/mcp.ts</code></a></td>
-              <td>847</td>
+              <td>964</td>
               <td>MCP server, tool definitions, schemas, and Streamable HTTP transport.</td>
             </tr>
             <tr>
@@ -324,7 +360,7 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-store-ts.html"><code>apps/server/src/store.ts</code></a></td>
-              <td>419</td>
+              <td>712</td>
               <td>Storage interface plus JSON and Postgres index stores.</td>
             </tr>
             <tr>
@@ -358,77 +394,82 @@
               <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
             </tr>
             <tr>
+              <td><a href="docs-v2-migration-md.html"><code>docs/v2-migration.md</code></a></td>
+              <td>85</td>
+              <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
+            </tr>
+            <tr>
               <td><a href="package-json.html"><code>package.json</code></a></td>
-              <td>44</td>
+              <td>45</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-package-json.html"><code>packages/vault-core/package.json</code></a></td>
-              <td>12</td>
+              <td><a href="packages-core-package-json.html"><code>packages/core/package.json</code></a></td>
+              <td>34</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-hash-ts.html"><code>packages/vault-core/src/hash.ts</code></a></td>
+              <td><a href="packages-core-src-hash-ts.html"><code>packages/core/src/hash.ts</code></a></td>
               <td>9</td>
               <td>Authored project file.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-index-ts.html"><code>packages/vault-core/src/index.ts</code></a></td>
+              <td><a href="packages-core-src-index-ts.html"><code>packages/core/src/index.ts</code></a></td>
               <td>8</td>
               <td>Authored project file.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-indexer-test-ts.html"><code>packages/vault-core/src/indexer.test.ts</code></a></td>
+              <td><a href="packages-core-src-indexer-test-ts.html"><code>packages/core/src/indexer.test.ts</code></a></td>
               <td>211</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-indexer-ts.html"><code>packages/vault-core/src/indexer.ts</code></a></td>
-              <td>194</td>
+              <td><a href="packages-core-src-indexer-ts.html"><code>packages/core/src/indexer.ts</code></a></td>
+              <td>241</td>
               <td>Vault scanner, source policy application, redaction, chunking, metadata, and report output.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-markdown-test-ts.html"><code>packages/vault-core/src/markdown.test.ts</code></a></td>
+              <td><a href="packages-core-src-markdown-test-ts.html"><code>packages/core/src/markdown.test.ts</code></a></td>
               <td>44</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-markdown-ts.html"><code>packages/vault-core/src/markdown.ts</code></a></td>
+              <td><a href="packages-core-src-markdown-ts.html"><code>packages/core/src/markdown.ts</code></a></td>
               <td>132</td>
               <td>Markdown frontmatter parsing and heading chunking.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-paths-ts.html"><code>packages/vault-core/src/paths.ts</code></a></td>
+              <td><a href="packages-core-src-paths-ts.html"><code>packages/core/src/paths.ts</code></a></td>
               <td>17</td>
               <td>Authored project file.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-redaction-ts.html"><code>packages/vault-core/src/redaction.ts</code></a></td>
+              <td><a href="packages-core-src-redaction-ts.html"><code>packages/core/src/redaction.ts</code></a></td>
               <td>46</td>
               <td>Credential-like string redaction before indexing.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-search-ts.html"><code>packages/vault-core/src/search.ts</code></a></td>
-              <td>545</td>
+              <td><a href="packages-core-src-search-ts.html"><code>packages/core/src/search.ts</code></a></td>
+              <td>572</td>
               <td>Read-only search, list, recent, active project, fetch, status, and diagnostics helpers.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-source-policy-test-ts.html"><code>packages/vault-core/src/source-policy.test.ts</code></a></td>
-              <td>65</td>
+              <td><a href="packages-core-src-source-policy-test-ts.html"><code>packages/core/src/source-policy.test.ts</code></a></td>
+              <td>99</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-source-policy-ts.html"><code>packages/vault-core/src/source-policy.ts</code></a></td>
-              <td>113</td>
+              <td><a href="packages-core-src-source-policy-ts.html"><code>packages/core/src/source-policy.ts</code></a></td>
+              <td>244</td>
               <td>V1 allowlist and denylist rules.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-src-types-ts.html"><code>packages/vault-core/src/types.ts</code></a></td>
-              <td>139</td>
+              <td><a href="packages-core-src-types-ts.html"><code>packages/core/src/types.ts</code></a></td>
+              <td>264</td>
               <td>Shared TypeScript types for index documents, search results, and stats.</td>
             </tr>
             <tr>
-              <td><a href="packages-vault-core-tsconfig-json.html"><code>packages/vault-core/tsconfig.json</code></a></td>
+              <td><a href="packages-core-tsconfig-json.html"><code>packages/core/tsconfig.json</code></a></td>
               <td>9</td>
               <td>TypeScript compiler configuration.</td>
             </tr>
@@ -454,12 +495,12 @@
             </tr>
             <tr>
               <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
-              <td>888</td>
+              <td>896</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
               <td><a href="scripts-smoke-local-mjs.html"><code>scripts/smoke-local.mjs</code></a></td>
-              <td>214</td>
+              <td>222</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
@@ -469,17 +510,17 @@
             </tr>
             <tr>
               <td><a href="scripts-smoke-oauth-local-mjs.html"><code>scripts/smoke-oauth-local.mjs</code></a></td>
-              <td>212</td>
+              <td>214</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
               <td><a href="scripts-smoke-postgres-local-mjs.html"><code>scripts/smoke-postgres-local.mjs</code></a></td>
-              <td>194</td>
+              <td>196</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
               <td><a href="scripts-smoke-remote-mjs.html"><code>scripts/smoke-remote.mjs</code></a></td>
-              <td>182</td>
+              <td>184</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
@@ -494,7 +535,7 @@
             </tr>
             <tr>
               <td><a href="tsconfig-json.html"><code>tsconfig.json</code></a></td>
-              <td>8</td>
+              <td>9</td>
               <td>TypeScript compiler configuration.</td>
             </tr>
             <tr>
@@ -543,7 +584,6 @@
             </tr></tbody>
         </table>
       </section>
-    
   </main>
 </body>
 </html>
