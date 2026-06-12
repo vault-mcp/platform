@@ -27,7 +27,8 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 
 - Renamed `packages/vault-core` to `packages/core`.
 - Renamed `apps/indexer` to `apps/cli`.
-- Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, and write-mode placeholders.
+- Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, and a review queue view.
+- Added `scripts/install-obsidian-plugin.mjs` and `npm run plugin:install-copy` for installing the built plugin into the copied development vault.
 - Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.
 - Added configurable index modes:
   - `rules_plus_approvals`
@@ -67,6 +68,7 @@ Current local gates:
 - `npm run check:api`
 - `npm run smoke:local`
 - `npm run smoke:oauth-local`
+- `npm run plugin:install-copy`
 
 The local Postgres gate still requires `POSTGRES_SMOKE_DATABASE_URL`:
 
@@ -83,3 +85,5 @@ Migration gates after pushing to `vault-mcp/platform`:
 ## Production Safety
 
 Until the org migration is verified, keep the existing `TristanEDU/vault-mcp-connector` repo and production Vercel alias as fallback. Do not change production env vars or the `vault-mcp-connector.vercel.app` alias as part of source migration.
+
+For current Obsidian plugin testing steps, see `docs/plugin-private-alpha.md`.

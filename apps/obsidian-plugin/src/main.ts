@@ -35,6 +35,37 @@ type SyncSummary = {
   lastError: string | null;
 };
 
+type IndexDecision = "allow" | "deny" | "review";
+
+type IndexDecisionResult = {
+  decision: IndexDecision;
+  reason: string;
+  matchedRule: string;
+};
+
+type IndexPreviewItem = {
+  path: string;
+  title: string;
+  tags: string[];
+  status: string | null;
+  decision: IndexDecision;
+  reason: string;
+  matchedRule: string;
+  size: number;
+  updatedAt: string;
+  redactionCount: number;
+};
+
+type IndexPreview = {
+  generatedAt: string;
+  scanned: number;
+  allowed: number;
+  denied: number;
+  reviewRequired: number;
+  redacted: number;
+  items: IndexPreviewItem[];
+};
+
 const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   serverUrl: "https://vault-mcp-connector.vercel.app",
   syncToken: "",
@@ -63,6 +94,7 @@ const DEFAULT_SUMMARY: SyncSummary = {
 export default class VaultMcpPlugin extends Plugin {
   settings: VaultMcpPluginSettings = DEFAULT_SETTINGS;
   summary: SyncSummary = DEFAULT_SUMMARY;
+  indexPreview: IndexPreview | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -76,6 +108,14 @@ export default class VaultMcpPlugin extends Plugin {
       id: "open-dashboard",
       name: "Open dashboard",
       callback: () => new VaultMcpDashboardModal(this.app, this).open(),
+    });
+
+    this.addCommand({
+      id: "preview-index",
+      name: "Preview index decisions",
+      callback: () => {
+        void this.openIndexPreview();
+      },
     });
 
     this.addCommand({
@@ -142,11 +182,43 @@ export default class VaultMcpPlugin extends Plugin {
         generatedAt: payload.generated_at ?? null,
         lastError: null,
       };
+      this.indexPreview = null;
       new Notice(`Vault MCP synced ${payload.documents.length} approved document chunk${payload.documents.length === 1 ? "" : "s"}.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.summary = { ...this.summary, lastError: message };
       new Notice(`Vault MCP sync failed: ${message}`);
+    }
+  }
+
+  async openIndexPreview() {
+    try {
+      const preview = await this.buildIndexPreview();
+      this.indexPreview = preview;
+      this.summary = {
+        scanned: preview.scanned,
+        indexed: this.summary.indexed,
+        denied: preview.denied,
+        reviewRequired: preview.reviewRequired,
+        redacted: preview.redacted,
+        generatedAt: preview.generatedAt,
+        lastError: null,
+      };
+      new VaultMcpIndexPreviewModal(this.app, this, preview).open();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.summary = { ...this.summary, lastError: message };
+      new Notice(`Vault MCP preview failed: ${message}`);
+    }
+  }
+
+  async openReviewQueue() {
+    try {
+      const preview = this.indexPreview ?? await this.buildIndexPreview();
+      this.indexPreview = preview;
+      new VaultMcpReviewQueueModal(this.app, this, preview).open();
+    } catch (error) {
+      new Notice(`Vault MCP review queue failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -174,6 +246,55 @@ export default class VaultMcpPlugin extends Plugin {
     }
   }
 
+  private async buildIndexPreview(): Promise<IndexPreview> {
+    const files = this.app.vault.getMarkdownFiles();
+    const generatedAt = new Date().toISOString();
+    const items: IndexPreviewItem[] = [];
+    let allowed = 0;
+    let denied = 0;
+    let reviewRequired = 0;
+    let redacted = 0;
+
+    for (const file of files) {
+      const markdown = await this.app.vault.cachedRead(file);
+      const parsed = parseNote(markdown, file);
+      const policy = this.evaluateIndexDecision(file.path, parsed.tags, parsed.status);
+      const redaction = redactSensitiveContent(markdown);
+      if (redaction.count > 0) {
+        redacted += 1;
+      }
+      if (policy.decision === "allow") {
+        allowed += 1;
+      } else if (policy.decision === "review") {
+        reviewRequired += 1;
+      } else {
+        denied += 1;
+      }
+      items.push({
+        path: file.path,
+        title: parsed.title,
+        tags: parsed.tags,
+        status: parsed.status,
+        decision: policy.decision,
+        reason: policy.reason,
+        matchedRule: policy.matchedRule,
+        size: markdown.length,
+        updatedAt: new Date(file.stat.mtime).toISOString(),
+        redactionCount: redaction.count,
+      });
+    }
+
+    return {
+      generatedAt,
+      scanned: files.length,
+      allowed,
+      denied,
+      reviewRequired,
+      redacted,
+      items: items.sort((a, b) => decisionSort(a.decision) - decisionSort(b.decision) || a.path.localeCompare(b.path)),
+    };
+  }
+
   private async buildSyncPayload(): Promise<SyncPayload> {
     const files = this.app.vault.getMarkdownFiles();
     const generatedAt = new Date().toISOString();
@@ -190,14 +311,14 @@ export default class VaultMcpPlugin extends Plugin {
       const parsed = parseNote(markdown, file);
       const decision = this.evaluateIndexDecision(file.path, parsed.tags, parsed.status);
 
-      if (decision === "deny") {
+      if (decision.decision === "deny") {
         denied += 1;
-        deniedByRule["plugin-policy"] = (deniedByRule["plugin-policy"] ?? 0) + 1;
+        deniedByRule[decision.matchedRule] = (deniedByRule[decision.matchedRule] ?? 0) + 1;
         continue;
       }
-      if (decision === "review") {
+      if (decision.decision === "review") {
         reviewRequired += 1;
-        reviewedByRule["plugin-review"] = (reviewedByRule["plugin-review"] ?? 0) + 1;
+        reviewedByRule[decision.matchedRule] = (reviewedByRule[decision.matchedRule] ?? 0) + 1;
         continue;
       }
 
@@ -237,8 +358,8 @@ export default class VaultMcpPlugin extends Plugin {
             obsidian_uri: obsidianUri(this.app.vault.getName(), file.path),
             source_policy: {
               allowed: true,
-              reason: "Allowed by Obsidian plugin policy.",
-              matched_rule: `plugin-${this.settings.indexMode}`,
+              reason: decision.reason,
+              matched_rule: decision.matchedRule,
               policy_version: "vault-mcp-plugin-policy-v1",
               index_mode: this.settings.indexMode,
             },
@@ -283,24 +404,36 @@ export default class VaultMcpPlugin extends Plugin {
     };
   }
 
-  private evaluateIndexDecision(path: string, tags: string[], status: string | null): "allow" | "deny" | "review" {
+  private evaluateIndexDecision(path: string, tags: string[], status: string | null): IndexDecisionResult {
     if (this.settings.excludePrefixes.some((prefix) => path.startsWith(prefix))) {
-      return "deny";
+      const prefix = this.settings.excludePrefixes.find((candidate) => path.startsWith(candidate)) ?? "exclude-prefix";
+      return { decision: "deny", reason: `Denied by excluded prefix: ${prefix}`, matchedRule: `exclude:${prefix}` };
     }
 
     const sensitive = tags.some((tag) => /sensitive|credential|finance|legal|identity|review/i.test(tag))
       || ["review", "needs-review", "sensitive"].includes((status ?? "").toLowerCase());
     if (sensitive) {
-      return this.settings.indexMode === "rules_plus_approvals" ? "review" : "deny";
+      return this.settings.indexMode === "rules_plus_approvals"
+        ? { decision: "review", reason: "Sensitive tag or status requires manual approval.", matchedRule: "review:sensitive-metadata" }
+        : { decision: "deny", reason: "Sensitive tag or status is denied by the current index mode.", matchedRule: "deny:sensitive-metadata" };
     }
 
     if (this.settings.indexMode === "manual_only") {
-      return this.settings.manualAllowPaths.includes(path) || this.settings.manualAllowPrefixes.some((prefix) => path.startsWith(prefix))
-        ? "allow"
-        : "deny";
+      if (this.settings.manualAllowPaths.includes(path)) {
+        return { decision: "allow", reason: "Allowed by exact manual allow path.", matchedRule: `manual-path:${path}` };
+      }
+      const prefix = this.settings.manualAllowPrefixes.find((candidate) => path.startsWith(candidate));
+      if (prefix) {
+        return { decision: "allow", reason: `Allowed by manual allow prefix: ${prefix}`, matchedRule: `manual-prefix:${prefix}` };
+      }
+      return { decision: "deny", reason: "Denied because manual-only mode requires an explicit allow rule.", matchedRule: "manual-only:missing-allow" };
     }
 
-    return this.settings.includePrefixes.some((prefix) => path === prefix || path.startsWith(prefix)) ? "allow" : "deny";
+    const includePrefix = this.settings.includePrefixes.find((prefix) => path === prefix || path.startsWith(prefix));
+    if (includePrefix) {
+      return { decision: "allow", reason: `Allowed by included prefix: ${includePrefix}`, matchedRule: `include:${includePrefix}` };
+    }
+    return { decision: "deny", reason: "Denied because no include rule matched.", matchedRule: "include:no-match" };
   }
 
   private serverBaseUrl(): string {
@@ -324,18 +457,98 @@ class VaultMcpDashboardModal extends Modal {
     addStat(grid, "Write mode", this.plugin.settings.writeMode);
     addStat(grid, "Last indexed chunks", String(this.plugin.summary.indexed));
     addStat(grid, "Review queue", String(this.plugin.summary.reviewRequired));
+    if (this.plugin.indexPreview) {
+      addStat(grid, "Preview allowed notes", String(this.plugin.indexPreview.allowed));
+    }
     addStat(grid, "Last generated", this.plugin.summary.generatedAt ?? "Never");
     if (this.plugin.summary.lastError) {
       addStat(grid, "Last error", this.plugin.summary.lastError);
     }
     new Setting(contentEl)
       .addButton((button) => button
-        .setButtonText("Sync now")
+        .setButtonText("Preview index")
         .setCta()
+        .onClick(() => void this.plugin.openIndexPreview()))
+      .addButton((button) => button
+        .setButtonText("Review queue")
+        .onClick(() => void this.plugin.openReviewQueue()));
+    new Setting(contentEl)
+      .addButton((button) => button
+        .setButtonText("Sync now")
         .onClick(() => void this.plugin.syncNow()))
       .addButton((button) => button
         .setButtonText("Check write proposals")
         .onClick(() => void this.plugin.checkWriteProposals()));
+  }
+}
+
+class VaultMcpIndexPreviewModal extends Modal {
+  constructor(app: App, private readonly plugin: VaultMcpPlugin, private readonly preview: IndexPreview) {
+    super(app);
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h2", { text: "Vault MCP index preview" });
+    contentEl.createEl("p", {
+      cls: "vault-mcp-muted",
+      text: "This is a dry run. It shows what the plugin would sync, deny, or hold for review before any data is sent.",
+    });
+    const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard vault-mcp-dashboard--compact" });
+    addStat(grid, "Scanned notes", String(this.preview.scanned));
+    addStat(grid, "Allowed", String(this.preview.allowed));
+    addStat(grid, "Needs review", String(this.preview.reviewRequired));
+    addStat(grid, "Denied", String(this.preview.denied));
+    addStat(grid, "Would redact", String(this.preview.redacted));
+    addStat(grid, "Generated", this.preview.generatedAt);
+
+    new Setting(contentEl)
+      .addButton((button) => button
+        .setButtonText("Open review queue")
+        .onClick(() => void this.plugin.openReviewQueue()))
+      .addButton((button) => button
+        .setButtonText("Sync allowed notes")
+        .setCta()
+        .onClick(() => void this.plugin.syncNow()));
+
+    addPreviewSection(contentEl, "Needs review", this.preview.items.filter((item) => item.decision === "review"), true);
+    addPreviewSection(contentEl, "Allowed", this.preview.items.filter((item) => item.decision === "allow"), false);
+    addPreviewSection(contentEl, "Denied", this.preview.items.filter((item) => item.decision === "deny"), false);
+  }
+}
+
+class VaultMcpReviewQueueModal extends Modal {
+  constructor(app: App, private readonly plugin: VaultMcpPlugin, private readonly preview: IndexPreview) {
+    super(app);
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    const queue = this.preview.items.filter((item) => item.decision === "review");
+    contentEl.empty();
+    contentEl.createEl("h2", { text: "Vault MCP review queue" });
+    contentEl.createEl("p", {
+      cls: "vault-mcp-muted",
+      text: "These notes matched sensitive metadata and will not sync until you intentionally add them to manual allow paths or prefixes in settings.",
+    });
+    addStat(contentEl, "Queued notes", String(queue.length));
+
+    new Setting(contentEl)
+      .addButton((button) => button
+        .setButtonText("Open settings")
+        .setCta()
+        .onClick(() => {
+          this.close();
+          const setting = (this.app as App & { setting: { open(): void; openTabById(id: string): void } }).setting;
+          setting.open();
+          setting.openTabById(this.plugin.manifest.id);
+        }))
+      .addButton((button) => button
+        .setButtonText("Refresh preview")
+        .onClick(() => void this.plugin.openIndexPreview()));
+
+    addPreviewSection(contentEl, "Review required", queue, true);
   }
 }
 
@@ -430,6 +643,45 @@ function addStat(parent: HTMLElement, label: string, value: string) {
   stat.createDiv({ cls: "vault-mcp-dashboard__value", text: value });
 }
 
+function addPreviewSection(parent: HTMLElement, title: string, items: IndexPreviewItem[], startOpen: boolean) {
+  const details = parent.createEl("details", { cls: "vault-mcp-preview-section" });
+  details.open = startOpen;
+  details.createEl("summary", { text: `${title} (${items.length})` });
+  if (items.length === 0) {
+    details.createEl("p", { cls: "vault-mcp-muted", text: "No notes in this group." });
+    return;
+  }
+
+  const list = details.createDiv({ cls: "vault-mcp-preview-list" });
+  for (const item of items) {
+    const card = list.createDiv({ cls: "vault-mcp-preview-card" });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: item.title });
+    header.createDiv({ cls: `vault-mcp-chip vault-mcp-chip--${item.decision}`, text: item.decision });
+    card.createDiv({ cls: "vault-mcp-preview-card__path", text: item.path });
+    const meta = card.createDiv({ cls: "vault-mcp-preview-card__meta" });
+    meta.createSpan({ text: `rule: ${item.matchedRule}` });
+    meta.createSpan({ text: `updated: ${formatDate(item.updatedAt)}` });
+    meta.createSpan({ text: `${item.size.toLocaleString()} chars` });
+    if (item.status) {
+      meta.createSpan({ text: `status: ${item.status}` });
+    }
+    if (item.redactionCount > 0) {
+      meta.createSpan({ text: `redactions: ${item.redactionCount}` });
+    }
+    if (item.tags.length > 0) {
+      const tags = card.createDiv({ cls: "vault-mcp-preview-card__tags" });
+      for (const tag of item.tags.slice(0, 12)) {
+        tags.createSpan({ cls: "vault-mcp-tag", text: `#${tag}` });
+      }
+      if (item.tags.length > 12) {
+        tags.createSpan({ cls: "vault-mcp-tag", text: `+${item.tags.length - 12}` });
+      }
+    }
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: item.reason });
+  }
+}
+
 function addListSetting(containerEl: HTMLElement, name: string, desc: string, value: string[], onSave: (values: string[]) => Promise<void>) {
   new Setting(containerEl)
     .setName(name)
@@ -441,6 +693,24 @@ function addListSetting(containerEl: HTMLElement, name: string, desc: string, va
           await onSave(next.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
         });
     });
+}
+
+function decisionSort(decision: IndexDecision): number {
+  if (decision === "review") {
+    return 0;
+  }
+  if (decision === "allow") {
+    return 1;
+  }
+  return 2;
+}
+
+function formatDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString();
 }
 
 function parseNote(markdown: string, file: TFile): { title: string; tags: string[]; status: string | null } {
