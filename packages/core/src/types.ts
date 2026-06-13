@@ -236,7 +236,7 @@ export type SyncPayload = {
   stats?: IndexStats;
 };
 
-export type WriteOperation = "append_to_note" | "replace_note" | "patch_note" | "create_note" | "update_frontmatter" | "rename_note";
+export type WriteOperation = "append_to_note" | "replace_note" | "create_note" | "update_frontmatter" | "rename_note";
 
 export type WriteProposalStatus = "pending" | "approved" | "rejected" | "applied" | "conflict" | "failed";
 

@@ -20,7 +20,7 @@ import {
 } from "@vault-mcp/core";
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public");
-const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "patch_note", "create_note", "update_frontmatter", "rename_note"]);
+const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "create_note", "update_frontmatter", "rename_note"]);
 const WRITE_PROPOSAL_STATUSES = new Set<WriteProposalStatus>(["pending", "approved", "rejected", "applied", "conflict", "failed"]);
 
 export function createApp(config: ServerConfig, store: IndexStore) {

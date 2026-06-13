@@ -1703,47 +1703,47 @@
             </tr>
             <tr>
               <td class="line-number" id="L326"><a href="#L326">326</a></td>
-              <td class="source"><pre>      create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);</pre></td>
-              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L327"><a href="#L327">327</a></td>
-              <td class="source"><pre>      create index if not exists vault_documents_path_idx on vault_documents ((metadata-&gt;&gt;'path'));</pre></td>
-              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L328"><a href="#L328">328</a></td>
-              <td class="source"><pre>      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);</pre></td>
-              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L329"><a href="#L329">329</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L330"><a href="#L330">330</a></td>
               <td class="source"><pre>      alter table vault_documents add column if not exists tenant_id text not null default 'default';</pre></td>
               <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L331"><a href="#L331">331</a></td>
+              <td class="line-number" id="L327"><a href="#L327">327</a></td>
               <td class="source"><pre>      alter table vault_documents add column if not exists vault_id text not null default 'default';</pre></td>
               <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L332"><a href="#L332">332</a></td>
+              <td class="line-number" id="L328"><a href="#L328">328</a></td>
               <td class="source"><pre>      alter table vault_documents add column if not exists installation_id text not null default 'local';</pre></td>
               <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L333"><a href="#L333">333</a></td>
+              <td class="line-number" id="L329"><a href="#L329">329</a></td>
               <td class="source"><pre>      alter table vault_documents drop constraint if exists vault_documents_pkey;</pre></td>
               <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L334"><a href="#L334">334</a></td>
+              <td class="line-number" id="L330"><a href="#L330">330</a></td>
               <td class="source"><pre>      alter table vault_documents add primary key (tenant_id, vault_id, id);</pre></td>
+              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L331"><a href="#L331">331</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L332"><a href="#L332">332</a></td>
+              <td class="source"><pre>      create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);</pre></td>
+              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L333"><a href="#L333">333</a></td>
+              <td class="source"><pre>      create index if not exists vault_documents_path_idx on vault_documents ((metadata-&gt;&gt;'path'));</pre></td>
+              <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L334"><a href="#L334">334</a></td>
+              <td class="source"><pre>      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);</pre></td>
               <td>These methods expose production search/fetch/list/status/debug behavior. Most load all indexed documents and reuse core logic so JSON and Postgres behavior stay aligned.</td>
             </tr>
             <tr>

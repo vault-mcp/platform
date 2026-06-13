@@ -89,7 +89,7 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 ## Current Publishability Gaps
 
 - The plugin is not packaged for the Obsidian community plugin process.
-- `patch_note` proposals still need a dedicated patch parser/apply implementation.
+- `patch_note` is not part of the private-alpha write surface yet; it needs a dedicated patch parser/apply implementation before the server should accept it.
 - Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
 - The installer is a local development script, not a release artifact.
 
@@ -144,4 +144,4 @@ The default audit folder is:
 00 System/Vault MCP Write Audit
 ```
 
-Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Frontmatter updates use Obsidian's `FileManager.processFrontMatter`. Renames use Obsidian's `FileManager.renameFile`. `patch_note` remains blocked until it gets an operation-specific patch parser and apply implementation.
+Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Frontmatter updates use Obsidian's `FileManager.processFrontMatter`. Renames use Obsidian's `FileManager.renameFile`. `patch_note` remains a future operation and is rejected by the server until it gets an operation-specific patch parser and apply implementation.

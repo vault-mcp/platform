@@ -374,6 +374,22 @@ describe("server MCP contract", () => {
     expect(invalidProposalOperation.status).toBe(400);
     expect(await invalidProposalOperation.json()).toEqual({ error: "invalid_operation" });
 
+    const unsupportedPatchProposal = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        operation: "patch_note",
+        target_path: "20 Projects/Vault MCP Connector/Project Home.md",
+        proposed_patch: "@@ unsupported alpha patch @@",
+        requester: "test",
+      }),
+    });
+    expect(unsupportedPatchProposal.status).toBe(400);
+    expect(await unsupportedPatchProposal.json()).toEqual({ error: "invalid_operation" });
+
     const createProposal = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
       method: "POST",
       headers: {

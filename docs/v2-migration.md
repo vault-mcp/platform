@@ -54,7 +54,7 @@ Write support starts as a proposal queue:
 - The Obsidian plugin can apply approved create/append/replace/frontmatter/rename proposals locally only after policy and hash checks allow it.
 - `update_frontmatter` proposals store a JSON object in `proposed_content`; null values delete keys.
 - `rename_note` proposals store the new vault-relative Markdown path in `proposed_content`.
-- `patch_note` proposals remain blocked until an operation-specific patch parser/apply implementation is added.
+- `patch_note` is intentionally excluded from the private-alpha write operation allowlist until an operation-specific patch parser/apply implementation is added.
 - `review_required` remains the default plugin write mode.
 - `direct_apply` is reserved for explicitly configured scopes and still needs local backup/audit entries.
 - Base-content hash mismatches must move the proposal to review/conflict instead of overwriting the local file.

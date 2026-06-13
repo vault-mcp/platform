@@ -468,7 +468,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre>  it(&quot;routes review rules to the approval queue in rules-plus-approvals mode&quot;, () =&gt; {</pre></td>
+              <td class="source"><pre>  it(&quot;lets manual approvals override sensitive metadata but not denied paths&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
@@ -483,57 +483,57 @@
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>      rules: [</pre></td>
-              <td>Line 82 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>      manual_allow_paths: [&quot;40 Reference/JavaScript/Sensitive Token Notes.md&quot;, &quot;02 Daily/2026-06-07.md&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
-              <td class="source"><pre>        {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
-              <td class="source"><pre>          id: &quot;review-ai-notes&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>          action: &quot;review&quot; as const,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>          kind: &quot;path_prefix&quot; as const,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>          value: &quot;40 Reference/AI/&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>          reason: &quot;Review AI notes before syncing.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
-              <td class="source"><pre>        },</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
-              <td class="source"><pre>        ...defaultIndexPolicy().rules,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>      ],</pre></td>
+              <td class="source"><pre>    };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre>    const sensitiveApproved = evaluateSourcePolicy(&quot;40 Reference/JavaScript/Sensitive Token Notes.md&quot;, [&quot;sensitive&quot;], &quot;active&quot;, policy);</pre></td>
+              <td>Declares sensitiveApproved, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>    expect(sensitiveApproved.allowed).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre>    expect(sensitiveApproved.matchedRule).toBe(&quot;manual-approval&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="source"><pre>    const deniedPath = evaluateSourcePolicy(&quot;02 Daily/2026-06-07.md&quot;, [&quot;type/daily&quot;], &quot;active&quot;, policy);</pre></td>
+              <td>Declares deniedPath, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>    expect(deniedPath.allowed).toBe(false);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre>    expect(deniedPath.matchedRule).toBe(&quot;deny-prefix&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>    };</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -543,31 +543,106 @@
             </tr>
             <tr>
               <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre>  it(&quot;routes review rules to the approval queue in rules-plus-approvals mode&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre>    const policy = {</pre></td>
+              <td>Declares policy, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>      ...defaultIndexPolicy(&quot;rules_plus_approvals&quot;),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>      rules: [</pre></td>
+              <td>Line 97 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>        {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>          id: &quot;review-ai-notes&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre>          action: &quot;review&quot; as const,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>          kind: &quot;path_prefix&quot; as const,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre>          value: &quot;40 Reference/AI/&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>          reason: &quot;Review AI notes before syncing.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>        },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>        ...defaultIndexPolicy().rules,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>      ],</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>    };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
               <td class="source"><pre>    const decision = evaluateSourcePolicy(&quot;40 Reference/AI/Prompt.md&quot;, [&quot;type/reference&quot;], &quot;active&quot;, policy);</pre></td>
               <td>Declares decision, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
               <td class="source"><pre>    expect(decision.allowed).toBe(false);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
               <td class="source"><pre>    expect(decision.reviewRequired).toBe(true);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
               <td class="source"><pre>    expect(decision.matchedRule).toBe(&quot;review-ai-notes&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
               <td class="source"><pre>});</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>

@@ -738,37 +738,37 @@
             </tr>
             <tr>
               <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre>  const denyRule = policy.rules.find((rule) =&gt; rule.action === &quot;deny&quot; &amp;&amp; ruleMatches(rule, relativePath, tags, status));</pre></td>
+              <td class="source"><pre>  const denyRule = policy.rules.find((rule) =&gt;</pre></td>
               <td>Declares denyRule, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>    rule.action === &quot;deny&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>    &amp;&amp; (rule.kind === &quot;path_exact&quot; || rule.kind === &quot;path_prefix&quot;)</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>    &amp;&amp; ruleMatches(rule, relativePath, tags, status)</pre></td>
+              <td>Line 136 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>  );</pre></td>
+              <td>Line 137 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
               <td class="source"><pre>  if (denyRule) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre>    return deny(normalizeRuleId(denyRule), denyRule.reason);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>  if (status &amp;&amp; [&quot;review&quot;, &quot;needs-review&quot;, &quot;sensitive&quot;].includes(status.toLowerCase())) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L139"><a href="#L139">139</a></td>
-              <td class="source"><pre>    return deny(&quot;deny-status&quot;, `Denied status: ${status}`);</pre></td>
+              <td class="source"><pre>    return deny(normalizeRuleId(denyRule), denyRule.reason);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
@@ -783,12 +783,12 @@
             </tr>
             <tr>
               <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>  if (policy.mode === &quot;manual_only&quot; &amp;&amp; !isManuallyAllowed(relativePath, policy)) {</pre></td>
+              <td class="source"><pre>  if (isManuallyAllowed(relativePath, policy)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>    return deny(&quot;manual-approval-required&quot;, &quot;Manual indexing mode requires this path or prefix to be approved before indexing.&quot;);</pre></td>
+              <td class="source"><pre>    return allow(&quot;manual-approval&quot;, &quot;Allowed by explicit manual approval.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
@@ -803,496 +803,581 @@
             </tr>
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>  const reviewRule = policy.mode === &quot;rules_plus_approvals&quot;</pre></td>
-              <td>Declares reviewRule, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>    ? policy.rules.find((rule) =&gt; rule.action === &quot;review&quot; &amp;&amp; ruleMatches(rule, relativePath, tags, status))</pre></td>
-              <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L148"><a href="#L148">148</a></td>
-              <td class="source"><pre>    : undefined;</pre></td>
-              <td>Line 148 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>  if (reviewRule) {</pre></td>
+              <td class="source"><pre>  if (status &amp;&amp; [&quot;review&quot;, &quot;needs-review&quot;, &quot;sensitive&quot;].includes(status.toLowerCase())) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>    return {</pre></td>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>    return deny(&quot;deny-status&quot;, `Denied status: ${status}`);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L151"><a href="#L151">151</a></td>
-              <td class="source"><pre>      allowed: false,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L152"><a href="#L152">152</a></td>
-              <td class="source"><pre>      matchedRule: normalizeRuleId(reviewRule),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L153"><a href="#L153">153</a></td>
-              <td class="source"><pre>      reason: reviewRule.reason,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L154"><a href="#L154">154</a></td>
-              <td class="source"><pre>      reviewRequired: true,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L155"><a href="#L155">155</a></td>
-              <td class="source"><pre>    };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="source"><pre>  if (policy.mode === &quot;manual_only&quot; &amp;&amp; !isManuallyAllowed(relativePath, policy)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>    return deny(&quot;manual-approval-required&quot;, &quot;Manual indexing mode requires this path or prefix to be approved before indexing.&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>  const denyTagRule = policy.rules.find((rule) =&gt;</pre></td>
+              <td>Declares denyTagRule, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>    rule.action === &quot;deny&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>    &amp;&amp; rule.kind === &quot;tag&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre>    &amp;&amp; ruleMatches(rule, relativePath, tags, status)</pre></td>
+              <td>Line 157 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>  const allowRule = policy.rules.find((rule) =&gt; rule.action === &quot;allow&quot; &amp;&amp; ruleMatches(rule, relativePath, tags, status));</pre></td>
-              <td>Declares allowRule, a local value used later in this file.</td>
+              <td class="source"><pre>  );</pre></td>
+              <td>Line 158 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre>  if (allowRule) {</pre></td>
+              <td class="source"><pre>  if (denyTagRule) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L160"><a href="#L160">160</a></td>
+              <td class="source"><pre>    return deny(normalizeRuleId(denyTagRule), denyTagRule.reason);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre>  const reviewRule = policy.mode === &quot;rules_plus_approvals&quot;</pre></td>
+              <td>Declares reviewRule, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>    ? policy.rules.find((rule) =&gt; rule.action === &quot;review&quot; &amp;&amp; ruleMatches(rule, relativePath, tags, status))</pre></td>
+              <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>    : undefined;</pre></td>
+              <td>Line 165 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>  if (reviewRule) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>    return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>      allowed: false,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>      matchedRule: normalizeRuleId(reviewRule),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>      reason: reviewRule.reason,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre>      reviewRequired: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>    };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="source"><pre>  const allowRule = policy.rules.find((rule) =&gt; rule.action === &quot;allow&quot; &amp;&amp; ruleMatches(rule, relativePath, tags, status));</pre></td>
+              <td>Declares allowRule, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="source"><pre>  if (allowRule) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
               <td class="source"><pre>    const normalized = normalizeRuleId(allowRule);</pre></td>
               <td>Declares normalized, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
               <td class="source"><pre>    if (normalized === &quot;allow-active-project-home&quot; &amp;&amp; !isActiveProjectHome(relativePath, status)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
               <td class="source"><pre>      return deny(&quot;not-active-project&quot;, &quot;Only active project homes are indexed in V1.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
               <td class="source"><pre>    }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
               <td class="source"><pre>    return allow(normalized, allowRule.reason);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
               <td class="source"><pre>  if (relativePath === &quot;00 System/Task Hub.md&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
               <td class="source"><pre>    return allow(&quot;allow-task-hub&quot;, &quot;Allowed system task hub.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
               <td class="source"><pre>  if (relativePath.startsWith(&quot;20 Projects/&quot;) &amp;&amp; relativePath.endsWith(&quot;/Project Home.md&quot;)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
               <td class="source"><pre>    if (status?.toLowerCase() !== &quot;active&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
               <td class="source"><pre>      return deny(&quot;not-active-project&quot;, &quot;Only active project homes are indexed in V1.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
               <td class="source"><pre>    }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
               <td class="source"><pre>    return allow(&quot;allow-active-project-home&quot;, &quot;Allowed project home.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L178"><a href="#L178">178</a></td>
+              <td class="line-number" id="L195"><a href="#L195">195</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="line-number" id="L196"><a href="#L196">196</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
               <td class="source"><pre>  if (ALLOW_REFERENCE_EXACT.has(relativePath) || ALLOW_REFERENCE_PREFIXES.some((prefix) =&gt; relativePath.startsWith(prefix))) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
               <td class="source"><pre>    return allow(&quot;allow-selected-reference&quot;, &quot;Allowed selected reference note.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
               <td class="source"><pre>  if (relativePath.startsWith(&quot;40 Reference/&quot;)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
               <td class="source"><pre>    return deny(&quot;reference-not-selected&quot;, &quot;Reference note is not selected for V1 indexing.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L187"><a href="#L187">187</a></td>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
               <td class="source"><pre>  return deny(&quot;not-allowlisted&quot;, &quot;Path did not match the V1 allowlist.&quot;);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="line-number" id="L206"><a href="#L206">206</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="line-number" id="L207"><a href="#L207">207</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
               <td class="source"><pre>function ruleMatches(rule: IndexPolicyRule, relativePath: string, tags: string[], status: string | null): boolean {</pre></td>
               <td>Defines ruleMatches, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L192"><a href="#L192">192</a></td>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
               <td class="source"><pre>  if (rule.kind === &quot;path_exact&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L193"><a href="#L193">193</a></td>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
               <td class="source"><pre>    return relativePath === rule.value;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L194"><a href="#L194">194</a></td>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L195"><a href="#L195">195</a></td>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L196"><a href="#L196">196</a></td>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
               <td class="source"><pre>  if (rule.kind === &quot;path_prefix&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
               <td class="source"><pre>    return relativePath.startsWith(rule.value);</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
               <td class="source"><pre>  if (rule.kind === &quot;tag&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
               <td class="source"><pre>    return tags.some((tag) =&gt; normalizeTag(tag).includes(normalizeTag(rule.value)));</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L204"><a href="#L204">204</a></td>
+              <td class="line-number" id="L221"><a href="#L221">221</a></td>
               <td class="source"><pre>  return (status ?? &quot;&quot;).toLowerCase() === rule.value.toLowerCase();</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L205"><a href="#L205">205</a></td>
+              <td class="line-number" id="L222"><a href="#L222">222</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L206"><a href="#L206">206</a></td>
+              <td class="line-number" id="L223"><a href="#L223">223</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="line-number" id="L224"><a href="#L224">224</a></td>
               <td class="source"><pre>function isManuallyAllowed(relativePath: string, policy: IndexPolicy): boolean {</pre></td>
               <td>Defines isManuallyAllowed, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="line-number" id="L225"><a href="#L225">225</a></td>
               <td class="source"><pre>  return (policy.manual_allow_paths ?? []).includes(relativePath)</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="line-number" id="L226"><a href="#L226">226</a></td>
               <td class="source"><pre>    || (policy.manual_allow_prefixes ?? []).some((prefix) =&gt; relativePath.startsWith(prefix));</pre></td>
               <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L210"><a href="#L210">210</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L211"><a href="#L211">211</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L212"><a href="#L212">212</a></td>
-              <td class="source"><pre>function isActiveProjectHome(relativePath: string, status: string | null): boolean {</pre></td>
-              <td>Defines isActiveProjectHome, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L213"><a href="#L213">213</a></td>
-              <td class="source"><pre>  return relativePath.startsWith(&quot;20 Projects/&quot;)</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L214"><a href="#L214">214</a></td>
-              <td class="source"><pre>    &amp;&amp; relativePath.endsWith(&quot;/Project Home.md&quot;)</pre></td>
-              <td>Line 214 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L215"><a href="#L215">215</a></td>
-              <td class="source"><pre>    &amp;&amp; status?.toLowerCase() === &quot;active&quot;;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L216"><a href="#L216">216</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L217"><a href="#L217">217</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L218"><a href="#L218">218</a></td>
-              <td class="source"><pre>function normalizeRuleId(rule: IndexPolicyRule): string {</pre></td>
-              <td>Defines normalizeRuleId, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L219"><a href="#L219">219</a></td>
-              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-prefix:&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L220"><a href="#L220">220</a></td>
-              <td class="source"><pre>    return &quot;deny-prefix&quot;;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L221"><a href="#L221">221</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L222"><a href="#L222">222</a></td>
-              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-exact:&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L223"><a href="#L223">223</a></td>
-              <td class="source"><pre>    return &quot;deny-exact&quot;;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L224"><a href="#L224">224</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L225"><a href="#L225">225</a></td>
-              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-tag:&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L226"><a href="#L226">226</a></td>
-              <td class="source"><pre>    return &quot;deny-tag&quot;;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L227"><a href="#L227">227</a></td>
-              <td class="source"><pre>  }</pre></td>
+              <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L228"><a href="#L228">228</a></td>
-              <td class="source"><pre>  if (rule.id.startsWith(&quot;allow-reference-&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L229"><a href="#L229">229</a></td>
-              <td class="source"><pre>    return &quot;allow-selected-reference&quot;;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>function isActiveProjectHome(relativePath: string, status: string | null): boolean {</pre></td>
+              <td>Defines isActiveProjectHome, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
               <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="source"><pre>  return relativePath.startsWith(&quot;20 Projects/&quot;)</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L231"><a href="#L231">231</a></td>
+              <td class="source"><pre>    &amp;&amp; relativePath.endsWith(&quot;/Project Home.md&quot;)</pre></td>
+              <td>Line 231 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L232"><a href="#L232">232</a></td>
+              <td class="source"><pre>    &amp;&amp; status?.toLowerCase() === &quot;active&quot;;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L233"><a href="#L233">233</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L234"><a href="#L234">234</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L235"><a href="#L235">235</a></td>
+              <td class="source"><pre>function normalizeRuleId(rule: IndexPolicyRule): string {</pre></td>
+              <td>Defines normalizeRuleId, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L236"><a href="#L236">236</a></td>
+              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-prefix:&quot;)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L237"><a href="#L237">237</a></td>
+              <td class="source"><pre>    return &quot;deny-prefix&quot;;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L238"><a href="#L238">238</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L231"><a href="#L231">231</a></td>
-              <td class="source"><pre>  return rule.id;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L232"><a href="#L232">232</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L233"><a href="#L233">233</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L234"><a href="#L234">234</a></td>
-              <td class="source"><pre>function allow(matchedRule: string, reason: string): SourcePolicyDecision {</pre></td>
-              <td>Defines allow, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L235"><a href="#L235">235</a></td>
-              <td class="source"><pre>  return { allowed: true, matchedRule, reason };</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L236"><a href="#L236">236</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L237"><a href="#L237">237</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L238"><a href="#L238">238</a></td>
-              <td class="source"><pre>function deny(matchedRule: string, reason: string): SourcePolicyDecision {</pre></td>
-              <td>Defines deny, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L239"><a href="#L239">239</a></td>
-              <td class="source"><pre>  return { allowed: false, matchedRule, reason };</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-exact:&quot;)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L240"><a href="#L240">240</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    return &quot;deny-exact&quot;;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L241"><a href="#L241">241</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L242"><a href="#L242">242</a></td>
-              <td class="source"><pre>function normalizeTag(tag: string): string {</pre></td>
-              <td>Defines normalizeTag, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>  if (rule.id.startsWith(&quot;deny-tag:&quot;)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L243"><a href="#L243">243</a></td>
-              <td class="source"><pre>  return tag.replace(/^#/, &quot;&quot;).toLowerCase();</pre></td>
+              <td class="source"><pre>    return &quot;deny-tag&quot;;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L244"><a href="#L244">244</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L245"><a href="#L245">245</a></td>
+              <td class="source"><pre>  if (rule.id.startsWith(&quot;allow-reference-&quot;)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L246"><a href="#L246">246</a></td>
+              <td class="source"><pre>    return &quot;allow-selected-reference&quot;;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L247"><a href="#L247">247</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L248"><a href="#L248">248</a></td>
+              <td class="source"><pre>  return rule.id;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L249"><a href="#L249">249</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L250"><a href="#L250">250</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L251"><a href="#L251">251</a></td>
+              <td class="source"><pre>function allow(matchedRule: string, reason: string): SourcePolicyDecision {</pre></td>
+              <td>Defines allow, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L252"><a href="#L252">252</a></td>
+              <td class="source"><pre>  return { allowed: true, matchedRule, reason };</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L253"><a href="#L253">253</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L254"><a href="#L254">254</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L255"><a href="#L255">255</a></td>
+              <td class="source"><pre>function deny(matchedRule: string, reason: string): SourcePolicyDecision {</pre></td>
+              <td>Defines deny, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L256"><a href="#L256">256</a></td>
+              <td class="source"><pre>  return { allowed: false, matchedRule, reason };</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L257"><a href="#L257">257</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L258"><a href="#L258">258</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L259"><a href="#L259">259</a></td>
+              <td class="source"><pre>function normalizeTag(tag: string): string {</pre></td>
+              <td>Defines normalizeTag, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L260"><a href="#L260">260</a></td>
+              <td class="source"><pre>  return tag.replace(/^#/, &quot;&quot;).toLowerCase();</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L261"><a href="#L261">261</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>
