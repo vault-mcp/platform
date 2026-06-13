@@ -6,6 +6,18 @@ export type SyncResultSummary = {
   serverGeneratedAt: string | null;
 };
 
+export type PluginSafetySettings = {
+  indexMode: string;
+  writeMode: string;
+  writeAuditFolder: string;
+};
+
+export type PluginSafetyDisclosure = {
+  title: string;
+  summary: string;
+  points: string[];
+};
+
 type VaultSyncResponse = {
   ok?: boolean;
   vault?: {
@@ -93,6 +105,24 @@ export function summarizeSyncResponse(payload: SyncPayload, responseText: string
     message: `${acceptedText}. Scanned ${scanned} note${scanned === 1 ? "" : "s"}; denied ${denied}; review ${review}; redacted ${redacted}.`,
     serverDocumentCount,
     serverGeneratedAt,
+  };
+}
+
+export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSafetyDisclosure {
+  const writePoint = settings.writeMode === "direct_apply"
+    ? `Direct apply is selected. Treat this as experimental: matching proposals can be applied only after local safety checks, backup creation, and audit logging in ${settings.writeAuditFolder}.`
+    : `Write mode is review required. Remote clients can create proposals, but the plugin must approve and apply supported writes locally after safety checks.`;
+
+  return {
+    title: "Safety boundary",
+    summary: "Vault MCP syncs approved context to the server as a derived index. The local vault remains the source of truth.",
+    points: [
+      `Index mode is ${settings.indexMode}. Preview before syncing to see which notes are allowed, denied, or held for review.`,
+      "Exclude rules run before include and manual allow rules, so denied folders stay denied unless you change the policy.",
+      "The server stores searchable chunks and write proposals; it does not directly edit Obsidian files.",
+      writePoint,
+      `Local write applies create backup and audit notes under ${settings.writeAuditFolder}.`,
+    ],
   };
 }
 

@@ -13,6 +13,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
 - Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
+- Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
 
 ## Safe Test Install
@@ -226,6 +227,7 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 ## Privacy And Security Notes
 
 - The plugin scans local Markdown files according to the configured index policy.
+- The plugin displays its safety boundary in settings and the dashboard so testers can see the active index mode, write mode, audit folder, and server/write split before syncing or applying proposals.
 - The plugin syncs derived Markdown chunks and metadata to the configured server.
 - The plugin should not sync denied paths, excluded prefixes, or notes held for review unless the user approves them under the selected mode.
 - The server should never directly write to an Obsidian vault. Writes are proposal-first.

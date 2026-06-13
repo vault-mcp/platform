@@ -4,6 +4,7 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  pluginSafetyDisclosure,
   summarizeSyncResponse,
 } from "./plugin-helpers";
 
@@ -38,6 +39,34 @@ describe("plugin helpers", () => {
     expect(summary.message).toContain("denied 3");
     expect(summary.message).toContain("review 2");
     expect(summary.message).toContain("redacted 1");
+  });
+
+  it("describes the plugin safety boundary from current settings", () => {
+    const disclosure = pluginSafetyDisclosure({
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+    });
+
+    expect(disclosure.title).toBe("Safety boundary");
+    expect(disclosure.summary).toContain("derived index");
+    expect(disclosure.summary).toContain("source of truth");
+    expect(disclosure.points.join("\n")).toContain("Preview before syncing");
+    expect(disclosure.points.join("\n")).toContain("does not directly edit Obsidian files");
+    expect(disclosure.points.join("\n")).toContain("review required");
+    expect(disclosure.points.join("\n")).toContain("backup and audit notes");
+  });
+
+  it("calls out direct apply as experimental", () => {
+    const disclosure = pluginSafetyDisclosure({
+      indexMode: "manual_only",
+      writeMode: "direct_apply",
+      writeAuditFolder: "Audit",
+    });
+
+    expect(disclosure.points.join("\n")).toContain("Direct apply is selected");
+    expect(disclosure.points.join("\n")).toContain("experimental");
+    expect(disclosure.points.join("\n")).toContain("Audit");
   });
 });
 

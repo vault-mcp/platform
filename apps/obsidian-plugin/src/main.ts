@@ -7,6 +7,7 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  pluginSafetyDisclosure,
   summarizeSyncResponse,
 } from "./plugin-helpers";
 import type {
@@ -699,6 +700,7 @@ class VaultMcpDashboardModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
     contentEl.createEl("h2", { text: "Vault MCP" });
+    addSafetyDisclosure(contentEl, this.plugin.settings);
     const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard" });
     addStat(grid, "Server", this.plugin.settings.serverUrl);
     addStat(grid, "Vault id", this.plugin.settings.vaultId);
@@ -872,6 +874,8 @@ class VaultMcpSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
+    addSafetyDisclosure(containerEl, this.plugin.settings);
+
     new Setting(containerEl)
       .setName("Server URL")
       .setDesc("Base URL of the Vault MCP server.")
@@ -969,6 +973,17 @@ function addSyncSummarySection(parent: HTMLElement, message: string) {
   const box = parent.createDiv({ cls: "vault-mcp-sync-summary" });
   box.createDiv({ cls: "vault-mcp-safety__title", text: "Last sync summary" });
   box.createDiv({ cls: "vault-mcp-safety__message", text: message });
+}
+
+function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettings) {
+  const disclosure = pluginSafetyDisclosure(settings);
+  const box = parent.createDiv({ cls: "vault-mcp-disclosure" });
+  box.createDiv({ cls: "vault-mcp-disclosure__title", text: disclosure.title });
+  box.createDiv({ cls: "vault-mcp-disclosure__summary", text: disclosure.summary });
+  const list = box.createEl("ul", { cls: "vault-mcp-disclosure__list" });
+  for (const point of disclosure.points) {
+    list.createEl("li", { text: point });
+  }
 }
 
 function addTroubleshootingHint(parent: HTMLElement, message: string) {
