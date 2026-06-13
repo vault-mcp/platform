@@ -23,6 +23,7 @@ type VaultMcpPluginSettings = {
   manualAllowPaths: string[];
   manualAllowPrefixes: string[];
   syncIntervalMinutes: number;
+  writeAuditFolder: string;
 };
 
 type SyncHistoryEntry = {
@@ -91,6 +92,12 @@ type ProposalSafetyAnalysis = {
   diffPreview: string | null;
 };
 
+type LocalApplyResult = {
+  backupPath: string;
+  auditPath: string;
+  newHash: string;
+};
+
 const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   serverUrl: "https://vault-mcp-connector.vercel.app",
   syncToken: "",
@@ -104,6 +111,7 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   manualAllowPaths: [],
   manualAllowPrefixes: [],
   syncIntervalMinutes: 0,
+  writeAuditFolder: "00 System/Vault MCP Write Audit",
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -317,7 +325,6 @@ export default class VaultMcpPlugin extends Plugin {
       if (response.status < 200 || response.status >= 300) {
         throw new Error(`Request failed with ${response.status}: ${response.text}`);
       }
-      const parsed = JSON.parse(response.text) as { proposal?: WriteProposal };
       await this.addHistory({ type: "proposal-update", message: `Marked proposal ${proposalId} ${status}.` });
       new Notice(`Vault MCP proposal marked ${status}.`);
       const proposals = await this.fetchWriteProposals();
@@ -326,6 +333,31 @@ export default class VaultMcpPlugin extends Plugin {
     } catch (error) {
       await this.addHistory({ type: "error", message: `Proposal update failed: ${error instanceof Error ? error.message : String(error)}` });
       new Notice(`Vault MCP proposal update failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  async applyWriteProposal(proposal: WriteProposal) {
+    if (!this.settings.syncToken.trim()) {
+      new Notice("Vault MCP sync token is required.");
+      return;
+    }
+
+    try {
+      const result = await this.applyWriteProposalLocally(proposal);
+      await this.patchWriteProposalStatus(
+        proposal.id,
+        "applied",
+        `Applied locally in Obsidian plugin. Backup: ${result.backupPath}. Audit: ${result.auditPath}. New hash: ${result.newHash}.`,
+      );
+      await this.addHistory({ type: "proposal-update", message: `Applied proposal ${proposal.id} locally.` });
+      new Notice(`Vault MCP proposal applied locally. Backup: ${result.backupPath}`);
+      const proposals = await this.fetchWriteProposals();
+      this.writeProposals = proposals;
+      new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await this.addHistory({ type: "error", message: `Proposal apply failed: ${message}` });
+      new Notice(`Vault MCP proposal apply failed: ${message}`);
     }
   }
 
@@ -490,6 +522,96 @@ export default class VaultMcpPlugin extends Plugin {
     };
   }
 
+  private async applyWriteProposalLocally(proposal: WriteProposal): Promise<LocalApplyResult> {
+    const analysis = await this.analyzeWriteProposal(proposal);
+    if (!analysis.canApplyInFuture) {
+      throw new Error(`Proposal is not safe to apply: ${analysis.message}`);
+    }
+
+    const beforeFile = this.app.vault.getAbstractFileByPath(proposal.target_path);
+    const beforeContent = beforeFile instanceof TFile ? await this.app.vault.cachedRead(beforeFile) : "";
+    const afterContent = contentAfterProposal(proposal, beforeContent);
+    if (afterContent === null) {
+      throw new Error(`Unsupported write operation: ${proposal.operation}`);
+    }
+
+    const currentHash = beforeFile instanceof TFile ? await sha256Hex(beforeContent) : null;
+    if (proposal.base_content_hash && currentHash !== proposal.base_content_hash) {
+      throw new Error("Local file hash changed before apply. Refresh proposals and review conflict.");
+    }
+
+    const backup = await this.writeProposalAuditFiles(proposal, beforeContent, afterContent, currentHash);
+
+    if (proposal.operation === "create_note") {
+      if (beforeFile) {
+        throw new Error("Cannot create note because target already exists.");
+      }
+      await this.ensureFolder(parentPrefix(proposal.target_path).replace(/\/$/, ""));
+      await this.app.vault.create(proposal.target_path, afterContent);
+    } else {
+      if (!(beforeFile instanceof TFile)) {
+        throw new Error("Cannot edit note because target file does not exist.");
+      }
+      await this.app.vault.process(beforeFile, () => afterContent);
+    }
+
+    return {
+      ...backup,
+      newHash: await sha256Hex(afterContent),
+    };
+  }
+
+  private async writeProposalAuditFiles(proposal: WriteProposal, beforeContent: string, afterContent: string, beforeHash: string | null): Promise<{ backupPath: string; auditPath: string }> {
+    const timestamp = new Date().toISOString();
+    const folder = `${this.settings.writeAuditFolder.replace(/\/$/, "")}/${timestamp.slice(0, 10)}`;
+    await this.ensureFolder(folder);
+    const safeId = proposal.id.replace(/[^A-Za-z0-9_-]/g, "-");
+    const backupPath = `${folder}/${timestamp.replace(/[:.]/g, "-")}-${safeId}-backup.md`;
+    const auditPath = `${folder}/${timestamp.replace(/[:.]/g, "-")}-${safeId}-audit.md`;
+    await this.app.vault.create(backupPath, beforeContent);
+    await this.app.vault.create(auditPath, [
+      "---",
+      "type: vault-mcp-write-audit",
+      `proposal_id: ${JSON.stringify(proposal.id)}`,
+      `target_path: ${JSON.stringify(proposal.target_path)}`,
+      `operation: ${JSON.stringify(proposal.operation)}`,
+      `status: ${JSON.stringify(proposal.status)}`,
+      `created: ${JSON.stringify(timestamp)}`,
+      "---",
+      "# Vault MCP Write Audit",
+      "",
+      `- Proposal id: \`${proposal.id}\``,
+      `- Target path: \`${proposal.target_path}\``,
+      `- Operation: \`${proposal.operation}\``,
+      `- Requester: \`${proposal.requester}\``,
+      `- Base hash: \`${proposal.base_content_hash ?? "none"}\``,
+      `- Local before hash: \`${beforeHash ?? "none"}\``,
+      `- Local after hash: \`${await sha256Hex(afterContent)}\``,
+      `- Backup path: \`${backupPath}\``,
+      "",
+      "## Diff Preview",
+      "",
+      "```diff",
+      buildDiffPreview(beforeContent, afterContent),
+      "```",
+    ].join("\n"));
+    return { backupPath, auditPath };
+  }
+
+  private async ensureFolder(folder: string) {
+    if (!folder) {
+      return;
+    }
+    const parts = folder.split("/").filter(Boolean);
+    let current = "";
+    for (const part of parts) {
+      current = current ? `${current}/${part}` : part;
+      if (!await this.app.vault.adapter.exists(current)) {
+        await this.app.vault.createFolder(current);
+      }
+    }
+  }
+
   private async buildSyncPayload(): Promise<SyncPayload> {
     const files = this.app.vault.getMarkdownFiles();
     const generatedAt = new Date().toISOString();
@@ -646,6 +768,25 @@ export default class VaultMcpPlugin extends Plugin {
   private async addHistory(entry: Omit<SyncHistoryEntry, "createdAt">) {
     this.syncHistory = [{ ...entry, createdAt: new Date().toISOString() }, ...this.syncHistory].slice(0, 20);
     await this.saveSettings();
+  }
+
+  private async patchWriteProposalStatus(proposalId: string, status: WriteProposalStatus, message: string) {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/write-proposals/${encodeURIComponent(proposalId)}`,
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status,
+        actor: `obsidian-plugin:${this.settings.installationId}`,
+        message,
+      }),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`Request failed with ${response.status}: ${response.text}`);
+    }
   }
 }
 
@@ -867,7 +1008,7 @@ class VaultMcpSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Write mode")
-      .setDesc("Write tools are not active yet; this reserves the future plugin behavior.")
+      .setDesc("Review required is the safe default. Direct apply remains reserved until explicitly reviewed.")
       .addDropdown((dropdown) => dropdown
         .addOption("review_required", "Review required")
         .addOption("direct_apply", "Direct apply")
@@ -894,6 +1035,17 @@ class VaultMcpSettingTab extends PluginSettingTab {
       this.plugin.settings.manualAllowPrefixes = values;
       await this.plugin.saveSettings();
     });
+
+    new Setting(containerEl).setName("Write safety").setHeading();
+    new Setting(containerEl)
+      .setName("Write audit folder")
+      .setDesc("Vault-relative folder where local write backups and audit notes are created before any proposal is applied.")
+      .addText((text) => text
+        .setValue(this.plugin.settings.writeAuditFolder)
+        .onChange(async (value) => {
+          this.plugin.settings.writeAuditFolder = value.trim() || DEFAULT_SETTINGS.writeAuditFolder;
+          await this.plugin.saveSettings();
+        }));
   }
 }
 
@@ -1076,16 +1228,25 @@ function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal
 
   addAuditTrail(card, proposal);
 
-  if (proposal.status === "pending") {
+  if (proposal.status === "pending" || proposal.status === "approved") {
     const actions = card.createDiv({ cls: "vault-mcp-preview-card__actions" });
     const setting = new Setting(actions);
-    if (analysis.canApplyInFuture) {
+    if (proposal.status === "pending" && analysis.canApplyInFuture) {
       setting.addButton((button) => button
         .setButtonText("Approve")
         .setCta()
         .onClick(() => {
           modal.close();
           void plugin.updateWriteProposalStatus(proposal.id, "approved");
+        }));
+    }
+    if (proposal.status === "approved" && analysis.canApplyInFuture) {
+      setting.addButton((button) => button
+        .setButtonText("Apply locally")
+        .setCta()
+        .onClick(() => {
+          modal.close();
+          void plugin.applyWriteProposal(proposal);
         }));
     } else if (analysis.status === "conflict" || analysis.status === "missing-target" || analysis.status === "existing-target") {
       setting.addButton((button) => button
@@ -1096,12 +1257,14 @@ function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal
           void plugin.updateWriteProposalStatus(proposal.id, "conflict");
         }));
     }
-    setting.addButton((button) => button
-      .setButtonText("Reject")
-      .onClick(() => {
-        modal.close();
-        void plugin.updateWriteProposalStatus(proposal.id, "rejected");
-      }));
+    if (proposal.status === "pending") {
+      setting.addButton((button) => button
+        .setButtonText("Reject")
+        .onClick(() => {
+          modal.close();
+          void plugin.updateWriteProposalStatus(proposal.id, "rejected");
+        }));
+    }
   }
 }
 
@@ -1203,6 +1366,16 @@ function previewForProposal(proposal: WriteProposal, currentContent: string): st
   }
   if ((proposal.operation === "replace_note" || proposal.operation === "create_note") && proposal.proposed_content !== undefined) {
     return buildDiffPreview(currentContent, proposal.proposed_content);
+  }
+  return null;
+}
+
+function contentAfterProposal(proposal: WriteProposal, currentContent: string): string | null {
+  if (proposal.operation === "append_to_note" && proposal.proposed_content !== undefined) {
+    return `${currentContent}${proposal.proposed_content}`;
+  }
+  if ((proposal.operation === "replace_note" || proposal.operation === "create_note") && proposal.proposed_content !== undefined) {
+    return proposal.proposed_content;
   }
   return null;
 }

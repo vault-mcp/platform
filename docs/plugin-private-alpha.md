@@ -11,7 +11,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Lets the user approve a review-required note by exact path or approve its parent folder as a prefix.
 - Keeps a short local activity history for previews, syncs, approvals, proposal checks, and errors.
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
-- Reviews server-side write proposals and can mark pending proposals approved or rejected, but does not apply writes to local files yet.
+- Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create/append/replace proposals after local safety checks.
 
 ## Safe Test Install
 
@@ -89,7 +89,8 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 ## Current Publishability Gaps
 
 - The plugin is not packaged for the Obsidian community plugin process.
-- Write proposals can be approved or rejected from Obsidian, but cannot be applied to local files yet.
+- Only `create_note`, `append_to_note`, and `replace_note` proposals can be applied locally.
+- Patch, frontmatter, and rename proposals still need dedicated apply implementations.
 - Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
 - The installer is a local development script, not a release artifact.
 
@@ -111,8 +112,27 @@ The proposal view shows:
 - current proposal status
 - audit trail
 
-For pending proposals, the plugin can mark the proposal `approved`, `rejected`, or `conflict` on the server. Approval does not edit local files yet.
+For pending proposals, the plugin can mark the proposal `approved`, `rejected`, or `conflict` on the server.
 
 The plugin only shows `Approve` when the local safety analysis says the future apply path is compatible. If the target file is missing, the create target already exists, or the base content hash does not match the local file, the plugin offers `Mark conflict` instead.
 
-Local application still needs backup/audit creation and Obsidian API write paths. The current diff and hash checks are readiness gates, not a write implementation.
+After a proposal is approved, compatible proposals show `Apply locally`.
+
+Local apply currently supports:
+
+- `create_note`
+- `append_to_note`
+- `replace_note`
+
+Before local apply, the plugin creates:
+
+- a backup note containing the previous content
+- an audit note containing proposal metadata, before/after hashes, backup path, and diff preview
+
+The default audit folder is:
+
+```text
+00 System/Vault MCP Write Audit
+```
+
+Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Patch, frontmatter, and rename operations are still blocked until they get operation-specific implementations.
