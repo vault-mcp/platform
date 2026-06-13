@@ -28,6 +28,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 - Renamed `packages/vault-core` to `packages/core`.
 - Renamed `apps/indexer` to `apps/cli`.
 - Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, one-click review approvals, and a review queue view.
+- Added Obsidian plugin write proposal review for pending server proposals, including approve/reject status updates and audit visibility. Local file application remains intentionally unimplemented.
 - Added `scripts/install-obsidian-plugin.mjs` and `npm run plugin:install-copy` for installing the built plugin into the copied development vault.
 - Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.
 - Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.
@@ -49,7 +50,8 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 Write support starts as a proposal queue:
 
 - The server stores `write_proposals` with operation type, target path, base content hash, proposed patch/content, requester, status, timestamps, and audit trail.
-- The Obsidian plugin will later pull proposals and apply them locally only after policy allows it.
+- The Obsidian plugin can pull proposals and mark pending proposals approved or rejected.
+- The Obsidian plugin will later apply approved proposals locally only after policy and hash checks allow it.
 - `review_required` remains the default plugin write mode.
 - `direct_apply` is reserved for explicitly configured scopes and still needs local backup/audit entries.
 - Base-content hash mismatches must move the proposal to review/conflict instead of overwriting the local file.

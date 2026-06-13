@@ -359,6 +359,21 @@ describe("server MCP contract", () => {
     expect(statusB.result.structuredContent.vault_id).toBe("vault-b");
     expect(statusB.result.structuredContent.document_count).toBe(1);
 
+    const invalidProposalOperation = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        operation: "invent_new_operation",
+        target_path: "20 Projects/Vault MCP Connector/Project Home.md",
+        requester: "test",
+      }),
+    });
+    expect(invalidProposalOperation.status).toBe(400);
+    expect(await invalidProposalOperation.json()).toEqual({ error: "invalid_operation" });
+
     const createProposal = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
       method: "POST",
       headers: {
@@ -394,6 +409,20 @@ describe("server MCP contract", () => {
     const approvedBody = await approveProposal.json() as { proposal: { status: string; audit: unknown[] } };
     expect(approvedBody.proposal.status).toBe("approved");
     expect(approvedBody.proposal.audit).toHaveLength(2);
+
+    const invalidProposalStatus = await fetch(`${baseUrl}/admin/write-proposals/${proposalBody.proposal.id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: "definitely-not-real",
+        actor: "plugin-test",
+      }),
+    });
+    expect(invalidProposalStatus.status).toBe(400);
+    expect(await invalidProposalStatus.json()).toEqual({ error: "invalid_status" });
 
     const listedProposals = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
       headers: { Authorization: `Bearer ${config.syncToken}` },

@@ -20,6 +20,8 @@ import {
 } from "@vault-mcp/core";
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public");
+const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "patch_note", "create_note", "update_frontmatter", "rename_note"]);
+const WRITE_PROPOSAL_STATUSES = new Set<WriteProposalStatus>(["pending", "approved", "rejected", "applied", "conflict", "failed"]);
 
 export function createApp(config: ServerConfig, store: IndexStore) {
   const app = express();
@@ -148,6 +150,10 @@ export function createApp(config: ServerConfig, store: IndexStore) {
       res.status(400).json({ error: "operation and target_path are required" });
       return;
     }
+    if (!WRITE_OPERATIONS.has(body.operation)) {
+      res.status(400).json({ error: "invalid_operation" });
+      return;
+    }
 
     const now = new Date().toISOString();
     const proposal = await store.createWriteProposal({
@@ -179,6 +185,10 @@ export function createApp(config: ServerConfig, store: IndexStore) {
     const body = req.body as { status?: WriteProposalStatus; actor?: string; message?: string };
     if (!body.status) {
       res.status(400).json({ error: "status is required" });
+      return;
+    }
+    if (!WRITE_PROPOSAL_STATUSES.has(body.status)) {
+      res.status(400).json({ error: "invalid_status" });
       return;
     }
 

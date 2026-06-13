@@ -11,7 +11,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Lets the user approve a review-required note by exact path or approve its parent folder as a prefix.
 - Keeps a short local activity history for previews, syncs, approvals, proposal checks, and errors.
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
-- Checks server-side write proposals, but does not apply writes yet.
+- Reviews server-side write proposals and can mark pending proposals approved or rejected, but does not apply writes to local files yet.
 
 ## Safe Test Install
 
@@ -89,6 +89,22 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 ## Current Publishability Gaps
 
 - The plugin is not packaged for the Obsidian community plugin process.
-- Write proposals can be listed from the server, but cannot be approved, rejected, or applied in Obsidian yet.
+- Write proposals can be approved or rejected from Obsidian, but cannot be applied to local files yet.
 - Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
 - The installer is a local development script, not a release artifact.
+
+## Write Proposal Review
+
+Use `Review write proposals` from the dashboard to fetch proposals for the configured vault.
+
+The proposal view shows:
+
+- operation type
+- target path
+- requester
+- base content hash prefix
+- proposed content or patch preview
+- current proposal status
+- audit trail
+
+For pending proposals, the plugin can mark the proposal `approved` or `rejected` on the server. Approval does not edit local files yet. Local application still needs a diff view, base-content hash check, backup/audit record, and Obsidian API write path.

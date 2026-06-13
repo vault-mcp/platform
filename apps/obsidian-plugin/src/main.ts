@@ -8,7 +8,7 @@ import {
   Setting,
   TFile,
 } from "obsidian";
-import type { IndexMode, SyncPayload, VaultDocument, WriteMode } from "@vault-mcp/core";
+import type { IndexMode, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -26,7 +26,7 @@ type VaultMcpPluginSettings = {
 };
 
 type SyncHistoryEntry = {
-  type: "preview" | "sync" | "approval" | "proposal-check" | "error";
+  type: "preview" | "sync" | "approval" | "proposal-check" | "proposal-update" | "error";
   message: string;
   createdAt: string;
   scanned?: number;
@@ -110,6 +110,7 @@ export default class VaultMcpPlugin extends Plugin {
   settings: VaultMcpPluginSettings = DEFAULT_SETTINGS;
   summary: SyncSummary = DEFAULT_SUMMARY;
   indexPreview: IndexPreview | null = null;
+  writeProposals: WriteProposal[] = [];
   syncHistory: SyncHistoryEntry[] = [];
 
   async onload() {
@@ -268,22 +269,51 @@ export default class VaultMcpPlugin extends Plugin {
     }
 
     try {
+      const proposals = await this.fetchWriteProposals();
+      this.writeProposals = proposals;
+      await this.addHistory({ type: "proposal-check", message: `Checked write proposals: ${proposals.length} found.` });
+      new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
+    } catch (error) {
+      await this.addHistory({ type: "error", message: `Proposal check failed: ${error instanceof Error ? error.message : String(error)}` });
+      new Notice(`Vault MCP proposal check failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  async updateWriteProposalStatus(proposalId: string, status: Extract<WriteProposalStatus, "approved" | "rejected">) {
+    if (!this.settings.syncToken.trim()) {
+      new Notice("Vault MCP sync token is required.");
+      return;
+    }
+
+    const message = status === "approved"
+      ? "Approved in Obsidian plugin. Local apply is not implemented yet."
+      : "Rejected in Obsidian plugin.";
+    try {
       const response = await requestUrl({
-        url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/write-proposals`,
-        method: "GET",
+        url: `${this.serverBaseUrl()}/admin/write-proposals/${encodeURIComponent(proposalId)}`,
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${this.settings.syncToken}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          status,
+          actor: `obsidian-plugin:${this.settings.installationId}`,
+          message,
+        }),
       });
       if (response.status < 200 || response.status >= 300) {
         throw new Error(`Request failed with ${response.status}: ${response.text}`);
       }
-      const parsed = JSON.parse(response.text) as { proposals?: unknown[] };
-      await this.addHistory({ type: "proposal-check", message: `Checked write proposals: ${parsed.proposals?.length ?? 0} found.` });
-      new Notice(`Vault MCP has ${parsed.proposals?.length ?? 0} write proposal${parsed.proposals?.length === 1 ? "" : "s"} pending or recorded.`);
+      const parsed = JSON.parse(response.text) as { proposal?: WriteProposal };
+      await this.addHistory({ type: "proposal-update", message: `Marked proposal ${proposalId} ${status}.` });
+      new Notice(`Vault MCP proposal marked ${status}.`);
+      const proposals = await this.fetchWriteProposals();
+      this.writeProposals = proposals;
+      new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
     } catch (error) {
-      await this.addHistory({ type: "error", message: `Proposal check failed: ${error instanceof Error ? error.message : String(error)}` });
-      new Notice(`Vault MCP proposal check failed: ${error instanceof Error ? error.message : String(error)}`);
+      await this.addHistory({ type: "error", message: `Proposal update failed: ${error instanceof Error ? error.message : String(error)}` });
+      new Notice(`Vault MCP proposal update failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -354,6 +384,21 @@ export default class VaultMcpPlugin extends Plugin {
       redacted,
       items: items.sort((a, b) => decisionSort(a.decision) - decisionSort(b.decision) || a.path.localeCompare(b.path)),
     };
+  }
+
+  private async fetchWriteProposals(): Promise<WriteProposal[]> {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/write-proposals`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+      },
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`Request failed with ${response.status}: ${response.text}`);
+    }
+    const parsed = JSON.parse(response.text) as { proposals?: WriteProposal[] };
+    return parsed.proposals ?? [];
   }
 
   private async buildSyncPayload(): Promise<SyncPayload> {
@@ -551,7 +596,7 @@ class VaultMcpDashboardModal extends Modal {
         .setButtonText("Sync now")
         .onClick(() => void this.plugin.syncNow()))
       .addButton((button) => button
-        .setButtonText("Check write proposals")
+        .setButtonText("Review write proposals")
         .onClick(() => void this.plugin.checkWriteProposals()));
     addHistorySection(contentEl, this.plugin.syncHistory);
   }
@@ -627,6 +672,47 @@ class VaultMcpReviewQueueModal extends Modal {
         }));
 
     addReviewSection(contentEl, this.plugin, queue);
+  }
+}
+
+class VaultMcpWriteProposalsModal extends Modal {
+  constructor(app: App, private readonly plugin: VaultMcpPlugin, private readonly proposals: WriteProposal[]) {
+    super(app);
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    const pendingCount = this.proposals.filter((proposal) => proposal.status === "pending").length;
+    contentEl.createEl("h2", { text: "Vault MCP write proposals" });
+    contentEl.createEl("p", {
+      cls: "vault-mcp-muted",
+      text: "These are remote write requests stored on the server. Approve or reject records your decision only; applying changes to local vault files is a later safety layer.",
+    });
+    const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard vault-mcp-dashboard--compact" });
+    addStat(grid, "Total proposals", String(this.proposals.length));
+    addStat(grid, "Pending", String(pendingCount));
+    addStat(grid, "Vault id", this.plugin.settings.vaultId);
+    addStat(grid, "Write mode", this.plugin.settings.writeMode);
+
+    new Setting(contentEl)
+      .addButton((button) => button
+        .setButtonText("Refresh")
+        .setCta()
+        .onClick(() => {
+          this.close();
+          void this.plugin.checkWriteProposals();
+        }));
+
+    if (this.proposals.length === 0) {
+      contentEl.createEl("p", { cls: "vault-mcp-muted", text: "No write proposals found for this vault." });
+      return;
+    }
+
+    const list = contentEl.createDiv({ cls: "vault-mcp-proposal-list" });
+    for (const proposal of this.proposals) {
+      addWriteProposalCard(list, this.plugin, this, proposal);
+    }
   }
 }
 
@@ -860,6 +946,72 @@ function addHistorySection(parent: HTMLElement, history: SyncHistoryEntry[]) {
   }
 }
 
+function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal: Modal, proposal: WriteProposal) {
+  const card = parent.createDiv({ cls: "vault-mcp-proposal-card" });
+  const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+  header.createDiv({ cls: "vault-mcp-preview-card__title", text: proposal.target_path });
+  header.createDiv({ cls: `vault-mcp-chip vault-mcp-chip--${proposalStatusTone(proposal.status)}`, text: proposal.status });
+
+  const meta = card.createDiv({ cls: "vault-mcp-preview-card__meta" });
+  meta.createSpan({ text: `operation: ${proposal.operation}` });
+  meta.createSpan({ text: `requester: ${proposal.requester}` });
+  meta.createSpan({ text: `updated: ${formatDate(proposal.updated_at)}` });
+  if (proposal.base_content_hash) {
+    meta.createSpan({ text: `base: ${proposal.base_content_hash.slice(0, 16)}` });
+  }
+
+  card.createDiv({
+    cls: "vault-mcp-preview-card__reason",
+    text: `Proposal id: ${proposal.id}`,
+  });
+
+  if (proposal.proposed_patch) {
+    addCodePreview(card, "Proposed patch", proposal.proposed_patch);
+  }
+  if (proposal.proposed_content) {
+    addCodePreview(card, "Proposed content", proposal.proposed_content);
+  }
+
+  addAuditTrail(card, proposal);
+
+  if (proposal.status === "pending") {
+    const actions = card.createDiv({ cls: "vault-mcp-preview-card__actions" });
+    new Setting(actions)
+      .addButton((button) => button
+        .setButtonText("Approve")
+        .setCta()
+        .onClick(() => {
+          modal.close();
+          void plugin.updateWriteProposalStatus(proposal.id, "approved");
+        }))
+      .addButton((button) => button
+        .setButtonText("Reject")
+        .onClick(() => {
+          modal.close();
+          void plugin.updateWriteProposalStatus(proposal.id, "rejected");
+        }));
+  }
+}
+
+function addCodePreview(parent: HTMLElement, label: string, value: string) {
+  const section = parent.createDiv({ cls: "vault-mcp-code-preview" });
+  section.createDiv({ cls: "vault-mcp-dashboard__label", text: label });
+  section.createEl("pre", { text: truncateMiddle(value, 4000) });
+}
+
+function addAuditTrail(parent: HTMLElement, proposal: WriteProposal) {
+  const details = parent.createEl("details", { cls: "vault-mcp-proposal-audit" });
+  details.createEl("summary", { text: `Audit trail (${proposal.audit.length})` });
+  const list = details.createDiv({ cls: "vault-mcp-history-list" });
+  for (const entry of proposal.audit) {
+    const row = list.createDiv({ cls: "vault-mcp-history-row" });
+    row.createDiv({ cls: `vault-mcp-chip vault-mcp-chip--${proposalStatusTone(entry.status)}`, text: entry.status });
+    const body = row.createDiv({ cls: "vault-mcp-history-row__body" });
+    body.createDiv({ cls: "vault-mcp-history-row__message", text: entry.message });
+    body.createDiv({ cls: "vault-mcp-history-row__meta", text: `${formatDate(entry.created_at)} · ${entry.actor}` });
+  }
+}
+
 function addListSetting(containerEl: HTMLElement, name: string, desc: string, value: string[], onSave: (values: string[]) => Promise<void>) {
   new Setting(containerEl)
     .setName(name)
@@ -888,10 +1040,28 @@ function historyTone(type: SyncHistoryEntry["type"]): "allow" | "deny" | "review
   if (type === "error") {
     return "deny";
   }
-  if (type === "approval" || type === "sync") {
+  if (type === "approval" || type === "sync" || type === "proposal-update") {
     return "allow";
   }
   return "review";
+}
+
+function proposalStatusTone(status: WriteProposalStatus): "allow" | "deny" | "review" {
+  if (status === "approved" || status === "applied") {
+    return "allow";
+  }
+  if (status === "rejected" || status === "conflict" || status === "failed") {
+    return "deny";
+  }
+  return "review";
+}
+
+function truncateMiddle(value: string, maxLength: number): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+  const half = Math.floor((maxLength - 40) / 2);
+  return `${value.slice(0, half)}\n\n... truncated ${value.length - maxLength} characters ...\n\n${value.slice(-half)}`;
 }
 
 function decisionSort(decision: IndexDecision): number {

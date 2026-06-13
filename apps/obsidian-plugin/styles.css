@@ -146,3 +146,43 @@
   margin-top: 2px;
   overflow-wrap: anywhere;
 }
+
+.vault-mcp-proposal-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+  max-height: 520px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.vault-mcp-proposal-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.vault-mcp-code-preview {
+  margin-top: 10px;
+}
+
+.vault-mcp-code-preview pre {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  font-size: var(--font-ui-smaller);
+  margin: 6px 0 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.vault-mcp-proposal-audit {
+  margin-top: 10px;
+}
+
+.vault-mcp-proposal-audit > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
