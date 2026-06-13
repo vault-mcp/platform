@@ -1,5 +1,9 @@
 # Deployment
 
+For a start-to-finish private-alpha self-host walkthrough, read
+[Self-Host Vault MCP](self-host.md) first. This page is the lower-level runtime,
+environment, and platform reference.
+
 ## Runtime
 
 The server is a Node HTTP service. It can run from `npm run start` after `npm run build`, as a Vercel Express Function through `api/index.ts`, or from the included Dockerfile on a container host.

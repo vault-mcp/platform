@@ -1,6 +1,7 @@
 # Acceptance Runbook
 
 Use this after the remote HTTPS endpoint, Postgres, sync token, and OAuth provider are configured.
+For first-time setup, start with [Self-Host Vault MCP](self-host.md).
 
 ## Automated Gates
 

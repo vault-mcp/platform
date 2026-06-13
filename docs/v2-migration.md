@@ -111,3 +111,4 @@ Migration gates after pushing to `vault-mcp/platform`:
 Until the org migration is verified, keep the existing `TristanEDU/vault-mcp-connector` repo and production Vercel alias as fallback. Do not change production env vars or the `vault-mcp-connector.vercel.app` alias as part of source migration.
 
 For current Obsidian plugin testing steps, see `docs/plugin-private-alpha.md`.
+For the current private-alpha self-host path, see `docs/self-host.md`.
