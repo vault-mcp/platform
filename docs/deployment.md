@@ -135,6 +135,28 @@ npm run build
 npm run start
 ```
 
+## Health And Observability
+
+`GET /healthz` is the first operator check after deploy and after sync. It returns
+safe runtime status without exposing secrets or database URLs:
+
+- `ok`
+- `service.name`
+- `service.version`
+- `service.public_base_url`
+- `service.mcp_resource_url`
+- `document_count`
+- `vault_count`
+- `generated_at`
+- `last_sync_at`
+- `storage.kind`
+- `storage.ok`
+- `storage.migrations` for Postgres
+
+When storage is healthy, the endpoint returns HTTP `200`. When Postgres is
+unreachable or the schema cannot be queried, the endpoint returns HTTP `503` with
+`ok: false` and a safe `storage.error` string.
+
 ## Container Hosts
 
 Use the Dockerfile for hosts that run containers directly, such as Fly.io, Render, Railway, a VPS, or any Kubernetes-like runtime:

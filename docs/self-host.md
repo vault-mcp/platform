@@ -162,6 +162,20 @@ curl https://vault-mcp.example.com/.well-known/oauth-protected-resource
 curl https://vault-mcp.example.com/.well-known/oauth-authorization-server
 ```
 
+`/healthz` should return HTTP `200` with:
+
+- `ok: true`
+- `service.version`
+- `storage.kind`
+- `storage.ok`
+- `storage.migrations` when Postgres is active
+- `document_count`
+- `vault_count`
+- `last_sync_at`
+
+If storage is unreachable, `/healthz` returns HTTP `503` with `ok: false` and a
+safe storage error message.
+
 ## Step 4 - Sync A Test Vault
 
 Start with a copied or disposable vault. Do not start with a live vault.

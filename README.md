@@ -57,7 +57,7 @@ V1 exposes an allowlisted derived index through:
 
 - `POST /mcp` - MCP Streamable HTTP JSON-RPC endpoint.
 - `GET /mcp` - authenticated Streamable HTTP SSE endpoint.
-- `GET /healthz` - service and index health.
+- `GET /healthz` - service version, storage/database status, migration ids, vault count, and index health.
 - `POST /admin/sync` - authenticated sync endpoint for the local indexer.
 - `DELETE /admin/vaults/:vaultId` - authenticated cleanup endpoint for removing a synced vault, its manifest, and its write proposals.
 - `GET /notes/:id` - authenticated private citation URL for fetched note chunks.

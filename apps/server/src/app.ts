@@ -7,6 +7,7 @@ import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBear
 import { handleStatelessMcpRequest } from "./mcp.js";
 import { attachOAuthStore, registerOAuthRoutes } from "./oauth.js";
 import type { IndexStore } from "./store.js";
+import { SERVICE_NAME, SERVICE_VERSION } from "./version.js";
 import {
   DEFAULT_INSTALLATION_ID,
   DEFAULT_POLICY_VERSION,
@@ -48,9 +49,16 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   });
 
   app.get("/healthz", async (_req: Request, res: Response) => {
-    res.json({
-      ok: true,
-      ...await store.health(),
+    const health = await store.health();
+    res.status(health.storage.ok ? 200 : 503).json({
+      ok: health.storage.ok,
+      service: {
+        name: SERVICE_NAME,
+        version: SERVICE_VERSION,
+        public_base_url: config.publicBaseUrl,
+        mcp_resource_url: config.mcpResourceUrl,
+      },
+      ...health,
     });
   });
 

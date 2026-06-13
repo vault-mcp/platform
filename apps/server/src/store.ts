@@ -35,12 +35,20 @@ import {
   searchSections,
   searchVault,
 } from "@vault-mcp/core";
-import { runPostgresMigrations } from "./migrations.js";
+import { getPostgresMigrationIds, runPostgresMigrations } from "./migrations.js";
 
 export type IndexHealth = {
   document_count: number;
+  vault_count: number;
   generated_at: string | null;
+  last_sync_at: string | null;
   stats: IndexStats | null;
+  storage: {
+    kind: "json" | "postgres";
+    ok: boolean;
+    migrations?: string[];
+    error?: string;
+  };
 };
 
 export type StoredOAuthClient = {
@@ -155,8 +163,14 @@ export class JsonIndexStore implements IndexStore {
   health() {
     return {
       document_count: this.documents.length,
+      vault_count: summarizeVaults(this.documents, this.manifests, this.generatedAt).length,
       generated_at: this.generatedAt,
+      last_sync_at: this.generatedAt,
       stats: this.stats,
+      storage: {
+        kind: "json" as const,
+        ok: true,
+      },
     };
   }
 
@@ -403,12 +417,38 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async health(): Promise<IndexHealth> {
-    const count = await this.pool.query<{ count: string }>("select count(*)::text as count from vault_documents");
-    return {
-      document_count: Number(count.rows[0]?.count ?? 0),
-      generated_at: this.generatedAt,
-      stats: this.stats,
-    };
+    try {
+      const [count, migrations, vaults] = await Promise.all([
+        this.pool.query<{ count: string }>("select count(*)::text as count from vault_documents"),
+        getPostgresMigrationIds(this.pool),
+        this.listVaults(),
+      ]);
+      return {
+        document_count: Number(count.rows[0]?.count ?? 0),
+        vault_count: vaults.length,
+        generated_at: this.generatedAt,
+        last_sync_at: mostRecentSyncAt(vaults.map((vault) => vault.last_indexed_at), this.generatedAt),
+        stats: this.stats,
+        storage: {
+          kind: "postgres",
+          ok: true,
+          migrations,
+        },
+      };
+    } catch (error) {
+      return {
+        document_count: 0,
+        vault_count: 0,
+        generated_at: this.generatedAt,
+        last_sync_at: this.generatedAt,
+        stats: this.stats,
+        storage: {
+          kind: "postgres",
+          ok: false,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
   }
 
   async search(query: string, limit = 10, scope?: string): Promise<SearchResponse> {
@@ -670,4 +710,11 @@ function summarizeVaults(documents: VaultDocument[], manifests: Map<string, Sync
   }
 
   return summaries.sort((a, b) => a.vault_id.localeCompare(b.vault_id));
+}
+
+function mostRecentSyncAt(values: Array<string | null | undefined>, fallback: string | null): string | null {
+  const valid = values
+    .filter((value): value is string => typeof value === "string" && !Number.isNaN(new Date(value).getTime()))
+    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  return valid[0] ?? fallback;
 }

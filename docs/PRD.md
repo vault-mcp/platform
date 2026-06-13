@@ -17,7 +17,7 @@ Build a private, portable, read-only MCP connector that lets approved AI clients
 
 - `POST /mcp`: Streamable HTTP JSON-RPC endpoint.
 - `GET /mcp`: authenticated Streamable HTTP SSE endpoint.
-- `GET /healthz`: health and index count.
+- `GET /healthz`: service version, storage/database status, migration ids, vault count, last sync time, and index count.
 - `POST /admin/sync`: bearer-token-protected index replacement.
 - `GET /notes/:id`: bearer-token-protected citation payload.
 

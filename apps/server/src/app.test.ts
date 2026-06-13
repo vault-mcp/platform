@@ -64,6 +64,33 @@ describe("server MCP contract", () => {
     expect(html).toContain("Build The Indexer");
   });
 
+  it("returns versioned health and storage status", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/healthz`);
+    expect(response.status).toBe(200);
+    const health = await response.json() as {
+      ok: boolean;
+      service: { name: string; version: string; mcp_resource_url: string };
+      storage: { kind: string; ok: boolean };
+      document_count: number;
+      vault_count: number;
+      last_sync_at: string | null;
+    };
+
+    expect(health.ok).toBe(true);
+    expect(health.service.name).toBe("vault-mcp-connector");
+    expect(health.service.version).toBe("0.1.0");
+    expect(health.service.mcp_resource_url).toBe("http://127.0.0.1:0/mcp");
+    expect(health.storage).toEqual({ kind: "json", ok: true });
+    expect(health.document_count).toBe(0);
+    expect(health.vault_count).toBe(0);
+    expect(health.last_sync_at).toBeNull();
+  });
+
   it("serves generated wiki source-reference pages without authentication", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);

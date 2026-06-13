@@ -123,267 +123,267 @@
             </tr>
             <tr>
               <td class="line-number" id="L10"><a href="#L10">10</a></td>
-              <td class="source"><pre>import {</pre></td>
+              <td class="source"><pre>import { SERVICE_NAME, SERVICE_VERSION } from &quot;./version.js&quot;;</pre></td>
               <td>Imports code from another module so this file can reuse it.</td>
             </tr>
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
-              <td class="source"><pre>  DEFAULT_INSTALLATION_ID,</pre></td>
+              <td class="source"><pre>import {</pre></td>
               <td>This resolves the repository public/ folder from the compiled server file location so static landing/wiki assets can be served.</td>
             </tr>
             <tr>
               <td class="line-number" id="L12"><a href="#L12">12</a></td>
-              <td class="source"><pre>  DEFAULT_POLICY_VERSION,</pre></td>
+              <td class="source"><pre>  DEFAULT_INSTALLATION_ID,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L13"><a href="#L13">13</a></td>
-              <td class="source"><pre>  DEFAULT_TENANT_ID,</pre></td>
+              <td class="source"><pre>  DEFAULT_POLICY_VERSION,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L14"><a href="#L14">14</a></td>
-              <td class="source"><pre>  defaultIndexPolicy,</pre></td>
+              <td class="source"><pre>  DEFAULT_TENANT_ID,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L15"><a href="#L15">15</a></td>
-              <td class="source"><pre>  summarizeIndexPolicy,</pre></td>
+              <td class="source"><pre>  defaultIndexPolicy,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L16"><a href="#L16">16</a></td>
-              <td class="source"><pre>  type SyncManifest,</pre></td>
+              <td class="source"><pre>  summarizeIndexPolicy,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L17"><a href="#L17">17</a></td>
-              <td class="source"><pre>  type SyncPayload,</pre></td>
+              <td class="source"><pre>  type SyncManifest,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L18"><a href="#L18">18</a></td>
-              <td class="source"><pre>  type WriteOperation,</pre></td>
+              <td class="source"><pre>  type SyncPayload,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L19"><a href="#L19">19</a></td>
-              <td class="source"><pre>  type WriteProposalStatus,</pre></td>
+              <td class="source"><pre>  type WriteOperation,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L20"><a href="#L20">20</a></td>
-              <td class="source"><pre>} from &quot;@vault-mcp/core&quot;;</pre></td>
+              <td class="source"><pre>  type WriteProposalStatus,</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L21"><a href="#L21">21</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>} from &quot;@vault-mcp/core&quot;;</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L22"><a href="#L22">22</a></td>
-              <td class="source"><pre>const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), &quot;../../../public&quot;);</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L23"><a href="#L23">23</a></td>
-              <td class="source"><pre>const WRITE_OPERATIONS = new Set&lt;WriteOperation&gt;([&quot;append_to_note&quot;, &quot;replace_note&quot;, &quot;create_note&quot;, &quot;update_frontmatter&quot;, &quot;rename_note&quot;]);</pre></td>
+              <td class="source"><pre>const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), &quot;../../../public&quot;);</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L24"><a href="#L24">24</a></td>
-              <td class="source"><pre>const WRITE_PROPOSAL_STATUSES = new Set&lt;WriteProposalStatus&gt;([&quot;pending&quot;, &quot;approved&quot;, &quot;rejected&quot;, &quot;applied&quot;, &quot;conflict&quot;, &quot;failed&quot;]);</pre></td>
+              <td class="source"><pre>const WRITE_OPERATIONS = new Set&lt;WriteOperation&gt;([&quot;append_to_note&quot;, &quot;replace_note&quot;, &quot;create_note&quot;, &quot;update_frontmatter&quot;, &quot;rename_note&quot;]);</pre></td>
               <td>This starts Express app creation: create the app, merge allowed origins with the public base URL, install CORS/body parsing/static wiki assets, and attach the store to requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L25"><a href="#L25">25</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>const WRITE_PROPOSAL_STATUSES = new Set&lt;WriteProposalStatus&gt;([&quot;pending&quot;, &quot;approved&quot;, &quot;rejected&quot;, &quot;applied&quot;, &quot;conflict&quot;, &quot;failed&quot;]);</pre></td>
+              <td>Declares WRITE_PROPOSAL_STATUSES, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L26"><a href="#L26">26</a></td>
-              <td class="source"><pre>export function createApp(config: ServerConfig, store: IndexStore) {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L27"><a href="#L27">27</a></td>
-              <td class="source"><pre>  const app = express();</pre></td>
+              <td class="source"><pre>export function createApp(config: ServerConfig, store: IndexStore) {</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L28"><a href="#L28">28</a></td>
-              <td class="source"><pre>  const allowedOrigins = uniqueOrigins([...config.allowedOrigins, config.publicBaseUrl]);</pre></td>
+              <td class="source"><pre>  const app = express();</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L29"><a href="#L29">29</a></td>
-              <td class="source"><pre>  app.use(applyCors(allowedOrigins));</pre></td>
+              <td class="source"><pre>  const allowedOrigins = uniqueOrigins([...config.allowedOrigins, config.publicBaseUrl]);</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L30"><a href="#L30">30</a></td>
-              <td class="source"><pre>  app.use(express.json({ limit: &quot;25mb&quot; }));</pre></td>
+              <td class="source"><pre>  app.use(applyCors(allowedOrigins));</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L31"><a href="#L31">31</a></td>
-              <td class="source"><pre>  app.use(express.urlencoded({ extended: false, limit: &quot;25mb&quot; }));</pre></td>
+              <td class="source"><pre>  app.use(express.json({ limit: &quot;25mb&quot; }));</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L32"><a href="#L32">32</a></td>
-              <td class="source"><pre>  app.use(&quot;/assets&quot;, express.static(path.join(publicDir, &quot;assets&quot;), { index: false }));</pre></td>
+              <td class="source"><pre>  app.use(express.urlencoded({ extended: false, limit: &quot;25mb&quot; }));</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
-              <td class="source"><pre>  app.use(&quot;/wiki&quot;, express.static(path.join(publicDir, &quot;wiki&quot;), { index: false }));</pre></td>
+              <td class="source"><pre>  app.use(&quot;/assets&quot;, express.static(path.join(publicDir, &quot;assets&quot;), { index: false }));</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
-              <td class="source"><pre>  app.use(&quot;/wiki/files&quot;, express.static(path.join(publicDir, &quot;wiki&quot;, &quot;files&quot;), { index: &quot;index.html&quot; }));</pre></td>
+              <td class="source"><pre>  app.use(&quot;/wiki&quot;, express.static(path.join(publicDir, &quot;wiki&quot;), { index: false }));</pre></td>
               <td>These routes register OAuth endpoints and serve the public landing page plus the conceptual wiki without authentication.</td>
             </tr>
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
-              <td class="source"><pre>  app.use((req, _res, next) =&gt; {</pre></td>
+              <td class="source"><pre>  app.use(&quot;/wiki/files&quot;, express.static(path.join(publicDir, &quot;wiki&quot;, &quot;files&quot;), { index: &quot;index.html&quot; }));</pre></td>
               <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
-              <td class="source"><pre>    attachOAuthStore(req, store);</pre></td>
+              <td class="source"><pre>  app.use((req, _res, next) =&gt; {</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
-              <td class="source"><pre>    next();</pre></td>
+              <td class="source"><pre>    attachOAuthStore(req, store);</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>    next();</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
-              <td class="source"><pre>  registerOAuthRoutes(app, config);</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  registerOAuthRoutes(app, config);</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
-              <td class="source"><pre>  app.get(&quot;/&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
-              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;index.html&quot;));</pre></td>
+              <td class="source"><pre>  app.get(&quot;/&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;index.html&quot;));</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
-              <td class="source"><pre>  app.get([&quot;/wiki&quot;, &quot;/wiki/&quot;], (_req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;wiki&quot;, &quot;index.html&quot;));</pre></td>
+              <td class="source"><pre>  app.get([&quot;/wiki&quot;, &quot;/wiki/&quot;], (_req: Request, res: Response) =&gt; {</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>    res.sendFile(path.join(publicDir, &quot;wiki&quot;, &quot;index.html&quot;));</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>These routes serve health and OAuth protected-resource metadata, which clients use to discover auth requirements.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
-              <td class="source"><pre>  app.get(&quot;/healthz&quot;, async (_req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
-              <td class="source"><pre>    res.json({</pre></td>
+              <td class="source"><pre>  app.get(&quot;/healthz&quot;, async (_req: Request, res: Response) =&gt; {</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L52"><a href="#L52">52</a></td>
-              <td class="source"><pre>      ok: true,</pre></td>
+              <td class="source"><pre>    const health = await store.health();</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
-              <td class="source"><pre>      ...await store.health(),</pre></td>
+              <td class="source"><pre>    res.status(health.storage.ok ? 200 : 503).json({</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
-              <td class="source"><pre>    });</pre></td>
+              <td class="source"><pre>      ok: health.storage.ok,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L55"><a href="#L55">55</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      service: {</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L56"><a href="#L56">56</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>        name: SERVICE_NAME,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L57"><a href="#L57">57</a></td>
-              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>        version: SERVICE_VERSION,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
-              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
+              <td class="source"><pre>        public_base_url: config.publicBaseUrl,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>        mcp_resource_url: config.mcpResourceUrl,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      },</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L61"><a href="#L61">61</a></td>
-              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource/mcp&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>      ...health,</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
+              <td class="source"><pre>    });</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
@@ -398,312 +398,312 @@
             </tr>
             <tr>
               <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre>  app.post(&quot;/admin/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L66"><a href="#L66">66</a></td>
-              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
+              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L67"><a href="#L67">67</a></td>
-              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L68"><a href="#L68">68</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This admin sync route requires the sync token, validates the payload shape, replaces the stored index, and returns updated health.</td>
             </tr>
             <tr>
               <td class="line-number" id="L69"><a href="#L69">69</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 69 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  app.get(&quot;/.well-known/oauth-protected-resource/mcp&quot;, (_req: Request, res: Response) =&gt; {</pre></td>
+              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
               <td class="line-number" id="L70"><a href="#L70">70</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>    res.json(protectedResourceMetadata(config));</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L71"><a href="#L71">71</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L72"><a href="#L72">72</a></td>
-              <td class="source"><pre>    await store.replace({</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L73"><a href="#L73">73</a></td>
-              <td class="source"><pre>      documents: payload.documents,</pre></td>
+              <td class="source"><pre>  app.post(&quot;/admin/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>      generated_at: payload.generated_at,</pre></td>
+              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L75"><a href="#L75">75</a></td>
-              <td class="source"><pre>      stats: payload.stats,</pre></td>
+              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>    });</pre></td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L77"><a href="#L77">77</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      return;</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>    res.json({</pre></td>
+              <td class="source"><pre>    }</pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre>      ok: true,</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This private note route requires user auth and fetches a single indexed document by id for citation URLs.</td>
             </tr>
             <tr>
               <td class="line-number" id="L80"><a href="#L80">80</a></td>
-              <td class="source"><pre>      ...await store.health(),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    await store.replace({</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>    });</pre></td>
+              <td class="source"><pre>      documents: payload.documents,</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      generated_at: payload.generated_at,</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      stats: payload.stats,</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L84"><a href="#L84">84</a></td>
-              <td class="source"><pre>  app.post(&quot;/admin/vaults/register&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>    });</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>    const body = req.body as Partial&lt;SyncManifest&gt;;</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>    const vaultId = normalizeId(body.vault_id, &quot;default&quot;);</pre></td>
+              <td class="source"><pre>    res.json({</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>    const tenantId = normalizeId(body.tenant_id, DEFAULT_TENANT_ID);</pre></td>
+              <td class="source"><pre>      ok: true,</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>    const installationId = normalizeId(body.installation_id, DEFAULT_INSTALLATION_ID);</pre></td>
+              <td class="source"><pre>      ...await store.health(),</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L89"><a href="#L89">89</a></td>
-              <td class="source"><pre>    const indexMode = body.index_mode ?? &quot;rules_plus_approvals&quot;;</pre></td>
+              <td class="source"><pre>    });</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L90"><a href="#L90">90</a></td>
-              <td class="source"><pre>    const policy = defaultIndexPolicy(indexMode);</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>    const manifest: SyncManifest = {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>      tenant_id: tenantId,</pre></td>
+              <td class="source"><pre>  app.post(&quot;/admin/vaults/register&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre>      vault_id: vaultId,</pre></td>
+              <td class="source"><pre>    const body = req.body as Partial&lt;SyncManifest&gt;;</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L94"><a href="#L94">94</a></td>
-              <td class="source"><pre>      installation_id: installationId,</pre></td>
+              <td class="source"><pre>    const vaultId = normalizeId(body.vault_id, &quot;default&quot;);</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre>      vault_name: typeof body.vault_name === &quot;string&quot; &amp;&amp; body.vault_name.trim() ? body.vault_name.trim() : vaultId,</pre></td>
+              <td class="source"><pre>    const tenantId = normalizeId(body.tenant_id, DEFAULT_TENANT_ID);</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>      generated_at: new Date().toISOString(),</pre></td>
+              <td class="source"><pre>    const installationId = normalizeId(body.installation_id, DEFAULT_INSTALLATION_ID);</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L97"><a href="#L97">97</a></td>
-              <td class="source"><pre>      policy_version: body.policy_version ?? DEFAULT_POLICY_VERSION,</pre></td>
+              <td class="source"><pre>    const indexMode = body.index_mode ?? &quot;rules_plus_approvals&quot;;</pre></td>
               <td>This shared MCP handler catches unexpected MCP errors and returns a JSON-RPC internal-error response if headers were not already sent.</td>
             </tr>
             <tr>
               <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre>      index_mode: indexMode,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    const policy = defaultIndexPolicy(indexMode);</pre></td>
+              <td>Declares policy, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L99"><a href="#L99">99</a></td>
-              <td class="source"><pre>      policy_summary: body.policy_summary ?? summarizeIndexPolicy(policy),</pre></td>
+              <td class="source"><pre>    const manifest: SyncManifest = {</pre></td>
               <td>This POST /mcp route is the main authenticated JSON-RPC MCP endpoint for tools/list and tools/call requests.</td>
             </tr>
             <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
-              <td class="source"><pre>    };</pre></td>
+              <td class="source"><pre>      tenant_id: tenantId,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
-              <td class="source"><pre>    await store.registerVault(manifest);</pre></td>
+              <td class="source"><pre>      vault_id: vaultId,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L102"><a href="#L102">102</a></td>
-              <td class="source"><pre>    res.json({ ok: true, manifest });</pre></td>
+              <td class="source"><pre>      installation_id: installationId,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L103"><a href="#L103">103</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      vault_name: typeof body.vault_name === &quot;string&quot; &amp;&amp; body.vault_name.trim() ? body.vault_name.trim() : vaultId,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L104"><a href="#L104">104</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      generated_at: new Date().toISOString(),</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L105"><a href="#L105">105</a></td>
-              <td class="source"><pre>  app.get(&quot;/admin/vaults&quot;, requireBearerToken(config.syncToken), async (_req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>      policy_version: body.policy_version ?? DEFAULT_POLICY_VERSION,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>    res.json({ vaults: await store.listVaults() });</pre></td>
+              <td class="source"><pre>      index_mode: indexMode,</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L107"><a href="#L107">107</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      policy_summary: body.policy_summary ?? summarizeIndexPolicy(policy),</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L108"><a href="#L108">108</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>    };</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L109"><a href="#L109">109</a></td>
-              <td class="source"><pre>  app.get(&quot;/admin/vaults/:vaultId/status&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>    await store.registerVault(manifest);</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L110"><a href="#L110">110</a></td>
-              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
+              <td class="source"><pre>    res.json({ ok: true, manifest });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L111"><a href="#L111">111</a></td>
-              <td class="source"><pre>    res.json(await store.vaultStatus(vaultId));</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L112"><a href="#L112">112</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L113"><a href="#L113">113</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>  app.get(&quot;/admin/vaults&quot;, requireBearerToken(config.syncToken), async (_req: Request, res: Response) =&gt; {</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L114"><a href="#L114">114</a></td>
-              <td class="source"><pre>  app.delete(&quot;/admin/vaults/:vaultId&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>    res.json({ vaults: await store.listVaults() });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L115"><a href="#L115">115</a></td>
-              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
-              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L116"><a href="#L116">116</a></td>
-              <td class="source"><pre>    await store.deleteVault(vaultId);</pre></td>
-              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L117"><a href="#L117">117</a></td>
-              <td class="source"><pre>    res.json({ ok: true, vault_id: vaultId });</pre></td>
-              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L118"><a href="#L118">118</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
               <td class="source"><pre> </pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L120"><a href="#L120">120</a></td>
-              <td class="source"><pre>  app.post(&quot;/admin/vaults/:vaultId/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>  app.get(&quot;/admin/vaults/:vaultId/status&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
               <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>    res.json(await store.vaultStatus(vaultId));</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L122"><a href="#L122">122</a></td>
-              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
+              <td class="source"><pre>  app.delete(&quot;/admin/vaults/:vaultId&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L123"><a href="#L123">123</a></td>
-              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
+              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L124"><a href="#L124">124</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
+              <td class="source"><pre>    await store.deleteVault(vaultId);</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L125"><a href="#L125">125</a></td>
-              <td class="source"><pre>      return;</pre></td>
+              <td class="source"><pre>    res.json({ ok: true, vault_id: vaultId });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L126"><a href="#L126">126</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
@@ -713,472 +713,472 @@
             </tr>
             <tr>
               <td class="line-number" id="L128"><a href="#L128">128</a></td>
-              <td class="source"><pre>    await store.replace({</pre></td>
+              <td class="source"><pre>  app.post(&quot;/admin/vaults/:vaultId/sync&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L129"><a href="#L129">129</a></td>
-              <td class="source"><pre>      ...payload,</pre></td>
+              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
               <td>This GET /mcp route supports Streamable HTTP SSE clients by requiring Accept: text/event-stream, opening an SSE response, and sending keepalives.</td>
             </tr>
             <tr>
               <td class="line-number" id="L130"><a href="#L130">130</a></td>
-              <td class="source"><pre>      vault_id: vaultId,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    const payload = req.body as Partial&lt;SyncPayload&gt;;</pre></td>
+              <td>Declares payload, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L131"><a href="#L131">131</a></td>
-              <td class="source"><pre>      documents: payload.documents,</pre></td>
+              <td class="source"><pre>    if (!Array.isArray(payload.documents)) {</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L132"><a href="#L132">132</a></td>
-              <td class="source"><pre>    });</pre></td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;documents array is required&quot; });</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      return;</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L134"><a href="#L134">134</a></td>
-              <td class="source"><pre>    res.json({</pre></td>
+              <td class="source"><pre>    }</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre>      ok: true,</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>      vault: await store.vaultStatus(vaultId),</pre></td>
+              <td class="source"><pre>    await store.replace({</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre>    });</pre></td>
+              <td class="source"><pre>      ...payload,</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      vault_id: vaultId,</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L139"><a href="#L139">139</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      documents: payload.documents,</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L140"><a href="#L140">140</a></td>
-              <td class="source"><pre>  app.get(&quot;/admin/vaults/:vaultId/write-proposals&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>    });</pre></td>
               <td>This DELETE /mcp route explicitly rejects unsupported deletion with Method Not Allowed while advertising GET and POST as the supported methods.</td>
             </tr>
             <tr>
               <td class="line-number" id="L141"><a href="#L141">141</a></td>
-              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
-              <td>Declares vaultId, a local value used later in this file.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>    res.json({ proposals: await store.listWriteProposals(vaultId) });</pre></td>
+              <td class="source"><pre>    res.json({</pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>  });</pre></td>
+              <td class="source"><pre>      ok: true,</pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L144"><a href="#L144">144</a></td>
-              <td class="source"><pre> </pre></td>
+              <td class="source"><pre>      vault: await store.vaultStatus(vaultId),</pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L145"><a href="#L145">145</a></td>
-              <td class="source"><pre>  app.post(&quot;/admin/vaults/:vaultId/write-proposals&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td class="source"><pre>    });</pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>    const body = req.body as {</pre></td>
+              <td class="source"><pre> </pre></td>
               <td>These final lines return the configured app and de-duplicate origins after trimming trailing slashes.</td>
             </tr>
             <tr>
               <td class="line-number" id="L148"><a href="#L148">148</a></td>
-              <td class="source"><pre>      operation?: WriteOperation;</pre></td>
-              <td>Line 148 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  app.get(&quot;/admin/vaults/:vaultId/write-proposals&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
               <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>      target_path?: string;</pre></td>
-              <td>Line 149 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
+              <td>Declares vaultId, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>      base_content_hash?: string | null;</pre></td>
-              <td>Line 150 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L151"><a href="#L151">151</a></td>
-              <td class="source"><pre>      proposed_content?: string;</pre></td>
-              <td>Line 151 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L152"><a href="#L152">152</a></td>
-              <td class="source"><pre>      proposed_patch?: string;</pre></td>
-              <td>Line 152 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L153"><a href="#L153">153</a></td>
-              <td class="source"><pre>      requester?: string;</pre></td>
-              <td>Line 153 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L154"><a href="#L154">154</a></td>
-              <td class="source"><pre>    };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L155"><a href="#L155">155</a></td>
-              <td class="source"><pre>    if (!body.operation || !body.target_path) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L156"><a href="#L156">156</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;operation and target_path are required&quot; });</pre></td>
+              <td class="source"><pre>    res.json({ proposals: await store.listWriteProposals(vaultId) });</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre>  app.post(&quot;/admin/vaults/:vaultId/write-proposals&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>    const vaultId = paramValue(req.params.vaultId);</pre></td>
+              <td>Declares vaultId, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>    const body = req.body as {</pre></td>
+              <td>Declares body, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>      operation?: WriteOperation;</pre></td>
+              <td>Line 156 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L157"><a href="#L157">157</a></td>
-              <td class="source"><pre>      return;</pre></td>
+              <td class="source"><pre>      target_path?: string;</pre></td>
               <td>Line 157 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>      base_content_hash?: string | null;</pre></td>
+              <td>Line 158 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre>    if (!WRITE_OPERATIONS.has(body.operation)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre>      proposed_content?: string;</pre></td>
+              <td>Line 159 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L160"><a href="#L160">160</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;invalid_operation&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>      proposed_patch?: string;</pre></td>
+              <td>Line 160 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L161"><a href="#L161">161</a></td>
-              <td class="source"><pre>      return;</pre></td>
+              <td class="source"><pre>      requester?: string;</pre></td>
               <td>Line 161 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L162"><a href="#L162">162</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>    };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre>    if (!body.operation || !body.target_path) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;operation and target_path are required&quot; });</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>Line 165 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>    if (!WRITE_OPERATIONS.has(body.operation)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;invalid_operation&quot; });</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>Line 169 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
               <td class="source"><pre>    const now = new Date().toISOString();</pre></td>
               <td>Declares now, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
               <td class="source"><pre>    const proposal = await store.createWriteProposal({</pre></td>
               <td>Declares proposal, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
               <td class="source"><pre>      id: randomUUID(),</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
               <td class="source"><pre>      tenant_id: DEFAULT_TENANT_ID,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
               <td class="source"><pre>      vault_id: vaultId,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
               <td class="source"><pre>      operation: body.operation,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
               <td class="source"><pre>      target_path: body.target_path,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
               <td class="source"><pre>      base_content_hash: body.base_content_hash ?? null,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
               <td class="source"><pre>      proposed_content: body.proposed_content,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
               <td class="source"><pre>      proposed_patch: body.proposed_patch,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
               <td class="source"><pre>      requester: body.requester ?? &quot;admin-api&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
               <td class="source"><pre>      status: &quot;pending&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
               <td class="source"><pre>      created_at: now,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
               <td class="source"><pre>      updated_at: now,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L178"><a href="#L178">178</a></td>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
               <td class="source"><pre>      audit: [{</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
               <td class="source"><pre>        status: &quot;pending&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
               <td class="source"><pre>        actor: body.requester ?? &quot;admin-api&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
               <td class="source"><pre>        message: &quot;Write proposal created.&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
               <td class="source"><pre>        created_at: now,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
               <td class="source"><pre>      }],</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
               <td class="source"><pre>    res.status(201).json({ proposal });</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L187"><a href="#L187">187</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L188"><a href="#L188">188</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L189"><a href="#L189">189</a></td>
-              <td class="source"><pre>  app.patch(&quot;/admin/write-proposals/:proposalId&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L190"><a href="#L190">190</a></td>
-              <td class="source"><pre>    const proposalId = paramValue(req.params.proposalId);</pre></td>
-              <td>Declares proposalId, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L191"><a href="#L191">191</a></td>
-              <td class="source"><pre>    const body = req.body as { status?: WriteProposalStatus; actor?: string; message?: string };</pre></td>
-              <td>Declares body, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L192"><a href="#L192">192</a></td>
-              <td class="source"><pre>    if (!body.status) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L193"><a href="#L193">193</a></td>
-              <td class="source"><pre>      res.status(400).json({ error: &quot;status is required&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L194"><a href="#L194">194</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 194 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L195"><a href="#L195">195</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L196"><a href="#L196">196</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="source"><pre>  app.patch(&quot;/admin/write-proposals/:proposalId&quot;, requireBearerToken(config.syncToken), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="source"><pre>    const proposalId = paramValue(req.params.proposalId);</pre></td>
+              <td>Declares proposalId, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="source"><pre>    const body = req.body as { status?: WriteProposalStatus; actor?: string; message?: string };</pre></td>
+              <td>Declares body, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="source"><pre>    if (!body.status) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="source"><pre>      res.status(400).json({ error: &quot;status is required&quot; });</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>Line 202 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
               <td class="source"><pre>    if (!WRITE_PROPOSAL_STATUSES.has(body.status)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
               <td class="source"><pre>      res.status(400).json({ error: &quot;invalid_status&quot; });</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L198"><a href="#L198">198</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 198 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L199"><a href="#L199">199</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L200"><a href="#L200">200</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L201"><a href="#L201">201</a></td>
-              <td class="source"><pre>    const proposal = await store.updateWriteProposalStatus(</pre></td>
-              <td>Declares proposal, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L202"><a href="#L202">202</a></td>
-              <td class="source"><pre>      proposalId,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L203"><a href="#L203">203</a></td>
-              <td class="source"><pre>      body.status,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L204"><a href="#L204">204</a></td>
-              <td class="source"><pre>      body.actor ?? &quot;admin-api&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L205"><a href="#L205">205</a></td>
-              <td class="source"><pre>      body.message ?? `Status changed to ${body.status}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L206"><a href="#L206">206</a></td>
-              <td class="source"><pre>    );</pre></td>
+              <td class="source"><pre>      return;</pre></td>
               <td>Line 206 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="source"><pre>    const proposal = await store.updateWriteProposalStatus(</pre></td>
+              <td>Declares proposal, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="source"><pre>      proposalId,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="source"><pre>      body.status,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="source"><pre>      body.actor ?? &quot;admin-api&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
+              <td class="source"><pre>      body.message ?? `Status changed to ${body.status}.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
+              <td class="source"><pre>    );</pre></td>
+              <td>Line 214 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
               <td class="source"><pre>    if (!proposal) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
               <td class="source"><pre>      res.status(404).json({ error: &quot;not_found&quot; });</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
               <td class="source"><pre>      return;</pre></td>
-              <td>Line 209 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>Line 217 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
               <td class="source"><pre>    }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
               <td class="source"><pre>    res.json({ proposal });</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L213"><a href="#L213">213</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L214"><a href="#L214">214</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L215"><a href="#L215">215</a></td>
-              <td class="source"><pre>  app.get(&quot;/notes/:id&quot;, requireUserAuth(config), async (req: Request, res: Response) =&gt; {</pre></td>
-              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L216"><a href="#L216">216</a></td>
-              <td class="source"><pre>    const id = typeof req.params.id === &quot;string&quot; ? req.params.id : &quot;&quot;;</pre></td>
-              <td>Declares id, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L217"><a href="#L217">217</a></td>
-              <td class="source"><pre>    const document = await store.fetch(id);</pre></td>
-              <td>Declares document, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L218"><a href="#L218">218</a></td>
-              <td class="source"><pre>    if (!document) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L219"><a href="#L219">219</a></td>
-              <td class="source"><pre>      res.status(404).json({ error: &quot;not_found&quot; });</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L220"><a href="#L220">220</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 220 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L221"><a href="#L221">221</a></td>
-              <td class="source"><pre>    }</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -1188,218 +1188,218 @@
             </tr>
             <tr>
               <td class="line-number" id="L223"><a href="#L223">223</a></td>
+              <td class="source"><pre>  app.get(&quot;/notes/:id&quot;, requireUserAuth(config), async (req: Request, res: Response) =&gt; {</pre></td>
+              <td>Registers Express application behavior such as middleware or an HTTP route.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L224"><a href="#L224">224</a></td>
+              <td class="source"><pre>    const id = typeof req.params.id === &quot;string&quot; ? req.params.id : &quot;&quot;;</pre></td>
+              <td>Declares id, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L225"><a href="#L225">225</a></td>
+              <td class="source"><pre>    const document = await store.fetch(id);</pre></td>
+              <td>Declares document, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L226"><a href="#L226">226</a></td>
+              <td class="source"><pre>    if (!document) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L227"><a href="#L227">227</a></td>
+              <td class="source"><pre>      res.status(404).json({ error: &quot;not_found&quot; });</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L228"><a href="#L228">228</a></td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>Line 228 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L229"><a href="#L229">229</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L231"><a href="#L231">231</a></td>
               <td class="source"><pre>    res.json(document);</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L224"><a href="#L224">224</a></td>
+              <td class="line-number" id="L232"><a href="#L232">232</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L225"><a href="#L225">225</a></td>
+              <td class="line-number" id="L233"><a href="#L233">233</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L226"><a href="#L226">226</a></td>
+              <td class="line-number" id="L234"><a href="#L234">234</a></td>
               <td class="source"><pre>  const handleMcp = async (req: Request, res: Response) =&gt; {</pre></td>
               <td>Declares handleMcp, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L227"><a href="#L227">227</a></td>
+              <td class="line-number" id="L235"><a href="#L235">235</a></td>
               <td class="source"><pre>    try {</pre></td>
               <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L228"><a href="#L228">228</a></td>
+              <td class="line-number" id="L236"><a href="#L236">236</a></td>
               <td class="source"><pre>      await handleStatelessMcpRequest(req, res, store);</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L229"><a href="#L229">229</a></td>
+              <td class="line-number" id="L237"><a href="#L237">237</a></td>
               <td class="source"><pre>    } catch (error) {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="line-number" id="L238"><a href="#L238">238</a></td>
               <td class="source"><pre>      console.error(&quot;Error handling MCP request:&quot;, error);</pre></td>
-              <td>Line 230 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>Line 238 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L231"><a href="#L231">231</a></td>
+              <td class="line-number" id="L239"><a href="#L239">239</a></td>
               <td class="source"><pre>      if (!res.headersSent) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L232"><a href="#L232">232</a></td>
+              <td class="line-number" id="L240"><a href="#L240">240</a></td>
               <td class="source"><pre>        res.status(500).json({</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L233"><a href="#L233">233</a></td>
+              <td class="line-number" id="L241"><a href="#L241">241</a></td>
               <td class="source"><pre>          jsonrpc: &quot;2.0&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L234"><a href="#L234">234</a></td>
+              <td class="line-number" id="L242"><a href="#L242">242</a></td>
               <td class="source"><pre>          error: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L235"><a href="#L235">235</a></td>
+              <td class="line-number" id="L243"><a href="#L243">243</a></td>
               <td class="source"><pre>            code: -32603,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L236"><a href="#L236">236</a></td>
+              <td class="line-number" id="L244"><a href="#L244">244</a></td>
               <td class="source"><pre>            message: &quot;Internal server error&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L237"><a href="#L237">237</a></td>
+              <td class="line-number" id="L245"><a href="#L245">245</a></td>
               <td class="source"><pre>          },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L238"><a href="#L238">238</a></td>
+              <td class="line-number" id="L246"><a href="#L246">246</a></td>
               <td class="source"><pre>          id: null,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L239"><a href="#L239">239</a></td>
+              <td class="line-number" id="L247"><a href="#L247">247</a></td>
               <td class="source"><pre>        });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L240"><a href="#L240">240</a></td>
+              <td class="line-number" id="L248"><a href="#L248">248</a></td>
               <td class="source"><pre>      }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L241"><a href="#L241">241</a></td>
+              <td class="line-number" id="L249"><a href="#L249">249</a></td>
               <td class="source"><pre>    }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L242"><a href="#L242">242</a></td>
+              <td class="line-number" id="L250"><a href="#L250">250</a></td>
               <td class="source"><pre>  };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L243"><a href="#L243">243</a></td>
+              <td class="line-number" id="L251"><a href="#L251">251</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L244"><a href="#L244">244</a></td>
+              <td class="line-number" id="L252"><a href="#L252">252</a></td>
               <td class="source"><pre>  app.post(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), handleMcp);</pre></td>
               <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L245"><a href="#L245">245</a></td>
+              <td class="line-number" id="L253"><a href="#L253">253</a></td>
               <td class="source"><pre>  app.get(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (req: Request, res: Response) =&gt; {</pre></td>
               <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L246"><a href="#L246">246</a></td>
+              <td class="line-number" id="L254"><a href="#L254">254</a></td>
               <td class="source"><pre>    const accept = req.get(&quot;accept&quot;) ?? &quot;&quot;;</pre></td>
               <td>Declares accept, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L247"><a href="#L247">247</a></td>
+              <td class="line-number" id="L255"><a href="#L255">255</a></td>
               <td class="source"><pre>    if (!accept.includes(&quot;text/event-stream&quot;)) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L248"><a href="#L248">248</a></td>
+              <td class="line-number" id="L256"><a href="#L256">256</a></td>
               <td class="source"><pre>      res.status(406).json({</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L249"><a href="#L249">249</a></td>
+              <td class="line-number" id="L257"><a href="#L257">257</a></td>
               <td class="source"><pre>        jsonrpc: &quot;2.0&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L250"><a href="#L250">250</a></td>
+              <td class="line-number" id="L258"><a href="#L258">258</a></td>
               <td class="source"><pre>        error: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L251"><a href="#L251">251</a></td>
+              <td class="line-number" id="L259"><a href="#L259">259</a></td>
               <td class="source"><pre>          code: -32000,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L252"><a href="#L252">252</a></td>
+              <td class="line-number" id="L260"><a href="#L260">260</a></td>
               <td class="source"><pre>          message: &quot;Not Acceptable: Client must accept text/event-stream.&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L253"><a href="#L253">253</a></td>
+              <td class="line-number" id="L261"><a href="#L261">261</a></td>
               <td class="source"><pre>        },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L254"><a href="#L254">254</a></td>
+              <td class="line-number" id="L262"><a href="#L262">262</a></td>
               <td class="source"><pre>        id: null,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L255"><a href="#L255">255</a></td>
+              <td class="line-number" id="L263"><a href="#L263">263</a></td>
               <td class="source"><pre>      });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L256"><a href="#L256">256</a></td>
-              <td class="source"><pre>      return;</pre></td>
-              <td>Line 256 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L257"><a href="#L257">257</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L258"><a href="#L258">258</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L259"><a href="#L259">259</a></td>
-              <td class="source"><pre>    res.status(200).set({</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L260"><a href="#L260">260</a></td>
-              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;text/event-stream&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L261"><a href="#L261">261</a></td>
-              <td class="source"><pre>      &quot;Cache-Control&quot;: &quot;no-cache, no-transform&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L262"><a href="#L262">262</a></td>
-              <td class="source"><pre>      &quot;Connection&quot;: &quot;keep-alive&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L263"><a href="#L263">263</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L264"><a href="#L264">264</a></td>
-              <td class="source"><pre>    res.flushHeaders();</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>      return;</pre></td>
+              <td>Line 264 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L265"><a href="#L265">265</a></td>
-              <td class="source"><pre>    res.write(&quot;: connected\n\n&quot;);</pre></td>
-              <td>Builds or sends an HTTP response back to the client.</td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L266"><a href="#L266">266</a></td>
@@ -1408,147 +1408,147 @@
             </tr>
             <tr>
               <td class="line-number" id="L267"><a href="#L267">267</a></td>
+              <td class="source"><pre>    res.status(200).set({</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L268"><a href="#L268">268</a></td>
+              <td class="source"><pre>      &quot;Content-Type&quot;: &quot;text/event-stream&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L269"><a href="#L269">269</a></td>
+              <td class="source"><pre>      &quot;Cache-Control&quot;: &quot;no-cache, no-transform&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L270"><a href="#L270">270</a></td>
+              <td class="source"><pre>      &quot;Connection&quot;: &quot;keep-alive&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L271"><a href="#L271">271</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L272"><a href="#L272">272</a></td>
+              <td class="source"><pre>    res.flushHeaders();</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L273"><a href="#L273">273</a></td>
+              <td class="source"><pre>    res.write(&quot;: connected\n\n&quot;);</pre></td>
+              <td>Builds or sends an HTTP response back to the client.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L274"><a href="#L274">274</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L275"><a href="#L275">275</a></td>
               <td class="source"><pre>    const keepAlive = setInterval(() =&gt; {</pre></td>
               <td>Declares keepAlive, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L268"><a href="#L268">268</a></td>
+              <td class="line-number" id="L276"><a href="#L276">276</a></td>
               <td class="source"><pre>      res.write(&quot;: keepalive\n\n&quot;);</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L269"><a href="#L269">269</a></td>
+              <td class="line-number" id="L277"><a href="#L277">277</a></td>
               <td class="source"><pre>    }, 15_000);</pre></td>
-              <td>Line 269 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>Line 277 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L270"><a href="#L270">270</a></td>
+              <td class="line-number" id="L278"><a href="#L278">278</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L271"><a href="#L271">271</a></td>
+              <td class="line-number" id="L279"><a href="#L279">279</a></td>
               <td class="source"><pre>    req.on(&quot;close&quot;, () =&gt; {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L272"><a href="#L272">272</a></td>
+              <td class="line-number" id="L280"><a href="#L280">280</a></td>
               <td class="source"><pre>      clearInterval(keepAlive);</pre></td>
-              <td>Line 272 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>Line 280 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L273"><a href="#L273">273</a></td>
+              <td class="line-number" id="L281"><a href="#L281">281</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L274"><a href="#L274">274</a></td>
+              <td class="line-number" id="L282"><a href="#L282">282</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L275"><a href="#L275">275</a></td>
+              <td class="line-number" id="L283"><a href="#L283">283</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L276"><a href="#L276">276</a></td>
+              <td class="line-number" id="L284"><a href="#L284">284</a></td>
               <td class="source"><pre>  app.delete(&quot;/mcp&quot;, requireAllowedOrigin(allowedOrigins), requireUserAuth(config), (_req: Request, res: Response) =&gt; {</pre></td>
               <td>Registers Express application behavior such as middleware or an HTTP route.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L277"><a href="#L277">277</a></td>
+              <td class="line-number" id="L285"><a href="#L285">285</a></td>
               <td class="source"><pre>    res.status(405).set(&quot;Allow&quot;, &quot;GET, POST&quot;).json({</pre></td>
               <td>Builds or sends an HTTP response back to the client.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L278"><a href="#L278">278</a></td>
+              <td class="line-number" id="L286"><a href="#L286">286</a></td>
               <td class="source"><pre>      jsonrpc: &quot;2.0&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L279"><a href="#L279">279</a></td>
+              <td class="line-number" id="L287"><a href="#L287">287</a></td>
               <td class="source"><pre>      error: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L280"><a href="#L280">280</a></td>
+              <td class="line-number" id="L288"><a href="#L288">288</a></td>
               <td class="source"><pre>        code: -32000,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L281"><a href="#L281">281</a></td>
+              <td class="line-number" id="L289"><a href="#L289">289</a></td>
               <td class="source"><pre>        message: &quot;Method not allowed.&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L282"><a href="#L282">282</a></td>
+              <td class="line-number" id="L290"><a href="#L290">290</a></td>
               <td class="source"><pre>      },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L283"><a href="#L283">283</a></td>
+              <td class="line-number" id="L291"><a href="#L291">291</a></td>
               <td class="source"><pre>      id: null,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L284"><a href="#L284">284</a></td>
+              <td class="line-number" id="L292"><a href="#L292">292</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L285"><a href="#L285">285</a></td>
+              <td class="line-number" id="L293"><a href="#L293">293</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L286"><a href="#L286">286</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L287"><a href="#L287">287</a></td>
-              <td class="source"><pre>  return app;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L288"><a href="#L288">288</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L289"><a href="#L289">289</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L290"><a href="#L290">290</a></td>
-              <td class="source"><pre>function uniqueOrigins(origins: string[]): string[] {</pre></td>
-              <td>Defines uniqueOrigins, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L291"><a href="#L291">291</a></td>
-              <td class="source"><pre>  return [...new Set(origins.map((origin) =&gt; origin.replace(/\/$/, &quot;&quot;)))];</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L292"><a href="#L292">292</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L293"><a href="#L293">293</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L294"><a href="#L294">294</a></td>
-              <td class="source"><pre>function normalizeId(value: unknown, fallback: string): string {</pre></td>
-              <td>Defines normalizeId, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L295"><a href="#L295">295</a></td>
-              <td class="source"><pre>  return typeof value === &quot;string&quot; &amp;&amp; value.trim() ? value.trim() : fallback;</pre></td>
+              <td class="source"><pre>  return app;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
@@ -1563,16 +1563,56 @@
             </tr>
             <tr>
               <td class="line-number" id="L298"><a href="#L298">298</a></td>
-              <td class="source"><pre>function paramValue(value: string | string[] | undefined): string {</pre></td>
-              <td>Defines paramValue, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>function uniqueOrigins(origins: string[]): string[] {</pre></td>
+              <td>Defines uniqueOrigins, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
               <td class="line-number" id="L299"><a href="#L299">299</a></td>
-              <td class="source"><pre>  return Array.isArray(value) ? value[0] ?? &quot;&quot; : value ?? &quot;&quot;;</pre></td>
+              <td class="source"><pre>  return [...new Set(origins.map((origin) =&gt; origin.replace(/\/$/, &quot;&quot;)))];</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L300"><a href="#L300">300</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L301"><a href="#L301">301</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L302"><a href="#L302">302</a></td>
+              <td class="source"><pre>function normalizeId(value: unknown, fallback: string): string {</pre></td>
+              <td>Defines normalizeId, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L303"><a href="#L303">303</a></td>
+              <td class="source"><pre>  return typeof value === &quot;string&quot; &amp;&amp; value.trim() ? value.trim() : fallback;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L304"><a href="#L304">304</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L305"><a href="#L305">305</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L306"><a href="#L306">306</a></td>
+              <td class="source"><pre>function paramValue(value: string | string[] | undefined): string {</pre></td>
+              <td>Defines paramValue, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L307"><a href="#L307">307</a></td>
+              <td class="source"><pre>  return Array.isArray(value) ? value[0] ?? &quot;&quot; : value ?? &quot;&quot;;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L308"><a href="#L308">308</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>
