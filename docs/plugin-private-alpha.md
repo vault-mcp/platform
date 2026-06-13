@@ -73,6 +73,17 @@ It then creates pending proposals for:
 
 Use `--dry-run` to print the planned fixture paths and proposal payloads without writing local fixture notes or posting proposals.
 
+Before opening Obsidian, verify the seeded batch is ready:
+
+```bash
+npm run plugin:verify-ui-smoke -- \
+  --base-url "https://vault-mcp-connector.vercel.app" \
+  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-id "default" \
+  --run-id "<run-id>" \
+  --mode initial
+```
+
 ## Obsidian Setup
 
 1. Open the copied vault in Obsidian.
@@ -199,3 +210,14 @@ Expected results:
 - `rename_note` renames `Rename Target.md` to `Renamed By Proposal.md`.
 
 This manual pass is still required before treating the plugin as publish-ready, because automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app.
+
+After applying all five proposals in Obsidian, verify the copied-vault files, proposal statuses, and audit notes:
+
+```bash
+npm run plugin:verify-ui-smoke -- \
+  --base-url "https://vault-mcp-connector.vercel.app" \
+  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-id "default" \
+  --run-id "<run-id>" \
+  --mode applied
+```

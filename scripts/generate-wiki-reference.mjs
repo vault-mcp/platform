@@ -54,6 +54,7 @@ const authoredFiles = [
   "README.md",
   "scripts/generate-wiki-reference.mjs",
   "scripts/seed-write-proposals.mjs",
+  "scripts/verify-ui-smoke.mjs",
   "scripts/smoke-local.mjs",
   "scripts/smoke-oauth-flow.mjs",
   "scripts/smoke-oauth-local.mjs",
