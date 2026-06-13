@@ -28,6 +28,13 @@
   color: var(--text-muted);
 }
 
+.vault-mcp-sync-summary {
+  border: 1px solid rgba(var(--color-green-rgb), 0.45);
+  border-radius: 8px;
+  margin-top: 14px;
+  padding: 10px;
+}
+
 .vault-mcp-preview-section {
   border-top: 1px solid var(--background-modifier-border);
   margin-top: 14px;
@@ -37,6 +44,10 @@
 .vault-mcp-preview-section > summary {
   cursor: pointer;
   font-weight: 700;
+}
+
+.vault-mcp-troubleshooting ul {
+  margin-bottom: 0;
 }
 
 .vault-mcp-preview-list {

@@ -11,6 +11,8 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Lets the user approve a review-required note by exact path or approve its parent folder as a prefix.
 - Keeps a short local activity history for previews, syncs, approvals, proposal checks, and errors.
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
+- Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
+- Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
 
 ## Safe Test Install
@@ -166,6 +168,8 @@ Check:
 - Sync token matches the server's configured admin sync token.
 - Vault id is the intended id, usually `default` for the current single-vault setup.
 - The server is reachable at `/healthz`.
+
+The dashboard keeps the last error and shows suggested fixes for common failures. If the error says the endpoint was not found, make sure the Server URL is the base URL and not `https://.../mcp` or `https://.../admin`.
 
 Do not paste tokens into screenshots, issue descriptions, or public docs.
 

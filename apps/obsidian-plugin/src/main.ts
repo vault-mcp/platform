@@ -3,6 +3,12 @@ import {
   applyWriteProposalWithAdapter,
   buildDiffPreview,
 } from "./write-helpers";
+import {
+  describeCaughtError,
+  describeHttpFailure,
+  normalizeServerBaseUrl,
+  summarizeSyncResponse,
+} from "./plugin-helpers";
 import type {
   LocalApplyResult,
   ProposalSafetyAnalysis,
@@ -53,10 +59,13 @@ type VaultMcpPluginData = Partial<VaultMcpPluginSettings> & {
 type SyncSummary = {
   scanned: number;
   indexed: number;
+  serverIndexed: number | null;
   denied: number;
   reviewRequired: number;
   redacted: number;
   generatedAt: string | null;
+  serverGeneratedAt: string | null;
+  lastSuccessMessage: string | null;
   lastError: string | null;
 };
 
@@ -110,10 +119,13 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
 const DEFAULT_SUMMARY: SyncSummary = {
   scanned: 0,
   indexed: 0,
+  serverIndexed: null,
   denied: 0,
   reviewRequired: 0,
   redacted: 0,
   generatedAt: null,
+  serverGeneratedAt: null,
+  lastSuccessMessage: null,
   lastError: null,
 };
 
@@ -185,7 +197,10 @@ export default class VaultMcpPlugin extends Plugin {
 
   async syncNow() {
     if (!this.settings.syncToken.trim()) {
-      new Notice("Vault MCP sync token is required.");
+      const message = "Sync token is required. Add the server admin sync token in Vault MCP settings before syncing.";
+      this.summary = { ...this.summary, lastError: message };
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
       return;
     }
 
@@ -202,31 +217,35 @@ export default class VaultMcpPlugin extends Plugin {
       });
 
       if (response.status < 200 || response.status >= 300) {
-        throw new Error(`Sync failed with ${response.status}: ${response.text}`);
+        throw new Error(describeHttpFailure("sync", response.status, response.text));
       }
 
+      const syncResult = summarizeSyncResponse(payload, response.text);
       this.summary = {
         scanned: payload.stats?.scanned_markdown ?? 0,
         indexed: payload.documents.length,
+        serverIndexed: syncResult.serverDocumentCount,
         denied: payload.stats?.denied_markdown ?? 0,
         reviewRequired: payload.stats?.review_required_markdown ?? 0,
         redacted: payload.stats?.redacted_documents ?? 0,
         generatedAt: payload.generated_at ?? null,
+        serverGeneratedAt: syncResult.serverGeneratedAt,
+        lastSuccessMessage: syncResult.message,
         lastError: null,
       };
       this.indexPreview = null;
       await this.addHistory({
         type: "sync",
-        message: `Synced ${payload.documents.length} document chunk${payload.documents.length === 1 ? "" : "s"}.`,
+        message: syncResult.message,
         scanned: this.summary.scanned,
         indexed: this.summary.indexed,
         denied: this.summary.denied,
         reviewRequired: this.summary.reviewRequired,
         redacted: this.summary.redacted,
       });
-      new Notice(`Vault MCP synced ${payload.documents.length} approved document chunk${payload.documents.length === 1 ? "" : "s"}.`);
+      new Notice(`Vault MCP sync complete. ${syncResult.message}`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = describeCaughtError("sync", error);
       this.summary = { ...this.summary, lastError: message };
       await this.addHistory({ type: "error", message: `Sync failed: ${message}` });
       new Notice(`Vault MCP sync failed: ${message}`);
@@ -240,10 +259,13 @@ export default class VaultMcpPlugin extends Plugin {
       this.summary = {
         scanned: preview.scanned,
         indexed: this.summary.indexed,
+        serverIndexed: this.summary.serverIndexed,
         denied: preview.denied,
         reviewRequired: preview.reviewRequired,
         redacted: preview.redacted,
         generatedAt: preview.generatedAt,
+        serverGeneratedAt: this.summary.serverGeneratedAt,
+        lastSuccessMessage: this.summary.lastSuccessMessage,
         lastError: null,
       };
       await this.addHistory({
@@ -275,7 +297,9 @@ export default class VaultMcpPlugin extends Plugin {
 
   async checkWriteProposals() {
     if (!this.settings.syncToken.trim()) {
-      new Notice("Vault MCP sync token is required.");
+      const message = "Sync token is required. Add the server admin sync token in Vault MCP settings before checking write proposals.";
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
       return;
     }
 
@@ -285,14 +309,17 @@ export default class VaultMcpPlugin extends Plugin {
       await this.addHistory({ type: "proposal-check", message: `Checked write proposals: ${proposals.length} found.` });
       new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
     } catch (error) {
-      await this.addHistory({ type: "error", message: `Proposal check failed: ${error instanceof Error ? error.message : String(error)}` });
-      new Notice(`Vault MCP proposal check failed: ${error instanceof Error ? error.message : String(error)}`);
+      const message = describeCaughtError("proposal check", error);
+      await this.addHistory({ type: "error", message: `Proposal check failed: ${message}` });
+      new Notice(`Vault MCP proposal check failed: ${message}`);
     }
   }
 
   async updateWriteProposalStatus(proposalId: string, status: Extract<WriteProposalStatus, "approved" | "rejected" | "conflict">) {
     if (!this.settings.syncToken.trim()) {
-      new Notice("Vault MCP sync token is required.");
+      const message = "Sync token is required. Add the server admin sync token in Vault MCP settings before updating write proposals.";
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
       return;
     }
 
@@ -316,7 +343,7 @@ export default class VaultMcpPlugin extends Plugin {
         }),
       });
       if (response.status < 200 || response.status >= 300) {
-        throw new Error(`Request failed with ${response.status}: ${response.text}`);
+        throw new Error(describeHttpFailure("proposal update", response.status, response.text));
       }
       await this.addHistory({ type: "proposal-update", message: `Marked proposal ${proposalId} ${status}.` });
       new Notice(`Vault MCP proposal marked ${status}.`);
@@ -324,14 +351,17 @@ export default class VaultMcpPlugin extends Plugin {
       this.writeProposals = proposals;
       new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
     } catch (error) {
-      await this.addHistory({ type: "error", message: `Proposal update failed: ${error instanceof Error ? error.message : String(error)}` });
-      new Notice(`Vault MCP proposal update failed: ${error instanceof Error ? error.message : String(error)}`);
+      const message = describeCaughtError("proposal update", error);
+      await this.addHistory({ type: "error", message: `Proposal update failed: ${message}` });
+      new Notice(`Vault MCP proposal update failed: ${message}`);
     }
   }
 
   async applyWriteProposal(proposal: WriteProposal) {
     if (!this.settings.syncToken.trim()) {
-      new Notice("Vault MCP sync token is required.");
+      const message = "Sync token is required. Add the server admin sync token in Vault MCP settings before applying write proposals.";
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
       return;
     }
 
@@ -348,7 +378,7 @@ export default class VaultMcpPlugin extends Plugin {
       this.writeProposals = proposals;
       new VaultMcpWriteProposalsModal(this.app, this, proposals).open();
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = describeCaughtError("proposal apply", error);
       await this.addHistory({ type: "error", message: `Proposal apply failed: ${message}` });
       new Notice(`Vault MCP proposal apply failed: ${message}`);
     }
@@ -432,7 +462,7 @@ export default class VaultMcpPlugin extends Plugin {
       },
     });
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`Request failed with ${response.status}: ${response.text}`);
+      throw new Error(describeHttpFailure("proposal check", response.status, response.text));
     }
     const parsed = JSON.parse(response.text) as { proposals?: WriteProposal[] };
     return parsed.proposals ?? [];
@@ -632,7 +662,7 @@ export default class VaultMcpPlugin extends Plugin {
   }
 
   private serverBaseUrl(): string {
-    return this.settings.serverUrl.replace(/\/$/, "");
+    return normalizeServerBaseUrl(this.settings.serverUrl);
   }
 
   private async addHistory(entry: Omit<SyncHistoryEntry, "createdAt">) {
@@ -655,7 +685,7 @@ export default class VaultMcpPlugin extends Plugin {
       }),
     });
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`Request failed with ${response.status}: ${response.text}`);
+      throw new Error(describeHttpFailure("proposal update", response.status, response.text));
     }
   }
 }
@@ -674,14 +704,24 @@ class VaultMcpDashboardModal extends Modal {
     addStat(grid, "Vault id", this.plugin.settings.vaultId);
     addStat(grid, "Index mode", this.plugin.settings.indexMode);
     addStat(grid, "Write mode", this.plugin.settings.writeMode);
-    addStat(grid, "Last indexed chunks", String(this.plugin.summary.indexed));
+    addStat(grid, "Last local chunks", String(this.plugin.summary.indexed));
+    if (this.plugin.summary.serverIndexed !== null) {
+      addStat(grid, "Server indexed chunks", String(this.plugin.summary.serverIndexed));
+    }
     addStat(grid, "Review queue", String(this.plugin.summary.reviewRequired));
     if (this.plugin.indexPreview) {
       addStat(grid, "Preview allowed notes", String(this.plugin.indexPreview.allowed));
     }
     addStat(grid, "Last generated", this.plugin.summary.generatedAt ?? "Never");
+    if (this.plugin.summary.serverGeneratedAt) {
+      addStat(grid, "Server generated", this.plugin.summary.serverGeneratedAt);
+    }
+    if (this.plugin.summary.lastSuccessMessage) {
+      addSyncSummarySection(contentEl, this.plugin.summary.lastSuccessMessage);
+    }
     if (this.plugin.summary.lastError) {
       addStat(grid, "Last error", this.plugin.summary.lastError);
+      addTroubleshootingHint(contentEl, this.plugin.summary.lastError);
     }
     new Setting(contentEl)
       .addButton((button) => button
@@ -787,7 +827,7 @@ class VaultMcpWriteProposalsModal extends Modal {
     contentEl.createEl("h2", { text: "Vault MCP write proposals" });
     contentEl.createEl("p", {
       cls: "vault-mcp-muted",
-      text: "These are remote write requests stored on the server. Approve or reject records your decision only; applying changes to local vault files is a later safety layer.",
+      text: "These are remote write requests stored on the server. The plugin checks local file hashes before approval and only applies supported approved proposals after creating backup and audit notes.",
     });
     const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard vault-mcp-dashboard--compact" });
     addStat(grid, "Total proposals", String(this.proposals.length));
@@ -923,6 +963,36 @@ function addStat(parent: HTMLElement, label: string, value: string) {
   const stat = parent.createDiv({ cls: "vault-mcp-dashboard__stat" });
   stat.createDiv({ cls: "vault-mcp-dashboard__label", text: label });
   stat.createDiv({ cls: "vault-mcp-dashboard__value", text: value });
+}
+
+function addSyncSummarySection(parent: HTMLElement, message: string) {
+  const box = parent.createDiv({ cls: "vault-mcp-sync-summary" });
+  box.createDiv({ cls: "vault-mcp-safety__title", text: "Last sync summary" });
+  box.createDiv({ cls: "vault-mcp-safety__message", text: message });
+}
+
+function addTroubleshootingHint(parent: HTMLElement, message: string) {
+  const lower = message.toLowerCase();
+  const hints: string[] = [];
+  if (lower.includes("sync token") || lower.includes("authorized")) {
+    hints.push("Open Vault MCP settings and confirm the sync token matches the server admin token.");
+  }
+  if (lower.includes("server url") || lower.includes("endpoint")) {
+    hints.push("Use only the base server URL, such as https://vault-mcp-connector.vercel.app. Do not include /mcp or /admin.");
+  }
+  if (lower.includes("could not reach") || lower.includes("server failed")) {
+    hints.push("Check /healthz in a browser and review server logs if the health check fails.");
+  }
+  if (hints.length === 0) {
+    return;
+  }
+  const details = parent.createEl("details", { cls: "vault-mcp-preview-section vault-mcp-troubleshooting" });
+  details.open = true;
+  details.createEl("summary", { text: "Suggested fix" });
+  const list = details.createEl("ul");
+  for (const hint of hints) {
+    list.createEl("li", { text: hint });
+  }
 }
 
 function addPreviewSection(parent: HTMLElement, title: string, items: IndexPreviewItem[], startOpen: boolean) {
