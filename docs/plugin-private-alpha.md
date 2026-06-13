@@ -65,6 +65,154 @@ The package contains only:
 
 This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
 
+## Manual Zip Install
+
+For a private-alpha user who does not want to build from source:
+
+1. Create this folder inside the test vault:
+
+```text
+.obsidian/plugins/vault-mcp
+```
+
+2. Unzip `vault-mcp-0.1.0.zip`.
+3. Copy the inner `vault-mcp` folder contents into `.obsidian/plugins/vault-mcp`.
+4. Confirm these files exist:
+
+```text
+.obsidian/plugins/vault-mcp/manifest.json
+.obsidian/plugins/vault-mcp/main.js
+.obsidian/plugins/vault-mcp/styles.css
+```
+
+5. Restart Obsidian or reload community plugins.
+6. Open Settings -> Community plugins and enable `Vault MCP`.
+
+For first private-alpha testing, use a copied or disposable vault. Do not use a live vault until the copied-vault UI verification gate passes.
+
+## Upgrade
+
+Manual upgrade for a private-alpha zip:
+
+1. Quit Obsidian or disable `Vault MCP` in Community plugins.
+2. Back up the current plugin folder if you want a rollback point:
+
+```text
+.obsidian/plugins/vault-mcp
+```
+
+3. Replace only these files from the new zip:
+
+```text
+manifest.json
+main.js
+styles.css
+```
+
+4. Leave `.obsidian/plugins/vault-mcp/data.json` in place if it exists. Obsidian uses that file for local plugin settings.
+5. Reopen Obsidian or re-enable the plugin.
+6. Open the Vault MCP dashboard and run `Preview index` before syncing.
+
+If the new version changes settings shape, the release notes must say so explicitly before a private-alpha user upgrades.
+
+## Uninstall
+
+Manual uninstall:
+
+1. Open Settings -> Community plugins.
+2. Disable `Vault MCP`.
+3. Quit Obsidian.
+4. Delete:
+
+```text
+.obsidian/plugins/vault-mcp
+```
+
+This removes the plugin and local plugin settings. It does not delete notes that the plugin created during write-proposal apply testing. If write-proposal testing was enabled, review the audit folder before deleting anything:
+
+```text
+00 System/Vault MCP Write Audit
+```
+
+## Troubleshooting
+
+### Plugin Does Not Appear In Obsidian
+
+Check that the files are nested exactly once:
+
+```text
+.obsidian/plugins/vault-mcp/manifest.json
+.obsidian/plugins/vault-mcp/main.js
+.obsidian/plugins/vault-mcp/styles.css
+```
+
+If the zip was extracted as `.obsidian/plugins/vault-mcp/vault-mcp/manifest.json`, move the inner files up one folder.
+
+### Plugin Appears But Will Not Enable
+
+Confirm Obsidian is at least the plugin manifest's `minAppVersion`. The current private-alpha manifest requires:
+
+```text
+1.5.0
+```
+
+Then open Obsidian's developer console and check for a startup error. In private alpha, treat startup errors as release blockers.
+
+### Sync Fails With Unauthorized Or Forbidden
+
+Check:
+
+- Server URL has no trailing path unless intentionally using a local server. Production is `https://vault-mcp-connector.vercel.app`.
+- Sync token matches the server's configured admin sync token.
+- Vault id is the intended id, usually `default` for the current single-vault setup.
+- The server is reachable at `/healthz`.
+
+Do not paste tokens into screenshots, issue descriptions, or public docs.
+
+### Preview Shows Too Many Denied Notes
+
+Check the selected index mode:
+
+- `rules_plus_approvals` uses include/exclude rules and queues sensitive metadata for review.
+- `manual_only` denies everything until explicitly approved.
+- `rules_only` denies sensitive metadata instead of queueing it.
+
+Also check exclude prefixes. Exclusions win over manual approvals.
+
+### Write Proposal Cannot Be Approved Or Applied
+
+The plugin blocks approval/apply when local safety checks fail. Common reasons:
+
+- The target note is missing.
+- A create target already exists.
+- The local file hash does not match the proposal's base content hash.
+- The operation is not supported in the current private-alpha surface.
+
+Do not override these checks manually. Mark the proposal `conflict`, inspect the audit trail, and create a new proposal from the current file state.
+
+## Known Limitations
+
+- The plugin is private-alpha software and should be tested against copied vaults first.
+- There is no BRAT release or Obsidian community-plugin release yet.
+- `patch_note` proposals are rejected until a safe parser/apply implementation exists.
+- `direct_apply` should stay disabled until separately reviewed.
+- The server stores a derived searchable index; it should not be treated as the canonical vault.
+- The current production smoke uses the copied vault, not the live vault.
+- Manual Obsidian UI click-through is still required before calling the plugin publish-ready.
+- Multi-vault support exists in the architecture, but needs more leakage tests before public release.
+
+## Privacy And Security Notes
+
+- The plugin scans local Markdown files according to the configured index policy.
+- The plugin syncs derived Markdown chunks and metadata to the configured server.
+- The plugin should not sync denied paths, excluded prefixes, or notes held for review unless the user approves them under the selected mode.
+- The server should never directly write to an Obsidian vault. Writes are proposal-first.
+- Local write application happens in the plugin after approval and local safety checks.
+- Supported local writes create backup and audit notes before applying changes.
+- Base-content hash mismatches block automatic apply and should become conflicts.
+- Sync tokens and OAuth secrets are credentials. Keep them in local ignored env/settings files and out of screenshots, commits, and public docs.
+- Public release docs must remove Tristan-specific vault paths and use demo vault paths instead.
+
 ## Seed Write Proposals For UI Testing
 
 Use the seeding script to create a repeatable set of pending write proposals for the copied vault. The script refuses to write fixtures unless the vault path contains `vault copy`.
@@ -159,6 +307,7 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 - `patch_note` is not part of the private-alpha write surface yet; it needs a dedicated patch parser/apply implementation before the server should accept it.
 - Plugin tests now cover pure write-proposal helper behavior and a headless apply harness for create, append, replace, frontmatter, rename, backup, and audit behavior. There is still no dedicated Obsidian UI/test harness for modal flows.
 - The installer and package scripts are local private-alpha workflows, not a public release process.
+- Fresh-user zip install and upgrade still need a manual pass by someone following only this guide.
 
 ## Write Proposal Review
 
