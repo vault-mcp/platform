@@ -238,316 +238,321 @@
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
-              <td class="source"><pre>- Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.</pre></td>
+              <td class="source"><pre>- Added plugin helper tests for write proposal content generation, rename target validation, frontmatter patch parsing, and diff preview behavior.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
-              <td class="source"><pre>- Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.</pre></td>
+              <td class="source"><pre>- Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
-              <td class="source"><pre>- Added configurable index modes:</pre></td>
+              <td class="source"><pre>- Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
-              <td class="source"><pre>  - `rules_plus_approvals`</pre></td>
+              <td class="source"><pre>- Added configurable index modes:</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
-              <td class="source"><pre>  - `manual_only`</pre></td>
+              <td class="source"><pre>  - `rules_plus_approvals`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
-              <td class="source"><pre>  - `rules_only`</pre></td>
+              <td class="source"><pre>  - `manual_only`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
-              <td class="source"><pre>- Added tenant/vault/installation identity fields to documents and sync payloads.</pre></td>
+              <td class="source"><pre>  - `rules_only`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
-              <td class="source"><pre>- Added scoped admin APIs for vault registration, per-vault sync, per-vault status, and write proposal lifecycle.</pre></td>
+              <td class="source"><pre>- Added tenant/vault/installation identity fields to documents and sync payloads.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
-              <td class="source"><pre>- Added MCP read tools:</pre></td>
+              <td class="source"><pre>- Added scoped admin APIs for vault registration, per-vault sync, per-vault status, and write proposal lifecycle.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
-              <td class="source"><pre>  - `list_vaults`</pre></td>
+              <td class="source"><pre>- Added MCP read tools:</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
-              <td class="source"><pre>  - `get_vault_status`</pre></td>
+              <td class="source"><pre>  - `list_vaults`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>- Extended existing read tools with optional `vault_id` where applicable.</pre></td>
+              <td class="source"><pre>  - `get_vault_status`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre>- Kept write behavior as proposals only; no MCP tool directly edits an Obsidian vault.</pre></td>
+              <td class="source"><pre>- Extended existing read tools with optional `vault_id` where applicable.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
-              <td class="source"><pre>- Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.</pre></td>
+              <td class="source"><pre>- Kept write behavior as proposals only; no MCP tool directly edits an Obsidian vault.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="source"><pre>- Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
               <td class="source"><pre>## Write Model</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
               <td class="source"><pre>Write support starts as a proposal queue:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
               <td class="source"><pre>- The server stores `write_proposals` with operation type, target path, base content hash, proposed patch/content, requester, status, timestamps, and audit trail.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
               <td class="source"><pre>- The Obsidian plugin can pull proposals, analyze local target state, and mark pending proposals approved, rejected, or conflict.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
               <td class="source"><pre>- The Obsidian plugin can apply approved create/append/replace/frontmatter/rename proposals locally only after policy and hash checks allow it.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
               <td class="source"><pre>- `update_frontmatter` proposals store a JSON object in `proposed_content`; null values delete keys.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
               <td class="source"><pre>- `rename_note` proposals store the new vault-relative Markdown path in `proposed_content`.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
               <td class="source"><pre>- `patch_note` is intentionally excluded from the private-alpha write operation allowlist until an operation-specific patch parser/apply implementation is added.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
               <td class="source"><pre>- `review_required` remains the default plugin write mode.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
               <td class="source"><pre>- `direct_apply` is reserved for explicitly configured scopes and still needs local backup/audit entries.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre>- Base-content hash mismatches must move the proposal to review/conflict instead of overwriting the local file.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
               <td class="source"><pre>Obsidian writes use safe Obsidian APIs:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>- `Vault.process` for note edits.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>- `FileManager.processFrontMatter` for frontmatter.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre>- `FileManager.renameFile` for renames.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
               <td class="source"><pre>## Verification</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
               <td class="source"><pre>Current local gates:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
               <td class="source"><pre>- `npm run build`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
               <td class="source"><pre>- `npm test`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
               <td class="source"><pre>- `npm run check:api`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
               <td class="source"><pre>- `npm run smoke:local`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
               <td class="source"><pre>- `npm run smoke:oauth-local`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
               <td class="source"><pre>- `npm run plugin:install-copy`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
               <td class="source"><pre>The local Postgres gate still requires `POSTGRES_SMOKE_DATABASE_URL`:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
               <td class="source"><pre>- `npm run smoke:postgres`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
               <td class="source"><pre>Migration gates after pushing to `vault-mcp/platform`:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
               <td class="source"><pre>- GitHub Actions pass from the org repo.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
               <td class="source"><pre>- Vercel project is reconnected to the org repo without changing production env vars.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>- Preview deployment remote smoke passes.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
               <td class="source"><pre>- Production deployment remote smoke passes.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre>- ChatGPT and Claude manual connector acceptance still pass.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
               <td class="source"><pre>## Production Safety</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
               <td class="source"><pre>Until the org migration is verified, keep the existing `TristanEDU/vault-mcp-connector` repo and production Vercel alias as fallback. Do not change production env vars or the `vault-mcp-connector.vercel.app` alias as part of source migration.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
               <td class="source"><pre>For current Obsidian plugin testing steps, see `docs/plugin-private-alpha.md`.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr></tbody>

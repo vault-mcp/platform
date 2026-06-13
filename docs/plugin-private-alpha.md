@@ -90,7 +90,7 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 
 - The plugin is not packaged for the Obsidian community plugin process.
 - `patch_note` is not part of the private-alpha write surface yet; it needs a dedicated patch parser/apply implementation before the server should accept it.
-- Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
+- Plugin tests now cover pure write-proposal helper behavior, but there is still no dedicated Obsidian UI/test harness for modal flows.
 - The installer is a local development script, not a release artifact.
 
 ## Write Proposal Review

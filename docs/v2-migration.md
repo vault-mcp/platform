@@ -30,6 +30,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 - Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, one-click review approvals, and a review queue view.
 - Added Obsidian plugin write proposal review for pending server proposals, including approve/reject/conflict status updates, audit visibility, local base-hash checks, diff previews, and guarded local apply for approved create/append/replace/frontmatter/rename proposals with backup/audit notes.
 - Added `scripts/install-obsidian-plugin.mjs` and `npm run plugin:install-copy` for installing the built plugin into the copied development vault.
+- Added plugin helper tests for write proposal content generation, rename target validation, frontmatter patch parsing, and diff preview behavior.
 - Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.
 - Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.
 - Added configurable index modes:
