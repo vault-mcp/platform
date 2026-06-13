@@ -53,6 +53,7 @@ const authoredFiles = [
   "public/wiki/tutorial.html",
   "README.md",
   "scripts/generate-wiki-reference.mjs",
+  "scripts/seed-write-proposals.mjs",
   "scripts/smoke-local.mjs",
   "scripts/smoke-oauth-flow.mjs",
   "scripts/smoke-oauth-local.mjs",

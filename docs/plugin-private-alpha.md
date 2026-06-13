@@ -41,6 +41,38 @@ npm run plugin:install-copy:skip-build -- --vault "/absolute/path/to/test vault"
 
 Do not point this workflow at the live vault until the private-alpha checklist passes.
 
+## Seed Write Proposals For UI Testing
+
+Use the seeding script to create a repeatable set of pending write proposals for the copied vault. The script refuses to write fixtures unless the vault path contains `vault copy`.
+
+```bash
+set -a
+source .env.production.local
+source .env.oauth.local
+set +a
+
+npm run plugin:seed-write-proposals -- \
+  --base-url "https://vault-mcp-connector.vercel.app" \
+  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-id "default"
+```
+
+The script creates fixture notes under:
+
+```text
+20 Projects/Vault MCP Connector/Plugin UI Smoke/<run-id>/
+```
+
+It then creates pending proposals for:
+
+- `create_note`
+- `append_to_note`
+- `replace_note`
+- `update_frontmatter`
+- `rename_note`
+
+Use `--dry-run` to print the planned fixture paths and proposal payloads without writing local fixture notes or posting proposals.
+
 ## Obsidian Setup
 
 1. Open the copied vault in Obsidian.
@@ -145,3 +177,25 @@ The default audit folder is:
 ```
 
 Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Frontmatter updates use Obsidian's `FileManager.processFrontMatter`. Renames use Obsidian's `FileManager.renameFile`. `patch_note` remains a future operation and is rejected by the server until it gets an operation-specific patch parser and apply implementation.
+
+## Manual UI Verification
+
+After seeding proposals, open the copied vault in Obsidian and use `Review write proposals`.
+
+For each seeded proposal:
+
+- Confirm the card shows the expected operation, target path, requester, local safety state, and diff preview.
+- Click `Approve` and verify the status update succeeds.
+- Refresh proposals, then click `Apply locally`.
+- Confirm the target note changed as expected in the copied vault.
+- Confirm a backup note and audit note were created under `00 System/Vault MCP Write Audit/<date>/`.
+
+Expected results:
+
+- `create_note` creates `Created From Proposal.md`.
+- `append_to_note` appends one bullet to `Append Target.md`.
+- `replace_note` replaces the body of `Replace Target.md`.
+- `update_frontmatter` changes `status` to `active`, adds test tags, and removes `remove_me`.
+- `rename_note` renames `Rename Target.md` to `Renamed By Proposal.md`.
+
+This manual pass is still required before treating the plugin as publish-ready, because automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app.

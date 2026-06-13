@@ -17,6 +17,7 @@
     "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",
     "plugin:install-copy:skip-build": "node scripts/install-obsidian-plugin.mjs --skip-build",
+    "plugin:seed-write-proposals": "node scripts/seed-write-proposals.mjs",
     "index": "npm run dev --workspace @vault-mcp/cli --",
     "wiki:generate": "node scripts/generate-wiki-reference.mjs",
     "smoke:remote": "node scripts/smoke-remote.mjs",
