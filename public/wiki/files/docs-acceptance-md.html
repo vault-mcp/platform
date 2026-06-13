@@ -208,278 +208,278 @@
             </tr>
             <tr>
               <td class="line-number" id="L27"><a href="#L27">27</a></td>
-              <td class="source"><pre>npm run smoke:postgres</pre></td>
+              <td class="source"><pre>npm run smoke:postgres:fresh</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L28"><a href="#L28">28</a></td>
-              <td class="source"><pre>```</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L29"><a href="#L29">29</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre>POSTGRES_SMOKE_DATABASE_URL=&quot;postgres://user:password@host:5432/vault_mcp_smoke&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L30"><a href="#L30">30</a></td>
-              <td class="source"><pre>`npm run db:migrate` uses `DATABASE_URL` first and falls back to</pre></td>
+              <td class="source"><pre>npm run smoke:postgres</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L31"><a href="#L31">31</a></td>
-              <td class="source"><pre>`POSTGRES_SMOKE_DATABASE_URL`, so the first command applies the schema to the</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L32"><a href="#L32">32</a></td>
-              <td class="source"><pre>throwaway database. The smoke command then replaces the `vault_documents` table</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
-              <td class="source"><pre>contents in that database with the copied-vault test index.</pre></td>
+              <td class="source"><pre>`npm run db:migrate` uses `DATABASE_URL` first and falls back to</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L34"><a href="#L34">34</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>`POSTGRES_SMOKE_DATABASE_URL`, so the first command applies the schema to the</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L35"><a href="#L35">35</a></td>
-              <td class="source"><pre>Remote endpoint gate with temporary static bearer auth:</pre></td>
+              <td class="source"><pre>throwaway database. `smoke:postgres:fresh` creates a temporary schema, runs</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L36"><a href="#L36">36</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>migrations from empty state, syncs a tiny fixture, verifies health, and drops the</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
-              <td class="source"><pre>```bash</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
+              <td class="source"><pre>schema. The full Postgres smoke command then replaces the `vault_documents` table</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
-              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
+              <td class="source"><pre>contents in that database with the copied-vault test index.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
-              <td class="source"><pre>SMOKE_ACCESS_TOKEN=&quot;temporary-test-access-token&quot; \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
-              <td class="source"><pre>MCP_SYNC_TOKEN=&quot;sync-token&quot; \</pre></td>
+              <td class="source"><pre>Remote endpoint gate with temporary static bearer auth:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
-              <td class="source"><pre>npm run smoke:remote</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
-              <td class="source"><pre>```</pre></td>
+              <td class="source"><pre>```bash</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>Remote endpoint gate with OAuth:</pre></td>
+              <td class="source"><pre>SMOKE_ACCESS_TOKEN=&quot;temporary-test-access-token&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>MCP_SYNC_TOKEN=&quot;sync-token&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L46"><a href="#L46">46</a></td>
-              <td class="source"><pre>```bash</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>SMOKE_ACCESS_TOKEN=&quot;oauth-access-token&quot; \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>SMOKE_EXPECT_OAUTH=true \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L50"><a href="#L50">50</a></td>
               <td class="source"><pre>npm run smoke:remote</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>Remote endpoint gate with OAuth:</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>```bash</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L52"><a href="#L52">52</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
-              <td class="source"><pre>Self-hosted OAuth flow gate:</pre></td>
+              <td class="source"><pre>SMOKE_ACCESS_TOKEN=&quot;oauth-access-token&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>SMOKE_EXPECT_OAUTH=true \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>npm run smoke:remote</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L55"><a href="#L55">55</a></td>
-              <td class="source"><pre>```bash</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L56"><a href="#L56">56</a></td>
-              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L57"><a href="#L57">57</a></td>
-              <td class="source"><pre>SMOKE_OAUTH_PASSWORD=&quot;private-human-authorization-password&quot; \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
-              <td class="source"><pre>MCP_SYNC_TOKEN=&quot;sync-token&quot; \</pre></td>
+              <td class="source"><pre>Self-hosted OAuth flow gate:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
-              <td class="source"><pre>npm run smoke:oauth-flow</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
-              <td class="source"><pre>```</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L61"><a href="#L61">61</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, single-use authorization codes, refresh-token exchange, refresh-token replay denial, copied-vault sync, and MCP `search`/`fetch`.</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L63"><a href="#L63">63</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L64"><a href="#L64">64</a></td>
-              <td class="source"><pre>Add multi-vault scoped-read verification to that same OAuth gate with:</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>```bash</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
               <td class="source"><pre>SMOKE_OAUTH_PASSWORD=&quot;private-human-authorization-password&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
               <td class="source"><pre>MCP_SYNC_TOKEN=&quot;sync-token&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
-              <td class="source"><pre>SMOKE_MULTI_VAULT=true \</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
               <td class="source"><pre>npm run smoke:oauth-flow</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>```</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, single-use authorization codes, refresh-token exchange, refresh-token replay denial, copied-vault sync, and MCP `search`/`fetch`.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>Add multi-vault scoped-read verification to that same OAuth gate with:</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>```bash</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>SMOKE_BASE_URL=&quot;https://vault-mcp.example.com&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>SMOKE_OAUTH_PASSWORD=&quot;private-human-authorization-password&quot; \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>The multi-vault pass creates a temporary `smoke-multivault` vault, verifies unscoped read errors plus scoped search/fetch/status behavior, then deletes the temporary vault.</pre></td>
+              <td class="source"><pre>MCP_SYNC_TOKEN=&quot;sync-token&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L75"><a href="#L75">75</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>SMOKE_MULTI_VAULT=true \</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>Passing output must include:</pre></td>
+              <td class="source"><pre>npm run smoke:oauth-flow</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>- `ok: true`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre>- nonzero `document_count`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>The multi-vault pass creates a temporary `smoke-multivault` vault, verifies unscoped read errors plus scoped search/fetch/status behavior, then deletes the temporary vault.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L80"><a href="#L80">80</a></td>
-              <td class="source"><pre>- `first_result_path: &quot;20 Projects/Vault MCP Connector/Project Home.md&quot;`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>- `metadata_resource: &quot;https://vault-mcp.example.com/mcp&quot;`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>Passing output must include:</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
@@ -488,88 +488,88 @@
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="source"><pre>- `ok: true`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre>- nonzero `document_count`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre>- `first_result_path: &quot;20 Projects/Vault MCP Connector/Project Home.md&quot;`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>- `metadata_resource: &quot;https://vault-mcp.example.com/mcp&quot;`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>The smoke script also verifies authenticated `GET /mcp` returns `text/event-stream`.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre>Also verify preflight/origin behavior:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
               <td class="source"><pre>```bash</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
               <td class="source"><pre>curl -i -X OPTIONS &quot;https://vault-mcp.example.com/mcp&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
               <td class="source"><pre>  -H &quot;Origin: https://chatgpt.com&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
               <td class="source"><pre>  -H &quot;Access-Control-Request-Method: POST&quot; \</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
               <td class="source"><pre>  -H &quot;Access-Control-Request-Headers: Authorization,Content-Type,Accept&quot;</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
               <td class="source"><pre>```</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L94"><a href="#L94">94</a></td>
-              <td class="source"><pre>Expected: `204` with `Access-Control-Allow-Origin: https://chatgpt.com`.</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>## MCP Inspector</pre></td>
-              <td>Markdown heading; it gives structure to the document.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre>1. Start from a synced endpoint.</pre></td>
-              <td>Markdown numbered step; it records ordered instructions.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L99"><a href="#L99">99</a></td>
-              <td class="source"><pre>2. Run:</pre></td>
-              <td>Markdown numbered step; it records ordered instructions.</td>
+              <td class="source"><pre>Expected: `204` with `Access-Control-Allow-Origin: https://chatgpt.com`.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
@@ -578,256 +578,281 @@
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>## MCP Inspector</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>1. Start from a synced endpoint.</pre></td>
+              <td>Markdown numbered step; it records ordered instructions.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>2. Run:</pre></td>
+              <td>Markdown numbered step; it records ordered instructions.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
               <td class="source"><pre>```bash</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
               <td class="source"><pre>npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
               <td class="source"><pre>```</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
               <td class="source"><pre>3. Provide an `Authorization: Bearer ...` header.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
               <td class="source"><pre>4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `list_vaults`, `get_vault_status`, and `debug_search`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
               <td class="source"><pre>5. Call `search` with `Vault MCP Connector`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
               <td class="source"><pre>6. Call `list_notes` with scope `20 Projects/Vault MCP Connector/`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
               <td class="source"><pre>7. Call `fetch` with the first returned id.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
               <td class="source"><pre>8. Call `fetch_note_by_path` with `20 Projects/Vault MCP Connector/Project Home.md`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
               <td class="source"><pre>9. Call `fetch` with `guessed-denied-id` and confirm it returns a tool error.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
               <td class="source"><pre>10. Call `fetch_note_by_path` with a denied path such as `02 Daily/2026-06-10.md` and confirm it returns a tool error.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
               <td class="source"><pre>## ChatGPT</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
               <td class="source"><pre>1. Enable developer mode in the ChatGPT workspace.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
               <td class="source"><pre>2. Create a custom MCP connector/app.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
               <td class="source"><pre>3. Endpoint: `https://vault-mcp.example.com/mcp`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
               <td class="source"><pre>4. Configure OAuth according to the provider backing `OAUTH_*`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
               <td class="source"><pre>   - For self-hosted OAuth, the provider URL is the same as the MCP host, `https://vault-mcp.example.com`.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
               <td class="source"><pre>   - Use the connector password set in `OAUTH_AUTH_PASSWORD` when the authorization page opens.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
               <td class="source"><pre>5. Scan tools and confirm only the read-only vault tools appear; no write/edit tools should be present.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
               <td class="source"><pre>6. Prompt: `Search my vault for the Vault MCP Connector project and fetch the relevant note.`</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
               <td class="source"><pre>7. Confirm the returned citation URL is under `/notes/:id`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
               <td class="source"><pre>8. Confirm metadata includes `obsidian_uri`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
               <td class="source"><pre>9. Confirm search/list/fetch responses are readable in the conversation, not just raw JSON.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
               <td class="source"><pre>10. If the ChatGPT client renders MCP output templates, confirm the vault results card appears from `ui://vault-mcp/results-v2.html`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
               <td class="source"><pre>11. Prompt with a denied area request, such as raw daily notes or credentials, and confirm no denied path is returned.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
               <td class="source"><pre>## Claude</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
               <td class="source"><pre>1. Add a custom remote MCP connector.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
               <td class="source"><pre>2. Endpoint: `https://vault-mcp.example.com/mcp`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
               <td class="source"><pre>3. Configure the same OAuth provider.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
               <td class="source"><pre>   - For self-hosted OAuth, the connector URL and OAuth provider URL are both `https://vault-mcp.example.com`; Claude should discover metadata and dynamically register.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
               <td class="source"><pre>   - Use the connector password set in `OAUTH_AUTH_PASSWORD` when the authorization page opens.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
               <td class="source"><pre>4. Confirm Claude sees `search` and `fetch`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
               <td class="source"><pre>5. Search and fetch `Vault MCP Connector`.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
               <td class="source"><pre>6. Confirm the same note chunk can be fetched as in ChatGPT.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
               <td class="source"><pre>7. Confirm guessed ids or denied sensitive paths are not accessible.</pre></td>
               <td>Markdown numbered step; it records ordered instructions.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L142"><a href="#L142">142</a></td>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
               <td class="source"><pre>## Completion Evidence</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
               <td class="source"><pre>Do not consider V1 complete until the project has:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L146"><a href="#L146">146</a></td>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
               <td class="source"><pre>- build/test/smoke logs</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
               <td class="source"><pre>- remote smoke output</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
               <td class="source"><pre>- MCP Inspector confirmation</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L149"><a href="#L149">149</a></td>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
               <td class="source"><pre>- ChatGPT read-only discovery/fetch confirmation</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
               <td class="source"><pre>- Claude read-only discovery/fetch confirmation</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
               <td class="source"><pre>- denied-path/guessed-id confirmation</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr></tbody>

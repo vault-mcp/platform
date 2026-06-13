@@ -114,6 +114,17 @@ Expected result:
 The server also runs the same migration runner on startup as a safety net, but
 you should treat `npm run db:migrate` as the explicit deploy/upgrade step.
 
+To prove a fresh database boot without touching existing Vault MCP tables, run
+the isolated schema smoke:
+
+```bash
+POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp" \
+npm run smoke:postgres:fresh
+```
+
+This creates a temporary schema, runs migrations from empty state, syncs one
+fixture document, checks Postgres health, and drops the schema.
+
 ## Step 3 - Deploy To Vercel
 
 Log in and link the project:
@@ -282,10 +293,11 @@ Before upgrading:
 2. Back up Postgres or confirm you can rebuild the derived index.
 3. Run `npm ci`.
 4. Run `npm run db:migrate`.
-5. Run `npm run build`.
-6. Deploy.
-7. Run `npm run smoke:oauth-flow`.
-8. Re-sync from the plugin or CLI if the release notes say index format changed.
+5. Run `npm run smoke:postgres:fresh` when a Postgres URL is available.
+6. Run `npm run build`.
+7. Deploy.
+8. Run `npm run smoke:oauth-flow`.
+9. Re-sync from the plugin or CLI if the release notes say index format changed.
 
 ## Recovery
 

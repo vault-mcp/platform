@@ -231,6 +231,16 @@ To verify the Postgres storage path before deploying, point the smoke test at a 
 
 ```bash
 POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
+npm run smoke:postgres:fresh
+```
+
+`smoke:postgres:fresh` creates a temporary schema inside the configured database,
+runs migrations from an empty state, syncs one fixture document, verifies
+`/healthz`-equivalent store health, and drops the schema. It is the safest way to
+prove fresh database boot without touching existing Vault MCP tables.
+
+```bash
+POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
 npm run smoke:postgres
 ```
 

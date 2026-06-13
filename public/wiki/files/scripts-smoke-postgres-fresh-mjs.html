@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>scripts/smoke-postgres-fresh.mjs - Line Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Line-by-line file reference</p>
+        <h1><code>scripts/smoke-postgres-fresh.mjs</code></h1>
+        <p class="lead">Postgres fresh-boot smoke that migrates and verifies an isolated temporary schema.</p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
+      </section>
+
+      <section>
+        <h2>How to read this file</h2>
+        <div class="card">
+          <p>Read this file as an end-to-end gate. It starts or contacts a server and proves the critical runtime behavior still works.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Source with explanatory notes</h2>
+        <table class="line-table">
+          <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="line-number" id="L1"><a href="#L1">1</a></td>
+              <td class="source"><pre>#!/usr/bin/env node</pre></td>
+              <td>Shebang line: lets the operating system run this script with the named interpreter.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L2"><a href="#L2">2</a></td>
+              <td class="source"><pre>import pg from &quot;pg&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L3"><a href="#L3">3</a></td>
+              <td class="source"><pre>import { PostgresIndexStore } from &quot;../apps/server/dist/store.js&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L4"><a href="#L4">4</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L5"><a href="#L5">5</a></td>
+              <td class="source"><pre>const configuredDatabaseUrl = process.env.POSTGRES_SMOKE_DATABASE_URL ?? process.env.POSTGRES_FRESH_DATABASE_URL;</pre></td>
+              <td>Declares configuredDatabaseUrl, configuration data that controls runtime behavior.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L6"><a href="#L6">6</a></td>
+              <td class="source"><pre>assert(configuredDatabaseUrl, &quot;POSTGRES_SMOKE_DATABASE_URL or POSTGRES_FRESH_DATABASE_URL is required&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L7"><a href="#L7">7</a></td>
+              <td class="source"><pre>const databaseUrl = normalizeSslMode(configuredDatabaseUrl);</pre></td>
+              <td>Declares databaseUrl, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L8"><a href="#L8">8</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L9"><a href="#L9">9</a></td>
+              <td class="source"><pre>const schema = `vault_mcp_fresh_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;</pre></td>
+              <td>Declares schema, a validation schema that describes allowed input or output data.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L10"><a href="#L10">10</a></td>
+              <td class="source"><pre>assert(/^[a-z][a-z0-9_]+$/.test(schema), `unsafe generated schema name: ${schema}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="source"><pre>const adminPool = new pg.Pool({ connectionString: databaseUrl });</pre></td>
+              <td>Declares adminPool, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="source"><pre>let store;</pre></td>
+              <td>Declares store, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="source"><pre>try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="source"><pre>  await adminPool.query(`create schema ${quoteIdentifier(schema)}`);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="source"><pre>  store = new PostgresIndexStore(withSearchPath(withUnpooledConnection(databaseUrl), schema));</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="source"><pre>  await store.load();</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="source"><pre>  const generatedAt = new Date().toISOString();</pre></td>
+              <td>Declares generatedAt, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="source"><pre>  await store.replace({</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>    tenant_id: &quot;fresh-tenant&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre>    vault_id: &quot;fresh-vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="source"><pre>    installation_id: &quot;fresh-installation&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="source"><pre>    vault_name: &quot;Fresh Boot Smoke Vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="source"><pre>    policy_version: &quot;fresh-smoke-policy&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="source"><pre>    index_mode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="source"><pre>    generated_at: generatedAt,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre>    manifest: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="source"><pre>      tenant_id: &quot;fresh-tenant&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="source"><pre>      vault_id: &quot;fresh-vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="source"><pre>      installation_id: &quot;fresh-installation&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre>      vault_name: &quot;Fresh Boot Smoke Vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="source"><pre>      generated_at: generatedAt,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="source"><pre>      policy_version: &quot;fresh-smoke-policy&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="source"><pre>      index_mode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="source"><pre>      policy_summary: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="source"><pre>        allowed_rules: [&quot;20 Projects/&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="source"><pre>        denied_rules: [&quot;02 Daily/&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="source"><pre>        review_rules: [],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="source"><pre>      },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="source"><pre>    documents: [{</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="source"><pre>      id: &quot;fresh-doc&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="source"><pre>      tenant_id: &quot;fresh-tenant&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="source"><pre>      vault_id: &quot;fresh-vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="source"><pre>      installation_id: &quot;fresh-installation&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="source"><pre>      title: &quot;Fresh Boot Smoke&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>      text: &quot;Fresh Postgres boot smoke document.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre>      url: &quot;https://vault-mcp.example.test/notes/fresh-doc&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>      obsidian_uri: &quot;obsidian://open?vault=Fresh%20Boot%20Smoke%20Vault&amp;file=20%20Projects%2FFresh%20Boot.md&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre>      metadata: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>        tenant_id: &quot;fresh-tenant&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>        vault_id: &quot;fresh-vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>        installation_id: &quot;fresh-installation&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>        path: &quot;20 Projects/Fresh Boot.md&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre>        heading: null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre>        note_title: &quot;Fresh Boot Smoke&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>        chunk_index: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="source"><pre>        tags: [&quot;topic/mcp&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="source"><pre>        status: &quot;active&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre>        updated_at: generatedAt,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre>        content_hash: &quot;fresh-content-hash&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="source"><pre>        obsidian_uri: &quot;obsidian://open?vault=Fresh%20Boot%20Smoke%20Vault&amp;file=20%20Projects%2FFresh%20Boot.md&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="source"><pre>        source_policy: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="source"><pre>          allowed: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>          reason: &quot;Fresh boot smoke fixture.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>          matched_rule: &quot;fresh-smoke&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>          policy_version: &quot;fresh-smoke-policy&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre>          index_mode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>        },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>      },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>    }],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>    stats: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>      scanned_markdown: 1,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre>      allowed_documents: 1,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>      denied_markdown: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre>      denied_by_rule: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre>      review_required_markdown: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre>      reviewed_by_rule: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="source"><pre>      redacted_documents: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="source"><pre>      redactions_by_pattern: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>  const health = await store.health();</pre></td>
+              <td>Declares health, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre>  assert(health.storage.kind === &quot;postgres&quot;, &quot;expected Postgres storage health&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="source"><pre>  assert(health.storage.ok === true, &quot;expected storage health ok&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="source"><pre>  assert(health.storage.migrations?.includes(&quot;0001_initial_vault_mcp_schema&quot;), &quot;expected initial migration id in health&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>  assert(health.document_count === 1, `expected 1 document, got ${health.document_count}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre>  assert(health.vault_count === 1, `expected 1 vault, got ${health.vault_count}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="source"><pre>  assert(health.last_sync_at === generatedAt, &quot;expected health last_sync_at to match fixture sync&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre>  const vaults = await store.listVaults();</pre></td>
+              <td>Declares vaults, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre>  assert(vaults.length === 1, `expected 1 vault summary, got ${vaults.length}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>  assert(vaults[0].vault_id === &quot;fresh-vault&quot;, `expected fresh-vault, got ${vaults[0].vault_id}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>  const fetched = await store.fetch(&quot;fresh-doc&quot;, &quot;fresh-vault&quot;);</pre></td>
+              <td>Declares fetched, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>  assert(fetched?.title === &quot;Fresh Boot Smoke&quot;, &quot;expected fresh document fetch to work&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>  console.log(JSON.stringify({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre>    ok: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>    schema,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>    storage: health.storage,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>    document_count: health.document_count,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>    vault_count: health.vault_count,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>    last_sync_at: health.last_sync_at,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>  }, null, 2));</pre></td>
+              <td>Line 108 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre>} finally {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre>  await store?.close?.();</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>  await adminPool.query(`drop schema if exists ${quoteIdentifier(schema)} cascade`).catch((error) =&gt; {</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>    console.error(`Failed to drop smoke schema ${schema}:`, error);</pre></td>
+              <td>Line 112 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>  await adminPool.end();</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>function withSearchPath(connectionString, schemaName) {</pre></td>
+              <td>Defines withSearchPath, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>  const url = new URL(connectionString);</pre></td>
+              <td>Declares url, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>  const existingOptions = url.searchParams.get(&quot;options&quot;);</pre></td>
+              <td>Declares existingOptions, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>  const searchPathOption = `-c search_path=${schemaName}`;</pre></td>
+              <td>Declares searchPathOption, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>  url.searchParams.set(&quot;options&quot;, existingOptions ? `${existingOptions} ${searchPathOption}` : searchPathOption);</pre></td>
+              <td>Line 121 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>  return url.toString();</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>function withUnpooledConnection(connectionString) {</pre></td>
+              <td>Defines withUnpooledConnection, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>  const url = new URL(connectionString);</pre></td>
+              <td>Declares url, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre>  url.hostname = url.hostname.replace(&quot;-pooler.&quot;, &quot;.&quot;);</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre>  return url.toString();</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre>function normalizeSslMode(connectionString) {</pre></td>
+              <td>Defines normalizeSslMode, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>  const url = new URL(connectionString);</pre></td>
+              <td>Declares url, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="source"><pre>  if (url.searchParams.get(&quot;sslmode&quot;) === &quot;require&quot;) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>    url.searchParams.set(&quot;sslmode&quot;, &quot;verify-full&quot;);</pre></td>
+              <td>Line 134 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>  return url.toString();</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="source"><pre>function quoteIdentifier(value) {</pre></td>
+              <td>Defines quoteIdentifier, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="source"><pre>  return `&quot;${value.replaceAll(&quot;\&quot;&quot;, &quot;\&quot;\&quot;&quot;)}&quot;`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="source"><pre>function assert(condition, message) {</pre></td>
+              <td>Defines assert, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>  if (!condition) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="source"><pre>    throw new Error(message);</pre></td>
+              <td>Line 145 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr></tbody>
+        </table>
+      </section>
+  </main>
+</body>
+</html>

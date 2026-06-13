@@ -24,12 +24,17 @@ POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke"
 npm run db:migrate
 
 POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
+npm run smoke:postgres:fresh
+
+POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
 npm run smoke:postgres
 ```
 
 `npm run db:migrate` uses `DATABASE_URL` first and falls back to
 `POSTGRES_SMOKE_DATABASE_URL`, so the first command applies the schema to the
-throwaway database. The smoke command then replaces the `vault_documents` table
+throwaway database. `smoke:postgres:fresh` creates a temporary schema, runs
+migrations from empty state, syncs a tiny fixture, verifies health, and drops the
+schema. The full Postgres smoke command then replaces the `vault_documents` table
 contents in that database with the copied-vault test index.
 
 Remote endpoint gate with temporary static bearer auth:

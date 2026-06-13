@@ -28,6 +28,7 @@
     "smoke:oauth-flow": "node scripts/smoke-oauth-flow.mjs",
     "smoke:local": "npm run build && npm run check:api && node scripts/smoke-local.mjs",
     "smoke:oauth-local": "npm run build && npm run check:api && node scripts/smoke-oauth-local.mjs",
+    "smoke:postgres:fresh": "npm run build --workspace @vault-mcp/server && node scripts/smoke-postgres-fresh.mjs",
     "smoke:postgres": "npm run build && npm run check:api && node scripts/smoke-postgres-local.mjs",
     "start": "npm run start --workspace @vault-mcp/server",
     "test": "vitest run",
