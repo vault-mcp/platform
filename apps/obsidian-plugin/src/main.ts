@@ -81,6 +81,16 @@ type IndexPreview = {
   items: IndexPreviewItem[];
 };
 
+type ProposalSafetyAnalysis = {
+  targetExists: boolean;
+  currentHash: string | null;
+  baseHashMatches: boolean | null;
+  canApplyInFuture: boolean;
+  status: "ready" | "conflict" | "missing-target" | "existing-target" | "unsupported";
+  message: string;
+  diffPreview: string | null;
+};
+
 const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   serverUrl: "https://vault-mcp-connector.vercel.app",
   syncToken: "",
@@ -279,7 +289,7 @@ export default class VaultMcpPlugin extends Plugin {
     }
   }
 
-  async updateWriteProposalStatus(proposalId: string, status: Extract<WriteProposalStatus, "approved" | "rejected">) {
+  async updateWriteProposalStatus(proposalId: string, status: Extract<WriteProposalStatus, "approved" | "rejected" | "conflict">) {
     if (!this.settings.syncToken.trim()) {
       new Notice("Vault MCP sync token is required.");
       return;
@@ -287,7 +297,9 @@ export default class VaultMcpPlugin extends Plugin {
 
     const message = status === "approved"
       ? "Approved in Obsidian plugin. Local apply is not implemented yet."
-      : "Rejected in Obsidian plugin.";
+      : status === "conflict"
+        ? "Marked conflict in Obsidian plugin after local safety analysis."
+        : "Rejected in Obsidian plugin.";
     try {
       const response = await requestUrl({
         url: `${this.serverBaseUrl()}/admin/write-proposals/${encodeURIComponent(proposalId)}`,
@@ -399,6 +411,83 @@ export default class VaultMcpPlugin extends Plugin {
     }
     const parsed = JSON.parse(response.text) as { proposals?: WriteProposal[] };
     return parsed.proposals ?? [];
+  }
+
+  async analyzeWriteProposal(proposal: WriteProposal): Promise<ProposalSafetyAnalysis> {
+    const target = this.app.vault.getAbstractFileByPath(proposal.target_path);
+    const targetExists = target instanceof TFile;
+    const currentContent = targetExists ? await this.app.vault.cachedRead(target) : null;
+    const currentHash = currentContent === null ? null : await sha256Hex(currentContent);
+    const baseHashMatches = proposal.base_content_hash === null ? null : currentHash === proposal.base_content_hash;
+
+    if (proposal.operation === "create_note") {
+      if (targetExists) {
+        return {
+          targetExists,
+          currentHash,
+          baseHashMatches,
+          canApplyInFuture: false,
+          status: "existing-target",
+          message: "Create-note proposal targets a file that already exists. This must be reviewed as a conflict.",
+          diffPreview: buildDiffPreview("", proposal.proposed_content ?? ""),
+        };
+      }
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: Boolean(proposal.proposed_content),
+        status: proposal.proposed_content ? "ready" : "unsupported",
+        message: proposal.proposed_content ? "Ready for future create-note application." : "Create-note proposal has no proposed content.",
+        diffPreview: buildDiffPreview("", proposal.proposed_content ?? ""),
+      };
+    }
+
+    if (!targetExists) {
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: false,
+        status: "missing-target",
+        message: "Target file does not exist locally. This must be reviewed before any apply step.",
+        diffPreview: null,
+      };
+    }
+
+    if (proposal.base_content_hash && !baseHashMatches) {
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: false,
+        status: "conflict",
+        message: "Local file hash does not match the proposal base hash. Do not apply automatically.",
+        diffPreview: previewForProposal(proposal, currentContent ?? ""),
+      };
+    }
+
+    if (proposal.operation === "append_to_note" || proposal.operation === "replace_note") {
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: Boolean(proposal.proposed_content),
+        status: proposal.proposed_content ? "ready" : "unsupported",
+        message: proposal.proposed_content ? "Base hash is compatible for future local apply." : "Proposal has no proposed content to preview.",
+        diffPreview: previewForProposal(proposal, currentContent ?? ""),
+      };
+    }
+
+    return {
+      targetExists,
+      currentHash,
+      baseHashMatches,
+      canApplyInFuture: false,
+      status: "unsupported",
+      message: "This operation needs a dedicated diff/apply implementation before it can be safely applied.",
+      diffPreview: previewForProposal(proposal, currentContent ?? ""),
+    };
   }
 
   private async buildSyncPayload(): Promise<SyncPayload> {
@@ -710,8 +799,15 @@ class VaultMcpWriteProposalsModal extends Modal {
     }
 
     const list = contentEl.createDiv({ cls: "vault-mcp-proposal-list" });
+    list.createEl("p", { cls: "vault-mcp-muted", text: "Analyzing local files and proposal hashes..." });
+    void this.renderProposalCards(list);
+  }
+
+  private async renderProposalCards(list: HTMLElement) {
+    list.empty();
     for (const proposal of this.proposals) {
-      addWriteProposalCard(list, this.plugin, this, proposal);
+      const analysis = await this.plugin.analyzeWriteProposal(proposal);
+      addWriteProposalCard(list, this.plugin, this, proposal, analysis);
     }
   }
 }
@@ -946,7 +1042,7 @@ function addHistorySection(parent: HTMLElement, history: SyncHistoryEntry[]) {
   }
 }
 
-function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal: Modal, proposal: WriteProposal) {
+function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal: Modal, proposal: WriteProposal, analysis: ProposalSafetyAnalysis) {
   const card = parent.createDiv({ cls: "vault-mcp-proposal-card" });
   const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
   header.createDiv({ cls: "vault-mcp-preview-card__title", text: proposal.target_path });
@@ -959,16 +1055,22 @@ function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal
   if (proposal.base_content_hash) {
     meta.createSpan({ text: `base: ${proposal.base_content_hash.slice(0, 16)}` });
   }
+  if (analysis.currentHash) {
+    meta.createSpan({ text: `local: ${analysis.currentHash.slice(0, 16)}` });
+  }
 
   card.createDiv({
     cls: "vault-mcp-preview-card__reason",
     text: `Proposal id: ${proposal.id}`,
   });
 
-  if (proposal.proposed_patch) {
+  addSafetySummary(card, analysis);
+
+  if (analysis.diffPreview) {
+    addCodePreview(card, "Local diff preview", analysis.diffPreview);
+  } else if (proposal.proposed_patch) {
     addCodePreview(card, "Proposed patch", proposal.proposed_patch);
-  }
-  if (proposal.proposed_content) {
+  } else if (proposal.proposed_content) {
     addCodePreview(card, "Proposed content", proposal.proposed_content);
   }
 
@@ -976,21 +1078,41 @@ function addWriteProposalCard(parent: HTMLElement, plugin: VaultMcpPlugin, modal
 
   if (proposal.status === "pending") {
     const actions = card.createDiv({ cls: "vault-mcp-preview-card__actions" });
-    new Setting(actions)
-      .addButton((button) => button
+    const setting = new Setting(actions);
+    if (analysis.canApplyInFuture) {
+      setting.addButton((button) => button
         .setButtonText("Approve")
         .setCta()
         .onClick(() => {
           modal.close();
           void plugin.updateWriteProposalStatus(proposal.id, "approved");
-        }))
-      .addButton((button) => button
-        .setButtonText("Reject")
+        }));
+    } else if (analysis.status === "conflict" || analysis.status === "missing-target" || analysis.status === "existing-target") {
+      setting.addButton((button) => button
+        .setButtonText("Mark conflict")
+        .setCta()
         .onClick(() => {
           modal.close();
-          void plugin.updateWriteProposalStatus(proposal.id, "rejected");
+          void plugin.updateWriteProposalStatus(proposal.id, "conflict");
         }));
+    }
+    setting.addButton((button) => button
+      .setButtonText("Reject")
+      .onClick(() => {
+        modal.close();
+        void plugin.updateWriteProposalStatus(proposal.id, "rejected");
+      }));
   }
+}
+
+function addSafetySummary(parent: HTMLElement, analysis: ProposalSafetyAnalysis) {
+  const box = parent.createDiv({ cls: `vault-mcp-safety vault-mcp-safety--${analysis.status}` });
+  box.createDiv({ cls: "vault-mcp-safety__title", text: safetyTitle(analysis.status) });
+  box.createDiv({ cls: "vault-mcp-safety__message", text: analysis.message });
+  const facts = box.createDiv({ cls: "vault-mcp-preview-card__meta" });
+  facts.createSpan({ text: `target: ${analysis.targetExists ? "exists" : "missing"}` });
+  facts.createSpan({ text: `base hash: ${analysis.baseHashMatches === null ? "not supplied" : analysis.baseHashMatches ? "matches" : "mismatch"}` });
+  facts.createSpan({ text: `future apply: ${analysis.canApplyInFuture ? "possible" : "blocked"}` });
 }
 
 function addCodePreview(parent: HTMLElement, label: string, value: string) {
@@ -1054,6 +1176,64 @@ function proposalStatusTone(status: WriteProposalStatus): "allow" | "deny" | "re
     return "deny";
   }
   return "review";
+}
+
+function safetyTitle(status: ProposalSafetyAnalysis["status"]): string {
+  if (status === "ready") {
+    return "Local safety check ready";
+  }
+  if (status === "conflict") {
+    return "Hash conflict";
+  }
+  if (status === "missing-target") {
+    return "Missing local target";
+  }
+  if (status === "existing-target") {
+    return "Target already exists";
+  }
+  return "Unsupported apply path";
+}
+
+function previewForProposal(proposal: WriteProposal, currentContent: string): string | null {
+  if (proposal.proposed_patch) {
+    return proposal.proposed_patch;
+  }
+  if (proposal.operation === "append_to_note" && proposal.proposed_content !== undefined) {
+    return buildDiffPreview(currentContent, `${currentContent}${proposal.proposed_content}`);
+  }
+  if ((proposal.operation === "replace_note" || proposal.operation === "create_note") && proposal.proposed_content !== undefined) {
+    return buildDiffPreview(currentContent, proposal.proposed_content);
+  }
+  return null;
+}
+
+function buildDiffPreview(before: string, after: string): string {
+  const beforeLines = before.split(/\r?\n/);
+  const afterLines = after.split(/\r?\n/);
+  const rows: string[] = [];
+  const maxRows = Math.max(beforeLines.length, afterLines.length);
+  for (let index = 0; index < maxRows; index += 1) {
+    const beforeLine = beforeLines[index];
+    const afterLine = afterLines[index];
+    if (beforeLine === afterLine) {
+      if (beforeLine !== undefined && shouldKeepContext(rows)) {
+        rows.push(`  ${beforeLine}`);
+      }
+      continue;
+    }
+    if (beforeLine !== undefined) {
+      rows.push(`- ${beforeLine}`);
+    }
+    if (afterLine !== undefined) {
+      rows.push(`+ ${afterLine}`);
+    }
+  }
+  return rows.length > 0 ? rows.join("\n") : "No text changes detected.";
+}
+
+function shouldKeepContext(rows: string[]): boolean {
+  const previous = rows.at(-1);
+  return previous === undefined || previous.startsWith("- ") || previous.startsWith("+ ");
 }
 
 function truncateMiddle(value: string, maxLength: number): string {

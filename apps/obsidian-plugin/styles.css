@@ -186,3 +186,34 @@
   cursor: pointer;
   font-weight: 600;
 }
+
+.vault-mcp-safety {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.vault-mcp-safety--ready {
+  border-color: rgba(var(--color-green-rgb), 0.45);
+}
+
+.vault-mcp-safety--conflict,
+.vault-mcp-safety--missing-target,
+.vault-mcp-safety--existing-target {
+  border-color: rgba(var(--color-red-rgb), 0.45);
+}
+
+.vault-mcp-safety--unsupported {
+  border-color: rgba(var(--color-orange-rgb), 0.45);
+}
+
+.vault-mcp-safety__title {
+  font-weight: 700;
+}
+
+.vault-mcp-safety__message {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 4px;
+}

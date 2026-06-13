@@ -103,8 +103,16 @@ The proposal view shows:
 - target path
 - requester
 - base content hash prefix
+- local content hash prefix when the target exists
+- local safety status
+- base-hash match or mismatch
 - proposed content or patch preview
+- local diff preview for create, append, and replace proposals
 - current proposal status
 - audit trail
 
-For pending proposals, the plugin can mark the proposal `approved` or `rejected` on the server. Approval does not edit local files yet. Local application still needs a diff view, base-content hash check, backup/audit record, and Obsidian API write path.
+For pending proposals, the plugin can mark the proposal `approved`, `rejected`, or `conflict` on the server. Approval does not edit local files yet.
+
+The plugin only shows `Approve` when the local safety analysis says the future apply path is compatible. If the target file is missing, the create target already exists, or the base content hash does not match the local file, the plugin offers `Mark conflict` instead.
+
+Local application still needs backup/audit creation and Obsidian API write paths. The current diff and hash checks are readiness gates, not a write implementation.
