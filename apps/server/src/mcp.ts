@@ -98,6 +98,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching vault"),
   }, async ({ query, mode, vault_id, limit, scope, tags, status, type }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.searchVault({ query, mode, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Search results for "${query}"`));
   });
@@ -120,6 +124,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching notes"),
   }, async ({ query, vault_id, limit, scope, tags, status, type }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.searchNotes({ query, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Matching notes for "${query}"`));
   });
@@ -142,6 +150,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Searching sections"),
   }, async ({ query, vault_id, limit, scope, tags, status, type }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.searchSections({ query, vault_id, limit, scope, tags, status, type });
     return jsonToolResult(structuredContent, describeSearchResults(structuredContent.results, `Matching sections for "${query}"`));
   });
@@ -165,6 +177,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Listing notes"),
   }, async ({ scope, vault_id, tag, status, type, limit, cursor }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.listNotes({ scope, vault_id, tag, status, type, limit, cursor });
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Indexed vault notes", structuredContent.next_cursor));
   });
@@ -183,6 +199,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Finding recent notes"),
   }, async ({ scope, vault_id, limit }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.recentNotes(scope, limit, vault_id);
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Recently updated indexed notes"));
   });
@@ -202,6 +222,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Finding active projects"),
   }, async ({ limit, cursor, vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.activeProjects(limit, cursor, vault_id);
     return jsonToolResult(structuredContent, describeNoteList(structuredContent.notes, "Active vault projects", structuredContent.next_cursor));
   });
@@ -217,6 +241,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Fetching note"),
   }, async ({ id, vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const document = await store.fetch(id, vault_id);
 
     if (!document) {
@@ -237,6 +265,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Fetching note"),
   }, async ({ path, vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const document = await store.fetchByPath(path, vault_id);
 
     if (!document) {
@@ -269,6 +301,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     },
     annotations: readOnlyAnnotations(),
   }, async ({ vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.indexStatus(vault_id);
     return jsonToolResult(structuredContent, describeIndexStatus(structuredContent));
   });
@@ -314,6 +350,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Checking vault status"),
   }, async ({ vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.vaultStatus(vault_id);
     return jsonToolResult(structuredContent, describeVaultStatus(structuredContent));
   });
@@ -338,6 +378,10 @@ export function createMcpServer(store: IndexStore): McpServer {
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Debugging search"),
   }, async ({ query, scope, vault_id }) => {
+    const scopeError = await requireVaultScope(store, vault_id);
+    if (scopeError) {
+      return scopeError;
+    }
     const structuredContent = await store.debugSearch(query, scope, vault_id);
     return jsonToolResult(structuredContent, describeSearchDebug(structuredContent));
   });
@@ -465,6 +509,45 @@ function unavailableResult() {
       {
         type: "text" as const,
         text: `${error.error.message}\n\nTry search, list_notes, or fetch_note_by_path with an allowlisted exact path. Denied and non-indexed notes are intentionally unavailable.`,
+      },
+    ],
+  };
+}
+
+async function requireVaultScope(store: IndexStore, vaultId: string | undefined) {
+  if (vaultId) {
+    return null;
+  }
+
+  const vaults = await store.listVaults();
+  if (vaults.length <= 1) {
+    return null;
+  }
+
+  const vaultLines = vaults
+    .map((vault) => `- ${vault.vault_id}: ${vault.vault_name} (${vault.document_count} document${vault.document_count === 1 ? "" : "s"})`)
+    .join("\n");
+
+  const text = [
+    "More than one vault is connected to this MCP server.",
+    "",
+    "Pass vault_id to choose which vault to read before searching, listing, fetching, or checking status.",
+    "",
+    "Connected vaults:",
+    vaultLines,
+    "",
+    "Next action: call list_vaults if you need structured vault metadata, then retry this tool with vault_id.",
+  ].join("\n");
+
+  return {
+    isError: true as const,
+    _meta: {
+      "vault-mcp/resultSummary": "Multiple vaults are connected; pass vault_id to choose one.",
+    },
+    content: [
+      {
+        type: "text" as const,
+        text,
       },
     ],
   };

@@ -43,6 +43,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
   - `list_vaults`
   - `get_vault_status`
 - Extended existing read tools with optional `vault_id` where applicable.
+- Enforced multi-vault read disambiguation: when more than one vault has synced, search/list/fetch/status/debug tools require `vault_id` instead of reading across vaults by default.
 - Kept write behavior as proposals only; no MCP tool directly edits an Obsidian vault.
 - Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.
 
@@ -76,6 +77,8 @@ Current local gates:
 - `npm run smoke:local`
 - `npm run smoke:oauth-local`
 - `npm run plugin:install-copy`
+
+The server contract tests include a two-vault fixture with overlapping note paths. They verify scoped `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `get_vault_status`, and `debug_search`, plus clear errors for unscoped reads when multiple vaults are connected.
 
 The local Postgres gate still requires `POSTGRES_SMOKE_DATABASE_URL`:
 

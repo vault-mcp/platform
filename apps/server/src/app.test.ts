@@ -315,12 +315,12 @@ describe("server MCP contract", () => {
 
     const vaultA = fixtureDocument({
       id: "doc-a",
-      text: "Shared path content that belongs to Vault A only.",
+      text: "Shared path content with alpha-unique-content that belongs to Vault A only.",
       contentHash: "hash-a",
     });
     const vaultB = fixtureDocument({
       id: "doc-b",
-      text: "Shared path content that belongs to Vault B only.",
+      text: "Shared path content with bravo-unique-content that belongs to Vault B only.",
       contentHash: "hash-b",
     });
 
@@ -338,6 +338,15 @@ describe("server MCP contract", () => {
     });
     expect(vaults.result.structuredContent.vaults.map((vault: { vault_id: string }) => vault.vault_id)).toEqual(["vault-a", "vault-b"]);
 
+    const unscopedSearch = await mcp(baseUrl, accessToken, 44, "tools/call", {
+      name: "search",
+      arguments: { query: "shared path", limit: 5 },
+    });
+    expect(unscopedSearch.result.isError).toBe(true);
+    expect(unscopedSearch.result.content?.[0].text).toContain("More than one vault is connected");
+    expect(unscopedSearch.result.content?.[0].text).toContain("vault-a");
+    expect(unscopedSearch.result.content?.[0].text).toContain("vault-b");
+
     const scopedSearchA = await mcp(baseUrl, accessToken, 41, "tools/call", {
       name: "search_notes",
       arguments: { query: "shared path", vault_id: "vault-a", limit: 5 },
@@ -346,11 +355,71 @@ describe("server MCP contract", () => {
     expect(scopedSearchA.result.structuredContent.results[0].id).toBe("doc-a");
     expect(scopedSearchA.result.structuredContent.results[0].vault_id).toBe("vault-a");
 
+    const scopedSectionSearchB = await mcp(baseUrl, accessToken, 45, "tools/call", {
+      name: "search_sections",
+      arguments: { query: "bravo-unique-content", vault_id: "vault-b", limit: 5 },
+    });
+    expect(scopedSectionSearchB.result.structuredContent.results).toHaveLength(1);
+    expect(scopedSectionSearchB.result.structuredContent.results[0].id).toBe("doc-b");
+    expect(scopedSectionSearchB.result.structuredContent.results[0].vault_id).toBe("vault-b");
+
+    const scopedSearchBNoA = await mcp(baseUrl, accessToken, 46, "tools/call", {
+      name: "search",
+      arguments: { query: "alpha-unique-content", vault_id: "vault-b", limit: 5 },
+    });
+    expect(scopedSearchBNoA.result.structuredContent.results).toEqual([]);
+
+    const listedA = await mcp(baseUrl, accessToken, 47, "tools/call", {
+      name: "list_notes",
+      arguments: { vault_id: "vault-a", limit: 5 },
+    });
+    expect(listedA.result.structuredContent.notes).toHaveLength(1);
+    expect(listedA.result.structuredContent.notes[0]).toMatchObject({
+      id: "doc-a",
+      vault_id: "vault-a",
+      path: "20 Projects/Vault MCP Connector/Project Home.md",
+    });
+
+    const recentB = await mcp(baseUrl, accessToken, 48, "tools/call", {
+      name: "recent_notes",
+      arguments: { vault_id: "vault-b", limit: 5 },
+    });
+    expect(recentB.result.structuredContent.notes).toHaveLength(1);
+    expect(recentB.result.structuredContent.notes[0].id).toBe("doc-b");
+    expect(recentB.result.structuredContent.notes[0].vault_id).toBe("vault-b");
+
+    const activeProjectsA = await mcp(baseUrl, accessToken, 49, "tools/call", {
+      name: "active_projects",
+      arguments: { vault_id: "vault-a", limit: 5 },
+    });
+    expect(activeProjectsA.result.structuredContent.notes).toHaveLength(1);
+    expect(activeProjectsA.result.structuredContent.notes[0].id).toBe("doc-a");
+
+    const fetchPathB = await mcp(baseUrl, accessToken, 50, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: "20 Projects/Vault MCP Connector/Project Home.md", vault_id: "vault-b" },
+    });
+    expect(fetchPathB.result.structuredContent.id).toBe("doc-b");
+    expect(fetchPathB.result.structuredContent.text).toContain("bravo-unique-content");
+
     const crossVaultFetch = await mcp(baseUrl, accessToken, 42, "tools/call", {
       name: "fetch",
       arguments: { id: "doc-b", vault_id: "vault-a" },
     });
     expect(crossVaultFetch.result.isError).toBe(true);
+
+    const crossVaultPathFetch = await mcp(baseUrl, accessToken, 51, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: "20 Projects/Vault MCP Connector/Project Home.md", vault_id: "missing-vault" },
+    });
+    expect(crossVaultPathFetch.result.isError).toBe(true);
+
+    const statusA = await mcp(baseUrl, accessToken, 52, "tools/call", {
+      name: "get_index_status",
+      arguments: { vault_id: "vault-a" },
+    });
+    expect(statusA.result.structuredContent.vault_id).toBe("vault-a");
+    expect(statusA.result.structuredContent.indexed_note_count).toBe(1);
 
     const statusB = await mcp(baseUrl, accessToken, 43, "tools/call", {
       name: "get_vault_status",
@@ -358,6 +427,30 @@ describe("server MCP contract", () => {
     });
     expect(statusB.result.structuredContent.vault_id).toBe("vault-b");
     expect(statusB.result.structuredContent.document_count).toBe(1);
+
+    const debugA = await mcp(baseUrl, accessToken, 53, "tools/call", {
+      name: "debug_search",
+      arguments: { query: "bravo-unique-content", vault_id: "vault-a" },
+    });
+    expect(debugA.result.structuredContent.result_count).toBe(0);
+
+    for (const [id, name, args] of [
+      [54, "list_notes", {}],
+      [55, "recent_notes", {}],
+      [56, "active_projects", {}],
+      [57, "fetch", { id: "doc-a" }],
+      [58, "fetch_note_by_path", { path: "20 Projects/Vault MCP Connector/Project Home.md" }],
+      [59, "get_index_status", {}],
+      [60, "get_vault_status", {}],
+      [61, "debug_search", { query: "shared path" }],
+    ] as const) {
+      const unscoped = await mcp(baseUrl, accessToken, id, "tools/call", {
+        name,
+        arguments: args,
+      });
+      expect(unscoped.result.isError, `${name} should require vault_id when multiple vaults are connected`).toBe(true);
+      expect(unscoped.result.content?.[0].text).toContain("Pass vault_id");
+    }
 
     const invalidProposalOperation = await fetch(`${baseUrl}/admin/vaults/vault-a/write-proposals`, {
       method: "POST",

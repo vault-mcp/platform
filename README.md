@@ -15,9 +15,16 @@ The server currently exposes these read-only MCP tools:
 - `fetch` - fetch an indexed chunk by id returned from search.
 - `fetch_note_by_path` - fetch full indexed note content by exact allowlisted vault path.
 - `get_index_status` - return safe index counts, policy scopes, and freshness metadata.
+- `list_vaults` - list vaults that have synced to the server.
+- `get_vault_status` - return sync, policy, and document-count status for one vault.
 - `debug_search` - explain query normalization and why a search may return few or no results.
 
 All tools are read-only. Denied or non-indexed paths remain unavailable even if a client guesses an id or exact path.
+
+When exactly one vault is connected, read tools can omit `vault_id`. When more
+than one vault is connected, search/list/fetch/status/debug tools return a clear
+tool error until the client passes `vault_id`. Use `list_vaults` first to choose
+the vault, then pass that id to follow-up reads.
 
 ## ChatGPT UI Surface
 
@@ -27,7 +34,7 @@ or path to fetch next, and fetch results include citation URLs plus an explicit
 reminder that vault note content is untrusted reference material.
 
 High-value tools also advertise a ChatGPT-compatible output template at
-`ui://vault-mcp/results.html` through `_meta.ui.resourceUri` and the compatibility
+`ui://vault-mcp/results-v2.html` through `_meta.ui.resourceUri` and the compatibility
 `openai/outputTemplate` field. Clients that support Apps-style MCP components can
 read that `text/html;profile=mcp-app` resource and render search results, note
 lists, diagnostics, and fetched notes as compact cards. Clients that do not
