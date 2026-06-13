@@ -35,6 +35,7 @@ import {
   searchSections,
   searchVault,
 } from "@vault-mcp/core";
+import { runPostgresMigrations } from "./migrations.js";
 
 export type IndexHealth = {
   document_count: number;
@@ -313,76 +314,7 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async load(): Promise<void> {
-    await this.pool.query(`
-      create table if not exists vault_index_meta (
-        key text primary key,
-        value jsonb not null
-      );
-
-      create table if not exists vault_documents (
-        id text not null,
-        tenant_id text not null default 'default',
-        vault_id text not null default 'default',
-        installation_id text not null default 'local',
-        title text not null,
-        text text not null,
-        url text not null,
-        metadata jsonb not null,
-        search_vector tsvector generated always as (
-          setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
-          setweight(to_tsvector('english', coalesce(metadata->>'path', '')), 'B') ||
-          setweight(to_tsvector('english', coalesce(text, '')), 'C')
-        ) stored,
-        primary key (tenant_id, vault_id, id)
-      );
-
-      alter table vault_documents add column if not exists tenant_id text not null default 'default';
-      alter table vault_documents add column if not exists vault_id text not null default 'default';
-      alter table vault_documents add column if not exists installation_id text not null default 'local';
-      alter table vault_documents drop constraint if exists vault_documents_pkey;
-      alter table vault_documents add primary key (tenant_id, vault_id, id);
-
-      create index if not exists vault_documents_search_idx on vault_documents using gin(search_vector);
-      create index if not exists vault_documents_path_idx on vault_documents ((metadata->>'path'));
-      create index if not exists vault_documents_vault_idx on vault_documents (tenant_id, vault_id);
-
-      create table if not exists oauth_token_uses (
-        jti text not null,
-        kind text not null,
-        expires_at timestamptz not null,
-        used_at timestamptz not null default now(),
-        primary key (jti, kind)
-      );
-
-      create index if not exists oauth_token_uses_expires_idx on oauth_token_uses (expires_at);
-
-      create table if not exists oauth_clients (
-        client_id text primary key,
-        redirect_uris jsonb not null,
-        client_name text not null,
-        scope text not null,
-        created_at timestamptz not null
-      );
-
-      create table if not exists vault_sync_manifests (
-        tenant_id text not null,
-        vault_id text not null,
-        manifest jsonb not null,
-        updated_at timestamptz not null default now(),
-        primary key (tenant_id, vault_id)
-      );
-
-      create table if not exists write_proposals (
-        id text primary key,
-        tenant_id text not null,
-        vault_id text not null,
-        proposal jsonb not null,
-        status text not null,
-        updated_at timestamptz not null
-      );
-
-      create index if not exists write_proposals_vault_idx on write_proposals (tenant_id, vault_id, status);
-    `);
+    await runPostgresMigrations(this.pool);
 
     const meta = await this.pool.query<{ key: string; value: unknown }>("select key, value from vault_index_meta");
     for (const row of meta.rows) {

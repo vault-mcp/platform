@@ -738,7 +738,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre>The Postgres store creates:</pre></td>
+              <td class="source"><pre>Run database migrations before first deploy and before upgrades:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
@@ -748,33 +748,33 @@
             </tr>
             <tr>
               <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre>- `vault_documents` with generated `tsvector` full-text search.</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>```bash</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>- `vault_index_meta` for sync metadata and stats.</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>Sync is a full replacement transaction, so deleted notes disappear from the remote index after the next successful sync.</pre></td>
+              <td class="source"><pre>DATABASE_URL=postgres://user:password@host:5432/vault_mcp npm run db:migrate</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="source"><pre>The server also runs the same migration runner on startup as a safety net. The</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L140"><a href="#L140">140</a></td>
-              <td class="source"><pre>## Auth</pre></td>
-              <td>Markdown heading; it gives structure to the document.</td>
+              <td class="source"><pre>migration ledger is stored in `vault_mcp_schema_migrations`.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L141"><a href="#L141">141</a></td>
@@ -783,7 +783,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>Local development can use `MCP_ACCESS_TOKEN`. Production can use OAuth JWT validation:</pre></td>
+              <td class="source"><pre>The Postgres schema includes:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
@@ -793,38 +793,38 @@
             </tr>
             <tr>
               <td class="line-number" id="L144"><a href="#L144">144</a></td>
-              <td class="source"><pre>```bash</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
+              <td class="source"><pre>- `vault_documents` with generated `tsvector` full-text search.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L145"><a href="#L145">145</a></td>
-              <td class="source"><pre>OAUTH_ISSUER=https://auth.example.com</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>- `vault_index_meta` for sync metadata and stats.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>OAUTH_AUDIENCE=https://vault-mcp.example.com/mcp</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>- `vault_sync_manifests` for per-vault sync state.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>OAUTH_AUTHORIZATION_SERVER=https://auth.example.com</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>- `oauth_clients` and `oauth_token_uses` for self-hosted OAuth.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L148"><a href="#L148">148</a></td>
-              <td class="source"><pre>OAUTH_JWKS_URL=https://auth.example.com/.well-known/jwks.json</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>- `write_proposals` for proposal-first write workflows.</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>OAUTH_SCOPES=vault:read</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>```</pre></td>
-              <td>Markdown code-fence marker that starts or ends a code block.</td>
+              <td class="source"><pre>Sync is a full replacement transaction, so deleted notes disappear from the remote index after the next successful sync.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L151"><a href="#L151">151</a></td>
@@ -833,8 +833,8 @@
             </tr>
             <tr>
               <td class="line-number" id="L152"><a href="#L152">152</a></td>
-              <td class="source"><pre>Unauthenticated MCP requests return `401` with a `WWW-Authenticate` header pointing to protected-resource metadata.</pre></td>
-              <td>Markdown prose or table content intended for human documentation.</td>
+              <td class="source"><pre>## Auth</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
               <td class="line-number" id="L153"><a href="#L153">153</a></td>
@@ -843,7 +843,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L154"><a href="#L154">154</a></td>
-              <td class="source"><pre>`ALLOWED_ORIGINS` controls CORS/preflight and origin protection for deployed clients.</pre></td>
+              <td class="source"><pre>Local development can use `MCP_ACCESS_TOKEN`. Production can use OAuth JWT validation:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
@@ -853,38 +853,38 @@
             </tr>
             <tr>
               <td class="line-number" id="L156"><a href="#L156">156</a></td>
-              <td class="source"><pre>## Source Policy</pre></td>
-              <td>Markdown heading; it gives structure to the document.</td>
+              <td class="source"><pre>```bash</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L157"><a href="#L157">157</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>OAUTH_ISSUER=https://auth.example.com</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>V1 allowlist:</pre></td>
+              <td class="source"><pre>OAUTH_AUDIENCE=https://vault-mcp.example.com/mcp</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>OAUTH_AUTHORIZATION_SERVER=https://auth.example.com</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L160"><a href="#L160">160</a></td>
-              <td class="source"><pre>- active `20 Projects/**/Project Home.md` files</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>OAUTH_JWKS_URL=https://auth.example.com/.well-known/jwks.json</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L161"><a href="#L161">161</a></td>
-              <td class="source"><pre>- `00 System/Task Hub.md`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>OAUTH_SCOPES=vault:read</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L162"><a href="#L162">162</a></td>
-              <td class="source"><pre>- selected technical/reference subfolders under `40 Reference/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>```</pre></td>
+              <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
               <td class="line-number" id="L163"><a href="#L163">163</a></td>
@@ -893,7 +893,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L164"><a href="#L164">164</a></td>
-              <td class="source"><pre>V1 denylist wins before allowlist:</pre></td>
+              <td class="source"><pre>Unauthenticated MCP requests return `401` with a `WWW-Authenticate` header pointing to protected-resource metadata.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
@@ -903,47 +903,47 @@
             </tr>
             <tr>
               <td class="line-number" id="L166"><a href="#L166">166</a></td>
-              <td class="source"><pre>- `00 System/Credentials/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>`ALLOWED_ORIGINS` controls CORS/preflight and origin protection for deployed clients.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L167"><a href="#L167">167</a></td>
-              <td class="source"><pre>- `00 System/Needs Review.md`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L168"><a href="#L168">168</a></td>
-              <td class="source"><pre>- `02 Daily/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>## Source Policy</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
               <td class="line-number" id="L169"><a href="#L169">169</a></td>
-              <td class="source"><pre>- `50 Areas/Finance/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L170"><a href="#L170">170</a></td>
-              <td class="source"><pre>- `50 Areas/Identity/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre>V1 allowlist:</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L171"><a href="#L171">171</a></td>
-              <td class="source"><pre>- `90 Archive/`</pre></td>
-              <td>Markdown bullet item; it records one list entry.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L172"><a href="#L172">172</a></td>
-              <td class="source"><pre>- notes tagged as sensitive, credentials, finance, legal, identity, or review-gated</pre></td>
+              <td class="source"><pre>- active `20 Projects/**/Project Home.md` files</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L173"><a href="#L173">173</a></td>
-              <td class="source"><pre>- Excalidraw Markdown wrappers</pre></td>
+              <td class="source"><pre>- `00 System/Task Hub.md`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L174"><a href="#L174">174</a></td>
-              <td class="source"><pre>- unselected `40 Reference/` subfolders, including prompt archives, business-development references, client process notes, and other review-sensitive material</pre></td>
+              <td class="source"><pre>- selected technical/reference subfolders under `40 Reference/`</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
@@ -953,7 +953,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L176"><a href="#L176">176</a></td>
-              <td class="source"><pre>The MCP server never reads the vault directly. It only serves the synced, allowlisted index.</pre></td>
+              <td class="source"><pre>V1 denylist wins before allowlist:</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
@@ -963,16 +963,76 @@
             </tr>
             <tr>
               <td class="line-number" id="L178"><a href="#L178">178</a></td>
-              <td class="source"><pre>## Deployment</pre></td>
-              <td>Markdown heading; it gives structure to the document.</td>
+              <td class="source"><pre>- `00 System/Credentials/`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
               <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="source"><pre>- `00 System/Needs Review.md`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="source"><pre>- `02 Daily/`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="source"><pre>- `50 Areas/Finance/`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre>- `50 Areas/Identity/`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="source"><pre>- `90 Archive/`</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="source"><pre>- notes tagged as sensitive, credentials, finance, legal, identity, or review-gated</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="source"><pre>- Excalidraw Markdown wrappers</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="source"><pre>- unselected `40 Reference/` subfolders, including prompt archives, business-development references, client process notes, and other review-sensitive material</pre></td>
+              <td>Markdown bullet item; it records one list entry.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="source"><pre>The MCP server never reads the vault directly. It only serves the synced, allowlisted index.</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="source"><pre>## Deployment</pre></td>
+              <td>Markdown heading; it gives structure to the document.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
               <td class="source"><pre>See [docs/deployment.md](docs/deployment.md).</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr></tbody>

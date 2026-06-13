@@ -146,11 +146,48 @@ Docker was not available in the current local verification environment.
 
 ## Postgres
 
-When `DATABASE_URL` is set, the server creates the required tables and indexes on startup:
+When `DATABASE_URL` is set, Vault MCP uses Postgres for derived vault index data,
+OAuth client state, token replay protection, sync manifests, and write proposals.
+
+Run migrations before the first deploy and before upgrades:
+
+```bash
+DATABASE_URL="postgres://user:password@host:5432/vault_mcp" npm run db:migrate
+```
+
+The command builds the server package, runs all pending migrations, and prints a
+JSON summary:
+
+```json
+{
+  "ok": true,
+  "total_migrations": 1,
+  "applied_count": 1,
+  "applied": [
+    {
+      "id": "0001_initial_vault_mcp_schema",
+      "description": "Create the initial Vault MCP tables, indexes, and multi-vault columns."
+    }
+  ],
+  "already_applied": [],
+  "pending": []
+}
+```
+
+The server also runs the same migration runner during startup as a safety net,
+but self-hosters should treat `npm run db:migrate` as the explicit deploy/upgrade
+step. Applied migrations are tracked in `vault_mcp_schema_migrations`.
+
+The current schema includes:
 
 - `vault_documents`
 - `vault_index_meta`
+- `vault_sync_manifests`
+- `oauth_clients`
+- `oauth_token_uses`
+- `write_proposals`
 - GIN full-text index on a generated `tsvector`
+- supporting indexes for paths, vault scoping, token expiry, and write proposal status
 
 The local indexer performs full replacement syncs:
 
@@ -171,7 +208,7 @@ POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke"
 npm run smoke:postgres
 ```
 
-The smoke test starts the server with `DATABASE_URL` set from `POSTGRES_SMOKE_DATABASE_URL`, syncs `/Users/tjt/Documents/Tristan's Personal vault copy`, and verifies `tools/list`, `search`, `fetch`, and guessed-ID denial through Postgres full-text search.
+The smoke test starts the server with `DATABASE_URL` set from `POSTGRES_SMOKE_DATABASE_URL`, runs the same migration runner, syncs `/Users/tjt/Documents/Tristan's Personal vault copy`, and verifies `tools/list`, `search`, `fetch`, and guessed-ID denial through Postgres full-text search.
 
 ## Remote Smoke Test
 

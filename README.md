@@ -130,10 +130,22 @@ Local development uses `INDEX_FILE` JSON storage when `DATABASE_URL` is unset. P
 DATABASE_URL=postgres://user:password@host:5432/vault_mcp
 ```
 
-The Postgres store creates:
+Run database migrations before first deploy and before upgrades:
+
+```bash
+DATABASE_URL=postgres://user:password@host:5432/vault_mcp npm run db:migrate
+```
+
+The server also runs the same migration runner on startup as a safety net. The
+migration ledger is stored in `vault_mcp_schema_migrations`.
+
+The Postgres schema includes:
 
 - `vault_documents` with generated `tsvector` full-text search.
 - `vault_index_meta` for sync metadata and stats.
+- `vault_sync_manifests` for per-vault sync state.
+- `oauth_clients` and `oauth_token_uses` for self-hosted OAuth.
+- `write_proposals` for proposal-first write workflows.
 
 Sync is a full replacement transaction, so deleted notes disappear from the remote index after the next successful sync.
 

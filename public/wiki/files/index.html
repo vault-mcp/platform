@@ -60,7 +60,7 @@
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
         <h1>Source appendix.</h1>
-        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 61 authored text files and 13,398 lines with explanatory notes beside source lines.</p>
+        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 63 authored text files and 13,591 lines with explanatory notes beside source lines.</p>
         <p><a href="/wiki/tutorial.html">Start with the rebuild tutorial</a> · <a href="/wiki/">Back to the wiki home</a></p>
       </section>
 
@@ -105,6 +105,11 @@
           <h3>Storage</h3>
           <p>Shared storage interface plus JSON and Postgres implementations.</p>
           <a href="apps-server-src-store-ts.html"><code>apps/server/src/store.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Migrations</h3>
+          <p>Versioned Postgres schema setup for self-hosting and production deploys.</p>
+          <a href="apps-server-src-migrations-ts.html"><code>apps/server/src/migrations.ts</code></a>
         </article>
         <article class="card">
           <h3>Indexer</h3>
@@ -194,6 +199,18 @@
           <p>Node server startup and shutdown handling.</p>
           <p>3 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
           <a href="apps-server-src-index-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/migrate.ts</code></h3>
+          <p>Command-line entrypoint for running Postgres migrations before deploys or upgrades.</p>
+          <p>0 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-migrate-ts.html">Open curated file reference</a>
+        </article>
+        <article class="card">
+          <h3><code>apps/server/src/migrations.ts</code></h3>
+          <p>Versioned Postgres schema migrations and the migration runner used by startup and CLI.</p>
+          <p>0 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
+          <a href="apps-server-src-migrations-ts.html">Open curated file reference</a>
         </article>
         <article class="card">
           <h3><code>apps/server/src/mcp.ts</code></h3>
@@ -315,7 +332,7 @@
             </tr>
             <tr>
               <td><a href="apps-server-package-json.html"><code>apps/server/package.json</code></a></td>
-              <td>18</td>
+              <td>19</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
@@ -349,6 +366,16 @@
               <td>Node server startup and shutdown handling.</td>
             </tr>
             <tr>
+              <td><a href="apps-server-src-migrate-ts.html"><code>apps/server/src/migrate.ts</code></a></td>
+              <td>39</td>
+              <td>Command-line entrypoint for running Postgres migrations before deploys or upgrades.</td>
+            </tr>
+            <tr>
+              <td><a href="apps-server-src-migrations-ts.html"><code>apps/server/src/migrations.ts</code></a></td>
+              <td>156</td>
+              <td>Versioned Postgres schema migrations and the migration runner used by startup and CLI.</td>
+            </tr>
+            <tr>
               <td><a href="apps-server-src-mcp-ts.html"><code>apps/server/src/mcp.ts</code></a></td>
               <td>1047</td>
               <td>MCP server, tool definitions, schemas, and Streamable HTTP transport.</td>
@@ -360,7 +387,7 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-store-ts.html"><code>apps/server/src/store.ts</code></a></td>
-              <td>741</td>
+              <td>673</td>
               <td>Storage interface plus JSON and Postgres index stores.</td>
             </tr>
             <tr>
@@ -375,7 +402,7 @@
             </tr>
             <tr>
               <td><a href="docs-acceptance-md.html"><code>docs/acceptance.md</code></a></td>
-              <td>144</td>
+              <td>150</td>
               <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
             </tr>
             <tr>
@@ -385,7 +412,7 @@
             </tr>
             <tr>
               <td><a href="docs-deployment-md.html"><code>docs/deployment.md</code></a></td>
-              <td>235</td>
+              <td>272</td>
               <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
             </tr>
             <tr>
@@ -395,12 +422,12 @@
             </tr>
             <tr>
               <td><a href="docs-v2-migration-md.html"><code>docs/v2-migration.md</code></a></td>
-              <td>111</td>
+              <td>113</td>
               <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
             </tr>
             <tr>
               <td><a href="package-json.html"><code>package.json</code></a></td>
-              <td>51</td>
+              <td>52</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
@@ -490,12 +517,12 @@
             </tr>
             <tr>
               <td><a href="readme-md.html"><code>README.md</code></a></td>
-              <td>180</td>
+              <td>192</td>
               <td>Human documentation for setup, deployment, acceptance, or project requirements.</td>
             </tr>
             <tr>
               <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
-              <td>900</td>
+              <td>907</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>

@@ -14,6 +14,7 @@
     "deploy:vercel": "node scripts/vercel-production-deploy.mjs",
     "deploy:vercel:check": "node scripts/vercel-production-deploy.mjs --check",
     "dev:server": "npm run dev --workspace @vault-mcp/server",
+    "db:migrate": "npm run build --workspace @vault-mcp/server && npm run migrate --workspace @vault-mcp/server",
     "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
     "plugin:package": "node scripts/package-obsidian-plugin.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",

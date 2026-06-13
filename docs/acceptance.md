@@ -20,10 +20,16 @@ If a throwaway Postgres database is available, verify the production storage pat
 
 ```bash
 POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
+npm run db:migrate
+
+POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke" \
 npm run smoke:postgres
 ```
 
-This replaces the `vault_documents` table contents in that database with the copied-vault test index.
+`npm run db:migrate` uses `DATABASE_URL` first and falls back to
+`POSTGRES_SMOKE_DATABASE_URL`, so the first command applies the schema to the
+throwaway database. The smoke command then replaces the `vault_documents` table
+contents in that database with the copied-vault test index.
 
 Remote endpoint gate with temporary static bearer auth:
 

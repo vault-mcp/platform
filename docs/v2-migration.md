@@ -40,6 +40,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 - Added tenant/vault/installation identity fields to documents and sync payloads.
 - Added scoped admin APIs for vault registration, per-vault sync, per-vault status, and write proposal lifecycle.
 - Added an admin vault delete endpoint so smoke fixtures and stale vault registrations can be cleaned up without touching other vaults.
+- Added an explicit Postgres migration runner with `npm run db:migrate`; the server still runs the same migrations at startup as a safety net.
 - Added MCP read tools:
   - `list_vaults`
   - `get_vault_status`
@@ -94,6 +95,7 @@ For the self-hosted OAuth flow, set `SMOKE_MULTI_VAULT=true` on `npm run smoke:o
 
 The local Postgres gate still requires `POSTGRES_SMOKE_DATABASE_URL`:
 
+- `npm run db:migrate`
 - `npm run smoke:postgres`
 
 Migration gates after pushing to `vault-mcp/platform`:
