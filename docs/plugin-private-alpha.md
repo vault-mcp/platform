@@ -41,6 +41,30 @@ npm run plugin:install-copy:skip-build -- --vault "/absolute/path/to/test vault"
 
 Do not point this workflow at the live vault until the private-alpha checklist passes.
 
+## Private Alpha Package
+
+Build a local installable package:
+
+```bash
+npm run plugin:package
+```
+
+This validates the plugin manifest, builds the plugin, stages the three Obsidian runtime files, and writes:
+
+```text
+dist/obsidian-plugin/vault-mcp/
+dist/obsidian-plugin/vault-mcp-0.1.0.zip
+dist/obsidian-plugin/vault-mcp-0.1.0.zip.sha256
+```
+
+The package contains only:
+
+- `manifest.json`
+- `main.js`
+- `styles.css`
+
+This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
+
 ## Seed Write Proposals For UI Testing
 
 Use the seeding script to create a repeatable set of pending write proposals for the copied vault. The script refuses to write fixtures unless the vault path contains `vault copy`.
@@ -131,10 +155,10 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 
 ## Current Publishability Gaps
 
-- The plugin is not packaged for the Obsidian community plugin process.
+- The plugin has a local private-alpha zip package, but it is not packaged for the Obsidian community plugin process.
 - `patch_note` is not part of the private-alpha write surface yet; it needs a dedicated patch parser/apply implementation before the server should accept it.
 - Plugin tests now cover pure write-proposal helper behavior and a headless apply harness for create, append, replace, frontmatter, rename, backup, and audit behavior. There is still no dedicated Obsidian UI/test harness for modal flows.
-- The installer is a local development script, not a release artifact.
+- The installer and package scripts are local private-alpha workflows, not a public release process.
 
 ## Write Proposal Review
 

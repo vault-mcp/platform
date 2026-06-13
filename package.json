@@ -15,6 +15,7 @@
     "deploy:vercel:check": "node scripts/vercel-production-deploy.mjs --check",
     "dev:server": "npm run dev --workspace @vault-mcp/server",
     "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
+    "plugin:package": "node scripts/package-obsidian-plugin.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",
     "plugin:install-copy:skip-build": "node scripts/install-obsidian-plugin.mjs --skip-build",
     "plugin:seed-write-proposals": "node scripts/seed-write-proposals.mjs",
