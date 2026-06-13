@@ -56,6 +56,75 @@
   margin: 4px 0;
 }
 
+.vault-mcp-checklist {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin: 10px 0 14px;
+  padding: 12px;
+}
+
+.vault-mcp-checklist__title {
+  font-weight: 700;
+}
+
+.vault-mcp-checklist__summary {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 4px;
+}
+
+.vault-mcp-checklist__items {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.vault-mcp-checklist__item {
+  align-items: flex-start;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.vault-mcp-checklist__item--blocked {
+  border-color: rgba(var(--color-red-rgb), 0.45);
+}
+
+.vault-mcp-checklist__item--warning {
+  border-color: rgba(var(--color-orange-rgb), 0.45);
+}
+
+.vault-mcp-checklist__item--ready {
+  border-color: rgba(var(--color-green-rgb), 0.4);
+}
+
+.vault-mcp-checklist__status {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  font-size: var(--font-ui-smaller);
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.vault-mcp-checklist__body {
+  min-width: 0;
+}
+
+.vault-mcp-checklist__label {
+  font-weight: 700;
+}
+
+.vault-mcp-checklist__message {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
 .vault-mcp-sync-summary {
   border: 1px solid rgba(var(--color-green-rgb), 0.45);
   border-radius: 8px;

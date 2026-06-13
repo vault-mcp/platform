@@ -4,6 +4,7 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  pluginConfigurationChecklist,
   pluginSafetyDisclosure,
   summarizeSyncResponse,
 } from "./plugin-helpers";
@@ -67,6 +68,66 @@ describe("plugin helpers", () => {
     expect(disclosure.points.join("\n")).toContain("Direct apply is selected");
     expect(disclosure.points.join("\n")).toContain("experimental");
     expect(disclosure.points.join("\n")).toContain("Audit");
+  });
+
+  it("marks a configured plugin as ready to sync", () => {
+    const checklist = pluginConfigurationChecklist({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+    });
+
+    expect(checklist.readyToPreview).toBe(true);
+    expect(checklist.readyToSync).toBe(true);
+    expect(checklist.items.every((item) => item.status !== "blocked")).toBe(true);
+    expect(checklist.items.find((item) => item.label === "Write mode")?.message).toContain("Review required");
+  });
+
+  it("blocks sync for invalid route URLs, missing tokens, missing vault ids, and empty scopes", () => {
+    const checklist = pluginConfigurationChecklist({
+      serverUrl: "https://vault-mcp-connector.vercel.app/mcp",
+      syncToken: "",
+      vaultId: "",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "",
+      includePrefixes: [],
+      excludePrefixes: [],
+    });
+
+    expect(checklist.readyToPreview).toBe(false);
+    expect(checklist.readyToSync).toBe(false);
+    expect(checklist.items.filter((item) => item.status === "blocked").map((item) => item.label)).toEqual([
+      "Server URL",
+      "Sync token",
+      "Vault id",
+      "Index scope",
+      "Write audit folder",
+    ]);
+    expect(checklist.items.find((item) => item.label === "Exclusions")?.status).toBe("warning");
+  });
+
+  it("warns when direct apply is selected", () => {
+    const checklist = pluginConfigurationChecklist({
+      serverUrl: "http://127.0.0.1:3333",
+      syncToken: "secret",
+      vaultId: "demo",
+      indexMode: "manual_only",
+      writeMode: "direct_apply",
+      writeAuditFolder: "Audit",
+      includePrefixes: [],
+      excludePrefixes: ["Private/"],
+    });
+
+    expect(checklist.readyToPreview).toBe(true);
+    expect(checklist.readyToSync).toBe(true);
+    expect(checklist.items.find((item) => item.label === "Write mode")?.status).toBe("warning");
+    expect(checklist.items.find((item) => item.label === "Index scope")?.message).toContain("Manual-only");
   });
 });
 

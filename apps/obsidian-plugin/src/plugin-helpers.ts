@@ -12,10 +12,30 @@ export type PluginSafetySettings = {
   writeAuditFolder: string;
 };
 
+export type PluginConfigurationSettings = PluginSafetySettings & {
+  serverUrl: string;
+  syncToken: string;
+  vaultId: string;
+  includePrefixes: string[];
+  excludePrefixes: string[];
+};
+
 export type PluginSafetyDisclosure = {
   title: string;
   summary: string;
   points: string[];
+};
+
+export type PluginConfigurationChecklistItem = {
+  label: string;
+  status: "ready" | "warning" | "blocked";
+  message: string;
+};
+
+export type PluginConfigurationChecklist = {
+  readyToPreview: boolean;
+  readyToSync: boolean;
+  items: PluginConfigurationChecklistItem[];
 };
 
 type VaultSyncResponse = {
@@ -123,6 +143,106 @@ export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSa
       writePoint,
       `Local write applies create backup and audit notes under ${settings.writeAuditFolder}.`,
     ],
+  };
+}
+
+export function pluginConfigurationChecklist(settings: PluginConfigurationSettings): PluginConfigurationChecklist {
+  const items: PluginConfigurationChecklistItem[] = [];
+  let normalizedServerUrl: string | null = null;
+
+  try {
+    normalizedServerUrl = normalizeServerBaseUrl(settings.serverUrl);
+    items.push({
+      label: "Server URL",
+      status: "ready",
+      message: `Using ${normalizedServerUrl}.`,
+    });
+  } catch (error) {
+    items.push({
+      label: "Server URL",
+      status: "blocked",
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  items.push(settings.syncToken.trim()
+    ? {
+        label: "Sync token",
+        status: "ready",
+        message: "A sync token is saved. It is hidden in the UI and used only for admin sync/proposal requests.",
+      }
+    : {
+        label: "Sync token",
+        status: "blocked",
+        message: "Add the server admin sync token before syncing or checking write proposals.",
+      });
+
+  items.push(settings.vaultId.trim()
+    ? {
+        label: "Vault id",
+        status: "ready",
+        message: `This vault will sync as ${settings.vaultId.trim()}.`,
+      }
+    : {
+        label: "Vault id",
+        status: "blocked",
+        message: "Choose a stable vault id before syncing.",
+      });
+
+  items.push(settings.includePrefixes.length > 0 || settings.indexMode === "manual_only"
+    ? {
+        label: "Index scope",
+        status: "ready",
+        message: settings.indexMode === "manual_only"
+          ? "Manual-only mode is selected; only explicit manual allow paths or prefixes can sync."
+          : `${settings.includePrefixes.length} include rule${settings.includePrefixes.length === 1 ? "" : "s"} configured.`,
+      }
+    : {
+        label: "Index scope",
+        status: "blocked",
+        message: "Add at least one include prefix or switch to manual-only mode before syncing.",
+      });
+
+  items.push(settings.excludePrefixes.length > 0
+    ? {
+        label: "Exclusions",
+        status: "ready",
+        message: `${settings.excludePrefixes.length} exclude rule${settings.excludePrefixes.length === 1 ? "" : "s"} configured. Exclusions win before include and manual allow rules.`,
+      }
+    : {
+        label: "Exclusions",
+        status: "warning",
+        message: "No exclude rules are configured. Review sensitive folders before syncing.",
+      });
+
+  items.push(settings.writeMode === "direct_apply"
+    ? {
+        label: "Write mode",
+        status: "warning",
+        message: "Direct apply is experimental. Use review required for private-alpha testing unless deliberately validating direct apply.",
+      }
+    : {
+        label: "Write mode",
+        status: "ready",
+        message: "Review required is selected. Writes stay proposal-first and require plugin-side approval/apply.",
+      });
+
+  items.push(settings.writeAuditFolder.trim()
+    ? {
+        label: "Write audit folder",
+        status: "ready",
+        message: `Backups and audit notes will be written under ${settings.writeAuditFolder.trim()}.`,
+      }
+    : {
+        label: "Write audit folder",
+        status: "blocked",
+        message: "Set a vault-relative audit folder before applying write proposals.",
+      });
+
+  return {
+    readyToPreview: !items.some((item) => item.label === "Server URL" && item.status === "blocked"),
+    readyToSync: !items.some((item) => item.status === "blocked"),
+    items,
   };
 }
 

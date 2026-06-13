@@ -7,6 +7,7 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  pluginConfigurationChecklist,
   pluginSafetyDisclosure,
   summarizeSyncResponse,
 } from "./plugin-helpers";
@@ -701,6 +702,7 @@ class VaultMcpDashboardModal extends Modal {
     contentEl.empty();
     contentEl.createEl("h2", { text: "Vault MCP" });
     addSafetyDisclosure(contentEl, this.plugin.settings);
+    addConfigurationChecklist(contentEl, this.plugin.settings);
     const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard" });
     addStat(grid, "Server", this.plugin.settings.serverUrl);
     addStat(grid, "Vault id", this.plugin.settings.vaultId);
@@ -875,6 +877,7 @@ class VaultMcpSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     addSafetyDisclosure(containerEl, this.plugin.settings);
+    addConfigurationChecklist(containerEl, this.plugin.settings);
 
     new Setting(containerEl)
       .setName("Server URL")
@@ -983,6 +986,27 @@ function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettin
   const list = box.createEl("ul", { cls: "vault-mcp-disclosure__list" });
   for (const point of disclosure.points) {
     list.createEl("li", { text: point });
+  }
+}
+
+function addConfigurationChecklist(parent: HTMLElement, settings: VaultMcpPluginSettings) {
+  const checklist = pluginConfigurationChecklist(settings);
+  const box = parent.createDiv({ cls: "vault-mcp-checklist" });
+  const heading = checklist.readyToSync ? "Configuration ready" : "Configuration needs attention";
+  box.createDiv({ cls: "vault-mcp-checklist__title", text: heading });
+  box.createDiv({
+    cls: "vault-mcp-checklist__summary",
+    text: checklist.readyToSync
+      ? "Preview and sync are available with the current settings."
+      : "Resolve blocked items before syncing. Warnings are allowed, but should be reviewed.",
+  });
+  const list = box.createDiv({ cls: "vault-mcp-checklist__items" });
+  for (const item of checklist.items) {
+    const row = list.createDiv({ cls: `vault-mcp-checklist__item vault-mcp-checklist__item--${item.status}` });
+    row.createDiv({ cls: "vault-mcp-checklist__status", text: item.status });
+    const body = row.createDiv({ cls: "vault-mcp-checklist__body" });
+    body.createDiv({ cls: "vault-mcp-checklist__label", text: item.label });
+    body.createDiv({ cls: "vault-mcp-checklist__message", text: item.message });
   }
 }
 
