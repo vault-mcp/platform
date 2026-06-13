@@ -17,6 +17,7 @@
     "db:migrate": "npm run build --workspace @vault-mcp/server && npm run migrate --workspace @vault-mcp/server",
     "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
     "plugin:package": "node scripts/package-obsidian-plugin.mjs",
+    "plugin:verify-package": "node scripts/verify-obsidian-plugin-package.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",
     "plugin:install-copy:skip-build": "node scripts/install-obsidian-plugin.mjs --skip-build",
     "plugin:seed-write-proposals": "node scripts/seed-write-proposals.mjs",

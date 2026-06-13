@@ -65,6 +65,24 @@ The package contains only:
 - `main.js`
 - `styles.css`
 
+Verify the package installs cleanly into a disposable generated vault:
+
+```bash
+npm run plugin:verify-package
+```
+
+This checks the zip checksum, extracts the package into a temporary vault under
+`.obsidian/plugins/vault-mcp`, verifies the manifest matches the source
+manifest, verifies `main.js` and `styles.css` are non-empty, and catches the
+common double-nested zip mistake where files land under
+`.obsidian/plugins/vault-mcp/vault-mcp`.
+
+To keep the generated disposable vault for inspection:
+
+```bash
+npm run plugin:verify-package -- --keep
+```
+
 This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
 
 ## Manual Zip Install
