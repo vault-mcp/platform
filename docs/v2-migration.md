@@ -28,7 +28,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 - Renamed `packages/vault-core` to `packages/core`.
 - Renamed `apps/indexer` to `apps/cli`.
 - Added `apps/obsidian-plugin` with private-alpha settings, dashboard, sync command, index modes, write-mode placeholders, dry-run index preview, one-click review approvals, and a review queue view.
-- Added Obsidian plugin write proposal review for pending server proposals, including approve/reject/conflict status updates, audit visibility, local base-hash checks, diff previews, and guarded local apply for approved create/append/replace proposals with backup/audit notes.
+- Added Obsidian plugin write proposal review for pending server proposals, including approve/reject/conflict status updates, audit visibility, local base-hash checks, diff previews, and guarded local apply for approved create/append/replace/frontmatter/rename proposals with backup/audit notes.
 - Added `scripts/install-obsidian-plugin.mjs` and `npm run plugin:install-copy` for installing the built plugin into the copied development vault.
 - Aligned manual approval policy so excluded paths still win, but explicit approvals can release notes held by sensitive metadata.
 - Added shared V2 types for vault installations, index policies, sync manifests, vault status, write proposals, and write audit entries.
@@ -51,13 +51,15 @@ Write support starts as a proposal queue:
 
 - The server stores `write_proposals` with operation type, target path, base content hash, proposed patch/content, requester, status, timestamps, and audit trail.
 - The Obsidian plugin can pull proposals, analyze local target state, and mark pending proposals approved, rejected, or conflict.
-- The Obsidian plugin can apply approved create/append/replace proposals locally only after policy and hash checks allow it.
-- Patch, frontmatter, and rename proposals remain blocked until operation-specific apply implementations are added.
+- The Obsidian plugin can apply approved create/append/replace/frontmatter/rename proposals locally only after policy and hash checks allow it.
+- `update_frontmatter` proposals store a JSON object in `proposed_content`; null values delete keys.
+- `rename_note` proposals store the new vault-relative Markdown path in `proposed_content`.
+- `patch_note` proposals remain blocked until an operation-specific patch parser/apply implementation is added.
 - `review_required` remains the default plugin write mode.
 - `direct_apply` is reserved for explicitly configured scopes and still needs local backup/audit entries.
 - Base-content hash mismatches must move the proposal to review/conflict instead of overwriting the local file.
 
-Future Obsidian writes should use Obsidian APIs:
+Obsidian writes use safe Obsidian APIs:
 
 - `Vault.process` for note edits.
 - `FileManager.processFrontMatter` for frontmatter.

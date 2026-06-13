@@ -98,6 +98,15 @@ type LocalApplyResult = {
   newHash: string;
 };
 
+type FrontmatterPatch = Record<string, string | number | boolean | null | string[] | number[] | boolean[]>;
+
+type AuditDraft = {
+  folder: string;
+  backupPath: string;
+  auditPath: string;
+  timestamp: string;
+};
+
 const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   serverUrl: "https://vault-mcp-connector.vercel.app",
   syncToken: "",
@@ -511,6 +520,37 @@ export default class VaultMcpPlugin extends Plugin {
       };
     }
 
+    if (proposal.operation === "rename_note") {
+      const newPath = renameTargetPath(proposal);
+      const newPathExists = newPath ? Boolean(this.app.vault.getAbstractFileByPath(newPath)) : false;
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: Boolean(newPath && !newPathExists),
+        status: newPath && !newPathExists ? "ready" : "unsupported",
+        message: newPath
+          ? newPathExists
+            ? "Rename target already exists. Choose a different target path before applying."
+            : "Base hash is compatible for future rename."
+          : "Rename proposal must provide the new path in proposed_content.",
+        diffPreview: newPath ? buildDiffPreview(proposal.target_path, newPath) : null,
+      };
+    }
+
+    if (proposal.operation === "update_frontmatter") {
+      const patch = parseFrontmatterPatch(proposal);
+      return {
+        targetExists,
+        currentHash,
+        baseHashMatches,
+        canApplyInFuture: Boolean(patch),
+        status: patch ? "ready" : "unsupported",
+        message: patch ? "Base hash is compatible for future frontmatter update." : "Frontmatter proposal must provide a JSON object in proposed_content.",
+        diffPreview: patch ? frontmatterPatchPreview(patch) : null,
+      };
+    }
+
     return {
       targetExists,
       currentHash,
@@ -531,37 +571,94 @@ export default class VaultMcpPlugin extends Plugin {
     const beforeFile = this.app.vault.getAbstractFileByPath(proposal.target_path);
     const beforeContent = beforeFile instanceof TFile ? await this.app.vault.cachedRead(beforeFile) : "";
     const afterContent = contentAfterProposal(proposal, beforeContent);
-    if (afterContent === null) {
-      throw new Error(`Unsupported write operation: ${proposal.operation}`);
-    }
 
     const currentHash = beforeFile instanceof TFile ? await sha256Hex(beforeContent) : null;
     if (proposal.base_content_hash && currentHash !== proposal.base_content_hash) {
       throw new Error("Local file hash changed before apply. Refresh proposals and review conflict.");
     }
 
-    const backup = await this.writeProposalAuditFiles(proposal, beforeContent, afterContent, currentHash);
+    const audit = await this.createProposalBackupAndAuditDraft(proposal, beforeContent, currentHash);
 
-    if (proposal.operation === "create_note") {
+    if (proposal.operation === "create_note" && afterContent !== null) {
       if (beforeFile) {
         throw new Error("Cannot create note because target already exists.");
       }
       await this.ensureFolder(parentPrefix(proposal.target_path).replace(/\/$/, ""));
       await this.app.vault.create(proposal.target_path, afterContent);
-    } else {
+      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, afterContent, currentHash, await sha256Hex(afterContent));
+      return {
+        backupPath: audit.backupPath,
+        auditPath: audit.auditPath,
+        newHash: await sha256Hex(afterContent),
+      };
+    }
+
+    if ((proposal.operation === "append_to_note" || proposal.operation === "replace_note") && afterContent !== null) {
       if (!(beforeFile instanceof TFile)) {
         throw new Error("Cannot edit note because target file does not exist.");
       }
       await this.app.vault.process(beforeFile, () => afterContent);
+      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, afterContent, currentHash, await sha256Hex(afterContent));
+      return {
+        backupPath: audit.backupPath,
+        auditPath: audit.auditPath,
+        newHash: await sha256Hex(afterContent),
+      };
     }
 
-    return {
-      ...backup,
-      newHash: await sha256Hex(afterContent),
-    };
+    if (proposal.operation === "update_frontmatter") {
+      if (!(beforeFile instanceof TFile)) {
+        throw new Error("Cannot update frontmatter because target file does not exist.");
+      }
+      const patch = parseFrontmatterPatch(proposal);
+      if (!patch) {
+        throw new Error("Frontmatter proposal must provide a JSON object in proposed_content.");
+      }
+      await this.app.fileManager.processFrontMatter(beforeFile, (frontmatter) => {
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === null) {
+            delete frontmatter[key];
+          } else {
+            frontmatter[key] = value;
+          }
+        }
+      });
+      const afterFile = this.app.vault.getAbstractFileByPath(proposal.target_path);
+      const appliedContent = afterFile instanceof TFile ? await this.app.vault.cachedRead(afterFile) : "";
+      const newHash = await sha256Hex(appliedContent);
+      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, appliedContent, currentHash, newHash);
+      return {
+        backupPath: audit.backupPath,
+        auditPath: audit.auditPath,
+        newHash,
+      };
+    }
+
+    if (proposal.operation === "rename_note") {
+      if (!(beforeFile instanceof TFile)) {
+        throw new Error("Cannot rename note because target file does not exist.");
+      }
+      const newPath = renameTargetPath(proposal);
+      if (!newPath) {
+        throw new Error("Rename proposal must provide the new path in proposed_content.");
+      }
+      if (this.app.vault.getAbstractFileByPath(newPath)) {
+        throw new Error("Cannot rename note because destination already exists.");
+      }
+      await this.ensureFolder(parentPrefix(newPath).replace(/\/$/, ""));
+      await this.app.fileManager.renameFile(beforeFile, newPath);
+      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, beforeContent, currentHash, currentHash ?? await sha256Hex(beforeContent), newPath);
+      return {
+        backupPath: audit.backupPath,
+        auditPath: audit.auditPath,
+        newHash: currentHash ?? await sha256Hex(beforeContent),
+      };
+    }
+
+    throw new Error(`Unsupported write operation: ${proposal.operation}`);
   }
 
-  private async writeProposalAuditFiles(proposal: WriteProposal, beforeContent: string, afterContent: string, beforeHash: string | null): Promise<{ backupPath: string; auditPath: string }> {
+  private async createProposalBackupAndAuditDraft(proposal: WriteProposal, beforeContent: string, beforeHash: string | null): Promise<AuditDraft> {
     const timestamp = new Date().toISOString();
     const folder = `${this.settings.writeAuditFolder.replace(/\/$/, "")}/${timestamp.slice(0, 10)}`;
     await this.ensureFolder(folder);
@@ -586,16 +683,35 @@ export default class VaultMcpPlugin extends Plugin {
       `- Requester: \`${proposal.requester}\``,
       `- Base hash: \`${proposal.base_content_hash ?? "none"}\``,
       `- Local before hash: \`${beforeHash ?? "none"}\``,
-      `- Local after hash: \`${await sha256Hex(afterContent)}\``,
       `- Backup path: \`${backupPath}\``,
       "",
-      "## Diff Preview",
+      "## Apply Status",
       "",
-      "```diff",
-      buildDiffPreview(beforeContent, afterContent),
-      "```",
+      "Backup created before local apply. Final result pending.",
     ].join("\n"));
-    return { backupPath, auditPath };
+    return { folder, backupPath, auditPath, timestamp };
+  }
+
+  private async finishProposalAudit(auditPath: string, proposal: WriteProposal, beforeContent: string, afterContent: string, beforeHash: string | null, afterHash: string, finalTargetPath = proposal.target_path) {
+    const auditFile = this.app.vault.getAbstractFileByPath(auditPath);
+    if (!(auditFile instanceof TFile)) {
+      throw new Error(`Audit file disappeared before completion: ${auditPath}`);
+    }
+    await this.app.vault.process(auditFile, (existing) => `${existing}
+
+## Apply Result
+
+- Applied at: \`${new Date().toISOString()}\`
+- Final target path: \`${finalTargetPath}\`
+- Local before hash: \`${beforeHash ?? "none"}\`
+- Local after hash: \`${afterHash}\`
+
+## Diff Preview
+
+\`\`\`diff
+${buildDiffPreview(beforeContent, afterContent)}
+\`\`\`
+`);
   }
 
   private async ensureFolder(folder: string) {
@@ -1378,6 +1494,50 @@ function contentAfterProposal(proposal: WriteProposal, currentContent: string): 
     return proposal.proposed_content;
   }
   return null;
+}
+
+function renameTargetPath(proposal: WriteProposal): string | null {
+  const value = proposal.proposed_content?.trim();
+  if (!value || value.includes("\n") || value.startsWith("/") || !value.endsWith(".md") || value.split("/").includes("..")) {
+    return null;
+  }
+  return value;
+}
+
+function parseFrontmatterPatch(proposal: WriteProposal): FrontmatterPatch | null {
+  if (!proposal.proposed_content) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(proposal.proposed_content) as unknown;
+    if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+      return null;
+    }
+    if (Object.keys(parsed).length === 0) {
+      return null;
+    }
+    for (const value of Object.values(parsed)) {
+      if (!isFrontmatterPatchValue(value)) {
+        return null;
+      }
+    }
+    return parsed as FrontmatterPatch;
+  } catch {
+    return null;
+  }
+}
+
+function isFrontmatterPatchValue(value: unknown): boolean {
+  if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return true;
+  }
+  return Array.isArray(value) && value.every((item) => typeof item === "string" || typeof item === "number" || typeof item === "boolean");
+}
+
+function frontmatterPatchPreview(patch: FrontmatterPatch): string {
+  return Object.entries(patch)
+    .map(([key, value]) => value === null ? `- ${key}` : `+ ${key}: ${JSON.stringify(value)}`)
+    .join("\n");
 }
 
 function buildDiffPreview(before: string, after: string): string {

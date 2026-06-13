@@ -11,7 +11,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Lets the user approve a review-required note by exact path or approve its parent folder as a prefix.
 - Keeps a short local activity history for previews, syncs, approvals, proposal checks, and errors.
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
-- Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create/append/replace proposals after local safety checks.
+- Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
 
 ## Safe Test Install
 
@@ -89,8 +89,7 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 ## Current Publishability Gaps
 
 - The plugin is not packaged for the Obsidian community plugin process.
-- Only `create_note`, `append_to_note`, and `replace_note` proposals can be applied locally.
-- Patch, frontmatter, and rename proposals still need dedicated apply implementations.
+- `patch_note` proposals still need a dedicated patch parser/apply implementation.
 - Plugin tests are still mostly covered through TypeScript/build checks instead of a dedicated Obsidian test harness.
 - The installer is a local development script, not a release artifact.
 
@@ -108,7 +107,7 @@ The proposal view shows:
 - local safety status
 - base-hash match or mismatch
 - proposed content or patch preview
-- local diff preview for create, append, and replace proposals
+- local diff preview for create, append, replace, frontmatter, and rename proposals
 - current proposal status
 - audit trail
 
@@ -123,6 +122,16 @@ Local apply currently supports:
 - `create_note`
 - `append_to_note`
 - `replace_note`
+- `update_frontmatter`
+- `rename_note`
+
+For `update_frontmatter`, `proposed_content` must be a JSON object. String, number, boolean, and arrays of those values are written as frontmatter values. `null` deletes a frontmatter key.
+
+For `rename_note`, `proposed_content` must be the new vault-relative Markdown path, for example:
+
+```text
+20 Projects/Vault MCP Connector/New Name.md
+```
 
 Before local apply, the plugin creates:
 
@@ -135,4 +144,4 @@ The default audit folder is:
 00 System/Vault MCP Write Audit
 ```
 
-Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Patch, frontmatter, and rename operations are still blocked until they get operation-specific implementations.
+Existing note edits use Obsidian's `Vault.process`. New note creation uses Obsidian's vault creation API. Frontmatter updates use Obsidian's `FileManager.processFrontMatter`. Renames use Obsidian's `FileManager.renameFile`. `patch_note` remains blocked until it gets an operation-specific patch parser and apply implementation.
