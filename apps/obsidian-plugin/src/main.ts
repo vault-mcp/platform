@@ -1,13 +1,11 @@
 import {
+  analyzeWriteProposalWithAdapter,
+  applyWriteProposalWithAdapter,
   buildDiffPreview,
-  contentAfterProposal,
-  frontmatterPatchPreview,
-  parseFrontmatterPatch,
-  previewForProposal,
-  renameTargetPath,
 } from "./write-helpers";
 import type {
-  FrontmatterPatch,
+  LocalApplyResult,
+  ProposalSafetyAnalysis,
 } from "./write-helpers";
 import {
   App,
@@ -91,29 +89,6 @@ type IndexPreview = {
   reviewRequired: number;
   redacted: number;
   items: IndexPreviewItem[];
-};
-
-type ProposalSafetyAnalysis = {
-  targetExists: boolean;
-  currentHash: string | null;
-  baseHashMatches: boolean | null;
-  canApplyInFuture: boolean;
-  status: "ready" | "conflict" | "missing-target" | "existing-target" | "unsupported";
-  message: string;
-  diffPreview: string | null;
-};
-
-type LocalApplyResult = {
-  backupPath: string;
-  auditPath: string;
-  newHash: string;
-};
-
-type AuditDraft = {
-  folder: string;
-  backupPath: string;
-  auditPath: string;
-  timestamp: string;
 };
 
 const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
@@ -464,263 +439,33 @@ export default class VaultMcpPlugin extends Plugin {
   }
 
   async analyzeWriteProposal(proposal: WriteProposal): Promise<ProposalSafetyAnalysis> {
-    const target = this.app.vault.getAbstractFileByPath(proposal.target_path);
-    const targetExists = target instanceof TFile;
-    const currentContent = targetExists ? await this.app.vault.cachedRead(target) : null;
-    const currentHash = currentContent === null ? null : await sha256Hex(currentContent);
-    const baseHashMatches = proposal.base_content_hash === null ? null : currentHash === proposal.base_content_hash;
-
-    if (proposal.operation === "create_note") {
-      if (targetExists) {
-        return {
-          targetExists,
-          currentHash,
-          baseHashMatches,
-          canApplyInFuture: false,
-          status: "existing-target",
-          message: "Create-note proposal targets a file that already exists. This must be reviewed as a conflict.",
-          diffPreview: buildDiffPreview("", proposal.proposed_content ?? ""),
-        };
-      }
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: Boolean(proposal.proposed_content),
-        status: proposal.proposed_content ? "ready" : "unsupported",
-        message: proposal.proposed_content ? "Ready for future create-note application." : "Create-note proposal has no proposed content.",
-        diffPreview: buildDiffPreview("", proposal.proposed_content ?? ""),
-      };
-    }
-
-    if (!targetExists) {
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: false,
-        status: "missing-target",
-        message: "Target file does not exist locally. This must be reviewed before any apply step.",
-        diffPreview: null,
-      };
-    }
-
-    if (proposal.base_content_hash && !baseHashMatches) {
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: false,
-        status: "conflict",
-        message: "Local file hash does not match the proposal base hash. Do not apply automatically.",
-        diffPreview: previewForProposal(proposal, currentContent ?? ""),
-      };
-    }
-
-    if (proposal.operation === "append_to_note" || proposal.operation === "replace_note") {
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: Boolean(proposal.proposed_content),
-        status: proposal.proposed_content ? "ready" : "unsupported",
-        message: proposal.proposed_content ? "Base hash is compatible for future local apply." : "Proposal has no proposed content to preview.",
-        diffPreview: previewForProposal(proposal, currentContent ?? ""),
-      };
-    }
-
-    if (proposal.operation === "rename_note") {
-      const newPath = renameTargetPath(proposal);
-      const newPathExists = newPath ? Boolean(this.app.vault.getAbstractFileByPath(newPath)) : false;
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: Boolean(newPath && !newPathExists),
-        status: newPath && !newPathExists ? "ready" : "unsupported",
-        message: newPath
-          ? newPathExists
-            ? "Rename target already exists. Choose a different target path before applying."
-            : "Base hash is compatible for future rename."
-          : "Rename proposal must provide the new path in proposed_content.",
-        diffPreview: newPath ? buildDiffPreview(proposal.target_path, newPath) : null,
-      };
-    }
-
-    if (proposal.operation === "update_frontmatter") {
-      const patch = parseFrontmatterPatch(proposal);
-      return {
-        targetExists,
-        currentHash,
-        baseHashMatches,
-        canApplyInFuture: Boolean(patch),
-        status: patch ? "ready" : "unsupported",
-        message: patch ? "Base hash is compatible for future frontmatter update." : "Frontmatter proposal must provide a JSON object in proposed_content.",
-        diffPreview: patch ? frontmatterPatchPreview(patch) : null,
-      };
-    }
-
-    return {
-      targetExists,
-      currentHash,
-      baseHashMatches,
-      canApplyInFuture: false,
-      status: "unsupported",
-      message: "This operation needs a dedicated diff/apply implementation before it can be safely applied.",
-      diffPreview: previewForProposal(proposal, currentContent ?? ""),
-    };
+    return analyzeWriteProposalWithAdapter(proposal, this.writeApplyAdapter());
   }
 
   private async applyWriteProposalLocally(proposal: WriteProposal): Promise<LocalApplyResult> {
-    const analysis = await this.analyzeWriteProposal(proposal);
-    if (!analysis.canApplyInFuture) {
-      throw new Error(`Proposal is not safe to apply: ${analysis.message}`);
-    }
-
-    const beforeFile = this.app.vault.getAbstractFileByPath(proposal.target_path);
-    const beforeContent = beforeFile instanceof TFile ? await this.app.vault.cachedRead(beforeFile) : "";
-    const afterContent = contentAfterProposal(proposal, beforeContent);
-
-    const currentHash = beforeFile instanceof TFile ? await sha256Hex(beforeContent) : null;
-    if (proposal.base_content_hash && currentHash !== proposal.base_content_hash) {
-      throw new Error("Local file hash changed before apply. Refresh proposals and review conflict.");
-    }
-
-    const audit = await this.createProposalBackupAndAuditDraft(proposal, beforeContent, currentHash);
-
-    if (proposal.operation === "create_note" && afterContent !== null) {
-      if (beforeFile) {
-        throw new Error("Cannot create note because target already exists.");
-      }
-      await this.ensureFolder(parentPrefix(proposal.target_path).replace(/\/$/, ""));
-      await this.app.vault.create(proposal.target_path, afterContent);
-      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, afterContent, currentHash, await sha256Hex(afterContent));
-      return {
-        backupPath: audit.backupPath,
-        auditPath: audit.auditPath,
-        newHash: await sha256Hex(afterContent),
-      };
-    }
-
-    if ((proposal.operation === "append_to_note" || proposal.operation === "replace_note") && afterContent !== null) {
-      if (!(beforeFile instanceof TFile)) {
-        throw new Error("Cannot edit note because target file does not exist.");
-      }
-      await this.app.vault.process(beforeFile, () => afterContent);
-      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, afterContent, currentHash, await sha256Hex(afterContent));
-      return {
-        backupPath: audit.backupPath,
-        auditPath: audit.auditPath,
-        newHash: await sha256Hex(afterContent),
-      };
-    }
-
-    if (proposal.operation === "update_frontmatter") {
-      if (!(beforeFile instanceof TFile)) {
-        throw new Error("Cannot update frontmatter because target file does not exist.");
-      }
-      const patch = parseFrontmatterPatch(proposal);
-      if (!patch) {
-        throw new Error("Frontmatter proposal must provide a JSON object in proposed_content.");
-      }
-      await this.app.fileManager.processFrontMatter(beforeFile, (frontmatter) => {
-        for (const [key, value] of Object.entries(patch)) {
-          if (value === null) {
-            delete frontmatter[key];
-          } else {
-            frontmatter[key] = value;
-          }
-        }
-      });
-      const afterFile = this.app.vault.getAbstractFileByPath(proposal.target_path);
-      const appliedContent = afterFile instanceof TFile ? await this.app.vault.cachedRead(afterFile) : "";
-      const newHash = await sha256Hex(appliedContent);
-      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, appliedContent, currentHash, newHash);
-      return {
-        backupPath: audit.backupPath,
-        auditPath: audit.auditPath,
-        newHash,
-      };
-    }
-
-    if (proposal.operation === "rename_note") {
-      if (!(beforeFile instanceof TFile)) {
-        throw new Error("Cannot rename note because target file does not exist.");
-      }
-      const newPath = renameTargetPath(proposal);
-      if (!newPath) {
-        throw new Error("Rename proposal must provide the new path in proposed_content.");
-      }
-      if (this.app.vault.getAbstractFileByPath(newPath)) {
-        throw new Error("Cannot rename note because destination already exists.");
-      }
-      await this.ensureFolder(parentPrefix(newPath).replace(/\/$/, ""));
-      await this.app.fileManager.renameFile(beforeFile, newPath);
-      await this.finishProposalAudit(audit.auditPath, proposal, beforeContent, beforeContent, currentHash, currentHash ?? await sha256Hex(beforeContent), newPath);
-      return {
-        backupPath: audit.backupPath,
-        auditPath: audit.auditPath,
-        newHash: currentHash ?? await sha256Hex(beforeContent),
-      };
-    }
-
-    throw new Error(`Unsupported write operation: ${proposal.operation}`);
+    return applyWriteProposalWithAdapter(proposal, this.writeApplyAdapter());
   }
 
-  private async createProposalBackupAndAuditDraft(proposal: WriteProposal, beforeContent: string, beforeHash: string | null): Promise<AuditDraft> {
-    const timestamp = new Date().toISOString();
-    const folder = `${this.settings.writeAuditFolder.replace(/\/$/, "")}/${timestamp.slice(0, 10)}`;
-    await this.ensureFolder(folder);
-    const safeId = proposal.id.replace(/[^A-Za-z0-9_-]/g, "-");
-    const backupPath = `${folder}/${timestamp.replace(/[:.]/g, "-")}-${safeId}-backup.md`;
-    const auditPath = `${folder}/${timestamp.replace(/[:.]/g, "-")}-${safeId}-audit.md`;
-    await this.app.vault.create(backupPath, beforeContent);
-    await this.app.vault.create(auditPath, [
-      "---",
-      "type: vault-mcp-write-audit",
-      `proposal_id: ${JSON.stringify(proposal.id)}`,
-      `target_path: ${JSON.stringify(proposal.target_path)}`,
-      `operation: ${JSON.stringify(proposal.operation)}`,
-      `status: ${JSON.stringify(proposal.status)}`,
-      `created: ${JSON.stringify(timestamp)}`,
-      "---",
-      "# Vault MCP Write Audit",
-      "",
-      `- Proposal id: \`${proposal.id}\``,
-      `- Target path: \`${proposal.target_path}\``,
-      `- Operation: \`${proposal.operation}\``,
-      `- Requester: \`${proposal.requester}\``,
-      `- Base hash: \`${proposal.base_content_hash ?? "none"}\``,
-      `- Local before hash: \`${beforeHash ?? "none"}\``,
-      `- Backup path: \`${backupPath}\``,
-      "",
-      "## Apply Status",
-      "",
-      "Backup created before local apply. Final result pending.",
-    ].join("\n"));
-    return { folder, backupPath, auditPath, timestamp };
-  }
-
-  private async finishProposalAudit(auditPath: string, proposal: WriteProposal, beforeContent: string, afterContent: string, beforeHash: string | null, afterHash: string, finalTargetPath = proposal.target_path) {
-    const auditFile = this.app.vault.getAbstractFileByPath(auditPath);
-    if (!(auditFile instanceof TFile)) {
-      throw new Error(`Audit file disappeared before completion: ${auditPath}`);
-    }
-    await this.app.vault.process(auditFile, (existing) => `${existing}
-
-## Apply Result
-
-- Applied at: \`${new Date().toISOString()}\`
-- Final target path: \`${finalTargetPath}\`
-- Local before hash: \`${beforeHash ?? "none"}\`
-- Local after hash: \`${afterHash}\`
-
-## Diff Preview
-
-\`\`\`diff
-${buildDiffPreview(beforeContent, afterContent)}
-\`\`\`
-`);
+  private writeApplyAdapter() {
+    return {
+      writeAuditFolder: this.settings.writeAuditFolder,
+      getFile: (path: string) => {
+        const file = this.app.vault.getAbstractFileByPath(path);
+        return file instanceof TFile ? file : null;
+      },
+      readFile: (file: TFile) => this.app.vault.cachedRead(file),
+      createFile: async (path: string, content: string) => {
+        await this.app.vault.create(path, content);
+      },
+      processFile: async (file: TFile, updater: (content: string) => string) => {
+        await this.app.vault.process(file, updater);
+      },
+      processFrontmatter: async (file: TFile, updater: (frontmatter: Record<string, unknown>) => void) => {
+        await this.app.fileManager.processFrontMatter(file, updater);
+      },
+      renameFile: (file: TFile, newPath: string) => this.app.fileManager.renameFile(file, newPath),
+      ensureFolder: (folder: string) => this.ensureFolder(folder),
+    };
   }
 
   private async ensureFolder(folder: string) {
