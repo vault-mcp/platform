@@ -111,6 +111,12 @@ export function createApp(config: ServerConfig, store: IndexStore) {
     res.json(await store.vaultStatus(vaultId));
   });
 
+  app.delete("/admin/vaults/:vaultId", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
+    const vaultId = paramValue(req.params.vaultId);
+    await store.deleteVault(vaultId);
+    res.json({ ok: true, vault_id: vaultId });
+  });
+
   app.post("/admin/vaults/:vaultId/sync", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
     const vaultId = paramValue(req.params.vaultId);
     const payload = req.body as Partial<SyncPayload>;

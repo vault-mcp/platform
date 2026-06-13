@@ -54,6 +54,18 @@ npm run smoke:oauth-flow
 
 This verifies authorization server metadata, dynamic client registration, PKCE authorization-code exchange, single-use authorization codes, refresh-token exchange, refresh-token replay denial, copied-vault sync, and MCP `search`/`fetch`.
 
+Add multi-vault scoped-read verification to that same OAuth gate with:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_OAUTH_PASSWORD="private-human-authorization-password" \
+MCP_SYNC_TOKEN="sync-token" \
+SMOKE_MULTI_VAULT=true \
+npm run smoke:oauth-flow
+```
+
+The multi-vault pass creates a temporary `smoke-multivault` vault, verifies unscoped read errors plus scoped search/fetch/status behavior, then deletes the temporary vault.
+
 Passing output must include:
 
 - `ok: true`
@@ -84,7 +96,7 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 ```
 
 3. Provide an `Authorization: Bearer ...` header.
-4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, and `debug_search`.
+4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `list_vaults`, `get_vault_status`, and `debug_search`.
 5. Call `search` with `Vault MCP Connector`.
 6. Call `list_notes` with scope `20 Projects/Vault MCP Connector/`.
 7. Call `fetch` with the first returned id.
@@ -105,7 +117,7 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 7. Confirm the returned citation URL is under `/notes/:id`.
 8. Confirm metadata includes `obsidian_uri`.
 9. Confirm search/list/fetch responses are readable in the conversation, not just raw JSON.
-10. If the ChatGPT client renders MCP output templates, confirm the vault results card appears from `ui://vault-mcp/results.html`.
+10. If the ChatGPT client renders MCP output templates, confirm the vault results card appears from `ui://vault-mcp/results-v2.html`.
 11. Prompt with a denied area request, such as raw daily notes or credentials, and confirm no denied path is returned.
 
 ## Claude

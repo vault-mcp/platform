@@ -53,46 +53,52 @@ await mcpSseProbe();
 const tools = await mcp(1, "tools/list", {});
 assert(tools.result.tools.map((tool) => tool.name).join(",") === expectedTools.join(","), "expected expanded read-only vault tools");
 
+const vaults = await mcp(10, "tools/call", {
+  name: "list_vaults",
+  arguments: {},
+});
+const selectedVaultId = selectVaultId(vaults.result.structuredContent.vaults);
+
 const search = await mcp(2, "tools/call", {
   name: "search",
-  arguments: { query: "Vault MCP Connector", limit: 1 },
+  arguments: withVaultId({ query: "Vault MCP Connector", limit: 1 }, selectedVaultId),
 });
 const first = search.result.structuredContent.results[0];
 assert(first?.metadata?.path === "20 Projects/Vault MCP Connector/Project Home.md", "expected Vault MCP Connector project search result");
 
 const fetched = await mcp(3, "tools/call", {
   name: "fetch",
-  arguments: { id: first.id },
+  arguments: withVaultId({ id: first.id }, selectedVaultId),
 });
 assert(fetched.result.structuredContent.title.includes("Vault MCP Connector"), "expected fetched Vault MCP Connector chunk");
 
 const listed = await mcp(30, "tools/call", {
   name: "list_notes",
-  arguments: { scope: "20 Projects/Vault MCP Connector/", limit: 1 },
+  arguments: withVaultId({ scope: "20 Projects/Vault MCP Connector/", limit: 1 }, selectedVaultId),
 });
 assert(listed.result.structuredContent.notes[0]?.path === "20 Projects/Vault MCP Connector/Project Home.md", "expected list_notes to find project home");
 
 const fetchedByPath = await mcp(31, "tools/call", {
   name: "fetch_note_by_path",
-  arguments: { path: "20 Projects/Vault MCP Connector/Project Home.md" },
+  arguments: withVaultId({ path: "20 Projects/Vault MCP Connector/Project Home.md" }, selectedVaultId),
 });
 assert(fetchedByPath.result.structuredContent.obsidian_uri?.startsWith("obsidian://open"), "expected path fetch to include obsidian_uri");
 
 const deniedScopeList = await mcp(32, "tools/call", {
   name: "list_notes",
-  arguments: { scope: "02 Daily/", limit: 5 },
+  arguments: withVaultId({ scope: "02 Daily/", limit: 5 }, selectedVaultId),
 });
 assert(deniedScopeList.result.structuredContent.notes.length === 0, "expected denied daily scope to be unavailable");
 
 const deniedPath = await mcp(33, "tools/call", {
   name: "fetch_note_by_path",
-  arguments: { path: "02 Daily/2026-06-10.md" },
+  arguments: withVaultId({ path: "02 Daily/2026-06-10.md" }, selectedVaultId),
 });
 assert(deniedPath.result.isError === true, "expected denied path fetch to fail");
 
 const guessed = await mcp(4, "tools/call", {
   name: "fetch",
-  arguments: { id: "guessed-denied-id" },
+  arguments: withVaultId({ id: "guessed-denied-id" }, selectedVaultId),
 });
 assert(guessed.result.isError === true, "expected guessed denied id to fail");
 
@@ -101,6 +107,7 @@ console.log(JSON.stringify({
   auth_token_source: process.env.SMOKE_ACCESS_TOKEN ? "SMOKE_ACCESS_TOKEN" : "MCP_ACCESS_TOKEN",
   document_count: health.document_count,
   first_result_path: first.metadata.path,
+  selected_vault_id: selectedVaultId,
   metadata_resource: metadata.resource,
 }, null, 2));
 
@@ -175,6 +182,25 @@ function required(name) {
   const value = process.env[name];
   assert(value, `${name} is required`);
   return value;
+}
+
+function selectVaultId(vaults) {
+  if (!Array.isArray(vaults) || vaults.length <= 1) {
+    return undefined;
+  }
+  const requested = process.env.SMOKE_VAULT_ID;
+  if (requested) {
+    assert(vaults.some((vault) => vault.vault_id === requested), `SMOKE_VAULT_ID ${requested} was not listed by list_vaults`);
+    return requested;
+  }
+  if (vaults.some((vault) => vault.vault_id === "default")) {
+    return "default";
+  }
+  return vaults[0].vault_id;
+}
+
+function withVaultId(args, vaultId) {
+  return vaultId ? { ...args, vault_id: vaultId } : args;
 }
 
 function assert(condition, message) {

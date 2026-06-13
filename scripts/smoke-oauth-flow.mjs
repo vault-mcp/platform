@@ -95,11 +95,26 @@ if (smoke.status !== 0) {
   process.exit(smoke.status ?? 1);
 }
 
+if (process.env.SMOKE_MULTI_VAULT === "true") {
+  const multiVaultSmoke = spawnSync("npm", ["run", "smoke:multi-vault-remote"], {
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      SMOKE_BASE_URL: baseUrl,
+      SMOKE_ACCESS_TOKEN: refresh.access_token,
+    },
+  });
+  if (multiVaultSmoke.status !== 0) {
+    process.exit(multiVaultSmoke.status ?? 1);
+  }
+}
+
 console.log(JSON.stringify({
   ok: true,
   oauth_flow: "authorization_code_pkce",
   refresh: true,
   replay_protection: true,
+  multi_vault: process.env.SMOKE_MULTI_VAULT === "true",
   metadata_issuer: metadata.issuer,
   resource,
 }, null, 2));

@@ -541,6 +541,25 @@ describe("server MCP contract", () => {
     expect(listedBody.proposals.map((proposal) => ({ id: proposal.id, status: proposal.status }))).toEqual([
       { id: proposalBody.proposal.id, status: "approved" },
     ]);
+
+    const deleteB = await fetch(`${baseUrl}/admin/vaults/vault-b`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(deleteB.status).toBe(200);
+    expect(await deleteB.json()).toEqual({ ok: true, vault_id: "vault-b" });
+
+    const vaultsAfterDelete = await mcp(baseUrl, accessToken, 62, "tools/call", {
+      name: "list_vaults",
+      arguments: {},
+    });
+    expect(vaultsAfterDelete.result.structuredContent.vaults.map((vault: { vault_id: string }) => vault.vault_id)).toEqual(["vault-a"]);
+
+    const deletedVaultFetch = await mcp(baseUrl, accessToken, 63, "tools/call", {
+      name: "fetch",
+      arguments: { id: "doc-b", vault_id: "vault-b" },
+    });
+    expect(deletedVaultFetch.result.isError).toBe(true);
   });
 
   it("handles allowed CORS preflight and rejects forbidden origins", async () => {

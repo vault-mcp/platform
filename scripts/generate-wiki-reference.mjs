@@ -57,6 +57,7 @@ const authoredFiles = [
   "scripts/seed-write-proposals.mjs",
   "scripts/verify-ui-smoke.mjs",
   "scripts/smoke-local.mjs",
+  "scripts/smoke-multivault-remote.mjs",
   "scripts/smoke-oauth-flow.mjs",
   "scripts/smoke-oauth-local.mjs",
   "scripts/smoke-postgres-local.mjs",

@@ -39,6 +39,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
   - `rules_only`
 - Added tenant/vault/installation identity fields to documents and sync payloads.
 - Added scoped admin APIs for vault registration, per-vault sync, per-vault status, and write proposal lifecycle.
+- Added an admin vault delete endpoint so smoke fixtures and stale vault registrations can be cleaned up without touching other vaults.
 - Added MCP read tools:
   - `list_vaults`
   - `get_vault_status`
@@ -79,6 +80,17 @@ Current local gates:
 - `npm run plugin:install-copy`
 
 The server contract tests include a two-vault fixture with overlapping note paths. They verify scoped `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `get_vault_status`, and `debug_search`, plus clear errors for unscoped reads when multiple vaults are connected.
+
+Remote multi-vault smoke is available with:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp-connector.vercel.app" \
+SMOKE_ACCESS_TOKEN="oauth-or-test-access-token" \
+MCP_SYNC_TOKEN="sync-token" \
+npm run smoke:multi-vault-remote
+```
+
+For the self-hosted OAuth flow, set `SMOKE_MULTI_VAULT=true` on `npm run smoke:oauth-flow`. The smoke creates a temporary `smoke-multivault` vault, verifies scoped behavior, and deletes the temporary vault in a `finally` cleanup.
 
 The local Postgres gate still requires `POSTGRES_SMOKE_DATABASE_URL`:
 

@@ -54,6 +54,7 @@ export interface IndexStore {
   load?(): Promise<void>;
   close?(): Promise<void>;
   registerVault(manifest: SyncManifest): Promise<void>;
+  deleteVault(vaultId: string): Promise<void>;
   replace(payload: SyncPayload): Promise<void>;
   health(): IndexHealth | Promise<IndexHealth>;
   search(query: string, limit?: number, scope?: string): SearchResponse | Promise<SearchResponse>;
@@ -113,6 +114,18 @@ export class JsonIndexStore implements IndexStore {
 
   async registerVault(manifest: SyncManifest): Promise<void> {
     this.manifests.set(manifest.vault_id, manifest);
+    await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
+    await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
+  }
+
+  async deleteVault(vaultId: string): Promise<void> {
+    this.documents = this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id ?? DEFAULT_VAULT_ID) !== vaultId);
+    this.manifests.delete(vaultId);
+    for (const [id, proposal] of this.writeProposals.entries()) {
+      if (proposal.vault_id === vaultId) {
+        this.writeProposals.delete(id);
+      }
+    }
     await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
     await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
   }
@@ -393,6 +406,22 @@ export class PostgresIndexStore implements IndexStore {
        on conflict (tenant_id, vault_id) do update set manifest = excluded.manifest, updated_at = now()`,
       [manifest.tenant_id, manifest.vault_id, JSON.stringify(manifest)],
     );
+  }
+
+  async deleteVault(vaultId: string): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      await client.query("delete from vault_documents where vault_id = $1", [vaultId]);
+      await client.query("delete from vault_sync_manifests where vault_id = $1", [vaultId]);
+      await client.query("delete from write_proposals where vault_id = $1", [vaultId]);
+      await client.query("commit");
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async replace(payload: SyncPayload): Promise<void> {

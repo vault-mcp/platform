@@ -59,6 +59,7 @@ V1 exposes an allowlisted derived index through:
 - `GET /mcp` - authenticated Streamable HTTP SSE endpoint.
 - `GET /healthz` - service and index health.
 - `POST /admin/sync` - authenticated sync endpoint for the local indexer.
+- `DELETE /admin/vaults/:vaultId` - authenticated cleanup endpoint for removing a synced vault, its manifest, and its write proposals.
 - `GET /notes/:id` - authenticated private citation URL for fetched note chunks.
 - `GET /.well-known/oauth-protected-resource` - OAuth protected-resource metadata for MCP clients.
 
@@ -107,6 +108,19 @@ SMOKE_ACCESS_TOKEN="test-or-oauth-access-token" \
 MCP_SYNC_TOKEN="sync-token" \
 npm run smoke:remote
 ```
+
+To prove multi-vault scoped reads against a deployed endpoint:
+
+```bash
+SMOKE_BASE_URL="https://vault-mcp.example.com" \
+SMOKE_ACCESS_TOKEN="test-or-oauth-access-token" \
+MCP_SYNC_TOKEN="sync-token" \
+npm run smoke:multi-vault-remote
+```
+
+The multi-vault smoke creates a temporary `smoke-multivault` vault, verifies
+unscoped read errors plus scoped search/fetch/status behavior, then deletes the
+temporary vault.
 
 ## Storage
 
