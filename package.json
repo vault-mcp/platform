@@ -46,9 +46,13 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "commander": "^14.0.2",
     "express": "^5.2.1",
-    "gray-matter": "^4.0.3",
     "jose": "^6.2.3",
     "pg": "^8.21.0",
+    "yaml": "^2.9.0",
     "zod": "^4.1.13"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "hono": "4.12.27"
   }
 }

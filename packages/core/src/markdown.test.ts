@@ -23,6 +23,21 @@ tags:
     expect(parsed.wikilinks).toEqual(["00 System/Task Hub"]);
     expect(parsed.tasks).toEqual(["Build the thing #task/next"]);
   });
+
+  it("handles string tags and notes without frontmatter", () => {
+    const withStringTags = parseMarkdownNote(`---
+tags: "type/project, topic/mcp"
+---
+No heading body.
+`, "20 Projects/Test.md");
+    const withoutFrontmatter = parseMarkdownNote("Body #inline/tag", "40 Reference/Plain.md");
+
+    expect(withStringTags.tags).toEqual(["topic/mcp", "type/project"]);
+    expect(withStringTags.title).toBe("Test");
+    expect(withoutFrontmatter.frontmatter).toEqual({});
+    expect(withoutFrontmatter.tags).toEqual(["inline/tag"]);
+    expect(withoutFrontmatter.title).toBe("Plain");
+  });
 });
 
 describe("chunkMarkdown", () => {

@@ -1,5 +1,5 @@
 import path from "node:path";
-import matter from "gray-matter";
+import YAML from "yaml";
 
 export type ParsedMarkdownNote = {
   frontmatter: Record<string, unknown>;
@@ -13,9 +13,9 @@ export type ParsedMarkdownNote = {
 };
 
 export function parseMarkdownNote(markdown: string, relativePath: string): ParsedMarkdownNote {
-  const parsed = matter(markdown);
-  const body = parsed.content.trim();
-  const frontmatter = parsed.data as Record<string, unknown>;
+  const parsed = parseFrontmatter(markdown);
+  const body = parsed.body.trim();
+  const frontmatter = parsed.frontmatter;
   const title = extractTitle(body, relativePath);
   const tags = extractTags(frontmatter, body);
   const status = typeof frontmatter.status === "string" ? frontmatter.status : null;
@@ -29,6 +29,22 @@ export function parseMarkdownNote(markdown: string, relativePath: string): Parse
     headings: extractHeadings(body),
     wikilinks: extractWikilinks(body),
     tasks: extractTasks(body),
+  };
+}
+
+function parseFrontmatter(markdown: string): { frontmatter: Record<string, unknown>; body: string } {
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!match) {
+    return { frontmatter: {}, body: markdown };
+  }
+
+  const parsed = YAML.parse(match[1]) as unknown;
+  const frontmatter = parsed && typeof parsed === "object" && !Array.isArray(parsed)
+    ? parsed as Record<string, unknown>
+    : {};
+  return {
+    frontmatter,
+    body: markdown.slice(match[0].length),
   };
 }
 

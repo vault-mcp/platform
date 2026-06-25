@@ -27,6 +27,7 @@
 - The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.
 - Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
 - ChatGPT-facing UI metadata and the `ui://vault-mcp/results.html` component only render existing read-only tool results; they do not add a separate data path or vault access path.
+- Dependency audit is a release gate. The current dependency tree removes `gray-matter`/`js-yaml`, pins safe `hono` and `esbuild` versions through npm overrides, and requires `npm audit --audit-level=low` to pass before production deploys.
 
 ## Current Gaps
 
