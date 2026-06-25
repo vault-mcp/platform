@@ -6,6 +6,7 @@ import {
   normalizeServerBaseUrl,
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
+  summarizeServerStatus,
   summarizeSyncResponse,
 } from "./plugin-helpers";
 
@@ -128,6 +129,62 @@ describe("plugin helpers", () => {
     expect(checklist.readyToSync).toBe(true);
     expect(checklist.items.find((item) => item.label === "Write mode")?.status).toBe("warning");
     expect(checklist.items.find((item) => item.label === "Index scope")?.message).toContain("Manual-only");
+  });
+
+  it("summarizes a healthy server and authorized vault status", () => {
+    const summary = summarizeServerStatus({
+      ok: true,
+      service: {
+        version: "0.1.0",
+        mcp_resource_url: "https://vault-mcp-connector.vercel.app/mcp",
+      },
+      storage: {
+        kind: "postgres",
+        ok: true,
+        migrations: ["0001_initial_vault_mcp_schema"],
+      },
+      document_count: 240,
+      vault_count: 1,
+      last_sync_at: "2026-06-25T21:00:00.000Z",
+    }, {
+      vault_id: "default",
+      vault_name: "Copied vault",
+      document_count: 240,
+      generated_at: "2026-06-25T21:00:00.000Z",
+    }, true);
+
+    expect(summary.status).toBe("ready");
+    expect(summary.title).toContain("ready");
+    expect(summary.message).toContain("sync token");
+    expect(summary.facts).toContain("Server version: 0.1.0");
+    expect(summary.facts).toContain("Configured vault chunks: 240");
+    expect(summary.facts.join("\n")).toContain("0001_initial_vault_mcp_schema");
+  });
+
+  it("treats reachable health without a token as a warning", () => {
+    const summary = summarizeServerStatus({
+      ok: true,
+      storage: { kind: "json", ok: true },
+      document_count: 0,
+      vault_count: 0,
+    }, null, false);
+
+    expect(summary.status).toBe("warning");
+    expect(summary.message).toContain("Add the admin sync token");
+    expect(summary.facts).toContain("Storage: json (ready)");
+  });
+
+  it("blocks when server storage is unhealthy", () => {
+    const summary = summarizeServerStatus({
+      ok: false,
+      storage: { kind: "postgres", ok: false },
+      document_count: 0,
+      vault_count: 0,
+    }, null, true);
+
+    expect(summary.status).toBe("blocked");
+    expect(summary.message).toContain("storage is reporting a failure");
+    expect(summary.facts).toContain("Storage: postgres (not ready)");
   });
 });
 

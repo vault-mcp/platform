@@ -15,6 +15,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
 - Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
+- Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
 
 ## Safe Test Install
@@ -293,7 +294,26 @@ npm run plugin:verify-ui-smoke -- \
 5. Open the plugin settings.
 6. Confirm the server URL, vault id, and index mode.
 7. Paste the admin sync token.
-8. Use the Vault MCP ribbon icon or command palette to open the dashboard.
+8. Click `Check connection`. A ready result means the server health check works and the sync token can read the configured vault status.
+9. Use the Vault MCP ribbon icon or command palette to open the dashboard.
+
+## Connection Preflight
+
+Run `Check connection` before previewing, syncing, or reviewing write proposals.
+
+The check does two things:
+
+- Calls `/healthz` on the configured server without credentials. This proves the base server URL is reachable and reports server version, storage type, storage readiness, migrations, total indexed chunks, connected vault count, and last sync time when available.
+- If a sync token is saved, calls `/admin/vaults/<vault-id>/status` with the token. This proves the plugin can access the configured vault admin surface before it tries to sync or review write proposals.
+
+Result meanings:
+
+- `Server and vault connection ready`: the server is healthy and the saved sync token can read this vault's status.
+- `Server reachable`: public health works, but no sync token is saved yet. Add the token before syncing.
+- `Server reachable, storage not ready`: the server responded, but storage is unhealthy. Check deployment logs and database configuration.
+- `Server check failed`: the URL is wrong, the server is unreachable, the endpoint returned an error, or the sync token was rejected.
+
+If connection preflight fails, do not sync. Fix the server URL, sync token, or deployment health first.
 
 ## Index Modes
 

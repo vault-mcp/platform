@@ -278,8 +278,8 @@
             </tr>
             <tr>
               <td class="line-number" id="L41"><a href="#L41">41</a></td>
-              <td class="source"><pre>type VaultSyncResponse = {</pre></td>
-              <td>Defines a TypeScript-only data shape used while compiling the project.</td>
+              <td class="source"><pre>export type PluginServerHealthSnapshot = {</pre></td>
+              <td>Exports a TypeScript type so other files can use this data shape at compile time.</td>
             </tr>
             <tr>
               <td class="line-number" id="L42"><a href="#L42">42</a></td>
@@ -288,17 +288,17 @@
             </tr>
             <tr>
               <td class="line-number" id="L43"><a href="#L43">43</a></td>
-              <td class="source"><pre>  vault?: {</pre></td>
+              <td class="source"><pre>  service?: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>    document_count?: number;</pre></td>
+              <td class="source"><pre>    version?: string;</pre></td>
               <td>Line 44 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre>    generated_at?: string | null;</pre></td>
+              <td class="source"><pre>    mcp_resource_url?: string;</pre></td>
               <td>Line 45 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
@@ -308,237 +308,237 @@
             </tr>
             <tr>
               <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>  document_count?: number;</pre></td>
-              <td>Line 47 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  storage?: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>  generated_at?: string | null;</pre></td>
+              <td class="source"><pre>    kind?: string;</pre></td>
               <td>Line 48 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>  error?: string;</pre></td>
+              <td class="source"><pre>    ok?: boolean;</pre></td>
               <td>Line 49 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre>    migrations?: string[];</pre></td>
+              <td>Line 50 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>  };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre>  document_count?: number;</pre></td>
+              <td>Line 52 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>  vault_count?: number;</pre></td>
+              <td>Line 53 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>  last_sync_at?: string | null;</pre></td>
+              <td>Line 54 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
               <td class="source"><pre>};</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre>export type PluginVaultStatusSnapshot = {</pre></td>
+              <td>Exports a TypeScript type so other files can use this data shape at compile time.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre>  vault_id?: string;</pre></td>
+              <td>Line 58 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>  vault_name?: string;</pre></td>
+              <td>Line 59 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="source"><pre>  document_count?: number;</pre></td>
+              <td>Line 60 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="source"><pre>  generated_at?: string | null;</pre></td>
+              <td>Line 61 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre>};</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="source"><pre>export type PluginServerStatusSummary = {</pre></td>
+              <td>Exports a TypeScript type so other files can use this data shape at compile time.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="source"><pre>  status: &quot;ready&quot; | &quot;warning&quot; | &quot;blocked&quot;;</pre></td>
+              <td>Line 65 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="source"><pre>  title: string;</pre></td>
+              <td>Line 66 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>  message: string;</pre></td>
+              <td>Line 67 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>  facts: string[];</pre></td>
+              <td>Line 68 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>};</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>type VaultSyncResponse = {</pre></td>
+              <td>Defines a TypeScript-only data shape used while compiling the project.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>  ok?: boolean;</pre></td>
+              <td>Line 72 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>  vault?: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>    document_count?: number;</pre></td>
+              <td>Line 74 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>    generated_at?: string | null;</pre></td>
+              <td>Line 75 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre>  };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>  document_count?: number;</pre></td>
+              <td>Line 77 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre>  generated_at?: string | null;</pre></td>
+              <td>Line 78 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre>  error?: string;</pre></td>
+              <td>Line 79 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre>};</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
               <td class="source"><pre>export function normalizeServerBaseUrl(value: string): string {</pre></td>
               <td>Defines normalizeServerBaseUrl, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
               <td class="source"><pre>  const trimmed = value.trim().replace(/\/+$/, &quot;&quot;);</pre></td>
               <td>Declares trimmed, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
               <td class="source"><pre>  if (!trimmed) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
               <td class="source"><pre>    throw new Error(&quot;Server URL is required. Use the base URL, for example https://vault-mcp-connector.vercel.app.&quot;);</pre></td>
-              <td>Line 55 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td>Line 85 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
               <td class="source"><pre>  let url: URL;</pre></td>
               <td>Declares url, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
               <td class="source"><pre>  try {</pre></td>
               <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
               <td class="source"><pre>    url = new URL(trimmed);</pre></td>
               <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
               <td class="source"><pre>  } catch {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>    throw new Error(&quot;Server URL is not a valid URL. Include https:// for production or http:// for a local server.&quot;);</pre></td>
-              <td>Line 62 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L63"><a href="#L63">63</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L64"><a href="#L64">64</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre>  if (url.protocol !== &quot;https:&quot; &amp;&amp; url.protocol !== &quot;http:&quot;) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L66"><a href="#L66">66</a></td>
-              <td class="source"><pre>    throw new Error(&quot;Server URL must start with https:// for production or http:// for local testing.&quot;);</pre></td>
-              <td>Line 66 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
-              <td class="source"><pre>  if (url.pathname !== &quot;/&quot; &amp;&amp; url.pathname !== &quot;&quot;) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
-              <td class="source"><pre>    throw new Error(&quot;Server URL should be the base server URL, not a route. Remove paths like /mcp, /admin, or /oauth.&quot;);</pre></td>
-              <td>Line 70 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
-              <td class="source"><pre>  return url.toString().replace(/\/$/, &quot;&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L75"><a href="#L75">75</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>export function describeHttpFailure(action: string, status: number, responseText: string): string {</pre></td>
-              <td>Defines describeHttpFailure, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L77"><a href="#L77">77</a></td>
-              <td class="source"><pre>  const serverError = parseServerError(responseText);</pre></td>
-              <td>Declares serverError, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>  const suffix = serverError ? ` Server said: ${serverError}` : &quot;&quot;;</pre></td>
-              <td>Declares suffix, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L80"><a href="#L80">80</a></td>
-              <td class="source"><pre>  if (status === 401 || status === 403) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>    return `${capitalize(action)} was not authorized. Check the sync token and server URL.${suffix}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L83"><a href="#L83">83</a></td>
-              <td class="source"><pre>  if (status === 404) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
-              <td class="source"><pre>    return `${capitalize(action)} endpoint was not found. Check that the server URL is the base URL and that the deployed server is current.${suffix}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>  if (status &gt;= 500) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>    return `${capitalize(action)} reached the server, but the server failed. Check server logs or try again.${suffix}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
-              <td class="source"><pre>  if (status &gt;= 400) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
-              <td class="source"><pre>    return `${capitalize(action)} was rejected by the server with HTTP ${status}.${suffix}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>  return `${capitalize(action)} failed with unexpected HTTP ${status}.${suffix}`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>    throw new Error(&quot;Server URL is not a valid URL. Include https:// for production or http:// for a local server.&quot;);</pre></td>
+              <td>Line 92 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre>}</pre></td>
+              <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -548,37 +548,37 @@
             </tr>
             <tr>
               <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre>export function describeCaughtError(action: string, error: unknown): string {</pre></td>
-              <td>Defines describeCaughtError, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>  const message = error instanceof Error ? error.message : String(error);</pre></td>
-              <td>Declares message, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
-              <td class="source"><pre>  if (/failed to fetch|network|load failed|could not connect|ENOTFOUND|ECONNREFUSED/i.test(message)) {</pre></td>
+              <td class="source"><pre>  if (url.protocol !== &quot;https:&quot; &amp;&amp; url.protocol !== &quot;http:&quot;) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre>    return `${capitalize(action)} could not reach the server. Check the server URL, network connection, and whether the server is running.`;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>    throw new Error(&quot;Server URL must start with https:// for production or http:// for local testing.&quot;);</pre></td>
+              <td>Line 96 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>  if (url.pathname !== &quot;/&quot; &amp;&amp; url.pathname !== &quot;&quot;) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L100"><a href="#L100">100</a></td>
-              <td class="source"><pre>  return message;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>    throw new Error(&quot;Server URL should be the base server URL, not a route. Remove paths like /mcp, /admin, or /oauth.&quot;);</pre></td>
+              <td>Line 100 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L101"><a href="#L101">101</a></td>
-              <td class="source"><pre>}</pre></td>
+              <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -588,846 +588,1281 @@
             </tr>
             <tr>
               <td class="line-number" id="L103"><a href="#L103">103</a></td>
-              <td class="source"><pre>export function summarizeSyncResponse(payload: SyncPayload, responseText: string): SyncResultSummary {</pre></td>
-              <td>Defines summarizeSyncResponse, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>  return url.toString().replace(/\/$/, &quot;&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
               <td class="line-number" id="L104"><a href="#L104">104</a></td>
-              <td class="source"><pre>  const parsed = safeJson(responseText) as VaultSyncResponse | null;</pre></td>
-              <td>Declares parsed, a local value used later in this file.</td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L105"><a href="#L105">105</a></td>
-              <td class="source"><pre>  const serverDocumentCount = typeof parsed?.vault?.document_count === &quot;number&quot;</pre></td>
-              <td>Declares serverDocumentCount, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>    ? parsed.vault.document_count</pre></td>
-              <td>Line 106 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L107"><a href="#L107">107</a></td>
-              <td class="source"><pre>    : typeof parsed?.document_count === &quot;number&quot;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L108"><a href="#L108">108</a></td>
-              <td class="source"><pre>      ? parsed.document_count</pre></td>
-              <td>Line 108 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L109"><a href="#L109">109</a></td>
-              <td class="source"><pre>      : null;</pre></td>
-              <td>Line 109 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L110"><a href="#L110">110</a></td>
-              <td class="source"><pre>  const serverGeneratedAt = typeof parsed?.vault?.generated_at === &quot;string&quot;</pre></td>
-              <td>Declares serverGeneratedAt, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L111"><a href="#L111">111</a></td>
-              <td class="source"><pre>    ? parsed.vault.generated_at</pre></td>
-              <td>Line 111 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L112"><a href="#L112">112</a></td>
-              <td class="source"><pre>    : typeof parsed?.generated_at === &quot;string&quot;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L113"><a href="#L113">113</a></td>
-              <td class="source"><pre>      ? parsed.generated_at</pre></td>
-              <td>Line 113 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L114"><a href="#L114">114</a></td>
-              <td class="source"><pre>      : null;</pre></td>
-              <td>Line 114 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L115"><a href="#L115">115</a></td>
-              <td class="source"><pre>  const localChunks = payload.documents.length;</pre></td>
-              <td>Declares localChunks, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L116"><a href="#L116">116</a></td>
-              <td class="source"><pre>  const scanned = payload.stats?.scanned_markdown ?? 0;</pre></td>
-              <td>Declares scanned, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L117"><a href="#L117">117</a></td>
-              <td class="source"><pre>  const denied = payload.stats?.denied_markdown ?? 0;</pre></td>
-              <td>Declares denied, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L118"><a href="#L118">118</a></td>
-              <td class="source"><pre>  const review = payload.stats?.review_required_markdown ?? 0;</pre></td>
-              <td>Declares review, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L119"><a href="#L119">119</a></td>
-              <td class="source"><pre>  const redacted = payload.stats?.redacted_documents ?? 0;</pre></td>
-              <td>Declares redacted, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L120"><a href="#L120">120</a></td>
-              <td class="source"><pre>  const acceptedText = serverDocumentCount === null</pre></td>
-              <td>Declares acceptedText, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L121"><a href="#L121">121</a></td>
-              <td class="source"><pre>    ? `${localChunks} chunk${localChunks === 1 ? &quot;&quot; : &quot;s&quot;} sent`</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L122"><a href="#L122">122</a></td>
-              <td class="source"><pre>    : `${serverDocumentCount} server chunk${serverDocumentCount === 1 ? &quot;&quot; : &quot;s&quot;} now indexed`;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L123"><a href="#L123">123</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L124"><a href="#L124">124</a></td>
-              <td class="source"><pre>  return {</pre></td>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>export function describeHttpFailure(action: string, status: number, responseText: string): string {</pre></td>
+              <td>Defines describeHttpFailure, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>  const serverError = parseServerError(responseText);</pre></td>
+              <td>Declares serverError, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>  const suffix = serverError ? ` Server said: ${serverError}` : &quot;&quot;;</pre></td>
+              <td>Declares suffix, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre>  if (status === 401 || status === 403) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>    return `${capitalize(action)} was not authorized. Check the sync token and server URL.${suffix}`;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L125"><a href="#L125">125</a></td>
-              <td class="source"><pre>    message: `${acceptedText}. Scanned ${scanned} note${scanned === 1 ? &quot;&quot; : &quot;s&quot;}; denied ${denied}; review ${review}; redacted ${redacted}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L126"><a href="#L126">126</a></td>
-              <td class="source"><pre>    serverDocumentCount,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L127"><a href="#L127">127</a></td>
-              <td class="source"><pre>    serverGeneratedAt,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L128"><a href="#L128">128</a></td>
-              <td class="source"><pre>  };</pre></td>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>  if (status === 404) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>    return `${capitalize(action)} endpoint was not found. Check that the server URL is the base URL and that the deployed server is current.${suffix}`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre>  if (status &gt;= 500) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>    return `${capitalize(action)} reached the server, but the server failed. Check server logs or try again.${suffix}`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>  if (status &gt;= 400) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>    return `${capitalize(action)} was rejected by the server with HTTP ${status}.${suffix}`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>  return `${capitalize(action)} failed with unexpected HTTP ${status}.${suffix}`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
               <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>export function describeCaughtError(action: string, error: unknown): string {</pre></td>
+              <td>Defines describeCaughtError, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>  const message = error instanceof Error ? error.message : String(error);</pre></td>
+              <td>Declares message, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre>  if (/failed to fetch|network|load failed|could not connect|ENOTFOUND|ECONNREFUSED/i.test(message)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre>    return `${capitalize(action)} could not reach the server. Check the server URL, network connection, and whether the server is running.`;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L130"><a href="#L130">130</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L131"><a href="#L131">131</a></td>
-              <td class="source"><pre>export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSafetyDisclosure {</pre></td>
-              <td>Defines pluginSafetyDisclosure, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L132"><a href="#L132">132</a></td>
-              <td class="source"><pre>  const writePoint = settings.writeMode === &quot;direct_apply&quot;</pre></td>
-              <td>Declares writePoint, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L133"><a href="#L133">133</a></td>
-              <td class="source"><pre>    ? `Direct apply is selected. Treat this as experimental: matching proposals can be applied only after local safety checks, backup creation, and audit logging in ${settings.writeAuditFolder}.`</pre></td>
-              <td>Line 133 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L134"><a href="#L134">134</a></td>
-              <td class="source"><pre>    : `Write mode is review required. Remote clients can create proposals, but the plugin must approve and apply supported writes locally after safety checks.`;</pre></td>
-              <td>Line 134 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>  return {</pre></td>
+              <td class="source"><pre>  return message;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="source"><pre>export function summarizeSyncResponse(payload: SyncPayload, responseText: string): SyncResultSummary {</pre></td>
+              <td>Defines summarizeSyncResponse, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>  const parsed = safeJson(responseText) as VaultSyncResponse | null;</pre></td>
+              <td>Declares parsed, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>  const serverDocumentCount = typeof parsed?.vault?.document_count === &quot;number&quot;</pre></td>
+              <td>Declares serverDocumentCount, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>    ? parsed.vault.document_count</pre></td>
+              <td>Line 136 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre>    title: &quot;Safety boundary&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    : typeof parsed?.document_count === &quot;number&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
               <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>    summary: &quot;Vault MCP syncs approved context to the server as a derived index. The local vault remains the source of truth.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      ? parsed.document_count</pre></td>
+              <td>Line 138 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L139"><a href="#L139">139</a></td>
-              <td class="source"><pre>    points: [</pre></td>
+              <td class="source"><pre>      : null;</pre></td>
               <td>Line 139 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L140"><a href="#L140">140</a></td>
-              <td class="source"><pre>      `Index mode is ${settings.indexMode}. Preview before syncing to see which notes are allowed, denied, or held for review.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>  const serverGeneratedAt = typeof parsed?.vault?.generated_at === &quot;string&quot;</pre></td>
+              <td>Declares serverGeneratedAt, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L141"><a href="#L141">141</a></td>
-              <td class="source"><pre>      &quot;Exclude rules run before include and manual allow rules, so denied folders stay denied unless you change the policy.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    ? parsed.vault.generated_at</pre></td>
+              <td>Line 141 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>      &quot;The server stores searchable chunks and write proposals; it does not directly edit Obsidian files.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    : typeof parsed?.generated_at === &quot;string&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
               <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>      writePoint,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      ? parsed.generated_at</pre></td>
+              <td>Line 143 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L144"><a href="#L144">144</a></td>
-              <td class="source"><pre>      `Local write applies create backup and audit notes under ${settings.writeAuditFolder}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      : null;</pre></td>
+              <td>Line 144 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L145"><a href="#L145">145</a></td>
-              <td class="source"><pre>    ],</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>  const localChunks = payload.documents.length;</pre></td>
+              <td>Declares localChunks, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>  };</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>  const scanned = payload.stats?.scanned_markdown ?? 0;</pre></td>
+              <td>Declares scanned, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>  const denied = payload.stats?.denied_markdown ?? 0;</pre></td>
+              <td>Declares denied, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L148"><a href="#L148">148</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  const review = payload.stats?.review_required_markdown ?? 0;</pre></td>
+              <td>Declares review, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>export function pluginConfigurationChecklist(settings: PluginConfigurationSettings): PluginConfigurationChecklist {</pre></td>
-              <td>Defines pluginConfigurationChecklist, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>  const redacted = payload.stats?.redacted_documents ?? 0;</pre></td>
+              <td>Declares redacted, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>  const items: PluginConfigurationChecklistItem[] = [];</pre></td>
-              <td>Declares items, a local value used later in this file.</td>
+              <td class="source"><pre>  const acceptedText = serverDocumentCount === null</pre></td>
+              <td>Declares acceptedText, a local value used later in this file.</td>
             </tr>
             <tr>
               <td class="line-number" id="L151"><a href="#L151">151</a></td>
-              <td class="source"><pre>  let normalizedServerUrl: string | null = null;</pre></td>
-              <td>Declares normalizedServerUrl, a local value used later in this file.</td>
+              <td class="source"><pre>    ? `${localChunks} chunk${localChunks === 1 ? &quot;&quot; : &quot;s&quot;} sent`</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
               <td class="line-number" id="L152"><a href="#L152">152</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>    : `${serverDocumentCount} server chunk${serverDocumentCount === 1 ? &quot;&quot; : &quot;s&quot;} now indexed`;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
               <td class="line-number" id="L153"><a href="#L153">153</a></td>
-              <td class="source"><pre>  try {</pre></td>
-              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L154"><a href="#L154">154</a></td>
-              <td class="source"><pre>    normalizedServerUrl = normalizeServerBaseUrl(settings.serverUrl);</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L155"><a href="#L155">155</a></td>
-              <td class="source"><pre>    items.push({</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L156"><a href="#L156">156</a></td>
-              <td class="source"><pre>      label: &quot;Server URL&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L157"><a href="#L157">157</a></td>
-              <td class="source"><pre>      status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>      message: `Using ${normalizedServerUrl}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L160"><a href="#L160">160</a></td>
-              <td class="source"><pre>  } catch (error) {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L161"><a href="#L161">161</a></td>
-              <td class="source"><pre>    items.push({</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L162"><a href="#L162">162</a></td>
-              <td class="source"><pre>      label: &quot;Server URL&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L163"><a href="#L163">163</a></td>
-              <td class="source"><pre>      status: &quot;blocked&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L164"><a href="#L164">164</a></td>
-              <td class="source"><pre>      message: error instanceof Error ? error.message : String(error),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L165"><a href="#L165">165</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L166"><a href="#L166">166</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L167"><a href="#L167">167</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L168"><a href="#L168">168</a></td>
-              <td class="source"><pre>  items.push(settings.syncToken.trim()</pre></td>
-              <td>Line 168 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L169"><a href="#L169">169</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L170"><a href="#L170">170</a></td>
-              <td class="source"><pre>        label: &quot;Sync token&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L171"><a href="#L171">171</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L172"><a href="#L172">172</a></td>
-              <td class="source"><pre>        message: &quot;A sync token is saved. It is hidden in the UI and used only for admin sync/proposal requests.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L173"><a href="#L173">173</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L174"><a href="#L174">174</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L175"><a href="#L175">175</a></td>
-              <td class="source"><pre>        label: &quot;Sync token&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L176"><a href="#L176">176</a></td>
-              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L177"><a href="#L177">177</a></td>
-              <td class="source"><pre>        message: &quot;Add the server admin sync token before syncing or checking write proposals.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L178"><a href="#L178">178</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L179"><a href="#L179">179</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L180"><a href="#L180">180</a></td>
-              <td class="source"><pre>  items.push(settings.vaultId.trim()</pre></td>
-              <td>Line 180 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L181"><a href="#L181">181</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L182"><a href="#L182">182</a></td>
-              <td class="source"><pre>        label: &quot;Vault id&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L183"><a href="#L183">183</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L184"><a href="#L184">184</a></td>
-              <td class="source"><pre>        message: `This vault will sync as ${settings.vaultId.trim()}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L185"><a href="#L185">185</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L186"><a href="#L186">186</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L187"><a href="#L187">187</a></td>
-              <td class="source"><pre>        label: &quot;Vault id&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L188"><a href="#L188">188</a></td>
-              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L189"><a href="#L189">189</a></td>
-              <td class="source"><pre>        message: &quot;Choose a stable vault id before syncing.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L190"><a href="#L190">190</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L191"><a href="#L191">191</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L192"><a href="#L192">192</a></td>
-              <td class="source"><pre>  items.push(settings.includePrefixes.length &gt; 0 || settings.indexMode === &quot;manual_only&quot;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L193"><a href="#L193">193</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L194"><a href="#L194">194</a></td>
-              <td class="source"><pre>        label: &quot;Index scope&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L195"><a href="#L195">195</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L196"><a href="#L196">196</a></td>
-              <td class="source"><pre>        message: settings.indexMode === &quot;manual_only&quot;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L197"><a href="#L197">197</a></td>
-              <td class="source"><pre>          ? &quot;Manual-only mode is selected; only explicit manual allow paths or prefixes can sync.&quot;</pre></td>
-              <td>Line 197 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L198"><a href="#L198">198</a></td>
-              <td class="source"><pre>          : `${settings.includePrefixes.length} include rule${settings.includePrefixes.length === 1 ? &quot;&quot; : &quot;s&quot;} configured.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L199"><a href="#L199">199</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L200"><a href="#L200">200</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L201"><a href="#L201">201</a></td>
-              <td class="source"><pre>        label: &quot;Index scope&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L202"><a href="#L202">202</a></td>
-              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L203"><a href="#L203">203</a></td>
-              <td class="source"><pre>        message: &quot;Add at least one include prefix or switch to manual-only mode before syncing.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L204"><a href="#L204">204</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L205"><a href="#L205">205</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L206"><a href="#L206">206</a></td>
-              <td class="source"><pre>  items.push(settings.excludePrefixes.length &gt; 0</pre></td>
-              <td>Line 206 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L207"><a href="#L207">207</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L208"><a href="#L208">208</a></td>
-              <td class="source"><pre>        label: &quot;Exclusions&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L209"><a href="#L209">209</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L210"><a href="#L210">210</a></td>
-              <td class="source"><pre>        message: `${settings.excludePrefixes.length} exclude rule${settings.excludePrefixes.length === 1 ? &quot;&quot; : &quot;s&quot;} configured. Exclusions win before include and manual allow rules.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L211"><a href="#L211">211</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L212"><a href="#L212">212</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L213"><a href="#L213">213</a></td>
-              <td class="source"><pre>        label: &quot;Exclusions&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L214"><a href="#L214">214</a></td>
-              <td class="source"><pre>        status: &quot;warning&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L215"><a href="#L215">215</a></td>
-              <td class="source"><pre>        message: &quot;No exclude rules are configured. Review sensitive folders before syncing.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L216"><a href="#L216">216</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L217"><a href="#L217">217</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L218"><a href="#L218">218</a></td>
-              <td class="source"><pre>  items.push(settings.writeMode === &quot;direct_apply&quot;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L219"><a href="#L219">219</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L220"><a href="#L220">220</a></td>
-              <td class="source"><pre>        label: &quot;Write mode&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L221"><a href="#L221">221</a></td>
-              <td class="source"><pre>        status: &quot;warning&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L222"><a href="#L222">222</a></td>
-              <td class="source"><pre>        message: &quot;Direct apply is experimental. Use review required for private-alpha testing unless deliberately validating direct apply.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L223"><a href="#L223">223</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L224"><a href="#L224">224</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L225"><a href="#L225">225</a></td>
-              <td class="source"><pre>        label: &quot;Write mode&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L226"><a href="#L226">226</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L227"><a href="#L227">227</a></td>
-              <td class="source"><pre>        message: &quot;Review required is selected. Writes stay proposal-first and require plugin-side approval/apply.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L228"><a href="#L228">228</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L229"><a href="#L229">229</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L230"><a href="#L230">230</a></td>
-              <td class="source"><pre>  items.push(settings.writeAuditFolder.trim()</pre></td>
-              <td>Line 230 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L231"><a href="#L231">231</a></td>
-              <td class="source"><pre>    ? {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L232"><a href="#L232">232</a></td>
-              <td class="source"><pre>        label: &quot;Write audit folder&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L233"><a href="#L233">233</a></td>
-              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L234"><a href="#L234">234</a></td>
-              <td class="source"><pre>        message: `Backups and audit notes will be written under ${settings.writeAuditFolder.trim()}.`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L235"><a href="#L235">235</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L236"><a href="#L236">236</a></td>
-              <td class="source"><pre>    : {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L237"><a href="#L237">237</a></td>
-              <td class="source"><pre>        label: &quot;Write audit folder&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L238"><a href="#L238">238</a></td>
-              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L239"><a href="#L239">239</a></td>
-              <td class="source"><pre>        message: &quot;Set a vault-relative audit folder before applying write proposals.&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L240"><a href="#L240">240</a></td>
-              <td class="source"><pre>      });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L241"><a href="#L241">241</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L242"><a href="#L242">242</a></td>
               <td class="source"><pre>  return {</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L243"><a href="#L243">243</a></td>
-              <td class="source"><pre>    readyToPreview: !items.some((item) =&gt; item.label === &quot;Server URL&quot; &amp;&amp; item.status === &quot;blocked&quot;),</pre></td>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>    message: `${acceptedText}. Scanned ${scanned} note${scanned === 1 ? &quot;&quot; : &quot;s&quot;}; denied ${denied}; review ${review}; redacted ${redacted}.`,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L244"><a href="#L244">244</a></td>
-              <td class="source"><pre>    readyToSync: !items.some((item) =&gt; item.status === &quot;blocked&quot;),</pre></td>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>    serverDocumentCount,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L245"><a href="#L245">245</a></td>
-              <td class="source"><pre>    items,</pre></td>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre>    serverGeneratedAt,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L246"><a href="#L246">246</a></td>
+              <td class="line-number" id="L158"><a href="#L158">158</a></td>
               <td class="source"><pre>  };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L247"><a href="#L247">247</a></td>
+              <td class="line-number" id="L159"><a href="#L159">159</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L248"><a href="#L248">248</a></td>
+              <td class="line-number" id="L160"><a href="#L160">160</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L249"><a href="#L249">249</a></td>
-              <td class="source"><pre>function parseServerError(responseText: string): string | null {</pre></td>
-              <td>Defines parseServerError, a reusable block of behavior called by other code.</td>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="source"><pre>export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSafetyDisclosure {</pre></td>
+              <td>Defines pluginSafetyDisclosure, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L250"><a href="#L250">250</a></td>
-              <td class="source"><pre>  const parsed = safeJson(responseText);</pre></td>
-              <td>Declares parsed, a local value used later in this file.</td>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre>  const writePoint = settings.writeMode === &quot;direct_apply&quot;</pre></td>
+              <td>Declares writePoint, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L251"><a href="#L251">251</a></td>
-              <td class="source"><pre>  if (parsed &amp;&amp; typeof parsed === &quot;object&quot; &amp;&amp; &quot;error&quot; in parsed &amp;&amp; typeof parsed.error === &quot;string&quot;) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre>    ? `Direct apply is selected. Treat this as experimental: matching proposals can be applied only after local safety checks, backup creation, and audit logging in ${settings.writeAuditFolder}.`</pre></td>
+              <td>Line 163 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L252"><a href="#L252">252</a></td>
-              <td class="source"><pre>    return parsed.error;</pre></td>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>    : `Write mode is review required. Remote clients can create proposals, but the plugin must approve and apply supported writes locally after safety checks.`;</pre></td>
+              <td>Line 164 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>  return {</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L253"><a href="#L253">253</a></td>
-              <td class="source"><pre>  }</pre></td>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>    title: &quot;Safety boundary&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>    summary: &quot;Vault MCP syncs approved context to the server as a derived index. The local vault remains the source of truth.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>    points: [</pre></td>
+              <td>Line 169 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>      `Index mode is ${settings.indexMode}. Preview before syncing to see which notes are allowed, denied, or held for review.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre>      &quot;Exclude rules run before include and manual allow rules, so denied folders stay denied unless you change the policy.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>      &quot;The server stores searchable chunks and write proposals; it does not directly edit Obsidian files.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre>      writePoint,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="source"><pre>      `Local write applies create backup and audit notes under ${settings.writeAuditFolder}.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="source"><pre>    ],</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L254"><a href="#L254">254</a></td>
-              <td class="source"><pre>  const trimmed = responseText.trim();</pre></td>
-              <td>Declares trimmed, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L255"><a href="#L255">255</a></td>
-              <td class="source"><pre>  if (!trimmed) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L256"><a href="#L256">256</a></td>
-              <td class="source"><pre>    return null;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L257"><a href="#L257">257</a></td>
-              <td class="source"><pre>  }</pre></td>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="source"><pre>  };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L258"><a href="#L258">258</a></td>
-              <td class="source"><pre>  return trimmed.length &gt; 180 ? `${trimmed.slice(0, 180)}...` : trimmed;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L259"><a href="#L259">259</a></td>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L260"><a href="#L260">260</a></td>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L261"><a href="#L261">261</a></td>
-              <td class="source"><pre>function safeJson(value: string): unknown | null {</pre></td>
-              <td>Defines safeJson, a reusable block of behavior called by other code.</td>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="source"><pre>export function pluginConfigurationChecklist(settings: PluginConfigurationSettings): PluginConfigurationChecklist {</pre></td>
+              <td>Defines pluginConfigurationChecklist, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L262"><a href="#L262">262</a></td>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="source"><pre>  const items: PluginConfigurationChecklistItem[] = [];</pre></td>
+              <td>Declares items, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="source"><pre>  let normalizedServerUrl: string | null = null;</pre></td>
+              <td>Declares normalizedServerUrl, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
               <td class="source"><pre>  try {</pre></td>
               <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L263"><a href="#L263">263</a></td>
-              <td class="source"><pre>    return JSON.parse(value) as unknown;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="source"><pre>    normalizedServerUrl = normalizeServerBaseUrl(settings.serverUrl);</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L264"><a href="#L264">264</a></td>
-              <td class="source"><pre>  } catch {</pre></td>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="source"><pre>    items.push({</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L265"><a href="#L265">265</a></td>
-              <td class="source"><pre>    return null;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="source"><pre>      label: &quot;Server URL&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L266"><a href="#L266">266</a></td>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
+              <td class="source"><pre>      status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="source"><pre>      message: `Using ${normalizedServerUrl}.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="source"><pre>  } catch (error) {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="source"><pre>    items.push({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
+              <td class="source"><pre>      label: &quot;Server URL&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
+              <td class="source"><pre>      status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
+              <td class="source"><pre>      message: error instanceof Error ? error.message : String(error),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L195"><a href="#L195">195</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L196"><a href="#L196">196</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L267"><a href="#L267">267</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L268"><a href="#L268">268</a></td>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="source"><pre>  items.push(settings.syncToken.trim()</pre></td>
+              <td>Line 198 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="source"><pre>        label: &quot;Sync token&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="source"><pre>        message: &quot;A sync token is saved. It is hidden in the UI and used only for admin sync/proposal requests.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
+              <td class="source"><pre>        label: &quot;Sync token&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L206"><a href="#L206">206</a></td>
+              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="source"><pre>        message: &quot;Add the server admin sync token before syncing or checking write proposals.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="source"><pre>  items.push(settings.vaultId.trim()</pre></td>
+              <td>Line 210 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="source"><pre>        label: &quot;Vault id&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
+              <td class="source"><pre>        message: `This vault will sync as ${settings.vaultId.trim()}.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
+              <td class="source"><pre>        label: &quot;Vault id&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
+              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
+              <td class="source"><pre>        message: &quot;Choose a stable vault id before syncing.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L221"><a href="#L221">221</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L222"><a href="#L222">222</a></td>
+              <td class="source"><pre>  items.push(settings.includePrefixes.length &gt; 0 || settings.indexMode === &quot;manual_only&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L223"><a href="#L223">223</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L224"><a href="#L224">224</a></td>
+              <td class="source"><pre>        label: &quot;Index scope&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L225"><a href="#L225">225</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L226"><a href="#L226">226</a></td>
+              <td class="source"><pre>        message: settings.indexMode === &quot;manual_only&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L227"><a href="#L227">227</a></td>
+              <td class="source"><pre>          ? &quot;Manual-only mode is selected; only explicit manual allow paths or prefixes can sync.&quot;</pre></td>
+              <td>Line 227 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L228"><a href="#L228">228</a></td>
+              <td class="source"><pre>          : `${settings.includePrefixes.length} include rule${settings.includePrefixes.length === 1 ? &quot;&quot; : &quot;s&quot;} configured.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L229"><a href="#L229">229</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L231"><a href="#L231">231</a></td>
+              <td class="source"><pre>        label: &quot;Index scope&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L232"><a href="#L232">232</a></td>
+              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L233"><a href="#L233">233</a></td>
+              <td class="source"><pre>        message: &quot;Add at least one include prefix or switch to manual-only mode before syncing.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L234"><a href="#L234">234</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L235"><a href="#L235">235</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L236"><a href="#L236">236</a></td>
+              <td class="source"><pre>  items.push(settings.excludePrefixes.length &gt; 0</pre></td>
+              <td>Line 236 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L237"><a href="#L237">237</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L238"><a href="#L238">238</a></td>
+              <td class="source"><pre>        label: &quot;Exclusions&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L239"><a href="#L239">239</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L240"><a href="#L240">240</a></td>
+              <td class="source"><pre>        message: `${settings.excludePrefixes.length} exclude rule${settings.excludePrefixes.length === 1 ? &quot;&quot; : &quot;s&quot;} configured. Exclusions win before include and manual allow rules.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L241"><a href="#L241">241</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L242"><a href="#L242">242</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L243"><a href="#L243">243</a></td>
+              <td class="source"><pre>        label: &quot;Exclusions&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L244"><a href="#L244">244</a></td>
+              <td class="source"><pre>        status: &quot;warning&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L245"><a href="#L245">245</a></td>
+              <td class="source"><pre>        message: &quot;No exclude rules are configured. Review sensitive folders before syncing.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L246"><a href="#L246">246</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L247"><a href="#L247">247</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L248"><a href="#L248">248</a></td>
+              <td class="source"><pre>  items.push(settings.writeMode === &quot;direct_apply&quot;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L249"><a href="#L249">249</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L250"><a href="#L250">250</a></td>
+              <td class="source"><pre>        label: &quot;Write mode&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L251"><a href="#L251">251</a></td>
+              <td class="source"><pre>        status: &quot;warning&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L252"><a href="#L252">252</a></td>
+              <td class="source"><pre>        message: &quot;Direct apply is experimental. Use review required for private-alpha testing unless deliberately validating direct apply.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L253"><a href="#L253">253</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L254"><a href="#L254">254</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L255"><a href="#L255">255</a></td>
+              <td class="source"><pre>        label: &quot;Write mode&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L256"><a href="#L256">256</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L257"><a href="#L257">257</a></td>
+              <td class="source"><pre>        message: &quot;Review required is selected. Writes stay proposal-first and require plugin-side approval/apply.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L258"><a href="#L258">258</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L259"><a href="#L259">259</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L260"><a href="#L260">260</a></td>
+              <td class="source"><pre>  items.push(settings.writeAuditFolder.trim()</pre></td>
+              <td>Line 260 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L261"><a href="#L261">261</a></td>
+              <td class="source"><pre>    ? {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L262"><a href="#L262">262</a></td>
+              <td class="source"><pre>        label: &quot;Write audit folder&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L263"><a href="#L263">263</a></td>
+              <td class="source"><pre>        status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L264"><a href="#L264">264</a></td>
+              <td class="source"><pre>        message: `Backups and audit notes will be written under ${settings.writeAuditFolder.trim()}.`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L265"><a href="#L265">265</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L266"><a href="#L266">266</a></td>
+              <td class="source"><pre>    : {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L267"><a href="#L267">267</a></td>
+              <td class="source"><pre>        label: &quot;Write audit folder&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L268"><a href="#L268">268</a></td>
+              <td class="source"><pre>        status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L269"><a href="#L269">269</a></td>
+              <td class="source"><pre>        message: &quot;Set a vault-relative audit folder before applying write proposals.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L270"><a href="#L270">270</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L271"><a href="#L271">271</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L272"><a href="#L272">272</a></td>
+              <td class="source"><pre>  return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L273"><a href="#L273">273</a></td>
+              <td class="source"><pre>    readyToPreview: !items.some((item) =&gt; item.label === &quot;Server URL&quot; &amp;&amp; item.status === &quot;blocked&quot;),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L274"><a href="#L274">274</a></td>
+              <td class="source"><pre>    readyToSync: !items.some((item) =&gt; item.status === &quot;blocked&quot;),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L275"><a href="#L275">275</a></td>
+              <td class="source"><pre>    items,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L276"><a href="#L276">276</a></td>
+              <td class="source"><pre>  };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L277"><a href="#L277">277</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L278"><a href="#L278">278</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L279"><a href="#L279">279</a></td>
+              <td class="source"><pre>export function summarizeServerStatus(</pre></td>
+              <td>Defines summarizeServerStatus, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L280"><a href="#L280">280</a></td>
+              <td class="source"><pre>  health: PluginServerHealthSnapshot,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L281"><a href="#L281">281</a></td>
+              <td class="source"><pre>  vaultStatus: PluginVaultStatusSnapshot | null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L282"><a href="#L282">282</a></td>
+              <td class="source"><pre>  tokenConfigured: boolean,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L283"><a href="#L283">283</a></td>
+              <td class="source"><pre>): PluginServerStatusSummary {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L284"><a href="#L284">284</a></td>
+              <td class="source"><pre>  const storageOk = health.storage?.ok !== false;</pre></td>
+              <td>Declares storageOk, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L285"><a href="#L285">285</a></td>
+              <td class="source"><pre>  const healthOk = health.ok !== false &amp;&amp; storageOk;</pre></td>
+              <td>Declares healthOk, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L286"><a href="#L286">286</a></td>
+              <td class="source"><pre>  const facts = [</pre></td>
+              <td>Declares facts, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L287"><a href="#L287">287</a></td>
+              <td class="source"><pre>    health.service?.version ? `Server version: ${health.service.version}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L288"><a href="#L288">288</a></td>
+              <td class="source"><pre>    health.service?.mcp_resource_url ? `MCP endpoint: ${health.service.mcp_resource_url}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L289"><a href="#L289">289</a></td>
+              <td class="source"><pre>    `Storage: ${health.storage?.kind ?? &quot;unknown&quot;} (${storageOk ? &quot;ready&quot; : &quot;not ready&quot;})`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L290"><a href="#L290">290</a></td>
+              <td class="source"><pre>    typeof health.document_count === &quot;number&quot; ? `Indexed chunks across server: ${health.document_count}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L291"><a href="#L291">291</a></td>
+              <td class="source"><pre>    typeof health.vault_count === &quot;number&quot; ? `Connected vaults: ${health.vault_count}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L292"><a href="#L292">292</a></td>
+              <td class="source"><pre>    health.last_sync_at ? `Last server sync: ${health.last_sync_at}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L293"><a href="#L293">293</a></td>
+              <td class="source"><pre>    vaultStatus?.vault_id ? `Configured vault: ${vaultStatus.vault_id}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L294"><a href="#L294">294</a></td>
+              <td class="source"><pre>    typeof vaultStatus?.document_count === &quot;number&quot; ? `Configured vault chunks: ${vaultStatus.document_count}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L295"><a href="#L295">295</a></td>
+              <td class="source"><pre>    vaultStatus?.generated_at ? `Configured vault generated: ${vaultStatus.generated_at}` : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L296"><a href="#L296">296</a></td>
+              <td class="source"><pre>    Array.isArray(health.storage?.migrations) &amp;&amp; health.storage.migrations.length &gt; 0</pre></td>
+              <td>Line 296 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L297"><a href="#L297">297</a></td>
+              <td class="source"><pre>      ? `Database migrations: ${health.storage.migrations.join(&quot;, &quot;)}`</pre></td>
+              <td>Line 297 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L298"><a href="#L298">298</a></td>
+              <td class="source"><pre>      : null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L299"><a href="#L299">299</a></td>
+              <td class="source"><pre>  ].filter((fact): fact is string =&gt; Boolean(fact));</pre></td>
+              <td>Uses an arrow function, a compact JavaScript function often used as a callback.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L300"><a href="#L300">300</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L301"><a href="#L301">301</a></td>
+              <td class="source"><pre>  if (!healthOk) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L302"><a href="#L302">302</a></td>
+              <td class="source"><pre>    return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L303"><a href="#L303">303</a></td>
+              <td class="source"><pre>      status: &quot;blocked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L304"><a href="#L304">304</a></td>
+              <td class="source"><pre>      title: &quot;Server reachable, storage not ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L305"><a href="#L305">305</a></td>
+              <td class="source"><pre>      message: &quot;The server answered /healthz, but storage is reporting a failure. Check the deployment logs and database connection before syncing.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L306"><a href="#L306">306</a></td>
+              <td class="source"><pre>      facts,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L307"><a href="#L307">307</a></td>
+              <td class="source"><pre>    };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L308"><a href="#L308">308</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L309"><a href="#L309">309</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L310"><a href="#L310">310</a></td>
+              <td class="source"><pre>  if (!tokenConfigured) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L311"><a href="#L311">311</a></td>
+              <td class="source"><pre>    return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L312"><a href="#L312">312</a></td>
+              <td class="source"><pre>      status: &quot;warning&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L313"><a href="#L313">313</a></td>
+              <td class="source"><pre>      title: &quot;Server reachable&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L314"><a href="#L314">314</a></td>
+              <td class="source"><pre>      message: &quot;The public health check works. Add the admin sync token to verify this plugin can read vault status, sync, and review write proposals.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L315"><a href="#L315">315</a></td>
+              <td class="source"><pre>      facts,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L316"><a href="#L316">316</a></td>
+              <td class="source"><pre>    };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L317"><a href="#L317">317</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L318"><a href="#L318">318</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L319"><a href="#L319">319</a></td>
+              <td class="source"><pre>  if (!vaultStatus) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L320"><a href="#L320">320</a></td>
+              <td class="source"><pre>    return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L321"><a href="#L321">321</a></td>
+              <td class="source"><pre>      status: &quot;warning&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L322"><a href="#L322">322</a></td>
+              <td class="source"><pre>      title: &quot;Server reachable, vault status not checked&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L323"><a href="#L323">323</a></td>
+              <td class="source"><pre>      message: &quot;The server health check works, but this run did not verify the configured vault with the sync token.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L324"><a href="#L324">324</a></td>
+              <td class="source"><pre>      facts,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L325"><a href="#L325">325</a></td>
+              <td class="source"><pre>    };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L326"><a href="#L326">326</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L327"><a href="#L327">327</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L328"><a href="#L328">328</a></td>
+              <td class="source"><pre>  return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L329"><a href="#L329">329</a></td>
+              <td class="source"><pre>    status: &quot;ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L330"><a href="#L330">330</a></td>
+              <td class="source"><pre>    title: &quot;Server and vault connection ready&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L331"><a href="#L331">331</a></td>
+              <td class="source"><pre>    message: &quot;The server is healthy and the sync token can read the configured vault status.&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L332"><a href="#L332">332</a></td>
+              <td class="source"><pre>    facts,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L333"><a href="#L333">333</a></td>
+              <td class="source"><pre>  };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L334"><a href="#L334">334</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L335"><a href="#L335">335</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L336"><a href="#L336">336</a></td>
+              <td class="source"><pre>function parseServerError(responseText: string): string | null {</pre></td>
+              <td>Defines parseServerError, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L337"><a href="#L337">337</a></td>
+              <td class="source"><pre>  const parsed = safeJson(responseText);</pre></td>
+              <td>Declares parsed, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L338"><a href="#L338">338</a></td>
+              <td class="source"><pre>  if (parsed &amp;&amp; typeof parsed === &quot;object&quot; &amp;&amp; &quot;error&quot; in parsed &amp;&amp; typeof parsed.error === &quot;string&quot;) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L339"><a href="#L339">339</a></td>
+              <td class="source"><pre>    return parsed.error;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L340"><a href="#L340">340</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L341"><a href="#L341">341</a></td>
+              <td class="source"><pre>  const trimmed = responseText.trim();</pre></td>
+              <td>Declares trimmed, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L342"><a href="#L342">342</a></td>
+              <td class="source"><pre>  if (!trimmed) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L343"><a href="#L343">343</a></td>
+              <td class="source"><pre>    return null;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L344"><a href="#L344">344</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L345"><a href="#L345">345</a></td>
+              <td class="source"><pre>  return trimmed.length &gt; 180 ? `${trimmed.slice(0, 180)}...` : trimmed;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L346"><a href="#L346">346</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L347"><a href="#L347">347</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L348"><a href="#L348">348</a></td>
+              <td class="source"><pre>function safeJson(value: string): unknown | null {</pre></td>
+              <td>Defines safeJson, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L349"><a href="#L349">349</a></td>
+              <td class="source"><pre>  try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L350"><a href="#L350">350</a></td>
+              <td class="source"><pre>    return JSON.parse(value) as unknown;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L351"><a href="#L351">351</a></td>
+              <td class="source"><pre>  } catch {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L352"><a href="#L352">352</a></td>
+              <td class="source"><pre>    return null;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L353"><a href="#L353">353</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L354"><a href="#L354">354</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L355"><a href="#L355">355</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L356"><a href="#L356">356</a></td>
               <td class="source"><pre>function capitalize(value: string): string {</pre></td>
               <td>Defines capitalize, a reusable block of behavior called by other code.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L270"><a href="#L270">270</a></td>
+              <td class="line-number" id="L357"><a href="#L357">357</a></td>
               <td class="source"><pre>  return value.length &gt; 0 ? `${value[0].toUpperCase()}${value.slice(1)}` : value;</pre></td>
               <td>Returns this value to the caller and ends the current function path.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L271"><a href="#L271">271</a></td>
+              <td class="line-number" id="L358"><a href="#L358">358</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>

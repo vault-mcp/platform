@@ -38,6 +38,36 @@ export type PluginConfigurationChecklist = {
   items: PluginConfigurationChecklistItem[];
 };
 
+export type PluginServerHealthSnapshot = {
+  ok?: boolean;
+  service?: {
+    version?: string;
+    mcp_resource_url?: string;
+  };
+  storage?: {
+    kind?: string;
+    ok?: boolean;
+    migrations?: string[];
+  };
+  document_count?: number;
+  vault_count?: number;
+  last_sync_at?: string | null;
+};
+
+export type PluginVaultStatusSnapshot = {
+  vault_id?: string;
+  vault_name?: string;
+  document_count?: number;
+  generated_at?: string | null;
+};
+
+export type PluginServerStatusSummary = {
+  status: "ready" | "warning" | "blocked";
+  title: string;
+  message: string;
+  facts: string[];
+};
+
 type VaultSyncResponse = {
   ok?: boolean;
   vault?: {
@@ -243,6 +273,63 @@ export function pluginConfigurationChecklist(settings: PluginConfigurationSettin
     readyToPreview: !items.some((item) => item.label === "Server URL" && item.status === "blocked"),
     readyToSync: !items.some((item) => item.status === "blocked"),
     items,
+  };
+}
+
+export function summarizeServerStatus(
+  health: PluginServerHealthSnapshot,
+  vaultStatus: PluginVaultStatusSnapshot | null,
+  tokenConfigured: boolean,
+): PluginServerStatusSummary {
+  const storageOk = health.storage?.ok !== false;
+  const healthOk = health.ok !== false && storageOk;
+  const facts = [
+    health.service?.version ? `Server version: ${health.service.version}` : null,
+    health.service?.mcp_resource_url ? `MCP endpoint: ${health.service.mcp_resource_url}` : null,
+    `Storage: ${health.storage?.kind ?? "unknown"} (${storageOk ? "ready" : "not ready"})`,
+    typeof health.document_count === "number" ? `Indexed chunks across server: ${health.document_count}` : null,
+    typeof health.vault_count === "number" ? `Connected vaults: ${health.vault_count}` : null,
+    health.last_sync_at ? `Last server sync: ${health.last_sync_at}` : null,
+    vaultStatus?.vault_id ? `Configured vault: ${vaultStatus.vault_id}` : null,
+    typeof vaultStatus?.document_count === "number" ? `Configured vault chunks: ${vaultStatus.document_count}` : null,
+    vaultStatus?.generated_at ? `Configured vault generated: ${vaultStatus.generated_at}` : null,
+    Array.isArray(health.storage?.migrations) && health.storage.migrations.length > 0
+      ? `Database migrations: ${health.storage.migrations.join(", ")}`
+      : null,
+  ].filter((fact): fact is string => Boolean(fact));
+
+  if (!healthOk) {
+    return {
+      status: "blocked",
+      title: "Server reachable, storage not ready",
+      message: "The server answered /healthz, but storage is reporting a failure. Check the deployment logs and database connection before syncing.",
+      facts,
+    };
+  }
+
+  if (!tokenConfigured) {
+    return {
+      status: "warning",
+      title: "Server reachable",
+      message: "The public health check works. Add the admin sync token to verify this plugin can read vault status, sync, and review write proposals.",
+      facts,
+    };
+  }
+
+  if (!vaultStatus) {
+    return {
+      status: "warning",
+      title: "Server reachable, vault status not checked",
+      message: "The server health check works, but this run did not verify the configured vault with the sync token.",
+      facts,
+    };
+  }
+
+  return {
+    status: "ready",
+    title: "Server and vault connection ready",
+    message: "The server is healthy and the sync token can read the configured vault status.",
+    facts,
   };
 }
 

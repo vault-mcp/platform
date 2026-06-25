@@ -125,6 +125,47 @@
   overflow-wrap: anywhere;
 }
 
+.vault-mcp-server-check {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin: 10px 0 14px;
+  padding: 12px;
+}
+
+.vault-mcp-server-check--ready {
+  border-color: rgba(var(--color-green-rgb), 0.45);
+}
+
+.vault-mcp-server-check--warning,
+.vault-mcp-server-check--unknown {
+  border-color: rgba(var(--color-orange-rgb), 0.45);
+}
+
+.vault-mcp-server-check--blocked {
+  border-color: rgba(var(--color-red-rgb), 0.45);
+}
+
+.vault-mcp-server-check__title {
+  font-weight: 700;
+}
+
+.vault-mcp-server-check__message,
+.vault-mcp-server-check__checked {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 4px;
+}
+
+.vault-mcp-server-check__facts {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.vault-mcp-server-check__facts li {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+
 .vault-mcp-sync-summary {
   border: 1px solid rgba(var(--color-green-rgb), 0.45);
   border-radius: 8px;

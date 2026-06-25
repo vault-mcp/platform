@@ -118,622 +118,622 @@
             </tr>
             <tr>
               <td class="line-number" id="L9"><a href="#L9">9</a></td>
-              <td class="source"><pre>  summarizeSyncResponse,</pre></td>
+              <td class="source"><pre>  summarizeServerStatus,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L10"><a href="#L10">10</a></td>
-              <td class="source"><pre>} from &quot;./plugin-helpers&quot;;</pre></td>
-              <td>Line 10 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  summarizeSyncResponse,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre>} from &quot;./plugin-helpers&quot;;</pre></td>
+              <td>Line 11 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
               <td class="source"><pre>describe(&quot;plugin helpers&quot;, () =&gt; {</pre></td>
               <td>Starts a Vitest test group that organizes related tests.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
               <td class="source"><pre>  it(&quot;normalizes base server URLs and rejects route URLs&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
               <td class="source"><pre>    expect(normalizeServerBaseUrl(&quot; https://vault-mcp-connector.vercel.app/ &quot;)).toBe(&quot;https://vault-mcp-connector.vercel.app&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
               <td class="source"><pre>    expect(normalizeServerBaseUrl(&quot;http://127.0.0.1:3333&quot;)).toBe(&quot;http://127.0.0.1:3333&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
               <td class="source"><pre>    expect(() =&gt; normalizeServerBaseUrl(&quot;vault-mcp-connector.vercel.app&quot;)).toThrow(&quot;Include https://&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
               <td class="source"><pre>    expect(() =&gt; normalizeServerBaseUrl(&quot;https://vault-mcp-connector.vercel.app/mcp&quot;)).toThrow(&quot;base server URL&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
               <td class="source"><pre>  it(&quot;turns HTTP failures into user-actionable messages&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
               <td class="source"><pre>    expect(describeHttpFailure(&quot;sync&quot;, 401, &quot;{\&quot;error\&quot;:\&quot;unauthorized\&quot;}&quot;)).toContain(&quot;Check the sync token&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
               <td class="source"><pre>    expect(describeHttpFailure(&quot;proposal check&quot;, 404, &quot;&quot;)).toContain(&quot;endpoint was not found&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
               <td class="source"><pre>    expect(describeHttpFailure(&quot;sync&quot;, 500, &quot;database unavailable&quot;)).toContain(&quot;server failed&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
               <td class="source"><pre>    expect(describeCaughtError(&quot;sync&quot;, new Error(&quot;Load failed&quot;))).toContain(&quot;could not reach the server&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
               <td class="source"><pre>  it(&quot;summarizes sync responses using server and local counts&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
               <td class="source"><pre>    const summary = summarizeSyncResponse(syncPayload(), JSON.stringify({</pre></td>
               <td>Declares summary, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
               <td class="source"><pre>      ok: true,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
               <td class="source"><pre>      vault: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
               <td class="source"><pre>        document_count: 12,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
               <td class="source"><pre>        generated_at: &quot;2026-06-13T18:00:00.000Z&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
               <td class="source"><pre>      },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
               <td class="source"><pre>    }));</pre></td>
-              <td>Line 34 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td>Line 35 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
               <td class="source"><pre>    expect(summary.serverDocumentCount).toBe(12);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
               <td class="source"><pre>    expect(summary.serverGeneratedAt).toBe(&quot;2026-06-13T18:00:00.000Z&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
               <td class="source"><pre>    expect(summary.message).toContain(&quot;12 server chunks now indexed&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
               <td class="source"><pre>    expect(summary.message).toContain(&quot;Scanned 10 notes&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>    expect(summary.message).toContain(&quot;denied 3&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre>    expect(summary.message).toContain(&quot;review 2&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>    expect(summary.message).toContain(&quot;redacted 1&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
               <td class="source"><pre>  it(&quot;describes the plugin safety boundary from current settings&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>    const disclosure = pluginSafetyDisclosure({</pre></td>
               <td>Declares disclosure, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
+              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>      writeAuditFolder: &quot;00 System/Vault MCP Write Audit&quot;,</pre></td>
+              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L51"><a href="#L51">51</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L52"><a href="#L52">52</a></td>
-              <td class="source"><pre>    expect(disclosure.title).toBe(&quot;Safety boundary&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L53"><a href="#L53">53</a></td>
-              <td class="source"><pre>    expect(disclosure.summary).toContain(&quot;derived index&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L54"><a href="#L54">54</a></td>
-              <td class="source"><pre>    expect(disclosure.summary).toContain(&quot;source of truth&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L55"><a href="#L55">55</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Preview before syncing&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L56"><a href="#L56">56</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;does not directly edit Obsidian files&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L57"><a href="#L57">57</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;review required&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L58"><a href="#L58">58</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;backup and audit notes&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L59"><a href="#L59">59</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L60"><a href="#L60">60</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L61"><a href="#L61">61</a></td>
-              <td class="source"><pre>  it(&quot;calls out direct apply as experimental&quot;, () =&gt; {</pre></td>
-              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>    const disclosure = pluginSafetyDisclosure({</pre></td>
-              <td>Declares disclosure, test setup or expected data used by the current test.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L63"><a href="#L63">63</a></td>
-              <td class="source"><pre>      indexMode: &quot;manual_only&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L64"><a href="#L64">64</a></td>
-              <td class="source"><pre>      writeMode: &quot;direct_apply&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre>      writeAuditFolder: &quot;Audit&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L66"><a href="#L66">66</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Direct apply is selected&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;experimental&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
-              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Audit&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L71"><a href="#L71">71</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L72"><a href="#L72">72</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L73"><a href="#L73">73</a></td>
-              <td class="source"><pre>  it(&quot;marks a configured plugin as ready to sync&quot;, () =&gt; {</pre></td>
-              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
-              <td>Declares checklist, test setup or expected data used by the current test.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L75"><a href="#L75">75</a></td>
-              <td class="source"><pre>      serverUrl: &quot;https://vault-mcp-connector.vercel.app&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>      syncToken: &quot;secret&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L77"><a href="#L77">77</a></td>
-              <td class="source"><pre>      vaultId: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L80"><a href="#L80">80</a></td>
               <td class="source"><pre>      writeAuditFolder: &quot;00 System/Vault MCP Write Audit&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>      includePrefixes: [&quot;20 Projects/&quot;],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>      excludePrefixes: [&quot;02 Daily/&quot;],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(true);</pre></td>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>    expect(disclosure.title).toBe(&quot;Safety boundary&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>    expect(checklist.readyToSync).toBe(true);</pre></td>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>    expect(disclosure.summary).toContain(&quot;derived index&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>    expect(checklist.items.every((item) =&gt; item.status !== &quot;blocked&quot;)).toBe(true);</pre></td>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>    expect(disclosure.summary).toContain(&quot;source of truth&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Write mode&quot;)?.message).toContain(&quot;Review required&quot;);</pre></td>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Preview before syncing&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;does not directly edit Obsidian files&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;review required&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;backup and audit notes&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>  it(&quot;blocks sync for invalid route URLs, missing tokens, missing vault ids, and empty scopes&quot;, () =&gt; {</pre></td>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre>  it(&quot;calls out direct apply as experimental&quot;, () =&gt; {</pre></td>
               <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
-              <td>Declares checklist, test setup or expected data used by the current test.</td>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre>    const disclosure = pluginSafetyDisclosure({</pre></td>
+              <td>Declares disclosure, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre>      serverUrl: &quot;https://vault-mcp-connector.vercel.app/mcp&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L94"><a href="#L94">94</a></td>
-              <td class="source"><pre>      syncToken: &quot;&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre>      vaultId: &quot;&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
-              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre>      writeAuditFolder: &quot;&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L99"><a href="#L99">99</a></td>
-              <td class="source"><pre>      includePrefixes: [],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L100"><a href="#L100">100</a></td>
-              <td class="source"><pre>      excludePrefixes: [],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L101"><a href="#L101">101</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L102"><a href="#L102">102</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L103"><a href="#L103">103</a></td>
-              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(false);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L104"><a href="#L104">104</a></td>
-              <td class="source"><pre>    expect(checklist.readyToSync).toBe(false);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L105"><a href="#L105">105</a></td>
-              <td class="source"><pre>    expect(checklist.items.filter((item) =&gt; item.status === &quot;blocked&quot;).map((item) =&gt; item.label)).toEqual([</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>      &quot;Server URL&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L107"><a href="#L107">107</a></td>
-              <td class="source"><pre>      &quot;Sync token&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L108"><a href="#L108">108</a></td>
-              <td class="source"><pre>      &quot;Vault id&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L109"><a href="#L109">109</a></td>
-              <td class="source"><pre>      &quot;Index scope&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L110"><a href="#L110">110</a></td>
-              <td class="source"><pre>      &quot;Write audit folder&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L111"><a href="#L111">111</a></td>
-              <td class="source"><pre>    ]);</pre></td>
-              <td>Line 111 participates in the surrounding block; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L112"><a href="#L112">112</a></td>
-              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Exclusions&quot;)?.status).toBe(&quot;warning&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L113"><a href="#L113">113</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L114"><a href="#L114">114</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L115"><a href="#L115">115</a></td>
-              <td class="source"><pre>  it(&quot;warns when direct apply is selected&quot;, () =&gt; {</pre></td>
-              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L116"><a href="#L116">116</a></td>
-              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
-              <td>Declares checklist, test setup or expected data used by the current test.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L117"><a href="#L117">117</a></td>
-              <td class="source"><pre>      serverUrl: &quot;http://127.0.0.1:3333&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L118"><a href="#L118">118</a></td>
-              <td class="source"><pre>      syncToken: &quot;secret&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L119"><a href="#L119">119</a></td>
-              <td class="source"><pre>      vaultId: &quot;demo&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
               <td class="source"><pre>      indexMode: &quot;manual_only&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
               <td class="source"><pre>      writeMode: &quot;direct_apply&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
               <td class="source"><pre>      writeAuditFolder: &quot;Audit&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L123"><a href="#L123">123</a></td>
-              <td class="source"><pre>      includePrefixes: [],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L124"><a href="#L124">124</a></td>
-              <td class="source"><pre>      excludePrefixes: [&quot;Private/&quot;],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L127"><a href="#L127">127</a></td>
-              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(true);</pre></td>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Direct apply is selected&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L128"><a href="#L128">128</a></td>
-              <td class="source"><pre>    expect(checklist.readyToSync).toBe(true);</pre></td>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;experimental&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L129"><a href="#L129">129</a></td>
-              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Write mode&quot;)?.status).toBe(&quot;warning&quot;);</pre></td>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>    expect(disclosure.points.join(&quot;\n&quot;)).toContain(&quot;Audit&quot;);</pre></td>
               <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L130"><a href="#L130">130</a></td>
-              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Index scope&quot;)?.message).toContain(&quot;Manual-only&quot;);</pre></td>
-              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
               <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>  it(&quot;marks a configured plugin as ready to sync&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
+              <td>Declares checklist, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre>      serverUrl: &quot;https://vault-mcp-connector.vercel.app&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>      syncToken: &quot;secret&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre>      vaultId: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="source"><pre>      writeAuditFolder: &quot;00 System/Vault MCP Write Audit&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="source"><pre>      includePrefixes: [&quot;20 Projects/&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="source"><pre>      excludePrefixes: [&quot;02 Daily/&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre>    expect(checklist.readyToSync).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="source"><pre>    expect(checklist.items.every((item) =&gt; item.status !== &quot;blocked&quot;)).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Write mode&quot;)?.message).toContain(&quot;Review required&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="source"><pre>  it(&quot;blocks sync for invalid route URLs, missing tokens, missing vault ids, and empty scopes&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
+              <td>Declares checklist, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre>      serverUrl: &quot;https://vault-mcp-connector.vercel.app/mcp&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre>      syncToken: &quot;&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>      vaultId: &quot;&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>      indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>      writeMode: &quot;review_required&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>      writeAuditFolder: &quot;&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre>      includePrefixes: [],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>      excludePrefixes: [],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(false);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>    expect(checklist.readyToSync).toBe(false);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>    expect(checklist.items.filter((item) =&gt; item.status === &quot;blocked&quot;).map((item) =&gt; item.label)).toEqual([</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>      &quot;Server URL&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>      &quot;Sync token&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre>      &quot;Vault id&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre>      &quot;Index scope&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>      &quot;Write audit folder&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>    ]);</pre></td>
+              <td>Line 112 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Exclusions&quot;)?.status).toBe(&quot;warning&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre>  it(&quot;warns when direct apply is selected&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>    const checklist = pluginConfigurationChecklist({</pre></td>
+              <td>Declares checklist, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>      serverUrl: &quot;http://127.0.0.1:3333&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>      syncToken: &quot;secret&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>      vaultId: &quot;demo&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>      indexMode: &quot;manual_only&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>      writeMode: &quot;direct_apply&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre>      writeAuditFolder: &quot;Audit&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre>      includePrefixes: [],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>      excludePrefixes: [&quot;Private/&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre>    expect(checklist.readyToPreview).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>    expect(checklist.readyToSync).toBe(true);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Write mode&quot;)?.status).toBe(&quot;warning&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre>    expect(checklist.items.find((item) =&gt; item.label === &quot;Index scope&quot;)?.message).toContain(&quot;Manual-only&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L132"><a href="#L132">132</a></td>
-              <td class="source"><pre>});</pre></td>
+              <td class="source"><pre>  });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -743,251 +743,536 @@
             </tr>
             <tr>
               <td class="line-number" id="L134"><a href="#L134">134</a></td>
-              <td class="source"><pre>function syncPayload(): SyncPayload {</pre></td>
-              <td>Defines syncPayload, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>  it(&quot;summarizes a healthy server and authorized vault status&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
               <td class="line-number" id="L135"><a href="#L135">135</a></td>
-              <td class="source"><pre>  return {</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>    const summary = summarizeServerStatus({</pre></td>
+              <td>Declares summary, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
               <td class="line-number" id="L136"><a href="#L136">136</a></td>
-              <td class="source"><pre>    tenant_id: &quot;default&quot;,</pre></td>
+              <td class="source"><pre>      ok: true,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L137"><a href="#L137">137</a></td>
-              <td class="source"><pre>    vault_id: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>      service: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L138"><a href="#L138">138</a></td>
-              <td class="source"><pre>    installation_id: &quot;test&quot;,</pre></td>
+              <td class="source"><pre>        version: &quot;0.1.0&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L139"><a href="#L139">139</a></td>
-              <td class="source"><pre>    vault_name: &quot;Test&quot;,</pre></td>
+              <td class="source"><pre>        mcp_resource_url: &quot;https://vault-mcp-connector.vercel.app/mcp&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L140"><a href="#L140">140</a></td>
-              <td class="source"><pre>    generated_at: &quot;2026-06-13T17:59:00.000Z&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L141"><a href="#L141">141</a></td>
-              <td class="source"><pre>    policy_version: &quot;test&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L142"><a href="#L142">142</a></td>
-              <td class="source"><pre>    index_mode: &quot;rules_plus_approvals&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L143"><a href="#L143">143</a></td>
-              <td class="source"><pre>    documents: Array.from({ length: 8 }, (_, index) =&gt; ({</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L144"><a href="#L144">144</a></td>
-              <td class="source"><pre>      id: `doc-${index}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L145"><a href="#L145">145</a></td>
-              <td class="source"><pre>      tenant_id: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L146"><a href="#L146">146</a></td>
-              <td class="source"><pre>      vault_id: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L147"><a href="#L147">147</a></td>
-              <td class="source"><pre>      installation_id: &quot;test&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L148"><a href="#L148">148</a></td>
-              <td class="source"><pre>      title: `Doc ${index}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L149"><a href="#L149">149</a></td>
-              <td class="source"><pre>      text: &quot;content&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L150"><a href="#L150">150</a></td>
-              <td class="source"><pre>      url: `https://example.com/notes/doc-${index}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L151"><a href="#L151">151</a></td>
-              <td class="source"><pre>      obsidian_uri: `obsidian://open?vault=Test&amp;file=Doc%20${index}.md`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L152"><a href="#L152">152</a></td>
-              <td class="source"><pre>      metadata: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L153"><a href="#L153">153</a></td>
-              <td class="source"><pre>        tenant_id: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L154"><a href="#L154">154</a></td>
-              <td class="source"><pre>        vault_id: &quot;default&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L155"><a href="#L155">155</a></td>
-              <td class="source"><pre>        installation_id: &quot;test&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L156"><a href="#L156">156</a></td>
-              <td class="source"><pre>        path: `Doc ${index}.md`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L157"><a href="#L157">157</a></td>
-              <td class="source"><pre>        heading: null,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L158"><a href="#L158">158</a></td>
-              <td class="source"><pre>        note_title: `Doc ${index}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L159"><a href="#L159">159</a></td>
-              <td class="source"><pre>        chunk_index: index,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L160"><a href="#L160">160</a></td>
-              <td class="source"><pre>        tags: [],</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L161"><a href="#L161">161</a></td>
-              <td class="source"><pre>        status: null,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L162"><a href="#L162">162</a></td>
-              <td class="source"><pre>        updated_at: &quot;2026-06-13T17:59:00.000Z&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L163"><a href="#L163">163</a></td>
-              <td class="source"><pre>        content_hash: `hash-${index}`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L164"><a href="#L164">164</a></td>
-              <td class="source"><pre>        obsidian_uri: `obsidian://open?vault=Test&amp;file=Doc%20${index}.md`,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L165"><a href="#L165">165</a></td>
-              <td class="source"><pre>        source_policy: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L166"><a href="#L166">166</a></td>
-              <td class="source"><pre>          allowed: true,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L167"><a href="#L167">167</a></td>
-              <td class="source"><pre>          reason: &quot;test&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L168"><a href="#L168">168</a></td>
-              <td class="source"><pre>          matched_rule: &quot;test&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L169"><a href="#L169">169</a></td>
-              <td class="source"><pre>        },</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L170"><a href="#L170">170</a></td>
               <td class="source"><pre>      },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L171"><a href="#L171">171</a></td>
-              <td class="source"><pre>    })),</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L172"><a href="#L172">172</a></td>
-              <td class="source"><pre>    stats: {</pre></td>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="source"><pre>      storage: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L173"><a href="#L173">173</a></td>
-              <td class="source"><pre>      scanned_markdown: 10,</pre></td>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
+              <td class="source"><pre>        kind: &quot;postgres&quot;,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="source"><pre>        ok: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>        migrations: [&quot;0001_initial_vault_mcp_schema&quot;],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="source"><pre>      },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
+              <td class="source"><pre>      document_count: 240,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>      vault_count: 1,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="source"><pre>      last_sync_at: &quot;2026-06-25T21:00:00.000Z&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
+              <td class="source"><pre>    }, {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="source"><pre>      vault_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>      vault_name: &quot;Copied vault&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre>      document_count: 240,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre>      generated_at: &quot;2026-06-25T21:00:00.000Z&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>    }, true);</pre></td>
+              <td>Line 154 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>    expect(summary.status).toBe(&quot;ready&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre>    expect(summary.title).toContain(&quot;ready&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L158"><a href="#L158">158</a></td>
+              <td class="source"><pre>    expect(summary.message).toContain(&quot;sync token&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L159"><a href="#L159">159</a></td>
+              <td class="source"><pre>    expect(summary.facts).toContain(&quot;Server version: 0.1.0&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L160"><a href="#L160">160</a></td>
+              <td class="source"><pre>    expect(summary.facts).toContain(&quot;Configured vault chunks: 240&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="source"><pre>    expect(summary.facts.join(&quot;\n&quot;)).toContain(&quot;0001_initial_vault_mcp_schema&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>  it(&quot;treats reachable health without a token as a warning&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>    const summary = summarizeServerStatus({</pre></td>
+              <td>Declares summary, test setup or expected data used by the current test.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>      ok: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>      storage: { kind: &quot;json&quot;, ok: true },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>      document_count: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>      vault_count: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>    }, null, false);</pre></td>
+              <td>Line 170 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>    expect(summary.status).toBe(&quot;warning&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre>    expect(summary.message).toContain(&quot;Add the admin sync token&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L174"><a href="#L174">174</a></td>
-              <td class="source"><pre>      allowed_documents: 8,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    expect(summary.facts).toContain(&quot;Storage: json (ready)&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
             </tr>
             <tr>
               <td class="line-number" id="L175"><a href="#L175">175</a></td>
-              <td class="source"><pre>      denied_markdown: 3,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L176"><a href="#L176">176</a></td>
-              <td class="source"><pre>      denied_by_rule: {},</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L177"><a href="#L177">177</a></td>
-              <td class="source"><pre>      review_required_markdown: 2,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>  it(&quot;blocks when server storage is unhealthy&quot;, () =&gt; {</pre></td>
+              <td>Defines one Vitest test case and describes the behavior it verifies.</td>
             </tr>
             <tr>
               <td class="line-number" id="L178"><a href="#L178">178</a></td>
-              <td class="source"><pre>      reviewed_by_rule: {},</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    const summary = summarizeServerStatus({</pre></td>
+              <td>Declares summary, test setup or expected data used by the current test.</td>
             </tr>
             <tr>
               <td class="line-number" id="L179"><a href="#L179">179</a></td>
-              <td class="source"><pre>      redacted_documents: 1,</pre></td>
+              <td class="source"><pre>      ok: false,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L180"><a href="#L180">180</a></td>
-              <td class="source"><pre>      redactions_by_pattern: {},</pre></td>
+              <td class="source"><pre>      storage: { kind: &quot;postgres&quot;, ok: false },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L181"><a href="#L181">181</a></td>
-              <td class="source"><pre>    },</pre></td>
+              <td class="source"><pre>      document_count: 0,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre>      vault_count: 0,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="source"><pre>    }, null, true);</pre></td>
+              <td>Line 183 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="source"><pre>    expect(summary.status).toBe(&quot;blocked&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="source"><pre>    expect(summary.message).toContain(&quot;storage is reporting a failure&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
+              <td class="source"><pre>    expect(summary.facts).toContain(&quot;Storage: postgres (not ready)&quot;);</pre></td>
+              <td>Asserts expected behavior in a test; the test fails if this expectation is not true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="source"><pre>});</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="source"><pre>function syncPayload(): SyncPayload {</pre></td>
+              <td>Defines syncPayload, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
+              <td class="source"><pre>  return {</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
+              <td class="source"><pre>    tenant_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
+              <td class="source"><pre>    vault_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L195"><a href="#L195">195</a></td>
+              <td class="source"><pre>    installation_id: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L196"><a href="#L196">196</a></td>
+              <td class="source"><pre>    vault_name: &quot;Test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="source"><pre>    generated_at: &quot;2026-06-13T17:59:00.000Z&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="source"><pre>    policy_version: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="source"><pre>    index_mode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="source"><pre>    documents: Array.from({ length: 8 }, (_, index) =&gt; ({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="source"><pre>      id: `doc-${index}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="source"><pre>      tenant_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="source"><pre>      vault_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
+              <td class="source"><pre>      installation_id: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
+              <td class="source"><pre>      title: `Doc ${index}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L206"><a href="#L206">206</a></td>
+              <td class="source"><pre>      text: &quot;content&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="source"><pre>      url: `https://example.com/notes/doc-${index}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="source"><pre>      obsidian_uri: `obsidian://open?vault=Test&amp;file=Doc%20${index}.md`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="source"><pre>      metadata: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="source"><pre>        tenant_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="source"><pre>        vault_id: &quot;default&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="source"><pre>        installation_id: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
+              <td class="source"><pre>        path: `Doc ${index}.md`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
+              <td class="source"><pre>        heading: null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
+              <td class="source"><pre>        note_title: `Doc ${index}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
+              <td class="source"><pre>        chunk_index: index,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
+              <td class="source"><pre>        tags: [],</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
+              <td class="source"><pre>        status: null,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
+              <td class="source"><pre>        updated_at: &quot;2026-06-13T17:59:00.000Z&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
+              <td class="source"><pre>        content_hash: `hash-${index}`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L221"><a href="#L221">221</a></td>
+              <td class="source"><pre>        obsidian_uri: `obsidian://open?vault=Test&amp;file=Doc%20${index}.md`,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L222"><a href="#L222">222</a></td>
+              <td class="source"><pre>        source_policy: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L223"><a href="#L223">223</a></td>
+              <td class="source"><pre>          allowed: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L224"><a href="#L224">224</a></td>
+              <td class="source"><pre>          reason: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L225"><a href="#L225">225</a></td>
+              <td class="source"><pre>          matched_rule: &quot;test&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L226"><a href="#L226">226</a></td>
+              <td class="source"><pre>        },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L227"><a href="#L227">227</a></td>
+              <td class="source"><pre>      },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L228"><a href="#L228">228</a></td>
+              <td class="source"><pre>    })),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L229"><a href="#L229">229</a></td>
+              <td class="source"><pre>    stats: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="source"><pre>      scanned_markdown: 10,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L231"><a href="#L231">231</a></td>
+              <td class="source"><pre>      allowed_documents: 8,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L232"><a href="#L232">232</a></td>
+              <td class="source"><pre>      denied_markdown: 3,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L233"><a href="#L233">233</a></td>
+              <td class="source"><pre>      denied_by_rule: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L234"><a href="#L234">234</a></td>
+              <td class="source"><pre>      review_required_markdown: 2,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L235"><a href="#L235">235</a></td>
+              <td class="source"><pre>      reviewed_by_rule: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L236"><a href="#L236">236</a></td>
+              <td class="source"><pre>      redacted_documents: 1,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L237"><a href="#L237">237</a></td>
+              <td class="source"><pre>      redactions_by_pattern: {},</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L238"><a href="#L238">238</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L239"><a href="#L239">239</a></td>
               <td class="source"><pre>  };</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="line-number" id="L240"><a href="#L240">240</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>

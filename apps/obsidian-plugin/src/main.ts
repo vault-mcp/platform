@@ -10,7 +10,9 @@ import {
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
   summarizeSyncResponse,
+  summarizeServerStatus,
 } from "./plugin-helpers";
+import type { PluginServerHealthSnapshot, PluginServerStatusSummary, PluginVaultStatusSnapshot } from "./plugin-helpers";
 import type {
   LocalApplyResult,
   ProposalSafetyAnalysis,
@@ -44,7 +46,7 @@ type VaultMcpPluginSettings = {
 };
 
 type SyncHistoryEntry = {
-  type: "preview" | "sync" | "approval" | "proposal-check" | "proposal-update" | "error";
+  type: "preview" | "sync" | "approval" | "server-check" | "proposal-check" | "proposal-update" | "error";
   message: string;
   createdAt: string;
   scanned?: number;
@@ -69,6 +71,10 @@ type SyncSummary = {
   serverGeneratedAt: string | null;
   lastSuccessMessage: string | null;
   lastError: string | null;
+};
+
+type ServerCheckState = PluginServerStatusSummary & {
+  checkedAt: string;
 };
 
 type IndexDecision = "allow" | "deny" | "review";
@@ -134,6 +140,7 @@ const DEFAULT_SUMMARY: SyncSummary = {
 export default class VaultMcpPlugin extends Plugin {
   settings: VaultMcpPluginSettings = DEFAULT_SETTINGS;
   summary: SyncSummary = DEFAULT_SUMMARY;
+  serverCheck: ServerCheckState | null = null;
   indexPreview: IndexPreview | null = null;
   writeProposals: WriteProposal[] = [];
   syncHistory: SyncHistoryEntry[] = [];
@@ -165,6 +172,14 @@ export default class VaultMcpPlugin extends Plugin {
       name: "Sync approved vault context now",
       callback: () => {
         void this.syncNow();
+      },
+    });
+
+    this.addCommand({
+      id: "check-server-connection",
+      name: "Check server connection",
+      callback: () => {
+        void this.checkServerConnection();
       },
     });
 
@@ -251,6 +266,55 @@ export default class VaultMcpPlugin extends Plugin {
       this.summary = { ...this.summary, lastError: message };
       await this.addHistory({ type: "error", message: `Sync failed: ${message}` });
       new Notice(`Vault MCP sync failed: ${message}`);
+    }
+  }
+
+  async checkServerConnection() {
+    try {
+      const healthResponse = await requestUrl({
+        url: `${this.serverBaseUrl()}/healthz`,
+        method: "GET",
+      });
+      if (healthResponse.status < 200 || healthResponse.status >= 300) {
+        throw new Error(describeHttpFailure("server check", healthResponse.status, healthResponse.text));
+      }
+
+      const health = parseJsonResponse<PluginServerHealthSnapshot>(healthResponse.text, "server health");
+      let vaultStatus: PluginVaultStatusSnapshot | null = null;
+      if (this.settings.syncToken.trim()) {
+        const vaultResponse = await requestUrl({
+          url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/status`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${this.settings.syncToken}`,
+          },
+        });
+        if (vaultResponse.status < 200 || vaultResponse.status >= 300) {
+          throw new Error(describeHttpFailure("vault status check", vaultResponse.status, vaultResponse.text));
+        }
+        vaultStatus = parseJsonResponse<PluginVaultStatusSnapshot>(vaultResponse.text, "vault status");
+      }
+
+      const checkedAt = new Date().toISOString();
+      this.serverCheck = {
+        ...summarizeServerStatus(health, vaultStatus, Boolean(this.settings.syncToken.trim())),
+        checkedAt,
+      };
+      this.summary = { ...this.summary, lastError: null };
+      await this.addHistory({ type: "server-check", message: this.serverCheck.message });
+      new VaultMcpServerStatusModal(this.app, this.serverCheck).open();
+    } catch (error) {
+      const message = describeCaughtError("server check", error);
+      this.serverCheck = {
+        status: "blocked",
+        title: "Server check failed",
+        message,
+        facts: [],
+        checkedAt: new Date().toISOString(),
+      };
+      this.summary = { ...this.summary, lastError: message };
+      await this.addHistory({ type: "error", message: `Server check failed: ${message}` });
+      new Notice(`Vault MCP server check failed: ${message}`);
     }
   }
 
@@ -703,6 +767,7 @@ class VaultMcpDashboardModal extends Modal {
     contentEl.createEl("h2", { text: "Vault MCP" });
     addSafetyDisclosure(contentEl, this.plugin.settings);
     addConfigurationChecklist(contentEl, this.plugin.settings);
+    addServerCheckSection(contentEl, this.plugin.serverCheck);
     const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard" });
     addStat(grid, "Server", this.plugin.settings.serverUrl);
     addStat(grid, "Vault id", this.plugin.settings.vaultId);
@@ -729,6 +794,11 @@ class VaultMcpDashboardModal extends Modal {
     }
     new Setting(contentEl)
       .addButton((button) => button
+        .setButtonText("Check connection")
+        .setCta()
+        .onClick(() => void this.plugin.checkServerConnection()));
+    new Setting(contentEl)
+      .addButton((button) => button
         .setButtonText("Preview index")
         .setCta()
         .onClick(() => void this.plugin.openIndexPreview()))
@@ -743,6 +813,19 @@ class VaultMcpDashboardModal extends Modal {
         .setButtonText("Review write proposals")
         .onClick(() => void this.plugin.checkWriteProposals()));
     addHistorySection(contentEl, this.plugin.syncHistory);
+  }
+}
+
+class VaultMcpServerStatusModal extends Modal {
+  constructor(app: App, private readonly check: ServerCheckState) {
+    super(app);
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h2", { text: "Vault MCP connection" });
+    addServerCheckSection(contentEl, this.check);
   }
 }
 
@@ -878,6 +961,15 @@ class VaultMcpSettingTab extends PluginSettingTab {
 
     addSafetyDisclosure(containerEl, this.plugin.settings);
     addConfigurationChecklist(containerEl, this.plugin.settings);
+    addServerCheckSection(containerEl, this.plugin.serverCheck);
+
+    new Setting(containerEl)
+      .setName("Connection preflight")
+      .setDesc("Checks /healthz and, when a sync token is saved, verifies this vault's admin status endpoint.")
+      .addButton((button) => button
+        .setButtonText("Check connection")
+        .setCta()
+        .onClick(() => void this.plugin.checkServerConnection()));
 
     new Setting(containerEl)
       .setName("Server URL")
@@ -1007,6 +1099,24 @@ function addConfigurationChecklist(parent: HTMLElement, settings: VaultMcpPlugin
     const body = row.createDiv({ cls: "vault-mcp-checklist__body" });
     body.createDiv({ cls: "vault-mcp-checklist__label", text: item.label });
     body.createDiv({ cls: "vault-mcp-checklist__message", text: item.message });
+  }
+}
+
+function addServerCheckSection(parent: HTMLElement, check: ServerCheckState | null) {
+  const box = parent.createDiv({ cls: `vault-mcp-server-check vault-mcp-server-check--${check?.status ?? "unknown"}` });
+  box.createDiv({ cls: "vault-mcp-server-check__title", text: check?.title ?? "Connection not checked" });
+  box.createDiv({
+    cls: "vault-mcp-server-check__message",
+    text: check?.message ?? "Run Check connection before syncing to confirm the server URL, storage, sync token, and configured vault status.",
+  });
+  if (check) {
+    box.createDiv({ cls: "vault-mcp-server-check__checked", text: `Checked: ${formatDate(check.checkedAt)}` });
+  }
+  if (check?.facts.length) {
+    const list = box.createEl("ul", { cls: "vault-mcp-server-check__facts" });
+    for (const fact of check.facts) {
+      list.createEl("li", { text: fact });
+    }
   }
 }
 
@@ -1334,6 +1444,14 @@ function safetyTitle(status: ProposalSafetyAnalysis["status"]): string {
     return "Target already exists";
   }
   return "Unsupported apply path";
+}
+
+function parseJsonResponse<T>(text: string, label: string): T {
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`Could not parse ${label} response as JSON.`);
+  }
 }
 
 function truncateMiddle(value: string, maxLength: number): string {

@@ -6,6 +6,7 @@ Private-alpha release for copied-vault and disposable-vault testing.
 
 - Settings for server URL, sync token, vault id, index mode, write mode, include rules, exclude rules, manual allow rules, and write audit folder.
 - Dashboard with safety boundary and configuration readiness checks.
+- Connection preflight for server health, storage readiness, migration metadata, and configured-vault status before sync.
 - Dry-run index preview for allowed, denied, review-required, and redacted notes.
 - Review queue for sensitive notes held by policy.
 - Sync of approved Markdown chunks to the configured Vault MCP server.
