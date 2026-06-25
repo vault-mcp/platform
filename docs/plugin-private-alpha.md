@@ -244,7 +244,16 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 
 ## Seed Write Proposals For UI Testing
 
-Use the seeding script to create a repeatable set of pending write proposals for the copied vault. The script refuses to write fixtures unless the vault path contains `vault copy`.
+Use the preparation script before manual UI verification. It installs the current plugin build into the copied vault, writes safe UI-smoke settings, seeds a fresh set of pending write proposals, and verifies the batch in initial mode.
+
+The safe settings intentionally use:
+
+- `vaultId`: `default`
+- `indexMode`: `rules_plus_approvals`
+- `writeMode`: `review_required`
+- narrow default include prefixes
+- sensitive default exclude prefixes
+- `00 System/Vault MCP Write Audit` as the audit folder
 
 ```bash
 set -a
@@ -252,13 +261,13 @@ source .env.production.local
 source .env.oauth.local
 set +a
 
-npm run plugin:seed-write-proposals -- \
+npm run plugin:prepare-ui-smoke -- \
   --base-url "https://vault-mcp-connector.vercel.app" \
   --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
   --vault-id "default"
 ```
 
-The script creates fixture notes under:
+The script refuses to write fixtures unless the vault path contains `vault copy`. It creates fixture notes under:
 
 ```text
 20 Projects/Vault MCP Connector/Plugin UI Smoke/<run-id>/
@@ -272,9 +281,9 @@ It then creates pending proposals for:
 - `update_frontmatter`
 - `rename_note`
 
-Use `--dry-run` to print the planned fixture paths and proposal payloads without writing local fixture notes or posting proposals.
+Use `--dry-run` to print the planned plugin settings, fixture paths, and proposal payloads without writing local plugin settings, local fixture notes, or server proposals.
 
-Before opening Obsidian, verify the seeded batch is ready:
+The preparation script runs this initial verifier automatically:
 
 ```bash
 npm run plugin:verify-ui-smoke -- \
@@ -284,6 +293,8 @@ npm run plugin:verify-ui-smoke -- \
   --run-id "<run-id>" \
   --mode initial
 ```
+
+Use `npm run plugin:seed-write-proposals` directly only when you deliberately do not want to reset copied-vault plugin settings. For normal private-alpha UI verification, prefer `plugin:prepare-ui-smoke` so the plugin and seeded proposals use the same vault id and safe write mode.
 
 ## Obsidian Setup
 

@@ -20,6 +20,7 @@
     "plugin:verify-package": "node scripts/verify-obsidian-plugin-package.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",
     "plugin:install-copy:skip-build": "node scripts/install-obsidian-plugin.mjs --skip-build",
+    "plugin:prepare-ui-smoke": "node scripts/prepare-ui-smoke.mjs",
     "plugin:seed-write-proposals": "node scripts/seed-write-proposals.mjs",
     "plugin:verify-ui-smoke": "node scripts/verify-ui-smoke.mjs",
     "index": "npm run dev --workspace @vault-mcp/cli --",

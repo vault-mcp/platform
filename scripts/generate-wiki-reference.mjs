@@ -61,6 +61,7 @@ const authoredFiles = [
   "README.md",
   "scripts/generate-wiki-reference.mjs",
   "scripts/package-obsidian-plugin.mjs",
+  "scripts/prepare-ui-smoke.mjs",
   "scripts/seed-write-proposals.mjs",
   "scripts/verify-obsidian-plugin-package.mjs",
   "scripts/verify-ui-smoke.mjs",
