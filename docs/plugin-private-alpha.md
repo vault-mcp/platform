@@ -59,6 +59,8 @@ This validates the plugin manifest, builds the plugin, stages the three Obsidian
 dist/obsidian-plugin/vault-mcp/
 dist/obsidian-plugin/vault-mcp-0.1.0.zip
 dist/obsidian-plugin/vault-mcp-0.1.0.zip.sha256
+dist/obsidian-plugin/vault-mcp-0.1.0-release-notes.md
+dist/obsidian-plugin/vault-mcp-0.1.0-release.json
 ```
 
 The package contains only:
@@ -75,9 +77,9 @@ npm run plugin:verify-package
 
 This checks the zip checksum, extracts the package into a temporary vault under
 `.obsidian/plugins/vault-mcp`, verifies the manifest matches the source
-manifest, verifies `main.js` and `styles.css` are non-empty, and catches the
-common double-nested zip mistake where files land under
-`.obsidian/plugins/vault-mcp/vault-mcp`.
+manifest, verifies `main.js` and `styles.css` are non-empty, validates release
+notes and release metadata, and catches the common double-nested zip mistake
+where files land under `.obsidian/plugins/vault-mcp/vault-mcp`.
 
 To keep the generated disposable vault for inspection:
 

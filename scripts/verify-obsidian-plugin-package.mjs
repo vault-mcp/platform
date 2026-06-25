@@ -14,6 +14,8 @@ const args = parseArgs(process.argv.slice(2));
 const pluginId = sourceManifest.id;
 const zipPath = path.resolve(args.zip ?? path.join(packageRoot, `${pluginId}-${sourceManifest.version}.zip`));
 const checksumPath = path.resolve(args.checksum ?? `${zipPath}.sha256`);
+const releaseNotesPath = path.resolve(args["release-notes"] ?? path.join(packageRoot, `${pluginId}-${sourceManifest.version}-release-notes.md`));
+const releaseManifestPath = path.resolve(args["release-manifest"] ?? path.join(packageRoot, `${pluginId}-${sourceManifest.version}-release.json`));
 const keep = Boolean(args.keep);
 let vaultRoot = args.vault ? path.resolve(args.vault) : null;
 let createdTempVault = false;
@@ -21,10 +23,22 @@ let createdTempVault = false;
 assert(pluginId === "vault-mcp", `Expected source manifest id vault-mcp, got ${pluginId}`);
 await assertFile(zipPath, "plugin zip");
 await assertFile(checksumPath, "plugin checksum");
+await assertFile(releaseNotesPath, "plugin release notes");
+await assertFile(releaseManifestPath, "plugin release manifest");
 
 const expectedChecksum = await readChecksum(checksumPath, path.basename(zipPath));
 const actualChecksum = await sha256File(zipPath);
 assert(actualChecksum === expectedChecksum, `Checksum mismatch for ${zipPath}`);
+const releaseManifest = JSON.parse(await readFile(releaseManifestPath, "utf8"));
+const releaseNotes = await readFile(releaseNotesPath, "utf8");
+validateReleaseManifest(releaseManifest, sourceManifest, {
+  zipName: path.basename(zipPath),
+  checksumName: path.basename(checksumPath),
+  releaseNotesName: path.basename(releaseNotesPath),
+  checksum: actualChecksum,
+});
+assert(releaseNotes.includes(sourceManifest.version), `Release notes must mention version ${sourceManifest.version}`);
+assert(releaseNotes.includes("Private-alpha"), "Release notes must state private-alpha status");
 
 if (!vaultRoot) {
   vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vault-mcp-plugin-install-"));
@@ -56,6 +70,8 @@ try {
     ok: true,
     zipPath,
     checksumPath,
+    releaseNotesPath,
+    releaseManifestPath,
     checksum: actualChecksum,
     vaultRoot,
     installedPluginDir,
@@ -127,7 +143,7 @@ function parseArgs(argv) {
   const parsed = {};
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (arg === "--zip" || arg === "--checksum" || arg === "--vault") {
+    if (arg === "--zip" || arg === "--checksum" || arg === "--release-notes" || arg === "--release-manifest" || arg === "--vault") {
       parsed[arg.slice(2)] = argv[index + 1];
       index += 1;
     } else if (arg === "--keep") {
@@ -137,6 +153,18 @@ function parseArgs(argv) {
     }
   }
   return parsed;
+}
+
+function validateReleaseManifest(value, sourceManifest, expected) {
+  assert(value && typeof value === "object", "Release manifest must be a JSON object");
+  assert(value.plugin?.id === sourceManifest.id, "Release manifest plugin id does not match source manifest");
+  assert(value.plugin?.version === sourceManifest.version, "Release manifest plugin version does not match source manifest");
+  assert(value.plugin?.minAppVersion === sourceManifest.minAppVersion, "Release manifest minAppVersion does not match source manifest");
+  assert(value.package?.zip === expected.zipName, "Release manifest zip filename does not match package");
+  assert(value.package?.checksum === expected.checksumName, "Release manifest checksum filename does not match package");
+  assert(value.package?.releaseNotes === expected.releaseNotesName, "Release manifest release notes filename does not match package");
+  assert(value.package?.sha256 === expected.checksum, "Release manifest SHA256 does not match package checksum");
+  assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(["manifest.json", "main.js", "styles.css"]), "Release manifest runtime files are not the Obsidian runtime file set");
 }
 
 function assert(condition, message) {

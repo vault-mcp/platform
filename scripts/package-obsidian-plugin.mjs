@@ -30,6 +30,11 @@ for (const file of files) {
 const stageDir = path.join(packageRoot, manifest.id);
 const zipPath = path.join(packageRoot, `${manifest.id}-${manifest.version}.zip`);
 const checksumPath = `${zipPath}.sha256`;
+const releaseNotesSourcePath = path.join(repoRoot, "docs", "releases", `obsidian-plugin-${manifest.version}.md`);
+const releaseNotesPath = path.join(packageRoot, `${manifest.id}-${manifest.version}-release-notes.md`);
+const releaseManifestPath = path.join(packageRoot, `${manifest.id}-${manifest.version}-release.json`);
+
+await assertFile(releaseNotesSourcePath, "release notes");
 
 if (!dryRun) {
   await rm(stageDir, { recursive: true, force: true });
@@ -41,12 +46,31 @@ if (!dryRun) {
   await run("zip", ["-qr", zipPath, manifest.id], packageRoot);
   const checksum = await sha256File(zipPath);
   await writeFile(checksumPath, `${checksum}  ${path.basename(zipPath)}\n`, "utf8");
+  await copyFile(releaseNotesSourcePath, releaseNotesPath);
+  await writeFile(releaseManifestPath, `${JSON.stringify({
+    plugin: {
+      id: manifest.id,
+      name: manifest.name,
+      version: manifest.version,
+      minAppVersion: manifest.minAppVersion,
+      description: manifest.description,
+    },
+    package: {
+      zip: path.basename(zipPath),
+      checksum: path.basename(checksumPath),
+      releaseNotes: path.basename(releaseNotesPath),
+      sha256: checksum,
+      runtimeFiles: files,
+    },
+  }, null, 2)}\n`, "utf8");
 }
 
 const outputs = {
   stageDir,
   zipPath,
   checksumPath,
+  releaseNotesPath,
+  releaseManifestPath,
 };
 
 console.log(JSON.stringify({

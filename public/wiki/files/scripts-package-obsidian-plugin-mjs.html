@@ -238,212 +238,212 @@
             </tr>
             <tr>
               <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre>const releaseNotesSourcePath = path.join(repoRoot, &quot;docs&quot;, &quot;releases&quot;, `obsidian-plugin-${manifest.version}.md`);</pre></td>
+              <td>Declares releaseNotesSourcePath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="source"><pre>const releaseNotesPath = path.join(packageRoot, `${manifest.id}-${manifest.version}-release-notes.md`);</pre></td>
+              <td>Declares releaseNotesPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="source"><pre>const releaseManifestPath = path.join(packageRoot, `${manifest.id}-${manifest.version}-release.json`);</pre></td>
+              <td>Declares releaseManifestPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="source"><pre>await assertFile(releaseNotesSourcePath, &quot;release notes&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
               <td class="source"><pre>if (!dryRun) {</pre></td>
               <td>Starts a conditional branch; the following block only runs when this test is true.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
               <td class="source"><pre>  await rm(stageDir, { recursive: true, force: true });</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>  await mkdir(stageDir, { recursive: true });</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre>  for (const file of files) {</pre></td>
               <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>    await copyFile(path.join(pluginRoot, file), path.join(stageDir, file));</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre>  await rm(zipPath, { force: true });</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
               <td class="source"><pre>  await run(&quot;zip&quot;, [&quot;-qr&quot;, zipPath, manifest.id], packageRoot);</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
               <td class="source"><pre>  const checksum = await sha256File(zipPath);</pre></td>
               <td>Declares checksum, a local value used later in this file.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
               <td class="source"><pre>  await writeFile(checksumPath, `${checksum}  ${path.basename(zipPath)}\n`, &quot;utf8&quot;);</pre></td>
               <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L44"><a href="#L44">44</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L45"><a href="#L45">45</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L46"><a href="#L46">46</a></td>
-              <td class="source"><pre>const outputs = {</pre></td>
-              <td>Declares outputs, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L47"><a href="#L47">47</a></td>
-              <td class="source"><pre>  stageDir,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>  zipPath,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L49"><a href="#L49">49</a></td>
-              <td class="source"><pre>  checksumPath,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>  await copyFile(releaseNotesSourcePath, releaseNotesPath);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
               <td class="line-number" id="L50"><a href="#L50">50</a></td>
-              <td class="source"><pre>};</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>  await writeFile(releaseManifestPath, `${JSON.stringify({</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
             </tr>
             <tr>
               <td class="line-number" id="L51"><a href="#L51">51</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L52"><a href="#L52">52</a></td>
-              <td class="source"><pre>console.log(JSON.stringify({</pre></td>
+              <td class="source"><pre>    plugin: {</pre></td>
               <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre>      id: manifest.id,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L53"><a href="#L53">53</a></td>
-              <td class="source"><pre>  ok: true,</pre></td>
+              <td class="source"><pre>      name: manifest.name,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L54"><a href="#L54">54</a></td>
-              <td class="source"><pre>  dryRun,</pre></td>
+              <td class="source"><pre>      version: manifest.version,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L55"><a href="#L55">55</a></td>
-              <td class="source"><pre>  skipBuild,</pre></td>
+              <td class="source"><pre>      minAppVersion: manifest.minAppVersion,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L56"><a href="#L56">56</a></td>
-              <td class="source"><pre>  plugin: {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre>      description: manifest.description,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L57"><a href="#L57">57</a></td>
-              <td class="source"><pre>    id: manifest.id,</pre></td>
+              <td class="source"><pre>    },</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L58"><a href="#L58">58</a></td>
-              <td class="source"><pre>    name: manifest.name,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>    package: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L59"><a href="#L59">59</a></td>
-              <td class="source"><pre>    version: manifest.version,</pre></td>
+              <td class="source"><pre>      zip: path.basename(zipPath),</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L60"><a href="#L60">60</a></td>
-              <td class="source"><pre>    minAppVersion: manifest.minAppVersion,</pre></td>
+              <td class="source"><pre>      checksum: path.basename(checksumPath),</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L61"><a href="#L61">61</a></td>
-              <td class="source"><pre>  },</pre></td>
+              <td class="source"><pre>      releaseNotes: path.basename(releaseNotesPath),</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L62"><a href="#L62">62</a></td>
-              <td class="source"><pre>  files: files.map((file) =&gt; path.join(stageDir, file)),</pre></td>
+              <td class="source"><pre>      sha256: checksum,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L63"><a href="#L63">63</a></td>
-              <td class="source"><pre>  outputs,</pre></td>
+              <td class="source"><pre>      runtimeFiles: files,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L64"><a href="#L64">64</a></td>
-              <td class="source"><pre>}, null, 2));</pre></td>
-              <td>Line 64 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L65"><a href="#L65">65</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+              <td class="source"><pre>  }, null, 2)}\n`, &quot;utf8&quot;);</pre></td>
+              <td>Line 65 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L66"><a href="#L66">66</a></td>
-              <td class="source"><pre>async function assertFile(value, label) {</pre></td>
-              <td>Defines assertFile, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L67"><a href="#L67">67</a></td>
-              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
-              <td>Declares result, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L68"><a href="#L68">68</a></td>
-              <td class="source"><pre>  assert(result?.isFile(), `Expected ${label} to exist: ${value}`);</pre></td>
-              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L69"><a href="#L69">69</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>const outputs = {</pre></td>
+              <td>Declares outputs, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>  stageDir,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre>  zipPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
               <td class="line-number" id="L71"><a href="#L71">71</a></td>
-              <td class="source"><pre>async function sha256File(file) {</pre></td>
-              <td>Defines sha256File, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>  checksumPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L72"><a href="#L72">72</a></td>
-              <td class="source"><pre>  const buffer = await readFile(file);</pre></td>
-              <td>Declares buffer, a local value used later in this file.</td>
+              <td class="source"><pre>  releaseNotesPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L73"><a href="#L73">73</a></td>
-              <td class="source"><pre>  return createHash(&quot;sha256&quot;).update(buffer).digest(&quot;hex&quot;);</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
+              <td class="source"><pre>  releaseManifestPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L74"><a href="#L74">74</a></td>
-              <td class="source"><pre>}</pre></td>
+              <td class="source"><pre>};</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
@@ -453,171 +453,291 @@
             </tr>
             <tr>
               <td class="line-number" id="L76"><a href="#L76">76</a></td>
-              <td class="source"><pre>async function run(command, commandArgs, cwd) {</pre></td>
-              <td>Defines run, a reusable block of behavior called by other code.</td>
+              <td class="source"><pre>console.log(JSON.stringify({</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L77"><a href="#L77">77</a></td>
-              <td class="source"><pre>  await new Promise((resolve, reject) =&gt; {</pre></td>
-              <td>Waits for an asynchronous operation to finish before continuing.</td>
+              <td class="source"><pre>  ok: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L78"><a href="#L78">78</a></td>
-              <td class="source"><pre>    const child = spawn(command, commandArgs, {</pre></td>
-              <td>Declares child, a local value used later in this file.</td>
+              <td class="source"><pre>  dryRun,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L79"><a href="#L79">79</a></td>
-              <td class="source"><pre>      cwd,</pre></td>
+              <td class="source"><pre>  skipBuild,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L80"><a href="#L80">80</a></td>
-              <td class="source"><pre>      stdio: &quot;inherit&quot;,</pre></td>
-              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+              <td class="source"><pre>  plugin: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
             </tr>
             <tr>
               <td class="line-number" id="L81"><a href="#L81">81</a></td>
-              <td class="source"><pre>      shell: false,</pre></td>
+              <td class="source"><pre>    id: manifest.id,</pre></td>
               <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L82"><a href="#L82">82</a></td>
-              <td class="source"><pre>    });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre>    name: manifest.name,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L83"><a href="#L83">83</a></td>
-              <td class="source"><pre>    child.on(&quot;error&quot;, reject);</pre></td>
-              <td>Line 83 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>    version: manifest.version,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L84"><a href="#L84">84</a></td>
-              <td class="source"><pre>    child.on(&quot;exit&quot;, (code) =&gt; {</pre></td>
-              <td>Opens a block; the following indented lines belong to this statement.</td>
+              <td class="source"><pre>    minAppVersion: manifest.minAppVersion,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L85"><a href="#L85">85</a></td>
-              <td class="source"><pre>      if (code === 0) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+              <td class="source"><pre>  },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L86"><a href="#L86">86</a></td>
-              <td class="source"><pre>        resolve();</pre></td>
-              <td>Line 86 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>  files: files.map((file) =&gt; path.join(stageDir, file)),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L87"><a href="#L87">87</a></td>
-              <td class="source"><pre>      } else {</pre></td>
-              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+              <td class="source"><pre>  outputs,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
             </tr>
             <tr>
               <td class="line-number" id="L88"><a href="#L88">88</a></td>
-              <td class="source"><pre>        reject(new Error(`${command} ${commandArgs.join(&quot; &quot;)} exited with ${code}`));</pre></td>
-              <td>Line 88 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+              <td class="source"><pre>}, null, 2));</pre></td>
+              <td>Line 88 participates in the surrounding block; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L89"><a href="#L89">89</a></td>
-              <td class="source"><pre>      }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
               <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>async function assertFile(value, label) {</pre></td>
+              <td>Defines assertFile, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
+              <td>Declares result, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="source"><pre>  assert(result?.isFile(), `Expected ${label} to exist: ${value}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre>async function sha256File(file) {</pre></td>
+              <td>Defines sha256File, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>  const buffer = await readFile(file);</pre></td>
+              <td>Declares buffer, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>  return createHash(&quot;sha256&quot;).update(buffer).digest(&quot;hex&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre>async function run(command, commandArgs, cwd) {</pre></td>
+              <td>Defines run, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>  await new Promise((resolve, reject) =&gt; {</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre>    const child = spawn(command, commandArgs, {</pre></td>
+              <td>Declares child, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>      cwd,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>      stdio: &quot;inherit&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>      shell: false,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
               <td class="source"><pre>    });</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L91"><a href="#L91">91</a></td>
-              <td class="source"><pre>  });</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L92"><a href="#L92">92</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L93"><a href="#L93">93</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L94"><a href="#L94">94</a></td>
-              <td class="source"><pre>function parseArgs(argv) {</pre></td>
-              <td>Defines parseArgs, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L95"><a href="#L95">95</a></td>
-              <td class="source"><pre>  const parsed = {};</pre></td>
-              <td>Declares parsed, a local value used later in this file.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L96"><a href="#L96">96</a></td>
-              <td class="source"><pre>  for (const arg of argv) {</pre></td>
-              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L97"><a href="#L97">97</a></td>
-              <td class="source"><pre>    if (!arg.startsWith(&quot;--&quot;)) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L98"><a href="#L98">98</a></td>
-              <td class="source"><pre>      throw new Error(`Unknown argument: ${arg}`);</pre></td>
-              <td>Line 98 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L99"><a href="#L99">99</a></td>
-              <td class="source"><pre>    }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L100"><a href="#L100">100</a></td>
-              <td class="source"><pre>    parsed[arg.slice(2)] = true;</pre></td>
-              <td>Assigns or compares values as part of the surrounding logic.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L101"><a href="#L101">101</a></td>
-              <td class="source"><pre>  }</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L102"><a href="#L102">102</a></td>
-              <td class="source"><pre>  return parsed;</pre></td>
-              <td>Returns this value to the caller and ends the current function path.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L103"><a href="#L103">103</a></td>
-              <td class="source"><pre>}</pre></td>
-              <td>Closes the current block, object, array, callback, or statement.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L104"><a href="#L104">104</a></td>
-              <td class="source"><pre> </pre></td>
-              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L105"><a href="#L105">105</a></td>
-              <td class="source"><pre>function assert(condition, message) {</pre></td>
-              <td>Defines assert, a reusable block of behavior called by other code.</td>
-            </tr>
-            <tr>
-              <td class="line-number" id="L106"><a href="#L106">106</a></td>
-              <td class="source"><pre>  if (!condition) {</pre></td>
-              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
-            </tr>
-            <tr>
               <td class="line-number" id="L107"><a href="#L107">107</a></td>
-              <td class="source"><pre>    throw new Error(message);</pre></td>
+              <td class="source"><pre>    child.on(&quot;error&quot;, reject);</pre></td>
               <td>Line 107 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
             </tr>
             <tr>
               <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>    child.on(&quot;exit&quot;, (code) =&gt; {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre>      if (code === 0) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre>        resolve();</pre></td>
+              <td>Line 110 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>      } else {</pre></td>
+              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>        reject(new Error(`${command} ${commandArgs.join(&quot; &quot;)} exited with ${code}`));</pre></td>
+              <td>Line 112 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>function parseArgs(argv) {</pre></td>
+              <td>Defines parseArgs, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>  const parsed = {};</pre></td>
+              <td>Declares parsed, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>  for (const arg of argv) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>    if (!arg.startsWith(&quot;--&quot;)) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>      throw new Error(`Unknown argument: ${arg}`);</pre></td>
+              <td>Line 122 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre>    parsed[arg.slice(2)] = true;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
               <td class="source"><pre>  }</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>  return parsed;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>function assert(condition, message) {</pre></td>
+              <td>Defines assert, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="source"><pre>  if (!condition) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre>    throw new Error(message);</pre></td>
+              <td>Line 131 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
               <td class="source"><pre>}</pre></td>
               <td>Closes the current block, object, array, callback, or statement.</td>
             </tr></tbody>
