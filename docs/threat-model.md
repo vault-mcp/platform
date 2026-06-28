@@ -26,10 +26,10 @@
 - Note text is explicitly described as untrusted data in server instructions.
 - The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.
 - Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
-- ChatGPT-facing UI metadata and the `ui://vault-mcp/results.html` component only render existing read-only tool results; they do not add a separate data path or vault access path.
+- ChatGPT-facing UI metadata and the `ui://vault-mcp/results-v2.html` component only render existing read-only tool results; they do not add a separate data path or vault access path. The component can display search results, note lists, fetched notes, vault lists, vault status, diagnostics, errors, and future proposal-shaped data from already-returned structured content.
 - Dependency audit is a release gate. The current dependency tree removes `gray-matter`/`js-yaml`, pins safe `hono` and `esbuild` versions through npm overrides, and requires `npm audit --audit-level=low` to pass before production deploys.
 
 ## Current Gaps
 
 - Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.
-- The current ChatGPT UI pass is read-only and result-display focused. Future write-capable UI still needs separate design, confirmation, audit, backup, conflict-resolution, and rollback controls.
+- The current ChatGPT UI pass is read-only and result-display focused. It includes cautious future proposal-shaped cards, but future write-capable UI still needs separate design, confirmation, audit, backup, conflict-resolution, and rollback controls before any write proposal tools are exposed to end users.
