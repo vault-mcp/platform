@@ -63,6 +63,7 @@ const authoredFiles = [
   "scripts/package-obsidian-plugin.mjs",
   "scripts/prepare-ui-smoke.mjs",
   "scripts/seed-write-proposals.mjs",
+  "scripts/smoke-plugin-lifecycle.mjs",
   "scripts/smoke-plugin-fresh-install.mjs",
   "scripts/verify-obsidian-plugin-package.mjs",
   "scripts/verify-ui-smoke.mjs",
@@ -104,6 +105,7 @@ const sectionSummaries = [
   ["Markdown parsing", "packages/core/src/markdown.ts", "Frontmatter parsing and heading-based chunking."],
   ["Smoke gates", "scripts/smoke-local.mjs", "Local end-to-end gate for sync, auth, tools/list, search, fetch, and denied guesses."],
   ["Fresh plugin install", "scripts/smoke-plugin-fresh-install.mjs", "Private-alpha package gate that installs the release zip into a disposable Obsidian vault from release metadata."],
+  ["Plugin lifecycle", "scripts/smoke-plugin-lifecycle.mjs", "Private-alpha package gate that proves upgrade preserves settings and uninstall leaves vault notes intact."],
   ["Remote gate", "scripts/smoke-remote.mjs", "Production/remote gate for OAuth-protected deployed endpoints."],
 ];
 

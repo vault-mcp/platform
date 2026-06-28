@@ -35,6 +35,7 @@ Private-alpha release for copied-vault and disposable-vault testing.
 npm run plugin:package
 npm run plugin:verify-package
 npm run plugin:smoke-fresh-install
+npm run plugin:smoke-lifecycle
 npm run build
 npm run check:api
 npm test

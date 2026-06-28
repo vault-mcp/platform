@@ -107,6 +107,25 @@ npm run plugin:smoke-fresh-install -- --keep
 npm run plugin:smoke-fresh-install -- --report dist/obsidian-plugin/fresh-install-smoke.json
 ```
 
+Smoke-test private-alpha upgrade and uninstall behavior:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
+This creates a disposable vault with an existing `vault-mcp` plugin install,
+an existing plugin `data.json`, a normal note, and a write-audit note. It
+upgrades runtime files from the release zip, verifies `data.json` is preserved
+exactly, then uninstalls the plugin and confirms normal vault notes plus write
+audit notes remain in place.
+
+To keep the disposable vault or write a report:
+
+```bash
+npm run plugin:smoke-lifecycle -- --keep
+npm run plugin:smoke-lifecycle -- --report dist/obsidian-plugin/lifecycle-smoke.json
+```
+
 This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
 
 ## Manual Zip Install
@@ -174,6 +193,14 @@ styles.css
 
 If the new version changes settings shape, the release notes must say so explicitly before a private-alpha user upgrades.
 
+The automated lifecycle smoke verifies this upgrade invariant by writing a
+sentinel `data.json`, applying the release zip runtime files, and checking the
+settings file is byte-for-byte unchanged:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
 ## Uninstall
 
 Manual uninstall:
@@ -192,6 +219,16 @@ This removes the plugin and local plugin settings. It does not delete notes that
 ```text
 00 System/Vault MCP Write Audit
 ```
+
+The lifecycle smoke also verifies uninstall behavior in a disposable vault:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
+It confirms the plugin folder is removed, `vault-mcp` is removed from
+`.obsidian/community-plugins.json`, and normal vault notes plus audit notes
+remain in place.
 
 ## Troubleshooting
 
