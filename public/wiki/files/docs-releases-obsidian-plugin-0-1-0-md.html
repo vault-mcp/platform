@@ -203,7 +203,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L26"><a href="#L26">26</a></td>
-              <td class="source"><pre>- Use copied or disposable vaults first. Do not point private-alpha testing at a live vault until the copied-vault UI smoke gate passes.</pre></td>
+              <td class="source"><pre>- Use copied or disposable vaults first. Do not point private-alpha testing at a live vault until the private-alpha safety review and release walkthrough gates pass.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
@@ -218,7 +218,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L29"><a href="#L29">29</a></td>
-              <td class="source"><pre>- Real Obsidian enablement and full user click-through still need manual verification.</pre></td>
+              <td class="source"><pre>- Copied-vault Obsidian UI verification passed for create, append, replace, frontmatter, and rename proposals; a broader external-user walkthrough is still open.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>
@@ -258,41 +258,46 @@
             </tr>
             <tr>
               <td class="line-number" id="L37"><a href="#L37">37</a></td>
-              <td class="source"><pre>npm run build</pre></td>
+              <td class="source"><pre>npm run plugin:smoke-fresh-install</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L38"><a href="#L38">38</a></td>
-              <td class="source"><pre>npm run check:api</pre></td>
+              <td class="source"><pre>npm run build</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L39"><a href="#L39">39</a></td>
-              <td class="source"><pre>npm test</pre></td>
+              <td class="source"><pre>npm run check:api</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr>
             <tr>
               <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="source"><pre>npm test</pre></td>
+              <td>Markdown prose or table content intended for human documentation.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
               <td class="source"><pre>```</pre></td>
               <td>Markdown code-fence marker that starts or ends a code block.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
               <td class="source"><pre>## Upgrade Notes</pre></td>
               <td>Markdown heading; it gives structure to the document.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
               <td class="source"><pre> </pre></td>
               <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
             </tr>
             <tr>
-              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
               <td class="source"><pre>This is the first private-alpha package. For later upgrades, preserve Obsidian's plugin `data.json` unless release notes explicitly say the settings shape changed.</pre></td>
               <td>Markdown prose or table content intended for human documentation.</td>
             </tr></tbody>

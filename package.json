@@ -18,6 +18,7 @@
     "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
     "plugin:package": "node scripts/package-obsidian-plugin.mjs",
     "plugin:verify-package": "node scripts/verify-obsidian-plugin-package.mjs",
+    "plugin:smoke-fresh-install": "node scripts/smoke-plugin-fresh-install.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",
     "plugin:install-copy:skip-build": "node scripts/install-obsidian-plugin.mjs --skip-build",
     "plugin:prepare-ui-smoke": "node scripts/prepare-ui-smoke.mjs",

@@ -88,21 +88,54 @@ To keep the generated disposable vault for inspection:
 npm run plugin:verify-package -- --keep
 ```
 
+Smoke-test the private-alpha zip from a fresh-user perspective:
+
+```bash
+npm run plugin:smoke-fresh-install
+```
+
+This uses the release manifest, zip, checksum, and release notes as the source
+of truth. It creates a disposable vault, installs the package under
+`.obsidian/plugins/vault-mcp`, writes `.obsidian/community-plugins.json` to
+enable the plugin id, verifies the runtime files and manifest, and catches
+double-nested plugin installs. It removes the disposable vault by default.
+
+To keep the disposable vault or write a report:
+
+```bash
+npm run plugin:smoke-fresh-install -- --keep
+npm run plugin:smoke-fresh-install -- --report dist/obsidian-plugin/fresh-install-smoke.json
+```
+
 This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
 
 ## Manual Zip Install
 
 For a private-alpha user who does not want to build from source:
 
-1. Create this folder inside the test vault:
+1. Confirm the private-alpha release bundle includes:
 
 ```text
-.obsidian/plugins/vault-mcp
+vault-mcp-0.1.0.zip
+vault-mcp-0.1.0.zip.sha256
+vault-mcp-0.1.0-release-notes.md
+vault-mcp-0.1.0-release.json
 ```
 
-2. Unzip `vault-mcp-0.1.0.zip`.
-3. Copy the inner `vault-mcp` folder contents into `.obsidian/plugins/vault-mcp`.
-4. Confirm these files exist:
+2. Verify the checksum before installing:
+
+```bash
+cd /path/to/release/files
+shasum -a 256 -c vault-mcp-0.1.0.zip.sha256
+```
+
+3. Extract `vault-mcp-0.1.0.zip` into the test vault's plugin folder:
+
+```text
+.obsidian/plugins/
+```
+
+The zip contains a single `vault-mcp` folder, so the final layout should be:
 
 ```text
 .obsidian/plugins/vault-mcp/manifest.json
@@ -110,10 +143,11 @@ For a private-alpha user who does not want to build from source:
 .obsidian/plugins/vault-mcp/styles.css
 ```
 
-5. Restart Obsidian or reload community plugins.
-6. Open Settings -> Community plugins and enable `Vault MCP`.
+4. Restart Obsidian or reload community plugins.
+5. Open Settings -> Community plugins and enable `Vault MCP`.
+6. Open the Vault MCP settings, confirm the safety disclosure and readiness checklist, then run `Check connection` before syncing.
 
-For first private-alpha testing, use a copied or disposable vault. Do not use a live vault until the copied-vault UI verification gate passes.
+For first private-alpha testing, use a copied or disposable vault. Do not use a live vault until the private-alpha safety review and release walkthrough gates pass.
 
 ## Upgrade
 
@@ -225,7 +259,7 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 - `direct_apply` should stay disabled until separately reviewed.
 - The server stores a derived searchable index; it should not be treated as the canonical vault.
 - The current production smoke uses the copied vault, not the live vault.
-- Manual Obsidian UI click-through is still required before calling the plugin publish-ready.
+- The copied-vault Obsidian UI click-through passed for create, append, replace, frontmatter, and rename proposals, but there is still no dedicated automated Obsidian UI/test harness for modal flows.
 - Multi-vault support exists in the architecture, but needs more leakage tests before public release.
 
 ## Privacy And Security Notes
@@ -244,7 +278,7 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 
 ## Seed Write Proposals For UI Testing
 
-Use the preparation script before manual UI verification. It installs the current plugin build into the copied vault, writes safe UI-smoke settings, seeds a fresh set of pending write proposals, and verifies the batch in initial mode.
+Use the preparation script before repeated manual UI verification. It installs the current plugin build into the copied vault, writes safe UI-smoke settings, seeds a fresh set of pending write proposals, and verifies the batch in initial mode.
 
 The safe settings intentionally use:
 
@@ -441,7 +475,7 @@ Expected results:
 - `update_frontmatter` changes `status` to `active`, adds test tags, and removes `remove_me`.
 - `rename_note` renames `Rename Target.md` to `Renamed By Proposal.md`.
 
-This manual pass is still required before treating the plugin as publish-ready, because automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app.
+Run this manual pass after meaningful write-path or plugin UI changes, because the automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app. The copied-vault run `ui-smoke-20260625-154056` passed this gate for create, append, replace, frontmatter, and rename proposals.
 
 After applying all five proposals in Obsidian, verify the copied-vault files, proposal statuses, and audit notes:
 
