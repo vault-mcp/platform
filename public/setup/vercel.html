@@ -198,6 +198,39 @@
       padding: 10px;
     }
 
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    label {
+      color: var(--muted);
+      display: grid;
+      font-size: 0.9rem;
+      gap: 6px;
+      line-height: 1.45;
+    }
+
+    input,
+    textarea {
+      background: #07131e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      font: inherit;
+      min-width: 0;
+      padding: 10px;
+      width: 100%;
+    }
+
+    textarea {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      min-height: 140px;
+      resize: vertical;
+    }
+
     code,
     .copy-value {
       color: #d8fbff;
@@ -258,7 +291,8 @@
     @media (max-width: 820px) {
       .hero,
       .grid,
-      .step {
+      .step,
+      .form-grid {
         grid-template-columns: 1fr;
       }
 
@@ -370,21 +404,52 @@
       <article class="step">
         <div class="num">5</div>
         <div>
-          <h2>Copy these values back into the Obsidian plugin</h2>
-          <p>The plugin needs the base server URL and admin sync token. The base URL does not include <code>/mcp</code>, <code>/admin</code>, or <code>/oauth</code>.</p>
-          <div class="copy-row">
-            <span class="copy-value">Server URL: https://your-vercel-domain.vercel.app</span>
-            <button data-copy="https://your-vercel-domain.vercel.app">Copy server URL example</button>
+          <h2>Generate env values and plugin setup bundle</h2>
+          <p>Enter your deployed Vercel base URL. This page generates browser-only secret values and a plugin setup bundle. Nothing is sent to Vault MCP by this form.</p>
+          <div class="form-grid">
+            <label>
+              Vercel base URL
+              <input id="server-url" value="https://your-vercel-domain.vercel.app" autocomplete="off">
+            </label>
+            <label>
+              Vault id
+              <input id="vault-id" value="default" autocomplete="off">
+            </label>
           </div>
-          <div class="copy-row">
-            <span class="copy-value">Sync token: paste your MCP_SYNC_TOKEN only into the plugin</span>
-            <button data-copy="MCP_SYNC_TOKEN goes in the Obsidian plugin only. Do not paste it into ChatGPT or Claude.">Copy token reminder</button>
+          <div class="actions">
+            <button id="generate-values" type="button">Generate private values</button>
+          </div>
+          <label>
+            Vercel environment values
+            <textarea id="env-output" spellcheck="false" readonly></textarea>
+          </label>
+          <div class="actions">
+            <button data-copy-target="env-output" type="button">Copy env values</button>
+          </div>
+          <label>
+            Obsidian plugin setup bundle
+            <textarea id="bundle-output" spellcheck="false" readonly></textarea>
+          </label>
+          <div class="actions">
+            <button data-copy-target="bundle-output" type="button">Copy setup bundle</button>
           </div>
         </div>
       </article>
 
       <article class="step">
         <div class="num">6</div>
+        <div>
+          <h2>Import the setup bundle in Obsidian</h2>
+          <p>Back in the Vault MCP plugin settings, paste the setup bundle into <code>Import setup bundle</code>, then click <code>Import bundle</code>. Run <code>Check connection</code> after importing.</p>
+          <div class="copy-row">
+            <span class="copy-value">Paste bundle -> Import bundle -> Check connection -> Preview index -> Sync now</span>
+            <button data-copy="Paste bundle -> Import bundle -> Check connection -> Preview index -> Sync now">Copy import sequence</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">7</div>
         <div>
           <h2>Run plugin preflight, preview, and sync</h2>
           <p>Back in Obsidian, click `Check connection`, then `Preview index`. Review what is allowed, denied, or held for review before syncing.</p>
@@ -396,7 +461,7 @@
       </article>
 
       <article class="step">
-        <div class="num">7</div>
+        <div class="num">8</div>
         <div>
           <h2>Connect ChatGPT or another MCP client</h2>
           <p>Clients use the MCP endpoint and OAuth. The endpoint includes <code>/mcp</code>. The sync token is only for the Obsidian plugin.</p>
@@ -435,6 +500,72 @@
   </footer>
 
   <script>
+    function randomSecret(bytes = 32) {
+      const values = new Uint8Array(bytes);
+      crypto.getRandomValues(values);
+      let binary = "";
+      for (const value of values) {
+        binary += String.fromCharCode(value);
+      }
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+
+    function normalizeBaseUrl(value) {
+      const url = new URL(value.trim());
+      if (url.protocol !== "https:") {
+        throw new Error("Vercel deployments should use https.");
+      }
+      url.pathname = "/";
+      url.search = "";
+      url.hash = "";
+      return url.toString().replace(/\/$/, "");
+    }
+
+    function buildOutputs() {
+      const serverInput = document.getElementById("server-url");
+      const vaultInput = document.getElementById("vault-id");
+      const envOutput = document.getElementById("env-output");
+      const bundleOutput = document.getElementById("bundle-output");
+      try {
+        const baseUrl = normalizeBaseUrl(serverInput.value);
+        const vaultId = (vaultInput.value || "default").trim() || "default";
+        const syncToken = randomSecret(32);
+        const oauthSecret = randomSecret(48);
+        const authPassword = randomSecret(18);
+        const env = [
+          `PUBLIC_BASE_URL=${baseUrl}`,
+          "DATABASE_URL=<paste your Neon Postgres connection string>",
+          `MCP_SYNC_TOKEN=${syncToken}`,
+          `OAUTH_ISSUER=${baseUrl}`,
+          `OAUTH_AUDIENCE=${baseUrl}/mcp`,
+          `OAUTH_AUTHORIZATION_SERVER=${baseUrl}`,
+          `OAUTH_JWT_SECRET=${oauthSecret}`,
+          `OAUTH_AUTH_PASSWORD=${authPassword}`,
+          "OAUTH_SCOPES=vault.read",
+          "ALLOWED_ORIGINS=https://chatgpt.com,https://chat.openai.com,https://claude.ai,http://localhost:6274,http://127.0.0.1:6274",
+        ].join("\n");
+        const bundle = {
+          type: "vault-mcp-plugin-setup",
+          version: 1,
+          serverUrl: baseUrl,
+          syncToken,
+          tenantId: "default",
+          vaultId,
+          indexMode: "rules_plus_approvals",
+          writeMode: "review_required",
+        };
+        envOutput.value = env;
+        bundleOutput.value = JSON.stringify(bundle, null, 2);
+      } catch {
+        envOutput.value = "Enter a valid https:// Vercel deployment URL first.";
+        bundleOutput.value = "";
+      }
+    }
+
+    document.getElementById("generate-values").addEventListener("click", buildOutputs);
+    document.getElementById("server-url").addEventListener("change", buildOutputs);
+    document.getElementById("vault-id").addEventListener("change", buildOutputs);
+
     for (const button of document.querySelectorAll("[data-copy]")) {
       button.addEventListener("click", async () => {
         const value = button.getAttribute("data-copy") || "";
@@ -450,6 +581,23 @@
         }
       });
     }
+    for (const button of document.querySelectorAll("[data-copy-target]")) {
+      button.addEventListener("click", async () => {
+        const target = document.getElementById(button.getAttribute("data-copy-target") || "");
+        const value = target && "value" in target ? target.value : "";
+        try {
+          await navigator.clipboard.writeText(value);
+          const previous = button.textContent;
+          button.textContent = "Copied";
+          setTimeout(() => {
+            button.textContent = previous;
+          }, 1200);
+        } catch {
+          button.textContent = "Select text";
+        }
+      });
+    }
+    buildOutputs();
   </script>
 </body>
 </html>

@@ -75,7 +75,7 @@ describe("server MCP contract", () => {
     expect(response.headers.get("content-type")).toContain("text/html");
     const html = await response.text();
     expect(html).toContain("No-terminal Vercel setup");
-    expect(html).toContain("Copy these values back into the Obsidian plugin");
+    expect(html).toContain("Obsidian plugin setup bundle");
   });
 
   it("returns versioned health and storage status", async () => {

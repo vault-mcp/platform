@@ -4,6 +4,7 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  parsePluginSetupBundle,
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
   pluginSetupGuide,
@@ -24,6 +25,47 @@ describe("plugin helpers", () => {
     expect(describeHttpFailure("proposal check", 404, "")).toContain("endpoint was not found");
     expect(describeHttpFailure("sync", 500, "database unavailable")).toContain("server failed");
     expect(describeCaughtError("sync", new Error("Load failed"))).toContain("could not reach the server");
+  });
+
+  it("parses plugin setup bundles from the hosted setup page", () => {
+    const bundle = parsePluginSetupBundle(JSON.stringify({
+      type: "vault-mcp-plugin-setup",
+      version: 1,
+      serverUrl: "https://example-vault-mcp.vercel.app/",
+      syncToken: "sync-token",
+      tenantId: "personal",
+      vaultId: "main-vault",
+      indexMode: "manual_only",
+      writeMode: "review_required",
+    }));
+
+    expect(bundle).toEqual({
+      serverUrl: "https://example-vault-mcp.vercel.app",
+      syncToken: "sync-token",
+      tenantId: "personal",
+      vaultId: "main-vault",
+      indexMode: "manual_only",
+      writeMode: "review_required",
+    });
+  });
+
+  it("defaults optional setup bundle fields to safe private-alpha values", () => {
+    const bundle = parsePluginSetupBundle(JSON.stringify({
+      serverUrl: "https://example-vault-mcp.vercel.app",
+      syncToken: "sync-token",
+    }));
+
+    expect(bundle.tenantId).toBe("default");
+    expect(bundle.vaultId).toBe("default");
+    expect(bundle.indexMode).toBe("rules_plus_approvals");
+    expect(bundle.writeMode).toBe("review_required");
+  });
+
+  it("rejects invalid plugin setup bundles", () => {
+    expect(() => parsePluginSetupBundle("not json")).toThrow("valid JSON");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ type: "other", serverUrl: "https://example.com", syncToken: "secret" }))).toThrow("not a Vault MCP");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ serverUrl: "https://example.com/mcp", syncToken: "secret" }))).toThrow("base server URL");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ serverUrl: "https://example.com", syncToken: "secret", indexMode: "everything" }))).toThrow("indexMode");
   });
 
   it("summarizes sync responses using server and local counts", () => {

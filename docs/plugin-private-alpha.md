@@ -52,11 +52,27 @@ https://vault-mcp-connector.vercel.app/setup/vercel
 ```
 
 That page walks a no-terminal user through the browser-based Vercel path,
-health check, plugin handoff, and client setup. The next product step is to
-replace the manual Vercel import portion with a one-click template flow that
-returns the generated server URL and token values back to the plugin. Users may
-still need to approve Vercel, Neon, GitHub, ChatGPT, Claude, or other account
-screens; the goal is to remove terminal work, not bypass account consent.
+generates private env values in the browser, creates a JSON plugin setup bundle,
+and explains the plugin handoff and client setup. Paste the generated JSON into
+`Import setup bundle` in the plugin settings, then click `Import bundle`.
+
+The bundle fills:
+
+- Server URL
+- Admin sync token
+- Tenant id
+- Vault id
+- Index mode
+- Write mode
+
+After importing, run `Check connection`, then `Preview index`, then review the
+queue before syncing.
+
+The next product step is to replace the manual Vercel import portion with a
+one-click template flow that returns the generated server URL and token values
+back to the plugin. Users may still need to approve Vercel, Neon, GitHub,
+ChatGPT, Claude, or other account screens; the goal is to remove terminal work,
+not bypass account consent.
 
 ## Safe Test Install
 

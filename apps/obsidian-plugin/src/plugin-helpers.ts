@@ -74,6 +74,15 @@ export type PluginSetupGuide = {
   recoveryActions: string[];
 };
 
+export type PluginSetupBundle = {
+  serverUrl: string;
+  syncToken: string;
+  tenantId: string;
+  vaultId: string;
+  indexMode: "rules_plus_approvals" | "manual_only" | "rules_only";
+  writeMode: "review_required" | "direct_apply";
+};
+
 export type PluginServerHealthSnapshot = {
   ok?: boolean;
   service?: {
@@ -137,6 +146,47 @@ export function normalizeServerBaseUrl(value: string): string {
   }
 
   return url.toString().replace(/\/$/, "");
+}
+
+export function parsePluginSetupBundle(value: string): PluginSetupBundle {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new Error("Setup bundle must be valid JSON copied from the Vault MCP setup page.");
+  }
+
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("Setup bundle must be a JSON object.");
+  }
+
+  const record = parsed as Record<string, unknown>;
+  if (record.type !== undefined && record.type !== "vault-mcp-plugin-setup") {
+    throw new Error("This JSON is not a Vault MCP plugin setup bundle.");
+  }
+
+  const serverUrl = normalizeServerBaseUrl(readRequiredString(record, "serverUrl", "Setup bundle is missing serverUrl."));
+  const syncToken = readRequiredString(record, "syncToken", "Setup bundle is missing syncToken.");
+  const vaultId = readOptionalString(record, "vaultId") || "default";
+  const tenantId = readOptionalString(record, "tenantId") || "default";
+  const indexMode = readOptionalString(record, "indexMode") || "rules_plus_approvals";
+  const writeMode = readOptionalString(record, "writeMode") || "review_required";
+
+  if (!["rules_plus_approvals", "manual_only", "rules_only"].includes(indexMode)) {
+    throw new Error("Setup bundle indexMode must be rules_plus_approvals, manual_only, or rules_only.");
+  }
+  if (!["review_required", "direct_apply"].includes(writeMode)) {
+    throw new Error("Setup bundle writeMode must be review_required or direct_apply.");
+  }
+
+  return {
+    serverUrl,
+    syncToken,
+    tenantId,
+    vaultId,
+    indexMode: indexMode as PluginSetupBundle["indexMode"],
+    writeMode: writeMode as PluginSetupBundle["writeMode"],
+  };
 }
 
 export function describeHttpFailure(action: string, status: number, responseText: string): string {
@@ -542,6 +592,25 @@ function parseServerError(responseText: string): string | null {
     return null;
   }
   return trimmed.length > 180 ? `${trimmed.slice(0, 180)}...` : trimmed;
+}
+
+function readRequiredString(record: Record<string, unknown>, key: string, message: string): string {
+  const value = record[key];
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(message);
+  }
+  return value.trim();
+}
+
+function readOptionalString(record: Record<string, unknown>, key: string): string | null {
+  const value = record[key];
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (typeof value !== "string") {
+    throw new Error(`Setup bundle ${key} must be a string.`);
+  }
+  return value.trim() || null;
 }
 
 function safeJson(value: string): unknown | null {
