@@ -154,6 +154,8 @@ describe("plugin helpers", () => {
       "Guided Vercel self-host",
       "Advanced manual hosting",
     ]);
+    expect(guide.hostingOptions.find((option) => option.label === "Guided Vercel self-host")?.actionUrl)
+      .toBe("https://vault-mcp-connector.vercel.app/setup/vercel");
     expect(guide.clientCards.map((card) => card.label)).toEqual([
       "ChatGPT",
       "Claude",
@@ -177,6 +179,8 @@ describe("plugin helpers", () => {
     });
 
     expect(guide.endpoint).toBe("Set a valid server URL first.");
+    expect(guide.hostingOptions.find((option) => option.label === "Guided Vercel self-host")?.actionUrl)
+      .toBe("https://vault-mcp-connector.vercel.app/setup/vercel");
     expect(guide.steps.find((step) => step.label === "Choose hosting")?.status).toBe("next");
     expect(guide.steps.find((step) => step.label === "Add the sync token")?.status).toBe("blocked");
     expect(guide.steps.find((step) => step.label === "Connect an MCP client")?.message).toContain("Clients use OAuth");

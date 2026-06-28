@@ -189,6 +189,15 @@
   margin: 4px 0;
 }
 
+.vault-mcp-setup-card__actions {
+  margin-top: 10px;
+}
+
+.vault-mcp-setup-card__actions .setting-item {
+  border: 0;
+  padding: 0;
+}
+
 .vault-mcp-disclosure {
   background: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);

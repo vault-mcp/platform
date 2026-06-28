@@ -64,6 +64,20 @@ describe("server MCP contract", () => {
     expect(html).toContain("Build The Indexer");
   });
 
+  it("serves the guided Vercel setup page without authentication", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/setup/vercel`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    const html = await response.text();
+    expect(html).toContain("No-terminal Vercel setup");
+    expect(html).toContain("Copy these values back into the Obsidian plugin");
+  });
+
   it("returns versioned health and storage status", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);

@@ -44,12 +44,19 @@ sequence, and a test prompt. They also repeat the critical token boundary:
 ordinary MCP clients use OAuth or a minted access token. They should not receive
 the plugin's admin sync token.
 
-The current private-alpha plugin does not yet create a Vercel project by itself.
-The next product step is to turn the guided Vercel self-host option into a
-browser-based deploy flow that returns the generated server URL and token values
-back to the plugin. Users may still need to approve Vercel, Neon, GitHub,
-ChatGPT, Claude, or other account screens; the goal is to remove terminal work,
-not bypass account consent.
+The current private-alpha plugin does not yet create a Vercel project by itself,
+but the guided self-host option now points to the hosted setup walkthrough:
+
+```text
+https://vault-mcp-connector.vercel.app/setup/vercel
+```
+
+That page walks a no-terminal user through the browser-based Vercel path,
+health check, plugin handoff, and client setup. The next product step is to
+replace the manual Vercel import portion with a one-click template flow that
+returns the generated server URL and token values back to the plugin. Users may
+still need to approve Vercel, Neon, GitHub, ChatGPT, Claude, or other account
+screens; the goal is to remove terminal work, not bypass account consent.
 
 ## Safe Test Install
 

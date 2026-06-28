@@ -51,6 +51,8 @@ export type PluginHostingOption = {
   status: "available" | "planned" | "advanced";
   summary: string;
   steps: string[];
+  actionLabel?: string;
+  actionUrl?: string;
 };
 
 export type PluginClientSetupCard = {
@@ -315,7 +317,9 @@ export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetu
   const syncTokenConfigured = Boolean(settings.syncToken.trim());
   const vaultIdConfigured = Boolean(settings.vaultId.trim());
   const serverReady = !checklist.items.some((item) => item.label === "Server URL" && item.status === "blocked");
-  const endpoint = serverReady ? `${normalizeServerBaseUrl(settings.serverUrl)}/mcp` : "Set a valid server URL first.";
+  const baseUrl = serverReady ? normalizeServerBaseUrl(settings.serverUrl) : null;
+  const endpoint = baseUrl ? `${baseUrl}/mcp` : "Set a valid server URL first.";
+  const vercelSetupUrl = baseUrl ? `${baseUrl}/setup/vercel` : "https://vault-mcp-connector.vercel.app/setup/vercel";
 
   return {
     title: "Start here",
@@ -391,6 +395,8 @@ export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetu
           "Copy the generated server URL and sync token back into this plugin.",
           "Run connection preflight, then preview and sync approved notes.",
         ],
+        actionLabel: "Open setup guide",
+        actionUrl: vercelSetupUrl,
       },
       {
         label: "Advanced manual hosting",

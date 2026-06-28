@@ -1112,6 +1112,17 @@ function addSetupGuide(parent: HTMLElement, settings: VaultMcpPluginSettings) {
     for (const item of option.steps) {
       list.createEl("li", { text: item });
     }
+    if (option.actionUrl) {
+      const actions = card.createDiv({ cls: "vault-mcp-setup-card__actions" });
+      new Setting(actions)
+        .addButton((button) => button
+          .setButtonText(option.actionLabel ?? "Open guide")
+          .setCta()
+          .onClick(() => openExternalUrl(option.actionUrl ?? "")))
+        .addButton((button) => button
+          .setButtonText("Copy link")
+          .onClick(() => void copyToClipboard(option.actionLabel ?? "setup guide", option.actionUrl ?? "")));
+    }
   }
 
   const clientsDetails = box.createEl("details", { cls: "vault-mcp-setup-section" });
@@ -1490,6 +1501,14 @@ async function copyToClipboard(label: string, value: string) {
   } catch {
     new Notice(`Vault MCP: could not copy ${label}. Select and copy it manually.`);
   }
+}
+
+function openExternalUrl(value: string) {
+  if (!value) {
+    new Notice("Vault MCP: setup guide URL is not ready.");
+    return;
+  }
+  window.open(value, "_blank", "noopener,noreferrer");
 }
 
 function openPluginSettings(app: App, plugin: VaultMcpPlugin) {

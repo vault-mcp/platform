@@ -56,6 +56,7 @@ const authoredFiles = [
   "packages/core/src/types.ts",
   "packages/core/tsconfig.json",
   "public/index.html",
+  "public/setup/vercel.html",
   "public/wiki/index.html",
   "public/wiki/tutorial.html",
   "README.md",
@@ -100,6 +101,7 @@ const sectionSummaries = [
   ["Indexer", "packages/core/src/indexer.ts", "Walks the vault, applies policy, redacts secrets, chunks Markdown, and builds the derived index."],
   ["Obsidian plugin", "apps/obsidian-plugin/src/main.ts", "Private-alpha plugin shell for indexing controls, sync, dashboard status, and future write approvals."],
   ["Plugin UX helpers", "apps/obsidian-plugin/src/plugin-helpers.ts", "Readable plugin-side server URL validation, sync summaries, setup guide cards, client setup guidance, and HTTP error handling."],
+  ["Guided Vercel setup", "public/setup/vercel.html", "Browser-first self-host setup walkthrough that hands users back to the Obsidian plugin."],
   ["Search", "packages/core/src/search.ts", "Search, listing, active project discovery, status, diagnostics, and controlled fetch helpers."],
   ["Source policy", "packages/core/src/source-policy.ts", "Allowlist and denylist rules that decide what can enter the index."],
   ["Markdown parsing", "packages/core/src/markdown.ts", "Frontmatter parsing and heading-based chunking."],
@@ -875,6 +877,7 @@ function summaryFor(filePath) {
     ["packages/core/src/redaction.ts", "Credential-like string redaction before indexing."],
     ["packages/core/src/types.ts", "Shared TypeScript types for index documents, search results, and stats."],
     ["public/index.html", "Public landing page for the connector."],
+    ["public/setup/vercel.html", "Browser-first Vercel setup walkthrough for no-terminal private-alpha users."],
     ["public/wiki/index.html", "Conceptual wiki landing page."],
   ]);
   if (summaries.has(filePath)) {
