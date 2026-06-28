@@ -9,6 +9,7 @@ import {
   normalizeServerBaseUrl,
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
+  pluginSetupGuide,
   summarizeSyncResponse,
   summarizeServerStatus,
 } from "./plugin-helpers";
@@ -765,6 +766,7 @@ class VaultMcpDashboardModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
     contentEl.createEl("h2", { text: "Vault MCP" });
+    addSetupGuide(contentEl, this.plugin.settings);
     addSafetyDisclosure(contentEl, this.plugin.settings);
     addConfigurationChecklist(contentEl, this.plugin.settings);
     addServerCheckSection(contentEl, this.plugin.serverCheck);
@@ -959,6 +961,7 @@ class VaultMcpSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
+    addSetupGuide(containerEl, this.plugin.settings);
     addSafetyDisclosure(containerEl, this.plugin.settings);
     addConfigurationChecklist(containerEl, this.plugin.settings);
     addServerCheckSection(containerEl, this.plugin.serverCheck);
@@ -1068,6 +1071,83 @@ function addSyncSummarySection(parent: HTMLElement, message: string) {
   const box = parent.createDiv({ cls: "vault-mcp-sync-summary" });
   box.createDiv({ cls: "vault-mcp-safety__title", text: "Last sync summary" });
   box.createDiv({ cls: "vault-mcp-safety__message", text: message });
+}
+
+function addSetupGuide(parent: HTMLElement, settings: VaultMcpPluginSettings) {
+  const guide = pluginSetupGuide(settings);
+  const box = parent.createDiv({ cls: "vault-mcp-setup" });
+  box.createDiv({ cls: "vault-mcp-setup__eyebrow", text: "First-run setup" });
+  box.createDiv({ cls: "vault-mcp-setup__title", text: guide.title });
+  box.createDiv({ cls: "vault-mcp-setup__summary", text: guide.summary });
+
+  const endpoint = box.createDiv({ cls: "vault-mcp-copy-value" });
+  const endpointBody = endpoint.createDiv({ cls: "vault-mcp-copy-value__body" });
+  endpointBody.createDiv({ cls: "vault-mcp-dashboard__label", text: "MCP endpoint for clients" });
+  endpointBody.createDiv({ cls: "vault-mcp-copy-value__text", text: guide.endpoint });
+  new Setting(endpoint.createDiv({ cls: "vault-mcp-copy-value__action" }))
+    .addButton((button) => button
+      .setButtonText("Copy")
+      .onClick(() => void copyToClipboard("MCP endpoint", guide.endpoint)));
+
+  const steps = box.createDiv({ cls: "vault-mcp-setup-steps" });
+  for (const step of guide.steps) {
+    const row = steps.createDiv({ cls: `vault-mcp-setup-step vault-mcp-setup-step--${step.status}` });
+    row.createDiv({ cls: "vault-mcp-setup-step__status", text: step.status });
+    const body = row.createDiv({ cls: "vault-mcp-setup-step__body" });
+    body.createDiv({ cls: "vault-mcp-setup-step__label", text: step.label });
+    body.createDiv({ cls: "vault-mcp-setup-step__message", text: step.message });
+  }
+
+  const hostingDetails = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  hostingDetails.open = true;
+  hostingDetails.createEl("summary", { text: "Choose hosting" });
+  const hostingList = hostingDetails.createDiv({ cls: "vault-mcp-setup-card-grid" });
+  for (const option of guide.hostingOptions) {
+    const card = hostingList.createDiv({ cls: `vault-mcp-setup-card vault-mcp-setup-card--${option.status}` });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: option.label });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--review", text: option.status });
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: option.summary });
+    const list = card.createEl("ol", { cls: "vault-mcp-setup-card__list" });
+    for (const item of option.steps) {
+      list.createEl("li", { text: item });
+    }
+  }
+
+  const clientsDetails = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  clientsDetails.open = true;
+  clientsDetails.createEl("summary", { text: "Connect an MCP client" });
+  const clientList = clientsDetails.createDiv({ cls: "vault-mcp-setup-card-grid" });
+  for (const client of guide.clientCards) {
+    const card = clientList.createDiv({ cls: "vault-mcp-setup-card" });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: client.label });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--review", text: client.status });
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: client.auth });
+    const value = card.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+    value.createDiv({ cls: "vault-mcp-copy-value__text", text: client.endpoint });
+    new Setting(value.createDiv({ cls: "vault-mcp-copy-value__action" }))
+      .addButton((button) => button
+        .setButtonText("Copy endpoint")
+        .onClick(() => void copyToClipboard(`${client.label} endpoint`, client.endpoint)));
+    const list = card.createEl("ol", { cls: "vault-mcp-setup-card__list" });
+    for (const item of client.steps) {
+      list.createEl("li", { text: item });
+    }
+    const prompt = card.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+    prompt.createDiv({ cls: "vault-mcp-copy-value__text", text: client.testPrompt });
+    new Setting(prompt.createDiv({ cls: "vault-mcp-copy-value__action" }))
+      .addButton((button) => button
+        .setButtonText("Copy test")
+        .onClick(() => void copyToClipboard(`${client.label} test prompt`, client.testPrompt)));
+  }
+
+  const recovery = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  recovery.createEl("summary", { text: "Recovery actions" });
+  const list = recovery.createEl("ul", { cls: "vault-mcp-disclosure__list" });
+  for (const item of guide.recoveryActions) {
+    list.createEl("li", { text: item });
+  }
 }
 
 function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettings) {
@@ -1397,6 +1477,19 @@ function addListSetting(containerEl: HTMLElement, name: string, desc: string, va
           await onSave(next.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
         });
     });
+}
+
+async function copyToClipboard(label: string, value: string) {
+  if (value === "Set a valid server URL first.") {
+    new Notice(`Vault MCP: ${label} is not ready to copy.`);
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(value);
+    new Notice(`Vault MCP: copied ${label}.`);
+  } catch {
+    new Notice(`Vault MCP: could not copy ${label}. Select and copy it manually.`);
+  }
 }
 
 function openPluginSettings(app: App, plugin: VaultMcpPlugin) {

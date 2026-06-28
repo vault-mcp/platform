@@ -13,10 +13,43 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
 - Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
+- Shows a first-run setup guide in settings and the dashboard with hosting choices, setup steps, client cards, copyable MCP endpoints, test prompts, and recovery actions.
 - Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
+
+## Plugin-First Setup Direction
+
+The publishable product should start from Obsidian, not from a terminal.
+
+The plugin dashboard and settings now include a `Start here` guide. It is the
+first private-alpha version of the no-terminal setup flow:
+
+1. Install and enable the plugin.
+2. Choose hosting:
+   - managed Vault MCP, planned as the simplest future path
+   - guided Vercel self-hosting, the target private-alpha self-host path
+   - advanced manual hosting, for developers and custom infrastructure
+3. Paste the server URL and admin sync token into the plugin.
+4. Run `Check connection` to verify server health, storage readiness,
+   migrations, and the configured vault status.
+5. Run `Preview index` before syncing.
+6. Review denied and review-required notes.
+7. Sync only approved context.
+8. Use the built-in client cards for ChatGPT, Claude, Codex, or MCP Inspector.
+
+The client cards show the MCP endpoint, authentication guidance, a short setup
+sequence, and a test prompt. They also repeat the critical token boundary:
+ordinary MCP clients use OAuth or a minted access token. They should not receive
+the plugin's admin sync token.
+
+The current private-alpha plugin does not yet create a Vercel project by itself.
+The next product step is to turn the guided Vercel self-host option into a
+browser-based deploy flow that returns the generated server URL and token values
+back to the plugin. Users may still need to approve Vercel, Neon, GitHub,
+ChatGPT, Claude, or other account screens; the goal is to remove terminal work,
+not bypass account consent.
 
 ## Safe Test Install
 

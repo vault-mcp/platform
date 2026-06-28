@@ -28,6 +28,167 @@
   color: var(--text-muted);
 }
 
+.vault-mcp-setup {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin: 10px 0 14px;
+  padding: 14px;
+}
+
+.vault-mcp-setup__eyebrow {
+  color: var(--text-accent);
+  font-size: var(--font-ui-smaller);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.vault-mcp-setup__title {
+  font-size: var(--font-ui-large);
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.vault-mcp-setup__summary {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 6px;
+}
+
+.vault-mcp-copy-value {
+  align-items: center;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 10px;
+}
+
+.vault-mcp-copy-value--compact {
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.vault-mcp-copy-value__body {
+  min-width: 0;
+}
+
+.vault-mcp-copy-value__text {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+  overflow-wrap: anywhere;
+}
+
+.vault-mcp-copy-value__action {
+  flex: 0 0 auto;
+}
+
+.vault-mcp-copy-value__action .setting-item {
+  border: 0;
+  padding: 0;
+}
+
+.vault-mcp-setup-steps {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vault-mcp-setup-step {
+  align-items: flex-start;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 9px;
+}
+
+.vault-mcp-setup-step--done {
+  border-color: rgba(var(--color-green-rgb), 0.4);
+}
+
+.vault-mcp-setup-step--next,
+.vault-mcp-setup-step--later {
+  border-color: rgba(var(--color-orange-rgb), 0.4);
+}
+
+.vault-mcp-setup-step--blocked {
+  border-color: rgba(var(--color-red-rgb), 0.45);
+}
+
+.vault-mcp-setup-step__status {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  font-size: var(--font-ui-smaller);
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.vault-mcp-setup-step__body {
+  min-width: 0;
+}
+
+.vault-mcp-setup-step__label {
+  font-weight: 700;
+}
+
+.vault-mcp-setup-step__message {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+.vault-mcp-setup-section {
+  border-top: 1px solid var(--background-modifier-border);
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+.vault-mcp-setup-section > summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.vault-mcp-setup-card-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.vault-mcp-setup-card {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.vault-mcp-setup-card--planned,
+.vault-mcp-setup-card--available {
+  border-color: rgba(var(--color-green-rgb), 0.35);
+}
+
+.vault-mcp-setup-card--advanced {
+  border-color: rgba(var(--color-orange-rgb), 0.35);
+}
+
+.vault-mcp-setup-card__list {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.vault-mcp-setup-card__list li {
+  margin: 4px 0;
+}
+
 .vault-mcp-disclosure {
   background: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);

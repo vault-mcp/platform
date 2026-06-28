@@ -6,6 +6,7 @@ import {
   normalizeServerBaseUrl,
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
+  pluginSetupGuide,
   summarizeServerStatus,
   summarizeSyncResponse,
 } from "./plugin-helpers";
@@ -129,6 +130,56 @@ describe("plugin helpers", () => {
     expect(checklist.readyToSync).toBe(true);
     expect(checklist.items.find((item) => item.label === "Write mode")?.status).toBe("warning");
     expect(checklist.items.find((item) => item.label === "Index scope")?.message).toContain("Manual-only");
+  });
+
+  it("builds a plugin-first setup guide with hosting and client cards", () => {
+    const guide = pluginSetupGuide({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "sync-secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+    });
+
+    expect(guide.title).toBe("Start here");
+    expect(guide.summary).toContain("start from this plugin");
+    expect(guide.endpoint).toBe("https://vault-mcp-connector.vercel.app/mcp");
+    expect(guide.steps.map((step) => step.label)).toContain("Choose hosting");
+    expect(guide.steps.find((step) => step.label === "Add the sync token")?.status).toBe("done");
+    expect(guide.hostingOptions.map((option) => option.label)).toEqual([
+      "Managed Vault MCP",
+      "Guided Vercel self-host",
+      "Advanced manual hosting",
+    ]);
+    expect(guide.clientCards.map((card) => card.label)).toEqual([
+      "ChatGPT",
+      "Claude",
+      "Codex",
+      "MCP Inspector",
+    ]);
+    expect(guide.clientCards.find((card) => card.label === "ChatGPT")?.auth).toContain("Do not paste the sync token");
+    expect(guide.recoveryActions.join("\n")).toContain("Rotate the server admin sync token");
+  });
+
+  it("blocks setup steps when the server URL and sync token are missing", () => {
+    const guide = pluginSetupGuide({
+      serverUrl: "not a url",
+      syncToken: "",
+      vaultId: "",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "",
+      includePrefixes: [],
+      excludePrefixes: [],
+    });
+
+    expect(guide.endpoint).toBe("Set a valid server URL first.");
+    expect(guide.steps.find((step) => step.label === "Choose hosting")?.status).toBe("next");
+    expect(guide.steps.find((step) => step.label === "Add the sync token")?.status).toBe("blocked");
+    expect(guide.steps.find((step) => step.label === "Connect an MCP client")?.message).toContain("Clients use OAuth");
   });
 
   it("summarizes a healthy server and authorized vault status", () => {
