@@ -11,11 +11,16 @@ Local copied-vault gates:
 npm run build
 npm run check:api
 npm test
+npm run smoke:mcp-ui
 npm run smoke:local
 npm run smoke:oauth-local
 ```
 
-Run the two local smoke scripts sequentially unless you set different `PORT` values; both default to `3333`.
+Run the two server local smoke scripts sequentially unless you set different `PORT` values; both default to `3333`.
+`smoke:mcp-ui` does not start a server or use live ChatGPT. It loads the MCP Apps
+HTML component from the compiled server package and verifies delayed tool
+globals plus rendered search, note, status, error, and proposal card states in a
+dependency-free fake DOM.
 
 If a throwaway Postgres database is available, verify the production storage path too:
 

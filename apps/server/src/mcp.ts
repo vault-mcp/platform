@@ -749,7 +749,7 @@ function trimForText(value: string | undefined, maxLength: number): string {
   return `${text.slice(0, maxLength - 1).trimEnd()}...`;
 }
 
-function chatGptResultsComponentHtml(): string {
+export function chatGptResultsComponentHtml(): string {
   return `<!doctype html>
 <html lang="en">
 <head>

@@ -96,9 +96,15 @@ curl http://127.0.0.1:3333/healthz
 Or run the compiled local smoke test:
 
 ```bash
+npm run smoke:mcp-ui
 npm run smoke:local
 npm run smoke:oauth-local
 ```
+
+`smoke:mcp-ui` is dependency-free and does not contact ChatGPT. It executes the
+MCP Apps output template with a tiny fake DOM, then verifies delayed
+`openai:set_globals`, retry rendering, note Markdown, status cards, error cards,
+and future proposal-shaped cards.
 
 For a deployed endpoint:
 
