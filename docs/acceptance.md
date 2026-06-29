@@ -103,12 +103,27 @@ The real BRAT gate still requires a GitHub prerelease and copied-vault UI test:
 
 1. Use the existing `0.1.0` prerelease, or create a new prerelease whose tag and release name match the manifest version.
 2. If recreating, upload `manifest.json`, `main.js`, and `styles.css` from `dist/brat/vault-mcp/`.
-3. Install through BRAT into `/Users/tjt/Documents/Tristan's Personal vault copy`
+3. Check copied-vault BRAT readiness:
+
+```bash
+npm run plugin:brat:check-copy -- --check-github-release
+```
+
+4. If needed, enable BRAT and add the repo in the copied vault:
+
+```bash
+npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-release
+```
+
+5. If the repo is private, add a fine-grained GitHub token in BRAT settings with
+   read-only Contents access to `vault-mcp/platform`. Do not put that token in
+   source code, screenshots, or docs.
+6. Install through BRAT into `/Users/tjt/Documents/Tristan's Personal vault copy`
    or another disposable vault.
-4. Enable `Vault MCP`.
-5. Import the setup bundle or paste server settings.
-6. Run `Check connection`, `Preview index`, and a copied-vault sync.
-7. Capture screenshots of the BRAT install, enabled plugin, readiness checklist,
+7. Enable `Vault MCP`.
+8. Import the setup bundle or paste server settings.
+9. Run `Check connection`, `Preview index`, and a copied-vault sync.
+10. Capture screenshots of the BRAT install, enabled plugin, readiness checklist,
    preview queue, and sync summary.
 
 For a private GitHub repository, BRAT needs a GitHub token with read access to

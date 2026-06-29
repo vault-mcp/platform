@@ -21,6 +21,7 @@
     "plugin:brat:prepare": "node scripts/prepare-brat-release.mjs",
     "plugin:brat:verify": "node scripts/verify-brat-release.mjs",
     "plugin:brat:verify-github": "node scripts/verify-brat-github-release.mjs",
+    "plugin:brat:check-copy": "node scripts/check-brat-copied-vault.mjs",
     "plugin:smoke-fresh-install": "node scripts/smoke-plugin-fresh-install.mjs",
     "plugin:smoke-lifecycle": "node scripts/smoke-plugin-lifecycle.mjs",
     "plugin:install-copy": "node scripts/install-obsidian-plugin.mjs",

@@ -110,6 +110,7 @@ To prepare the Obsidian plugin for BRAT private-alpha testing:
 npm run plugin:brat:prepare
 npm run plugin:brat:verify
 npm run plugin:brat:verify-github
+npm run plugin:brat:check-copy -- --check-github-release
 ```
 
 Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and

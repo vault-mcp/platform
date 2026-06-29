@@ -255,15 +255,29 @@ styles.css
 npm run plugin:brat:verify-github
 ```
 
-5. Install the BRAT plugin in a copied or disposable Obsidian vault.
-6. In BRAT, add the beta plugin from the GitHub repository:
+5. Check the copied vault's BRAT readiness:
+
+```bash
+npm run plugin:brat:check-copy -- --check-github-release
+```
+
+6. If needed, enable BRAT and add the Vault MCP repo to BRAT's copied-vault
+   config:
+
+```bash
+npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-release
+```
+
+7. Install the BRAT plugin in a copied or disposable Obsidian vault.
+8. In BRAT, add the beta plugin from the GitHub repository if it is not already
+   listed:
 
 ```text
 vault-mcp/platform
 ```
 
-7. Enable `Vault MCP` in Obsidian community plugins.
-8. Open Vault MCP settings, import the setup bundle or paste the server values,
+9. Enable `Vault MCP` in Obsidian community plugins.
+10. Open Vault MCP settings, import the setup bundle or paste the server values,
    run `Check connection`, then run `Preview index` before syncing.
 
 For a private GitHub repository, BRAT needs GitHub read access. The practical
