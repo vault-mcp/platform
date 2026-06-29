@@ -1,6 +1,12 @@
 # Vault MCP Obsidian Plugin 0.1.0
 
-Private-alpha release for copied-vault and disposable-vault testing.
+Private-alpha release for copied-vault, disposable-vault, and BRAT testing.
+
+GitHub prerelease:
+
+```text
+https://github.com/vault-mcp/platform/releases/tag/0.1.0
+```
 
 ## What Is Included
 
@@ -25,7 +31,7 @@ Private-alpha release for copied-vault and disposable-vault testing.
 
 - Use copied or disposable vaults first. Do not point private-alpha testing at a live vault until the private-alpha safety review and release walkthrough gates pass.
 - `patch_note` proposals are not accepted in this release.
-- BRAT release asset preparation is available through `npm run plugin:brat:prepare` and `npm run plugin:brat:verify`; the actual BRAT UI install from a GitHub prerelease is still an external gate.
+- BRAT release assets are published on the `0.1.0` GitHub prerelease and can be verified with `npm run plugin:brat:verify-github`; the actual BRAT UI install from a copied vault is still an external gate.
 - Obsidian community-plugin submission is not enabled yet.
 - Copied-vault Obsidian UI verification passed for create, append, replace, frontmatter, and rename proposals; a broader external-user walkthrough is still open.
 - Public docs still need demo-vault data before wider release.
@@ -37,6 +43,7 @@ npm run plugin:package
 npm run plugin:verify-package
 npm run plugin:brat:prepare
 npm run plugin:brat:verify
+npm run plugin:brat:verify-github
 npm run plugin:smoke-fresh-install
 npm run plugin:smoke-lifecycle
 npm run build

@@ -233,9 +233,15 @@ dist/brat/vault-mcp-0.1.0-brat-release.json
 To test through BRAT:
 
 1. Run `npm run release:check:local`.
-2. Create a GitHub prerelease on `vault-mcp/platform` named `0.1.0` with tag
-   `0.1.0`.
-3. Upload these assets from `dist/brat/vault-mcp/`:
+2. Use the existing private-alpha GitHub prerelease:
+
+```text
+https://github.com/vault-mcp/platform/releases/tag/0.1.0
+```
+
+3. To recreate or replace that release, create a GitHub prerelease on
+   `vault-mcp/platform` named `0.1.0` with tag `0.1.0`, then upload these assets
+   from `dist/brat/vault-mcp/`:
 
 ```text
 manifest.json
@@ -243,15 +249,21 @@ main.js
 styles.css
 ```
 
-4. Install the BRAT plugin in a copied or disposable Obsidian vault.
-5. In BRAT, add the beta plugin from the GitHub repository:
+4. Verify the published GitHub prerelease assets:
+
+```bash
+npm run plugin:brat:verify-github
+```
+
+5. Install the BRAT plugin in a copied or disposable Obsidian vault.
+6. In BRAT, add the beta plugin from the GitHub repository:
 
 ```text
 vault-mcp/platform
 ```
 
-6. Enable `Vault MCP` in Obsidian community plugins.
-7. Open Vault MCP settings, import the setup bundle or paste the server values,
+7. Enable `Vault MCP` in Obsidian community plugins.
+8. Open Vault MCP settings, import the setup bundle or paste the server values,
    run `Check connection`, then run `Preview index` before syncing.
 
 For a private GitHub repository, BRAT needs GitHub read access. The practical

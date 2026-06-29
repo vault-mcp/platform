@@ -109,11 +109,14 @@ To prepare the Obsidian plugin for BRAT private-alpha testing:
 ```bash
 npm run plugin:brat:prepare
 npm run plugin:brat:verify
+npm run plugin:brat:verify-github
 ```
 
 Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
 `dist/brat/vault-mcp/styles.css` to a GitHub prerelease whose tag and release
-name exactly match the plugin manifest version.
+name exactly match the plugin manifest version. The private-alpha `0.1.0`
+prerelease is published at
+`https://github.com/vault-mcp/platform/releases/tag/0.1.0`.
 
 For a smaller manual subset:
 

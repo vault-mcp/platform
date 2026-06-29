@@ -84,10 +84,25 @@ Passing output must show:
 - required assets exactly `manifest.json`, `main.js`, and `styles.css`
 - copied `main.js` and `styles.css` matching the built plugin files
 
+The GitHub prerelease asset gate proves the assets BRAT will fetch from GitHub:
+
+```bash
+npm run plugin:brat:verify-github
+```
+
+For the private-alpha `0.1.0` release, this verifies:
+
+- release URL: `https://github.com/vault-mcp/platform/releases/tag/0.1.0`
+- tag and release name: `0.1.0`
+- release is a prerelease, not a draft
+- required assets exactly `manifest.json`, `main.js`, and `styles.css`
+- downloaded assets pass the same manifest/runtime verifier
+- GitHub asset digests match the downloaded file hashes
+
 The real BRAT gate still requires a GitHub prerelease and copied-vault UI test:
 
-1. Create a prerelease whose tag and release name match the manifest version.
-2. Upload `manifest.json`, `main.js`, and `styles.css` from `dist/brat/vault-mcp/`.
+1. Use the existing `0.1.0` prerelease, or create a new prerelease whose tag and release name match the manifest version.
+2. If recreating, upload `manifest.json`, `main.js`, and `styles.css` from `dist/brat/vault-mcp/`.
 3. Install through BRAT into `/Users/tjt/Documents/Tristan's Personal vault copy`
    or another disposable vault.
 4. Enable `Vault MCP`.
