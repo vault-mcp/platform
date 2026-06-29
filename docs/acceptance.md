@@ -8,6 +8,30 @@ For first-time setup, start with [Self-Host Vault MCP](self-host.md).
 Local copied-vault gates:
 
 ```bash
+npm run release:check:local
+```
+
+That wiki-free local release gate runs:
+
+- `npm run build`
+- `npm run check:api`
+- `npm test`
+- `npm run smoke:mcp-ui`
+- `npm audit --audit-level=low`
+- `npm run plugin:package`
+- `npm run plugin:verify-package`
+- `npm run plugin:smoke-fresh-install`
+- `npm run plugin:smoke-lifecycle`
+- clean-env `npm run smoke:local`
+- `npm run smoke:oauth-local`
+
+It intentionally skips wiki generation unless explicitly requested. It also does
+not replace the remote OAuth, remote multi-vault, MCP Inspector, ChatGPT, Claude,
+or Codex acceptance gates.
+
+For focused reruns:
+
+```bash
 npm run build
 npm run check:api
 npm test

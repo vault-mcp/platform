@@ -110,6 +110,17 @@ Build a local installable package:
 npm run plugin:package
 ```
 
+Before sharing a private-alpha package, run the wiki-free local release gate:
+
+```bash
+npm run release:check:local
+```
+
+That command rebuilds the server/plugin, runs API/type/test/audit checks,
+executes the MCP UI smoke, rebuilds and verifies the plugin package, tests fresh
+install and lifecycle behavior, and runs local MCP static and OAuth smokes. It
+deliberately skips generated wiki updates unless explicitly requested.
+
 This validates the plugin manifest, builds the plugin, stages the three Obsidian runtime files, and writes:
 
 ```text

@@ -26,6 +26,7 @@
     "plugin:seed-write-proposals": "node scripts/seed-write-proposals.mjs",
     "plugin:verify-ui-smoke": "node scripts/verify-ui-smoke.mjs",
     "index": "npm run dev --workspace @vault-mcp/cli --",
+    "release:check:local": "node scripts/release-check-local.mjs",
     "wiki:generate": "node scripts/generate-wiki-reference.mjs",
     "smoke:remote": "node scripts/smoke-remote.mjs",
     "smoke:multi-vault-remote": "node scripts/smoke-multivault-remote.mjs",

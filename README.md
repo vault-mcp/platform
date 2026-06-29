@@ -93,7 +93,18 @@ Then check:
 curl http://127.0.0.1:3333/healthz
 ```
 
-Or run the compiled local smoke test:
+Or run the wiki-free local release gate:
+
+```bash
+npm run release:check:local
+```
+
+That command runs build, API check, tests, MCP UI smoke, audit, plugin
+package/verify/fresh-install/lifecycle checks, clean-env local smoke, and OAuth
+local smoke. It does not regenerate the wiki, run production smokes, or replace
+real MCP client acceptance.
+
+For a smaller manual subset:
 
 ```bash
 npm run smoke:mcp-ui
