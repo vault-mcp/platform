@@ -111,6 +111,7 @@ npm run plugin:brat:prepare
 npm run plugin:brat:verify
 npm run plugin:brat:verify-github
 npm run plugin:brat:check-copy -- --check-github-release
+npm run plugin:brat:verify-copy-install
 ```
 
 Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and

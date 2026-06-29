@@ -125,6 +125,12 @@ npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-releas
 9. Run `Check connection`, `Preview index`, and a copied-vault sync.
 10. Capture screenshots of the BRAT install, enabled plugin, readiness checklist,
    preview queue, and sync summary.
+11. Verify the installed copied-vault runtime files match the GitHub BRAT
+   release assets:
+
+```bash
+npm run plugin:brat:verify-copy-install
+```
 
 For a private GitHub repository, BRAT needs a GitHub token with read access to
 the selected repository contents. Do not hand private-org access to external

@@ -279,6 +279,12 @@ vault-mcp/platform
 9. Enable `Vault MCP` in Obsidian community plugins.
 10. Open Vault MCP settings, import the setup bundle or paste the server values,
    run `Check connection`, then run `Preview index` before syncing.
+11. Verify the copied-vault installed files match the GitHub BRAT release
+    assets:
+
+```bash
+npm run plugin:brat:verify-copy-install
+```
 
 For a private GitHub repository, BRAT needs GitHub read access. The practical
 private-alpha path is to add a fine-grained GitHub token in BRAT that has
