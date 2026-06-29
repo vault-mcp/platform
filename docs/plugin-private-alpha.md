@@ -193,7 +193,76 @@ npm run plugin:smoke-lifecycle -- --keep
 npm run plugin:smoke-lifecycle -- --report dist/obsidian-plugin/lifecycle-smoke.json
 ```
 
-This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
+This is a private-alpha artifact for copied-vault install testing. It is still
+useful even after BRAT is enabled because it proves direct zip install and
+upgrade behavior without relying on GitHub or BRAT.
+
+## BRAT Private Alpha Install
+
+BRAT installs Obsidian plugins from GitHub release assets. For Vault MCP, the
+release tag, release name, and the `version` inside the released
+`manifest.json` must match exactly.
+
+Prepare BRAT release assets:
+
+```bash
+npm run plugin:brat:prepare
+```
+
+If the plugin was already built during a local release check, skip the rebuild:
+
+```bash
+npm run plugin:brat:prepare -- --skip-build
+```
+
+Verify the BRAT asset folder:
+
+```bash
+npm run plugin:brat:verify
+```
+
+That creates and verifies:
+
+```text
+dist/brat/vault-mcp/manifest.json
+dist/brat/vault-mcp/main.js
+dist/brat/vault-mcp/styles.css
+dist/brat/vault-mcp-0.1.0-brat-release.json
+```
+
+To test through BRAT:
+
+1. Run `npm run release:check:local`.
+2. Create a GitHub prerelease on `vault-mcp/platform` named `0.1.0` with tag
+   `0.1.0`.
+3. Upload these assets from `dist/brat/vault-mcp/`:
+
+```text
+manifest.json
+main.js
+styles.css
+```
+
+4. Install the BRAT plugin in a copied or disposable Obsidian vault.
+5. In BRAT, add the beta plugin from the GitHub repository:
+
+```text
+vault-mcp/platform
+```
+
+6. Enable `Vault MCP` in Obsidian community plugins.
+7. Open Vault MCP settings, import the setup bundle or paste the server values,
+   run `Check connection`, then run `Preview index` before syncing.
+
+For a private GitHub repository, BRAT needs GitHub read access. The practical
+private-alpha path is to add a fine-grained GitHub token in BRAT that has
+read-only Contents access to the selected private repository. For wider testers,
+use a public release repo or a dedicated public plugin repo before inviting
+people who should not receive private-org repository access.
+
+The local BRAT scripts prove the release asset shape. They do not prove the
+actual BRAT UI install. The real BRAT gate is a screenshot-backed install in a
+copied vault from the GitHub prerelease assets.
 
 ## Manual Zip Install
 
@@ -358,7 +427,8 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 ## Known Limitations
 
 - The plugin is private-alpha software and should be tested against copied vaults first.
-- There is no BRAT release or Obsidian community-plugin release yet.
+- BRAT release assets can be prepared and verified locally, but the GitHub prerelease install still needs screenshot-backed copied-vault proof.
+- There is no Obsidian community-plugin release yet.
 - `patch_note` proposals are rejected until a safe parser/apply implementation exists.
 - `direct_apply` should stay disabled until separately reviewed.
 - The server stores a derived searchable index; it should not be treated as the canonical vault.

@@ -100,9 +100,20 @@ npm run release:check:local
 ```
 
 That command runs build, API check, tests, MCP UI smoke, audit, plugin
-package/verify/fresh-install/lifecycle checks, clean-env local smoke, and OAuth
-local smoke. It does not regenerate the wiki, run production smokes, or replace
-real MCP client acceptance.
+package/verify/BRAT/fresh-install/lifecycle checks, clean-env local smoke, and
+OAuth local smoke. It does not regenerate the wiki, run production smokes, or
+replace real MCP client acceptance.
+
+To prepare the Obsidian plugin for BRAT private-alpha testing:
+
+```bash
+npm run plugin:brat:prepare
+npm run plugin:brat:verify
+```
+
+Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
+`dist/brat/vault-mcp/styles.css` to a GitHub prerelease whose tag and release
+name exactly match the plugin manifest version.
 
 For a smaller manual subset:
 

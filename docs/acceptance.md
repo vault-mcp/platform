@@ -20,6 +20,8 @@ That wiki-free local release gate runs:
 - `npm audit --audit-level=low`
 - `npm run plugin:package`
 - `npm run plugin:verify-package`
+- `npm run plugin:brat:prepare -- --skip-build`
+- `npm run plugin:brat:verify`
 - `npm run plugin:smoke-fresh-install`
 - `npm run plugin:smoke-lifecycle`
 - clean-env `npm run smoke:local`
@@ -27,7 +29,7 @@ That wiki-free local release gate runs:
 
 It intentionally skips wiki generation unless explicitly requested. It also does
 not replace the remote OAuth, remote multi-vault, MCP Inspector, ChatGPT, Claude,
-or Codex acceptance gates.
+Codex, or real BRAT UI acceptance gates.
 
 For focused reruns:
 
@@ -65,6 +67,38 @@ throwaway database. `smoke:postgres:fresh` creates a temporary schema, runs
 migrations from empty state, syncs a tiny fixture, verifies health, and drops the
 schema. The full Postgres smoke command then replaces the `vault_documents` table
 contents in that database with the copied-vault test index.
+
+## BRAT
+
+The local BRAT gate proves the GitHub release asset shape:
+
+```bash
+npm run plugin:brat:prepare
+npm run plugin:brat:verify
+```
+
+Passing output must show:
+
+- `ok: true`
+- release tag/name equal to the plugin manifest version
+- required assets exactly `manifest.json`, `main.js`, and `styles.css`
+- copied `main.js` and `styles.css` matching the built plugin files
+
+The real BRAT gate still requires a GitHub prerelease and copied-vault UI test:
+
+1. Create a prerelease whose tag and release name match the manifest version.
+2. Upload `manifest.json`, `main.js`, and `styles.css` from `dist/brat/vault-mcp/`.
+3. Install through BRAT into `/Users/tjt/Documents/Tristan's Personal vault copy`
+   or another disposable vault.
+4. Enable `Vault MCP`.
+5. Import the setup bundle or paste server settings.
+6. Run `Check connection`, `Preview index`, and a copied-vault sync.
+7. Capture screenshots of the BRAT install, enabled plugin, readiness checklist,
+   preview queue, and sync summary.
+
+For a private GitHub repository, BRAT needs a GitHub token with read access to
+the selected repository contents. Do not hand private-org access to external
+testers unless that is the intended beta boundary.
 
 Remote endpoint gate with temporary static bearer auth:
 

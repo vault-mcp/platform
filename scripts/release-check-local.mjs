@@ -34,6 +34,14 @@ const steps = [
     args: ["run", "plugin:verify-package"],
   },
   {
+    name: "plugin:brat:prepare",
+    args: ["run", "plugin:brat:prepare", "--", "--skip-build"],
+  },
+  {
+    name: "plugin:brat:verify",
+    args: ["run", "plugin:brat:verify"],
+  },
+  {
     name: "plugin:smoke-fresh-install",
     args: ["run", "plugin:smoke-fresh-install"],
   },
@@ -77,6 +85,7 @@ try {
       "wiki generation is paused unless explicitly requested",
       "production OAuth smoke is remote-only",
       "production multi-vault smoke is remote-only",
+      "real BRAT install is a manual/external gate",
       "real MCP Inspector, ChatGPT, Claude, and Codex acceptance are manual/external gates",
     ],
     steps: results,

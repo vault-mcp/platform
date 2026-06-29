@@ -25,7 +25,8 @@ Private-alpha release for copied-vault and disposable-vault testing.
 
 - Use copied or disposable vaults first. Do not point private-alpha testing at a live vault until the private-alpha safety review and release walkthrough gates pass.
 - `patch_note` proposals are not accepted in this release.
-- BRAT and Obsidian community-plugin release paths are not enabled yet.
+- BRAT release asset preparation is available through `npm run plugin:brat:prepare` and `npm run plugin:brat:verify`; the actual BRAT UI install from a GitHub prerelease is still an external gate.
+- Obsidian community-plugin submission is not enabled yet.
 - Copied-vault Obsidian UI verification passed for create, append, replace, frontmatter, and rename proposals; a broader external-user walkthrough is still open.
 - Public docs still need demo-vault data before wider release.
 
@@ -34,6 +35,8 @@ Private-alpha release for copied-vault and disposable-vault testing.
 ```bash
 npm run plugin:package
 npm run plugin:verify-package
+npm run plugin:brat:prepare
+npm run plugin:brat:verify
 npm run plugin:smoke-fresh-install
 npm run plugin:smoke-lifecycle
 npm run build
