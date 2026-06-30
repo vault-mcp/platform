@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { REQUIRED_BRAT_REVIEW_FLAGS, REQUIRED_BRAT_SCREENSHOTS } from "./brat-ui-evidence-constants.mjs";
 import { duplicateScreenshotFailures, inspectScreenshot } from "./brat-ui-evidence-utils.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
@@ -23,21 +24,14 @@ const requiredCommands = [
   "plugin:brat:check-copy",
   "plugin:brat:verify-copy-install",
 ];
-const requiredScreenshots = [
-  "brat-repo-config",
-  "brat-install-update",
-  "community-plugin-enabled",
-  "vault-mcp-readiness",
-  "vault-mcp-check-connection",
-  "vault-mcp-preview-index",
-  "vault-mcp-sync-summary",
-];
+const requiredScreenshots = REQUIRED_BRAT_SCREENSHOTS;
 
 const reportResult = await readReport(reportPath);
 const checks = [];
 const missingScreenshots = [];
 const invalidScreenshots = [];
 const presentScreenshots = [];
+const incompleteReviews = [];
 const failures = [];
 
 if (!reportResult.ok) {
@@ -58,6 +52,11 @@ if (!reportResult.ok) {
   }
 
   for (const key of requiredScreenshots) {
+    const reviewIssues = screenshotReviewIssues(report.screenshotReview?.[key]);
+    if (reviewIssues.length > 0) {
+      incompleteReviews.push({ key, issues: reviewIssues });
+    }
+
     const value = report.screenshots?.[key];
     const screenshotPath = typeof value === "string" && value.length > 0
       ? path.resolve(path.isAbsolute(value) ? value : path.join(evidenceDir, value))
@@ -99,13 +98,19 @@ if (!reportResult.ok) {
   }
 }
 
-const complete = reportResult.ok && failures.length === 0 && missingScreenshots.length === 0 && invalidScreenshots.length === 0;
+const complete = reportResult.ok
+  && failures.length === 0
+  && missingScreenshots.length === 0
+  && invalidScreenshots.length === 0
+  && incompleteReviews.length === 0;
 const status = complete
   ? "complete"
   : reportResult.ok
     ? invalidScreenshots.length > 0
       ? "invalid_screenshots"
-      : "waiting_for_screenshots"
+      : missingScreenshots.length > 0
+        ? "waiting_for_screenshots"
+        : "waiting_for_review"
     : "missing_or_invalid_report";
 const output = {
   ok: true,
@@ -121,6 +126,10 @@ const output = {
     invalid: invalidScreenshots,
     missing: missingScreenshots,
   },
+  reviews: {
+    requiredFlags: REQUIRED_BRAT_REVIEW_FLAGS,
+    incomplete: incompleteReviews,
+  },
   failures,
   nextActions: complete
     ? ["Run npm run plugin:brat:verify-ui-evidence for the strict final gate."]
@@ -128,6 +137,7 @@ const output = {
       ? [
           "Capture the missing screenshots into the expected paths.",
           "Replace any invalid screenshots with readable PNG/JPEG files.",
+          "Inspect each screenshot and mark it reviewed with npm run plugin:brat:review.",
           "Avoid token fields and private note content in screenshots.",
           "Run npm run plugin:brat:verify-ui-evidence after all screenshots are present.",
         ]
@@ -161,6 +171,25 @@ function check(name, ok, expected, actual) {
     expected,
     actual: actual ?? null,
   };
+}
+
+function screenshotReviewIssues(review) {
+  const issues = [];
+  if (!review || typeof review !== "object") {
+    return ["missing review entry"];
+  }
+  for (const flag of REQUIRED_BRAT_REVIEW_FLAGS) {
+    if (review[flag] !== true) {
+      issues.push(`${flag} is not true`);
+    }
+  }
+  if (typeof review.reviewer !== "string" || review.reviewer.trim().length === 0) {
+    issues.push("reviewer is missing");
+  }
+  if (typeof review.reviewedAt !== "string" || review.reviewedAt.trim().length === 0) {
+    issues.push("reviewedAt is missing");
+  }
+  return issues;
 }
 
 function secretScanFailures(report) {

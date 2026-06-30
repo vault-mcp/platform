@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { REQUIRED_BRAT_REVIEW_FLAGS, REQUIRED_BRAT_SCREENSHOTS } from "./brat-ui-evidence-constants.mjs";
 import { duplicateScreenshotFailures, inspectScreenshot } from "./brat-ui-evidence-utils.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
@@ -24,15 +25,7 @@ const requiredCommands = [
   "plugin:brat:check-copy",
   "plugin:brat:verify-copy-install",
 ];
-const requiredScreenshots = [
-  "brat-repo-config",
-  "brat-install-update",
-  "community-plugin-enabled",
-  "vault-mcp-readiness",
-  "vault-mcp-check-connection",
-  "vault-mcp-preview-index",
-  "vault-mcp-sync-summary",
-];
+const requiredScreenshots = REQUIRED_BRAT_SCREENSHOTS;
 
 const report = JSON.parse(await readFile(reportPath, "utf8"));
 const failures = [];
@@ -60,6 +53,7 @@ for (const command of requiredCommands) {
 for (const key of requiredScreenshots) {
   const value = report.screenshots?.[key];
   assert(typeof value === "string" && value.length > 0, `report.screenshots.${key} is required`);
+  assertScreenshotReview(report.screenshotReview?.[key], key);
   if (typeof value === "string" && value.length > 0) {
     const screenshotPath = path.isAbsolute(value) ? value : path.join(evidenceDir, value);
     const inspection = await inspectScreenshot(screenshotPath);
@@ -120,6 +114,15 @@ function assert(condition, message) {
   if (!condition) {
     failures.push(message);
   }
+}
+
+function assertScreenshotReview(review, key) {
+  assert(review && typeof review === "object", `report.screenshotReview.${key} is required`);
+  for (const flag of REQUIRED_BRAT_REVIEW_FLAGS) {
+    assert(review?.[flag] === true, `report.screenshotReview.${key}.${flag} must be true`);
+  }
+  assert(typeof review?.reviewer === "string" && review.reviewer.trim().length > 0, `report.screenshotReview.${key}.reviewer is required`);
+  assert(typeof review?.reviewedAt === "string" && review.reviewedAt.trim().length > 0, `report.screenshotReview.${key}.reviewedAt is required`);
 }
 
 function parseArgs(argv) {

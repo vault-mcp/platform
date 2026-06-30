@@ -112,6 +112,16 @@ Space and click the Obsidian window. Use `--mode window` when the whole Obsidian
 window is safe to capture. After each screenshot, inspect it before sharing or
 using it as evidence.
 
+After inspecting a screenshot, mark it reviewed:
+
+```bash
+npm run plugin:brat:review -- --key brat-repo-config --reviewer "Tristan"
+```
+
+Only mark a screenshot reviewed when it shows the required UI state, uses copied
+or otherwise safe vault context, and does not expose GitHub tokens, sync tokens,
+OAuth passwords, or private note bodies.
+
 Do not capture:
 
 - GitHub tokens.
@@ -123,7 +133,8 @@ Do not capture:
 ## Evidence Report
 
 `npm run plugin:brat:prepare-ui-evidence` creates
-`dist/brat/ui-evidence/report.json` with this shape:
+`dist/brat/ui-evidence/report.json` with this shape. The screenshot review
+section is abbreviated here; the generated report includes every screenshot key.
 
 ```json
 {
@@ -144,6 +155,16 @@ Do not capture:
     "vault-mcp-check-connection": "vault-mcp-check-connection.png",
     "vault-mcp-preview-index": "vault-mcp-preview-index.png",
     "vault-mcp-sync-summary": "vault-mcp-sync-summary.png"
+  },
+  "screenshotReview": {
+    "brat-repo-config": {
+      "matchesRequiredScreen": false,
+      "copiedVaultOrSafeContext": false,
+      "noSecretsVisible": false,
+      "reviewer": "",
+      "reviewedAt": "",
+      "notes": ""
+    }
   },
   "notes": [
     "No token fields were visible in screenshots.",
@@ -172,6 +193,7 @@ This gate passes only when all of these are true:
 - Copied-vault installed-file verification passes.
 - All seven screenshots exist and are readable.
 - Screenshots are not duplicate placeholder files.
+- Every screenshot is marked reviewed after human inspection.
 - The evidence report says copied or disposable vault, not live vault.
 - No report field contains token-like values.
 - `npm run plugin:brat:verify-ui-evidence` prints `ok: true`.

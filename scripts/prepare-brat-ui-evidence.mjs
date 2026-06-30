@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
+import { defaultScreenshotReview } from "./brat-ui-evidence-constants.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
@@ -63,6 +64,7 @@ const report = {
   vaultRoot,
   commands,
   screenshots: screenshotNames,
+  screenshotReview: defaultScreenshotReview(),
   notes: [
     "No token fields were visible in screenshots.",
     "Testing used the copied or disposable vault only.",
