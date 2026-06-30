@@ -20,7 +20,19 @@ before the screenshots are considered meaningful.
 
 ## Before Opening Obsidian
 
-Run these from the repository root:
+Run this from the repository root:
+
+```bash
+npm run plugin:brat:ready
+```
+
+Expected result: the command verifies the GitHub `0.1.0` release, the copied
+vault BRAT config, the copied-vault installed plugin files, and the local UI
+evidence folder. When everything except screenshots is ready, it prints
+`Status: waiting_for_screenshots` plus the exact screenshot filenames to
+capture.
+
+If you need to debug one piece at a time, these are the individual checks:
 
 ```bash
 npm run plugin:brat:verify-github
@@ -40,7 +52,8 @@ Then reopen or reload the copied vault in Obsidian.
 
 ## Evidence Folder
 
-Prepare the local evidence folder:
+The readiness command prepares the local evidence folder automatically. To
+prepare it directly:
 
 ```bash
 npm run plugin:brat:prepare-ui-evidence
