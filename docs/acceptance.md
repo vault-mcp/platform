@@ -132,6 +132,15 @@ npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-releas
 npm run plugin:brat:verify-copy-install
 ```
 
+12. Capture and verify the screenshot-backed BRAT UI evidence:
+
+```bash
+npm run plugin:brat:verify-ui-evidence
+```
+
+Use [BRAT Private Alpha Walkthrough](brat-private-alpha-walkthrough.md) for the
+required screenshots and report format.
+
 For a private GitHub repository, BRAT needs a GitHub token with read access to
 the selected repository contents. Do not hand private-org access to external
 testers unless that is the intended beta boundary.

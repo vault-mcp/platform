@@ -286,15 +286,25 @@ vault-mcp/platform
 npm run plugin:brat:verify-copy-install
 ```
 
+12. Capture screenshot-backed BRAT UI evidence and verify the report:
+
+```bash
+npm run plugin:brat:verify-ui-evidence
+```
+
+Use [BRAT Private Alpha Walkthrough](brat-private-alpha-walkthrough.md) for the
+required screenshots, report JSON shape, and pass/fail criteria.
+
 For a private GitHub repository, BRAT needs GitHub read access. The practical
 private-alpha path is to add a fine-grained GitHub token in BRAT that has
 read-only Contents access to the selected private repository. For wider testers,
 use a public release repo or a dedicated public plugin repo before inviting
 people who should not receive private-org repository access.
 
-The local BRAT scripts prove the release asset shape. They do not prove the
-actual BRAT UI install. The real BRAT gate is a screenshot-backed install in a
-copied vault from the GitHub prerelease assets.
+The local BRAT scripts prove the release asset shape, copied-vault BRAT config,
+and installed-file parity. They do not prove the human Obsidian UI walkthrough.
+The final real BRAT gate is a screenshot-backed install/update pass in a copied
+vault from the GitHub prerelease assets.
 
 ## Manual Zip Install
 

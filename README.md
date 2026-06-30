@@ -112,6 +112,7 @@ npm run plugin:brat:verify
 npm run plugin:brat:verify-github
 npm run plugin:brat:check-copy -- --check-github-release
 npm run plugin:brat:verify-copy-install
+npm run plugin:brat:verify-ui-evidence
 ```
 
 Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
@@ -119,6 +120,8 @@ Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
 name exactly match the plugin manifest version. The private-alpha `0.1.0`
 prerelease is published at
 `https://github.com/vault-mcp/platform/releases/tag/0.1.0`.
+Use [docs/brat-private-alpha-walkthrough.md](docs/brat-private-alpha-walkthrough.md)
+for the screenshot-backed BRAT UI evidence gate.
 
 For a smaller manual subset:
 
