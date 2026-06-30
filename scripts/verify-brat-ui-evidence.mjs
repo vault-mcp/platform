@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { duplicateScreenshotFailures, inspectScreenshot } from "./brat-ui-evidence-utils.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const sourceManifest = JSON.parse(
@@ -35,6 +36,7 @@ const requiredScreenshots = [
 
 const report = JSON.parse(await readFile(reportPath, "utf8"));
 const failures = [];
+const inspectedScreenshots = [];
 
 assertEqual(report.releaseTag, expectedTag, "report.releaseTag");
 assertEqual(report.repo, expectedRepo, "report.repo");
@@ -60,8 +62,16 @@ for (const key of requiredScreenshots) {
   assert(typeof value === "string" && value.length > 0, `report.screenshots.${key} is required`);
   if (typeof value === "string" && value.length > 0) {
     const screenshotPath = path.isAbsolute(value) ? value : path.join(evidenceDir, value);
-    await assertScreenshot(screenshotPath, key);
+    const inspection = await inspectScreenshot(screenshotPath);
+    inspectedScreenshots.push({ key, ...inspection });
+    for (const issue of inspection.issues) {
+      failures.push(`${key} screenshot ${issue}`);
+    }
   }
+}
+
+for (const failure of duplicateScreenshotFailures(inspectedScreenshots)) {
+  failures.push(failure);
 }
 
 const serializedReport = JSON.stringify(report);
@@ -93,16 +103,14 @@ console.log(JSON.stringify({
   vaultKind: report.vaultKind,
   vaultRoot: report.vaultRoot,
   verifiedCommands: requiredCommands,
-  verifiedScreenshots: requiredScreenshots,
+  verifiedScreenshots: inspectedScreenshots.map((item) => ({
+    key: item.key,
+    path: item.path,
+    size: item.size,
+    dimensions: item.dimensions,
+    sha256: item.sha256,
+  })),
 }, null, 2));
-
-async function assertScreenshot(screenshotPath, key) {
-  const result = await stat(screenshotPath).catch(() => null);
-  assert(result?.isFile(), `${key} screenshot is missing: ${screenshotPath}`);
-  assert(result?.size > 100, `${key} screenshot is too small to be useful: ${screenshotPath}`);
-  const extension = path.extname(screenshotPath).toLowerCase();
-  assert([".png", ".jpg", ".jpeg"].includes(extension), `${key} screenshot must be PNG or JPEG: ${screenshotPath}`);
-}
 
 function assertEqual(actual, expected, label) {
   assert(actual === expected, `${label} must be ${expected}; received ${actual}`);

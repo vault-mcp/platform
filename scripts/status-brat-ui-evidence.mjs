@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { duplicateScreenshotFailures, inspectScreenshot } from "./brat-ui-evidence-utils.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
@@ -35,6 +36,7 @@ const requiredScreenshots = [
 const reportResult = await readReport(reportPath);
 const checks = [];
 const missingScreenshots = [];
+const invalidScreenshots = [];
 const presentScreenshots = [];
 const failures = [];
 
@@ -60,14 +62,31 @@ if (!reportResult.ok) {
     const screenshotPath = typeof value === "string" && value.length > 0
       ? path.resolve(path.isAbsolute(value) ? value : path.join(evidenceDir, value))
       : null;
-    const status = screenshotPath ? await stat(screenshotPath).catch(() => null) : null;
-    const valid = Boolean(status?.isFile() && status.size > 100 && [".png", ".jpg", ".jpeg"].includes(path.extname(screenshotPath).toLowerCase()));
-    if (valid) {
-      presentScreenshots.push({ key, path: screenshotPath, size: status.size });
+    const inspection = screenshotPath ? await inspectScreenshot(screenshotPath) : null;
+    if (inspection?.ok) {
+      presentScreenshots.push({
+        key,
+        path: screenshotPath,
+        size: inspection.size,
+        dimensions: inspection.dimensions,
+        sha256: inspection.sha256,
+      });
+    } else if (inspection && inspection.issues.some((issue) => issue.startsWith("missing screenshot"))) {
+      missingScreenshots.push({ key, expectedPath: screenshotPath ?? path.join(evidenceDir, `${key}.png`) });
+    } else if (inspection) {
+      invalidScreenshots.push({
+        key,
+        path: screenshotPath,
+        issues: inspection.issues,
+        size: inspection.size ?? null,
+        dimensions: inspection.dimensions ?? null,
+      });
     } else {
       missingScreenshots.push({ key, expectedPath: screenshotPath ?? path.join(evidenceDir, `${key}.png`) });
     }
   }
+
+  failures.push(...duplicateScreenshotFailures(presentScreenshots));
 
   for (const failure of secretScanFailures(report)) {
     failures.push(failure);
@@ -80,11 +99,13 @@ if (!reportResult.ok) {
   }
 }
 
-const complete = reportResult.ok && failures.length === 0 && missingScreenshots.length === 0;
+const complete = reportResult.ok && failures.length === 0 && missingScreenshots.length === 0 && invalidScreenshots.length === 0;
 const status = complete
   ? "complete"
   : reportResult.ok
-    ? "waiting_for_screenshots"
+    ? invalidScreenshots.length > 0
+      ? "invalid_screenshots"
+      : "waiting_for_screenshots"
     : "missing_or_invalid_report";
 const output = {
   ok: true,
@@ -97,6 +118,7 @@ const output = {
   screenshots: {
     required: requiredScreenshots.length,
     present: presentScreenshots,
+    invalid: invalidScreenshots,
     missing: missingScreenshots,
   },
   failures,
@@ -105,6 +127,7 @@ const output = {
     : reportResult.ok
       ? [
           "Capture the missing screenshots into the expected paths.",
+          "Replace any invalid screenshots with readable PNG/JPEG files.",
           "Avoid token fields and private note content in screenshots.",
           "Run npm run plugin:brat:verify-ui-evidence after all screenshots are present.",
         ]

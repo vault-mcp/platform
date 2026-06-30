@@ -159,7 +159,9 @@ npm run plugin:brat:evidence-status
 npm run plugin:brat:verify-ui-evidence
 ```
 
-Expected result: `ok: true`.
+Expected result: `ok: true`. The strict verifier checks that every screenshot is
+a readable PNG or JPEG, has useful dimensions, is not just a tiny placeholder,
+and is unique from the other evidence screenshots.
 
 ## Passing Criteria
 
@@ -169,6 +171,7 @@ This gate passes only when all of these are true:
 - Copied-vault BRAT config verification passes.
 - Copied-vault installed-file verification passes.
 - All seven screenshots exist and are readable.
+- Screenshots are not duplicate placeholder files.
 - The evidence report says copied or disposable vault, not live vault.
 - No report field contains token-like values.
 - `npm run plugin:brat:verify-ui-evidence` prints `ok: true`.
