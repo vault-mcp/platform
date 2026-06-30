@@ -26,6 +26,7 @@
     "plugin:brat:ready": "node scripts/brat-ready.mjs",
     "plugin:brat:capture": "node scripts/capture-brat-ui-evidence.mjs",
     "plugin:brat:review": "node scripts/review-brat-ui-evidence.mjs",
+    "plugin:brat:run-sheet": "node scripts/brat-ui-run-sheet.mjs",
     "plugin:brat:prepare-ui-evidence": "node scripts/prepare-brat-ui-evidence.mjs",
     "plugin:brat:evidence-status": "node scripts/status-brat-ui-evidence.mjs",
     "plugin:brat:verify-ui-evidence": "node scripts/verify-brat-ui-evidence.mjs",

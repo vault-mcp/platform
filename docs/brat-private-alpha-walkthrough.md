@@ -32,6 +32,15 @@ evidence folder. When everything except screenshots is ready, it prints
 `Status: waiting_for_screenshots` plus the exact screenshot filenames to
 capture.
 
+Then print the human run sheet:
+
+```bash
+npm run plugin:brat:run-sheet
+```
+
+The run sheet lists the purpose, capture command, and review command for each
+required screenshot.
+
 If you need to debug one piece at a time, these are the individual checks:
 
 ```bash
