@@ -100,6 +100,18 @@ Capture these screenshots after masking or avoiding token fields:
 - `vault-mcp-sync-summary.png`: a copied-vault sync summary is visible after
   syncing approved context.
 
+To avoid naming mistakes, use the capture helper from the repository root:
+
+```bash
+npm run plugin:brat:capture -- --list
+npm run plugin:brat:capture -- --key brat-repo-config
+```
+
+On macOS, the default `interactive` mode lets you drag a safe region, or press
+Space and click the Obsidian window. Use `--mode window` when the whole Obsidian
+window is safe to capture. After each screenshot, inspect it before sharing or
+using it as evidence.
+
 Do not capture:
 
 - GitHub tokens.
