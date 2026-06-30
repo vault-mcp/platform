@@ -40,7 +40,17 @@ Then reopen or reload the copied vault in Obsidian.
 
 ## Evidence Folder
 
-Use this folder for local evidence:
+Prepare the local evidence folder:
+
+```bash
+npm run plugin:brat:prepare-ui-evidence
+```
+
+That command runs the prerequisite BRAT checks and writes the initial
+`report.json` for you. Use `--skip-checks` only when you already ran the checks
+and only need to recreate the report scaffold.
+
+By default, evidence goes here:
 
 ```text
 dist/brat/ui-evidence/
@@ -78,7 +88,8 @@ Do not capture:
 
 ## Evidence Report
 
-Create `dist/brat/ui-evidence/report.json` with this shape:
+`npm run plugin:brat:prepare-ui-evidence` creates
+`dist/brat/ui-evidence/report.json` with this shape:
 
 ```json
 {

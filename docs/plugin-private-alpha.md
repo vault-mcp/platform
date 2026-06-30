@@ -286,9 +286,11 @@ vault-mcp/platform
 npm run plugin:brat:verify-copy-install
 ```
 
-12. Capture screenshot-backed BRAT UI evidence and verify the report:
+12. Prepare screenshot-backed BRAT UI evidence, capture the screenshots, and
+    verify the report:
 
 ```bash
+npm run plugin:brat:prepare-ui-evidence
 npm run plugin:brat:verify-ui-evidence
 ```
 

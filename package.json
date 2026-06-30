@@ -23,6 +23,7 @@
     "plugin:brat:verify-github": "node scripts/verify-brat-github-release.mjs",
     "plugin:brat:check-copy": "node scripts/check-brat-copied-vault.mjs",
     "plugin:brat:verify-copy-install": "node scripts/verify-brat-copied-vault-install.mjs",
+    "plugin:brat:prepare-ui-evidence": "node scripts/prepare-brat-ui-evidence.mjs",
     "plugin:brat:verify-ui-evidence": "node scripts/verify-brat-ui-evidence.mjs",
     "plugin:smoke-fresh-install": "node scripts/smoke-plugin-fresh-install.mjs",
     "plugin:smoke-lifecycle": "node scripts/smoke-plugin-lifecycle.mjs",
