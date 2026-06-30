@@ -136,6 +136,7 @@ npm run plugin:brat:verify-copy-install
 
 ```bash
 npm run plugin:brat:prepare-ui-evidence
+npm run plugin:brat:evidence-status
 npm run plugin:brat:verify-ui-evidence
 ```
 

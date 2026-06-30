@@ -113,6 +113,7 @@ npm run plugin:brat:verify-github
 npm run plugin:brat:check-copy -- --check-github-release
 npm run plugin:brat:verify-copy-install
 npm run plugin:brat:prepare-ui-evidence
+npm run plugin:brat:evidence-status
 npm run plugin:brat:verify-ui-evidence
 ```
 

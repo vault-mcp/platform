@@ -50,6 +50,15 @@ That command runs the prerequisite BRAT checks and writes the initial
 `report.json` for you. Use `--skip-checks` only when you already ran the checks
 and only need to recreate the report scaffold.
 
+To see what remains before the strict verifier can pass:
+
+```bash
+npm run plugin:brat:evidence-status
+```
+
+Before screenshots are captured, this should report
+`status: "waiting_for_screenshots"` and list the exact missing filenames.
+
 By default, evidence goes here:
 
 ```text
@@ -121,6 +130,7 @@ Do not capture:
 Then run:
 
 ```bash
+npm run plugin:brat:evidence-status
 npm run plugin:brat:verify-ui-evidence
 ```
 
