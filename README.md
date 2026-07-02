@@ -77,6 +77,21 @@ MCP_SYNC_TOKEN=dev-sync-token \
 npm run dev:server
 ```
 
+## Demo Vault
+
+Public docs and screenshots should use the synthetic demo vault under
+`fixtures/vault/`, not a copied personal vault. It includes allowlisted project
+and reference notes, denied credential/daily-note examples, and one intentional
+fixture secret used to prove redaction behavior.
+
+Verify it before using it in public-facing material:
+
+```bash
+npm run demo:verify
+```
+
+See [docs/demo-vault.md](docs/demo-vault.md).
+
 In another terminal:
 
 ```bash

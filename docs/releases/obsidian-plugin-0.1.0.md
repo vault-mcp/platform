@@ -34,7 +34,8 @@ https://github.com/vault-mcp/platform/releases/tag/0.1.0
 - BRAT release assets are published on the `0.1.0` GitHub prerelease and can be verified with `npm run plugin:brat:verify-github`; copied-vault installed-file parity can be verified with `npm run plugin:brat:verify-copy-install`; the screenshot-backed BRAT UI walkthrough is still an external gate.
 - Obsidian community-plugin submission is not enabled yet.
 - Copied-vault Obsidian UI verification passed for create, append, replace, frontmatter, and rename proposals; a broader external-user walkthrough is still open.
-- Public docs still need demo-vault data before wider release.
+- Public docs now have a synthetic demo vault fixture under `fixtures/vault/`,
+  but public screenshots and final public-doc cleanup are still open.
 
 ## Verification Commands
 
