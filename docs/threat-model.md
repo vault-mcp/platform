@@ -34,3 +34,40 @@
 
 - Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.
 - The current ChatGPT UI pass is read-only and result-display focused. It includes cautious future proposal-shaped cards, but future write-capable UI still needs separate design, confirmation, audit, backup, conflict-resolution, and rollback controls before any write proposal tools are exposed to end users.
+
+## Release Security Review Evidence
+
+Before treating a private-alpha build as release-ready, prepare a structured
+security review report:
+
+```bash
+npm run security:prepare
+```
+
+This writes:
+
+```text
+dist/security/security-review-report.json
+```
+
+Fill the report with non-secret evidence references for the current
+implementation and docs. The report covers OAuth, origins, sync/admin scope,
+tenant/vault isolation, indexing policy, write proposals, data boundaries, and
+recovery. Do not paste OAuth passwords, bearer values, sync tokens, GitHub
+tokens, database URLs, or private note bodies into the report.
+
+Check progress:
+
+```bash
+npm run security:status
+```
+
+Final strict gate:
+
+```bash
+npm run security:verify
+```
+
+The verifier requires `privateAlphaAcceptable: true`, and intentionally fails if
+the report marks public release or public write tools acceptable before those
+separate gates are complete.
