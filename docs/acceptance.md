@@ -2,6 +2,8 @@
 
 Use this after the remote HTTPS endpoint, Postgres, sync token, and OAuth provider are configured.
 For first-time setup, start with [Self-Host Vault MCP](self-host.md).
+For the planned localhost-only desktop path, see
+[Local Desktop Server Mode](local-server-mode.md).
 
 ## Automated Gates
 

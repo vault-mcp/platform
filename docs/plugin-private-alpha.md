@@ -30,6 +30,7 @@ first private-alpha version of the no-terminal setup flow:
 2. Choose hosting:
    - managed Vault MCP, planned as the simplest future path
    - guided Vercel self-hosting, the target private-alpha self-host path
+   - local desktop server mode, planned as the no-cloud desktop path
    - advanced manual hosting, for developers and custom infrastructure
 3. Paste the server URL and admin sync token into the plugin.
 4. Run `Check connection` to verify server health, storage readiness,
@@ -73,6 +74,12 @@ one-click template flow that returns the generated server URL and token values
 back to the plugin. Users may still need to approve Vercel, Neon, GitHub,
 ChatGPT, Claude, or other account screens; the goal is to remove terminal work,
 not bypass account consent.
+
+Another planned path is local desktop server mode. In that mode the user would
+install the plugin, toggle `Run local MCP server`, and let Obsidian start a
+localhost MCP server while the vault is open. This is the likely simplest
+privacy-first setup for desktop MCP clients, but it is not implemented in this
+release. See [Local Desktop Server Mode](local-server-mode.md).
 
 ## Safe Test Install
 

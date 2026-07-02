@@ -194,10 +194,13 @@ describe("plugin helpers", () => {
     expect(guide.hostingOptions.map((option) => option.label)).toEqual([
       "Managed Vault MCP",
       "Guided Vercel self-host",
+      "Local desktop server",
       "Advanced manual hosting",
     ]);
     expect(guide.hostingOptions.find((option) => option.label === "Guided Vercel self-host")?.actionUrl)
       .toBe("https://vault-mcp-connector.vercel.app/setup/vercel");
+    expect(guide.hostingOptions.find((option) => option.label === "Local desktop server")?.summary)
+      .toContain("localhost MCP server");
     expect(guide.clientCards.map((card) => card.label)).toEqual([
       "ChatGPT",
       "Claude",

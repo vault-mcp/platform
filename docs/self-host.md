@@ -29,6 +29,11 @@ Use this path first:
 Docker/container hosting is also supported, but Vercel + Neon is the path with
 the most verification today.
 
+If the user only needs desktop-local MCP access while Obsidian is open, the
+planned local desktop server mode may eventually be simpler than Vercel or
+container hosting. See [Local Desktop Server Mode](local-server-mode.md). It is
+not implemented in this private-alpha release.
+
 ## Prerequisites
 
 Install:

@@ -245,3 +245,8 @@ The MCP server never reads the vault directly. It only serves the synced, allowl
 Start with [docs/self-host.md](docs/self-host.md) for the private-alpha
 self-host path. Use [docs/deployment.md](docs/deployment.md) for lower-level
 runtime and platform details.
+
+For the planned no-cloud desktop path, see
+[docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
+Obsidian plugin start a localhost MCP server while the vault is open, but it is
+not implemented in the current private-alpha release.

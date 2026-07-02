@@ -5,7 +5,8 @@
 Move Vault MCP from a single-vault, read-only private connector into a publishable private-alpha platform with two clear halves:
 
 - An Obsidian plugin controls indexing, local sync, user approvals, and future vault writes.
-- A hosted MCP server remains the OAuth/client boundary for ChatGPT, Claude, Codex, and other MCP clients.
+- A hosted MCP server remains the OAuth/client boundary for browser, cloud, mobile, and multi-device clients such as ChatGPT web, Claude web, Codex, and other remote MCP clients.
+- A local desktop server mode becomes the no-cloud path for desktop MCP clients that can reach `127.0.0.1` while Obsidian is running.
 
 The production alias should stay stable at `https://vault-mcp-connector.vercel.app` while the source repository moves into the `vault-mcp` GitHub organization.
 
@@ -19,6 +20,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 
 - `apps/server`: hosted MCP server, OAuth, storage, multi-vault APIs, and admin sync/proposal endpoints.
 - `apps/obsidian-plugin`: plugin settings, dashboard, indexing controls, sync, and future write approvals.
+- `apps/local-server` or `apps/server --local`: planned localhost MCP/OAuth/admin API sidecar managed by the Obsidian plugin for desktop-only no-cloud use.
 - `apps/cli`: self-host/developer indexing, smoke-test, and admin helper workflows.
 - `packages/core`: shared schemas, Markdown parsing, source policy, redaction, stable ids, sync types, and write proposal types.
 - `packages/mcp-ui`: future home for reusable MCP Apps/ChatGPT UI once inline component HTML becomes too large.

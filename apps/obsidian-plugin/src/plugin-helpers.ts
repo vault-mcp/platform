@@ -386,7 +386,7 @@ export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetu
         status: serverReady ? "done" : "next",
         message: serverReady
           ? `Server URL is set to ${normalizeServerBaseUrl(settings.serverUrl)}.`
-          : "Choose managed hosting, guided Vercel self-hosting, or advanced manual hosting.",
+          : "Choose managed hosting, guided Vercel self-hosting, local desktop server mode, or advanced manual hosting.",
       },
       {
         label: "Add the sync token",
@@ -447,6 +447,17 @@ export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetu
         ],
         actionLabel: "Open setup guide",
         actionUrl: vercelSetupUrl,
+      },
+      {
+        label: "Local desktop server",
+        status: "planned",
+        summary: "Planned no-cloud path for desktop users: Obsidian starts a localhost MCP server while the vault is open, then stops it when Obsidian exits.",
+        steps: [
+          "Enable local server mode from the plugin.",
+          "Let the plugin choose a localhost port and create local-only credentials.",
+          "Connect desktop MCP clients to the localhost endpoint.",
+          "Keep Obsidian running whenever clients need vault access.",
+        ],
       },
       {
         label: "Advanced manual hosting",
