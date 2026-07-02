@@ -249,4 +249,5 @@ runtime and platform details.
 For the planned no-cloud desktop path, see
 [docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
 Obsidian plugin start a localhost MCP server while the vault is open, but it is
-not implemented in the current private-alpha release.
+not fully implemented in the current private-alpha release. Developer testing
+can start the Node-required local profile with `npm run local-server`.

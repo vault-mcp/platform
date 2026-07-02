@@ -120,11 +120,32 @@ universal ChatGPT web replacement.
 
 ## Implementation Slices
 
-Current private-alpha status: Slice 1 is partially implemented. The plugin now
-shows a `Local desktop server` settings section, saves the planned local port
-and keep-alive preference, renders the future localhost MCP endpoint, and keeps
-the `Run local MCP server` toggle disabled until a sidecar exists. No local
-server process is started yet.
+Current private-alpha status: Slice 1 is implemented and Slice 2 has a
+developer/Node-required launcher. The plugin now shows a `Local desktop server`
+settings section, saves the planned local port and keep-alive preference,
+renders the future localhost MCP endpoint, and keeps the `Run local MCP server`
+toggle disabled until plugin-managed lifecycle exists. The repo also includes
+`npm run local-server`, which starts the existing server with localhost-only
+defaults, JSON storage, generated local tokens, and MCP Inspector origins.
+
+Developer local-server start:
+
+```bash
+npm run local-server -- --port 38791 --data-dir data/local-server
+```
+
+The command prints:
+
+- MCP endpoint, defaulting to `http://127.0.0.1:38791/mcp`
+- `/healthz` URL
+- local JSON index path
+- generated MCP access token for local clients
+- generated plugin/admin sync token for local sync
+
+These printed tokens are local secrets. Do not paste them into docs,
+screenshots, or chat transcripts. The future plugin-managed version should
+generate and store these values inside the plugin flow instead of asking the
+user to run this command.
 
 ### Slice 1 - Design And Compatibility
 
@@ -135,12 +156,13 @@ server process is started yet.
 
 ### Slice 2 - Sidecar Build
 
-- Add `apps/local-server` or a `--local` server profile.
+- [x] Add a Node-required `scripts/start-local-server.mjs` local server profile
+  that wraps the existing server app with localhost defaults.
 - Build a single sidecar artifact for macOS, Windows, and Linux, or document a
   Node-required private-alpha path first.
-- Add `/healthz`, `/mcp`, `/admin/vaults/:vaultId/sync`, `/admin/vaults`, and
-  write-proposal endpoints in local profile.
-- Use local JSON/SQLite storage, not Postgres.
+- [x] Reuse existing `/healthz`, `/mcp`, `/admin/vaults/:vaultId/sync`,
+  `/admin/vaults`, and write-proposal endpoints in local profile.
+- [x] Use local JSON storage by default, not Postgres.
 
 ### Slice 3 - Plugin Lifecycle
 
