@@ -375,11 +375,23 @@ describe("server MCP contract", () => {
       contentHash: "hash-b",
     });
 
-    const syncA = await syncVault(baseUrl, config.syncToken, "vault-a", [vaultA]);
+    const syncA = await syncVault(baseUrl, config.syncToken, "vault-a", [vaultA], {
+      generated_at: "2026-06-08T00:00:00.000Z",
+    });
     expect(syncA.status).toBe(200);
     expect(syncA.body.vault.document_count).toBe(1);
 
-    const syncB = await syncVault(baseUrl, config.syncToken, "vault-b", [vaultB]);
+    const syncB = await syncVault(baseUrl, config.syncToken, "vault-b", [vaultB], {
+      generated_at: "2026-06-09T00:00:00.000Z",
+      stats: {
+        scanned_markdown: 99,
+        allowed_documents: 1,
+        denied_markdown: 98,
+        denied_by_rule: {
+          "test-global-stat": 98,
+        },
+      },
+    });
     expect(syncB.status).toBe(200);
     expect(syncB.body.vault.document_count).toBe(1);
 
@@ -471,6 +483,7 @@ describe("server MCP contract", () => {
     });
     expect(statusA.result.structuredContent.vault_id).toBe("vault-a");
     expect(statusA.result.structuredContent.indexed_note_count).toBe(1);
+    expect(statusA.result.structuredContent.last_indexed_at).toBe("2026-06-08T00:00:00.000Z");
 
     const statusB = await mcp(baseUrl, accessToken, 43, "tools/call", {
       name: "get_vault_status",
@@ -478,6 +491,15 @@ describe("server MCP contract", () => {
     });
     expect(statusB.result.structuredContent.vault_id).toBe("vault-b");
     expect(statusB.result.structuredContent.document_count).toBe(1);
+    expect(statusB.result.structuredContent.generated_at).toBe("2026-06-09T00:00:00.000Z");
+    expect(statusB.result.structuredContent.stats).toBeNull();
+
+    const statusAAfterSyncB = await mcp(baseUrl, accessToken, 62, "tools/call", {
+      name: "get_vault_status",
+      arguments: { vault_id: "vault-a" },
+    });
+    expect(statusAAfterSyncB.result.structuredContent.generated_at).toBe("2026-06-08T00:00:00.000Z");
+    expect(statusAAfterSyncB.result.structuredContent.stats).toBeNull();
 
     const debugA = await mcp(baseUrl, accessToken, 53, "tools/call", {
       name: "debug_search",
@@ -894,14 +916,20 @@ async function syncStatus(baseUrl: string, token: string, documents: VaultDocume
   return response.status;
 }
 
-async function syncVault(baseUrl: string, token: string, vaultId: string, documents: VaultDocument[]): Promise<{ status: number; body: any }> {
+async function syncVault(
+  baseUrl: string,
+  token: string,
+  vaultId: string,
+  documents: VaultDocument[],
+  extra: Record<string, unknown> = {},
+): Promise<{ status: number; body: any }> {
   const response = await fetch(`${baseUrl}/admin/vaults/${vaultId}/sync`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ documents }),
+    body: JSON.stringify({ documents, ...extra }),
   });
   return {
     status: response.status,

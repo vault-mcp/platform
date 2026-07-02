@@ -25,6 +25,7 @@ import {
   DEFAULT_INSTALLATION_ID,
   DEFAULT_TENANT_ID,
   DEFAULT_VAULT_ID,
+  defaultIndexPolicy,
   fetchDocument,
   fetchDocumentByPath,
   getIndexStatus,
@@ -34,6 +35,7 @@ import {
   searchNotes,
   searchSections,
   searchVault,
+  summarizeIndexPolicy,
 } from "@vault-mcp/core";
 import { getPostgresMigrationIds, runPostgresMigrations } from "./migrations.js";
 
@@ -153,8 +155,9 @@ export class JsonIndexStore implements IndexStore {
       : scopedDocuments;
     this.generatedAt = payload.generated_at ?? new Date().toISOString();
     this.stats = payload.stats ?? null;
-    if (payload.manifest) {
-      this.manifests.set(vaultId, payload.manifest);
+    const manifest = syncManifestFromPayload(payload, tenantId, vaultId, installationId, this.generatedAt);
+    if (manifest) {
+      this.manifests.set(vaultId, manifest);
     }
     await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
     await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
@@ -223,13 +226,14 @@ export class JsonIndexStore implements IndexStore {
   }
 
   vaultStatus(vaultId?: string): VaultStatus {
-    const status = this.indexStatus(vaultId);
     const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    const status = getIndexStatus(this.documents, vaultId ? null : this.stats, generatedAt, vaultId);
     return {
       ...status,
       document_count: scopedDocuments.length,
-      generated_at: this.generatedAt,
-      stats: this.stats,
+      generated_at: generatedAt,
+      stats: vaultId ? null : this.stats,
     };
   }
 
@@ -399,12 +403,13 @@ export class PostgresIndexStore implements IndexStore {
         on conflict (key) do update set value = excluded.value`,
         [JSON.stringify(this.generatedAt), JSON.stringify(this.stats)],
       );
-      if (payload.manifest) {
+      const manifest = syncManifestFromPayload(payload, tenantId, vaultId, installationId, this.generatedAt);
+      if (manifest) {
         await client.query(
           `insert into vault_sync_manifests (tenant_id, vault_id, manifest, updated_at)
            values ($1, $2, $3::jsonb, now())
            on conflict (tenant_id, vault_id) do update set manifest = excluded.manifest, updated_at = now()`,
-          [tenantId, vaultId, JSON.stringify(payload.manifest)],
+          [tenantId, vaultId, JSON.stringify(manifest)],
         );
       }
       await client.query("commit");
@@ -523,14 +528,16 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async vaultStatus(vaultId?: string): Promise<VaultStatus> {
-    const status = await this.indexStatus(vaultId);
     const documents = await this.allDocuments();
     const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const manifests = await this.allManifests();
+    const generatedAt = scopedGeneratedAt(vaultId, manifests, scopedDocuments, this.generatedAt);
+    const status = getIndexStatus(documents, vaultId ? null : this.stats, generatedAt, vaultId);
     return {
       ...status,
       document_count: scopedDocuments.length,
-      generated_at: this.generatedAt,
-      stats: this.stats,
+      generated_at: generatedAt,
+      stats: vaultId ? null : this.stats,
     };
   }
 
@@ -664,6 +671,47 @@ function withDocumentScope(document: VaultDocument, tenantId: string, vaultId: s
       installation_id: document.metadata.installation_id ?? installationId,
     },
   };
+}
+
+function syncManifestFromPayload(
+  payload: SyncPayload,
+  tenantId: string,
+  vaultId: string,
+  installationId: string,
+  generatedAt: string | null,
+): SyncManifest | null {
+  if (payload.manifest) {
+    return payload.manifest;
+  }
+  if (!payload.vault_id) {
+    return null;
+  }
+  const indexMode = payload.index_mode ?? "rules_plus_approvals";
+  const policy = defaultIndexPolicy(indexMode);
+  return {
+    tenant_id: tenantId,
+    vault_id: vaultId,
+    installation_id: installationId,
+    vault_name: typeof payload.vault_name === "string" && payload.vault_name.trim() ? payload.vault_name.trim() : vaultId,
+    generated_at: payload.generated_at ?? generatedAt ?? new Date().toISOString(),
+    policy_version: payload.policy_version ?? policy.version,
+    index_mode: indexMode,
+    policy_summary: summarizeIndexPolicy(policy),
+  };
+}
+
+function scopedGeneratedAt(
+  vaultId: string | undefined,
+  manifests: Map<string, SyncManifest | undefined>,
+  documents: VaultDocument[],
+  fallback: string | null,
+): string | null {
+  if (!vaultId) {
+    return fallback;
+  }
+  return manifests.get(vaultId)?.generated_at
+    ?? mostRecentSyncAt(documents.map((document) => document.metadata.updated_at), null)
+    ?? null;
 }
 
 function summarizeVaults(documents: VaultDocument[], manifests: Map<string, SyncPayload["manifest"]>, generatedAt: string | null): VaultSummary[] {
