@@ -214,11 +214,15 @@ export class JsonIndexStore implements IndexStore {
   }
 
   indexStatus(vaultId?: string) {
-    return getIndexStatus(this.documents, this.stats, this.generatedAt, vaultId);
+    const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    return getIndexStatus(this.documents, vaultId ? null : this.stats, generatedAt, vaultId);
   }
 
   debugSearch(query: string, scope?: string, vaultId?: string) {
-    return debugSearch(this.documents, query, scope, this.generatedAt, vaultId);
+    const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    return debugSearch(this.documents, query, scope, generatedAt, vaultId);
   }
 
   listVaults() {
@@ -516,11 +520,17 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async indexStatus(vaultId?: string): Promise<IndexStatusResponse> {
-    return getIndexStatus(await this.allDocuments(), this.stats, this.generatedAt, vaultId);
+    const documents = await this.allDocuments();
+    const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const generatedAt = scopedGeneratedAt(vaultId, await this.allManifests(), scopedDocuments, this.generatedAt);
+    return getIndexStatus(documents, vaultId ? null : this.stats, generatedAt, vaultId);
   }
 
   async debugSearch(query: string, scope?: string, vaultId?: string): Promise<DebugSearchResponse> {
-    return debugSearch(await this.allDocuments(), query, scope, this.generatedAt, vaultId);
+    const documents = await this.allDocuments();
+    const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const generatedAt = scopedGeneratedAt(vaultId, await this.allManifests(), scopedDocuments, this.generatedAt);
+    return debugSearch(documents, query, scope, generatedAt, vaultId);
   }
 
   async listVaults(): Promise<VaultSummary[]> {
