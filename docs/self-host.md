@@ -241,6 +241,44 @@ Passing output should include:
 - `"replay_protection": true`
 - `"multi_vault": true` when `SMOKE_MULTI_VAULT=true`
 
+## Step 5.5 - Record Self-Host Evidence
+
+The smoke tests prove behavior, but a publishable fresh self-host gate needs a
+single non-secret evidence report. Before starting a fresh Vercel + Neon pass,
+prepare the report:
+
+```bash
+npm run selfhost:prepare -- --base-url "https://vault-mcp.example.com"
+```
+
+This writes:
+
+```text
+dist/selfhost/selfhost-report.json
+```
+
+Fill it with non-secret evidence references for local build/test output,
+database migration and fresh Postgres smoke output, Vercel deployment/check
+URLs, `/healthz` and OAuth metadata checks, copied/disposable-vault sync,
+remote OAuth smoke, multi-vault smoke, and client handoff values. Do not paste
+`DATABASE_URL`, `MCP_SYNC_TOKEN`, OAuth passwords, bearer values, GitHub tokens,
+or private note bodies into the report.
+
+Check progress:
+
+```bash
+npm run selfhost:status
+```
+
+Final strict gate:
+
+```bash
+npm run selfhost:verify
+```
+
+The verifier requires a true fresh self-host pass. It intentionally fails if the
+report marks the run as an existing-project rerun only.
+
 ## Step 6 - Connect MCP Clients
 
 Use this MCP endpoint:

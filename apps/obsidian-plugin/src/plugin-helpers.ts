@@ -38,6 +38,51 @@ export type PluginConfigurationChecklist = {
   items: PluginConfigurationChecklistItem[];
 };
 
+export type PluginSetupGuideSettings = PluginConfigurationSettings;
+
+export type PluginSetupGuideStep = {
+  label: string;
+  status: "done" | "next" | "blocked" | "later";
+  message: string;
+};
+
+export type PluginHostingOption = {
+  label: string;
+  status: "available" | "planned" | "advanced";
+  summary: string;
+  steps: string[];
+  actionLabel?: string;
+  actionUrl?: string;
+};
+
+export type PluginClientSetupCard = {
+  label: string;
+  status: "available" | "needs-verification";
+  endpoint: string;
+  auth: string;
+  steps: string[];
+  testPrompt: string;
+};
+
+export type PluginSetupGuide = {
+  title: string;
+  summary: string;
+  endpoint: string;
+  steps: PluginSetupGuideStep[];
+  hostingOptions: PluginHostingOption[];
+  clientCards: PluginClientSetupCard[];
+  recoveryActions: string[];
+};
+
+export type PluginSetupBundle = {
+  serverUrl: string;
+  syncToken: string;
+  tenantId: string;
+  vaultId: string;
+  indexMode: "rules_plus_approvals" | "manual_only" | "rules_only";
+  writeMode: "review_required" | "direct_apply";
+};
+
 export type PluginServerHealthSnapshot = {
   ok?: boolean;
   service?: {
@@ -101,6 +146,47 @@ export function normalizeServerBaseUrl(value: string): string {
   }
 
   return url.toString().replace(/\/$/, "");
+}
+
+export function parsePluginSetupBundle(value: string): PluginSetupBundle {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new Error("Setup bundle must be valid JSON copied from the Vault MCP setup page.");
+  }
+
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("Setup bundle must be a JSON object.");
+  }
+
+  const record = parsed as Record<string, unknown>;
+  if (record.type !== undefined && record.type !== "vault-mcp-plugin-setup") {
+    throw new Error("This JSON is not a Vault MCP plugin setup bundle.");
+  }
+
+  const serverUrl = normalizeServerBaseUrl(readRequiredString(record, "serverUrl", "Setup bundle is missing serverUrl."));
+  const syncToken = readRequiredString(record, "syncToken", "Setup bundle is missing syncToken.");
+  const vaultId = readOptionalString(record, "vaultId") || "default";
+  const tenantId = readOptionalString(record, "tenantId") || "default";
+  const indexMode = readOptionalString(record, "indexMode") || "rules_plus_approvals";
+  const writeMode = readOptionalString(record, "writeMode") || "review_required";
+
+  if (!["rules_plus_approvals", "manual_only", "rules_only"].includes(indexMode)) {
+    throw new Error("Setup bundle indexMode must be rules_plus_approvals, manual_only, or rules_only.");
+  }
+  if (!["review_required", "direct_apply"].includes(writeMode)) {
+    throw new Error("Setup bundle writeMode must be review_required or direct_apply.");
+  }
+
+  return {
+    serverUrl,
+    syncToken,
+    tenantId,
+    vaultId,
+    indexMode: indexMode as PluginSetupBundle["indexMode"],
+    writeMode: writeMode as PluginSetupBundle["writeMode"],
+  };
 }
 
 export function describeHttpFailure(action: string, status: number, responseText: string): string {
@@ -276,6 +362,169 @@ export function pluginConfigurationChecklist(settings: PluginConfigurationSettin
   };
 }
 
+export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetupGuide {
+  const checklist = pluginConfigurationChecklist(settings);
+  const syncTokenConfigured = Boolean(settings.syncToken.trim());
+  const vaultIdConfigured = Boolean(settings.vaultId.trim());
+  const serverReady = !checklist.items.some((item) => item.label === "Server URL" && item.status === "blocked");
+  const baseUrl = serverReady ? normalizeServerBaseUrl(settings.serverUrl) : null;
+  const endpoint = baseUrl ? `${baseUrl}/mcp` : "Set a valid server URL first.";
+  const vercelSetupUrl = baseUrl ? `${baseUrl}/setup/vercel` : "https://vault-mcp-connector.vercel.app/setup/vercel";
+
+  return {
+    title: "Start here",
+    summary: "Vault MCP is meant to start from this plugin. Choose hosting, verify the server, preview what can leave the vault, sync approved notes, then connect ChatGPT or another MCP client.",
+    endpoint,
+    steps: [
+      {
+        label: "Install and enable the plugin",
+        status: "done",
+        message: "The plugin is running in this vault.",
+      },
+      {
+        label: "Choose hosting",
+        status: serverReady ? "done" : "next",
+        message: serverReady
+          ? `Server URL is set to ${normalizeServerBaseUrl(settings.serverUrl)}.`
+          : "Choose managed hosting, guided Vercel self-hosting, or advanced manual hosting.",
+      },
+      {
+        label: "Add the sync token",
+        status: syncTokenConfigured ? "done" : "blocked",
+        message: syncTokenConfigured
+          ? "A sync token is saved locally for plugin-to-server setup and sync."
+          : "Paste the server admin sync token. This is not the OAuth password and not a ChatGPT bearer token.",
+      },
+      {
+        label: "Name this vault",
+        status: vaultIdConfigured ? "done" : "blocked",
+        message: vaultIdConfigured
+          ? `This vault will sync as ${settings.vaultId.trim()}.`
+          : "Choose a stable vault id before syncing.",
+      },
+      {
+        label: "Run connection preflight",
+        status: checklist.readyToSync ? "next" : "blocked",
+        message: "Check server health, storage readiness, migrations, and this vault's admin status before syncing.",
+      },
+      {
+        label: "Preview and approve the index",
+        status: checklist.readyToPreview ? "next" : "blocked",
+        message: "Run Preview index and review allowed, denied, and review-required notes before any sync.",
+      },
+      {
+        label: "Sync approved notes",
+        status: checklist.readyToSync ? "later" : "blocked",
+        message: "Sync only after the checklist is unblocked and the preview matches what you expect to share.",
+      },
+      {
+        label: "Connect an MCP client",
+        status: checklist.readyToSync ? "later" : "blocked",
+        message: "Use the client cards below for ChatGPT, Claude, Codex, or MCP Inspector. Clients use OAuth; they should not receive the sync token.",
+      },
+    ],
+    hostingOptions: [
+      {
+        label: "Managed Vault MCP",
+        status: "planned",
+        summary: "The simplest future path: sign in, create a vault connection, and let hosted Vault MCP give you the server URL and client setup values.",
+        steps: [
+          "Sign in to the managed Vault MCP service.",
+          "Create a new vault connection.",
+          "Paste the generated server URL and sync token into this plugin.",
+          "Run connection preflight and preview the index before syncing.",
+        ],
+      },
+      {
+        label: "Guided Vercel self-host",
+        status: "available",
+        summary: "Best private-alpha path for users who want their own server. The goal is a no-terminal deploy flow, with Vercel, Neon, and GitHub consent handled in the browser.",
+        steps: [
+          "Use the guided deploy page or Deploy to Vercel button from the docs.",
+          "Approve any Vercel, Neon, or GitHub account prompts.",
+          "Copy the generated server URL and sync token back into this plugin.",
+          "Run connection preflight, then preview and sync approved notes.",
+        ],
+        actionLabel: "Open setup guide",
+        actionUrl: vercelSetupUrl,
+      },
+      {
+        label: "Advanced manual hosting",
+        status: "advanced",
+        summary: "Developer path for people who prefer terminal commands, custom Postgres, Docker/container hosts, or local development.",
+        steps: [
+          "Follow the self-host documentation.",
+          "Run database migrations and remote smoke tests.",
+          "Paste the final server URL and sync token into this plugin.",
+          "Use this plugin as the ongoing vault control surface.",
+        ],
+      },
+    ],
+    clientCards: [
+      {
+        label: "ChatGPT",
+        status: "needs-verification",
+        endpoint,
+        auth: "OAuth. During authorization, enter the OAuth authorization password. Do not paste the sync token into ChatGPT.",
+        steps: [
+          "Open ChatGPT connector/app settings.",
+          "Add a custom MCP connector using the endpoint below.",
+          "Complete the OAuth authorization screen.",
+          "Ask the test prompt and confirm the Vault MCP result card renders.",
+        ],
+        testPrompt: "Search my vault for active project notes and show one result card.",
+      },
+      {
+        label: "Claude",
+        status: "needs-verification",
+        endpoint,
+        auth: "OAuth custom connector flow. Use the same MCP endpoint and authorization password.",
+        steps: [
+          "Open Claude custom connector settings.",
+          "Add the Vault MCP endpoint below.",
+          "Complete OAuth authorization.",
+          "Run the test prompt and confirm search/fetch tools work.",
+        ],
+        testPrompt: "Use Vault MCP to find one active project note and summarize its status.",
+      },
+      {
+        label: "Codex",
+        status: "available",
+        endpoint,
+        auth: "OAuth or a minted access token, depending on the Codex MCP configuration path. Do not use the sync token as a client token.",
+        steps: [
+          "Add Vault MCP as an MCP server in Codex.",
+          "Use the endpoint below.",
+          "Authorize with OAuth or a short-lived access token from the server flow.",
+          "Verify list/search/fetch and a denied guessed id.",
+        ],
+        testPrompt: "Search Vault MCP for Vault MCP Connector and fetch the top result.",
+      },
+      {
+        label: "MCP Inspector",
+        status: "available",
+        endpoint,
+        auth: "OAuth or bearer access token for the inspected MCP server. The Inspector proxy token is separate and only authenticates the local inspector proxy.",
+        steps: [
+          "Run npx @modelcontextprotocol/inspector.",
+          "Connect to the endpoint below.",
+          "If the inspector reports invalid origin, restart it with localhost and 127.0.0.1 allowed origins.",
+          "Run tools/list, search, fetch, and a denied guessed id check.",
+        ],
+        testPrompt: "tools/list, then call search_notes for Vault MCP Connector.",
+      },
+    ],
+    recoveryActions: [
+      "Disable the plugin from Obsidian Community plugins.",
+      "Rotate the server admin sync token if it was exposed.",
+      "Revoke OAuth clients or rotate the OAuth secret if client access should be reset.",
+      "Delete this vault's derived server index if you no longer want remote search.",
+      "Restore a note from the write audit backup folder if a local write was approved by mistake.",
+      "Rebuild the index by previewing and syncing again after policy changes.",
+    ],
+  };
+}
+
 export function summarizeServerStatus(
   health: PluginServerHealthSnapshot,
   vaultStatus: PluginVaultStatusSnapshot | null,
@@ -343,6 +592,25 @@ function parseServerError(responseText: string): string | null {
     return null;
   }
   return trimmed.length > 180 ? `${trimmed.slice(0, 180)}...` : trimmed;
+}
+
+function readRequiredString(record: Record<string, unknown>, key: string, message: string): string {
+  const value = record[key];
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(message);
+  }
+  return value.trim();
+}
+
+function readOptionalString(record: Record<string, unknown>, key: string): string | null {
+  const value = record[key];
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (typeof value !== "string") {
+    throw new Error(`Setup bundle ${key} must be a string.`);
+  }
+  return value.trim() || null;
 }
 
 function safeJson(value: string): unknown | null {

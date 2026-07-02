@@ -300,6 +300,7 @@ export function createMcpServer(store: IndexStore): McpServer {
       embedding_model: z.string().nullable(),
     },
     annotations: readOnlyAnnotations(),
+    _meta: chatGptToolMeta("Checking index status"),
   }, async ({ vault_id }) => {
     const scopeError = await requireVaultScope(store, vault_id);
     if (scopeError) {
@@ -503,7 +504,9 @@ function unavailableResult() {
   return {
     isError: true as const,
     _meta: {
+      "vault-mcp/structuredContent": error,
       "vault-mcp/resultSummary": error.error.message,
+      "openai/outputTemplate": CHATGPT_RESULTS_TEMPLATE_URI,
     },
     content: [
       {
@@ -542,7 +545,15 @@ async function requireVaultScope(store: IndexStore, vaultId: string | undefined)
   return {
     isError: true as const,
     _meta: {
+      "vault-mcp/structuredContent": {
+        error: {
+          code: "VAULT_ID_REQUIRED",
+          message: "Multiple vaults are connected; pass vault_id to choose one.",
+        },
+        vaults,
+      },
       "vault-mcp/resultSummary": "Multiple vaults are connected; pass vault_id to choose one.",
+      "openai/outputTemplate": CHATGPT_RESULTS_TEMPLATE_URI,
     },
     content: [
       {
@@ -738,7 +749,7 @@ function trimForText(value: string | undefined, maxLength: number): string {
   return `${text.slice(0, maxLength - 1).trimEnd()}...`;
 }
 
-function chatGptResultsComponentHtml(): string {
+export function chatGptResultsComponentHtml(): string {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -779,7 +790,17 @@ function chatGptResultsComponentHtml(): string {
     .reader pre code { padding: 0; background: transparent; border-radius: 0; display: block; white-space: pre; }
     .reader a { color: LinkText; text-decoration-thickness: 1px; }
     .taskbox { vertical-align: -2px; margin-right: 6px; }
-    .empty { padding: 12px; color: color-mix(in srgb, CanvasText 62%, transparent); }
+    .empty, .error { padding: 12px; border-radius: 8px; color: color-mix(in srgb, CanvasText 72%, transparent); background: color-mix(in srgb, Canvas 92%, CanvasText 8%); border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); }
+    .error { border-color: color-mix(in srgb, red 35%, CanvasText 10%); }
+    .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px; }
+    .metric { border: 1px solid color-mix(in srgb, CanvasText 10%, transparent); border-radius: 8px; padding: 9px; background: color-mix(in srgb, Canvas 96%, CanvasText 4%); }
+    .metric-label { font-size: 11px; color: color-mix(in srgb, CanvasText 60%, transparent); }
+    .metric-value { margin-top: 3px; font-weight: 760; font-size: 15px; overflow-wrap: anywhere; }
+    .frontmatter { margin: 0 0 12px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 8px; padding: 10px; background: color-mix(in srgb, Canvas 95%, CanvasText 5%); }
+    .frontmatter summary { cursor: pointer; font-weight: 700; font-size: 13px; }
+    .kv { display: grid; grid-template-columns: minmax(72px, 0.32fr) 1fr; gap: 6px 10px; margin-top: 8px; font-size: 12px; }
+    .kv dt { color: color-mix(in srgb, CanvasText 58%, transparent); }
+    .kv dd { margin: 0; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -805,6 +826,10 @@ function chatGptResultsComponentHtml(): string {
 
     function renderItems(items, kind) {
       content.append(el("p", "count muted", items.length + " " + kind + (items.length === 1 ? "" : "s")));
+      if (!items.length) {
+        renderEmptyState("No matching vault " + kind + "s", "Try a broader query, remove filters, or run debug_search to inspect query normalization.");
+        return;
+      }
       const grid = el("div", "grid");
       for (const item of items.slice(0, 10)) {
         const card = el("article", "card");
@@ -820,6 +845,110 @@ function chatGptResultsComponentHtml(): string {
         grid.append(card);
       }
       content.append(grid);
+    }
+
+    function renderVaultCards(vaults) {
+      content.append(el("p", "count muted", vaults.length + " connected vault" + (vaults.length === 1 ? "" : "s")));
+      if (!vaults.length) {
+        renderEmptyState("No connected vaults", "Sync a vault from the Obsidian plugin or CLI before using search and fetch tools.");
+        return;
+      }
+      const grid = el("div", "grid");
+      for (const vault of vaults) {
+        const card = el("article", "card");
+        card.append(el("div", "card-title", vault.vault_name || vault.vault_id || "Vault"));
+        card.append(el("div", "path", "vault_id: " + (vault.vault_id || "unknown")));
+        const metrics = el("div", "status-grid");
+        addMetric(metrics, "Documents", vault.document_count ?? 0);
+        addMetric(metrics, "Mode", vault.index_mode || "unknown");
+        addMetric(metrics, "Last indexed", vault.last_indexed_at || "unknown");
+        card.append(metrics);
+        grid.append(card);
+      }
+      content.append(grid);
+    }
+
+    function renderStatusCard(data) {
+      const card = el("article", "card");
+      card.append(el("div", "card-title", data.vault_name || data.vault_id || "Vault status"));
+      if (data.vault_id) card.append(el("div", "path", "vault_id: " + data.vault_id));
+      const metrics = el("div", "status-grid");
+      addMetric(metrics, "Indexed notes", data.indexed_note_count ?? "unknown");
+      addMetric(metrics, "Sections", data.indexed_section_count ?? "unknown");
+      addMetric(metrics, "Documents", data.document_count ?? "unknown");
+      addMetric(metrics, "Index mode", data.index_mode || "unknown");
+      addMetric(metrics, "Last indexed", data.last_indexed_at || data.generated_at || "unknown");
+      card.append(metrics);
+      if (Array.isArray(data.allowed_scopes) || Array.isArray(data.excluded_scopes)) {
+        const chips = el("div", "chips");
+        for (const scope of (data.allowed_scopes || []).slice(0, 6)) chips.append(el("span", "chip", "allow: " + scope));
+        for (const scope of (data.excluded_scopes || []).slice(0, 6)) chips.append(el("span", "chip", "deny: " + scope));
+        card.append(chips);
+      }
+      content.append(card);
+    }
+
+    function renderDebugCard(data) {
+      const card = el("article", "card");
+      card.append(el("div", "card-title", "Search debug: " + (data.query || "(empty)")));
+      card.append(el("div", "snippet", "Normalized: " + (data.normalized_query || "(empty)") + " · Results: " + (data.result_count ?? 0)));
+      const chips = el("div", "chips");
+      for (const term of (data.expanded_query_terms || []).slice(0, 12)) chips.append(el("span", "chip", term));
+      card.append(chips);
+      if (Array.isArray(data.possible_reasons) && data.possible_reasons.length) {
+        const reader = el("div", "reader");
+        const list = el("ul");
+        for (const reason of data.possible_reasons) {
+          const item = el("li");
+          appendInline(item, reason);
+          list.append(item);
+        }
+        reader.append(list);
+        card.append(reader);
+      }
+      content.append(card);
+    }
+
+    function renderProposalCards(proposals) {
+      content.append(el("p", "count muted", proposals.length + " write proposal" + (proposals.length === 1 ? "" : "s")));
+      if (!proposals.length) {
+        renderEmptyState("No write proposals", "Remote write requests will appear here once proposal tools are enabled.");
+        return;
+      }
+      const grid = el("div", "grid");
+      for (const proposal of proposals.slice(0, 10)) {
+        const card = el("article", "card");
+        card.append(el("div", "card-title", proposal.operation || "write proposal"));
+        card.append(el("div", "path", proposal.target_path || ""));
+        const chips = el("div", "chips");
+        if (proposal.status) chips.append(el("span", "chip", "status: " + proposal.status));
+        if (proposal.requester) chips.append(el("span", "chip", "requester: " + proposal.requester));
+        chips.append(el("span", "chip", "requires Obsidian-side review"));
+        card.append(chips);
+        grid.append(card);
+      }
+      content.append(grid);
+    }
+
+    function addMetric(parent, label, value) {
+      const box = el("div", "metric");
+      box.append(el("div", "metric-label", label));
+      box.append(el("div", "metric-value", String(value ?? "unknown")));
+      parent.append(box);
+    }
+
+    function renderEmptyState(title, detail) {
+      const node = el("div", "empty");
+      node.append(el("div", "card-title", title));
+      node.append(el("div", "muted", detail));
+      content.append(node);
+    }
+
+    function renderErrorState(message, detail) {
+      const node = el("div", "error");
+      node.append(el("div", "card-title", message || "Vault result unavailable"));
+      if (detail) node.append(el("div", "muted", detail));
+      content.append(node);
     }
 
     function extractStructuredContent() {
@@ -864,9 +993,34 @@ function chatGptResultsComponentHtml(): string {
       head.append(toolbar);
       content.append(head);
 
+      const frontmatter = parseFrontmatter(data.text || "");
+      if (frontmatter.entries.length) {
+        const details = el("details", "frontmatter");
+        details.open = true;
+        details.append(el("summary", "", "Frontmatter"));
+        const list = el("dl", "kv");
+        for (const entry of frontmatter.entries.slice(0, 12)) {
+          list.append(el("dt", "", entry.key));
+          list.append(el("dd", "", entry.value));
+        }
+        details.append(list);
+        content.append(details);
+      }
+
       const reader = el("article", "reader");
       renderMarkdown(data.text || "", reader);
       content.append(reader);
+    }
+
+    function parseFrontmatter(markdown) {
+      const lines = markdown.replace(/\\r\\n?/g, "\\n").split("\\n");
+      if (lines[0] !== "---") return { entries: [] };
+      const entries = [];
+      for (let i = 1; i < lines.length && lines[i] !== "---"; i++) {
+        const match = lines[i].match(/^([A-Za-z0-9_-]+):\\s*(.*)$/);
+        if (match) entries.push({ key: match[1], value: match[2] || "(empty)" });
+      }
+      return { entries };
     }
 
     function anchor(href, label) {
@@ -1016,8 +1170,18 @@ function chatGptResultsComponentHtml(): string {
         renderItems(data.results, "result");
       } else if (data?.notes) {
         renderItems(data.notes, "note");
+      } else if (data?.vaults) {
+        renderVaultCards(data.vaults);
+      } else if (data?.indexed_note_count !== undefined || data?.document_count !== undefined) {
+        renderStatusCard(data);
+      } else if (data?.query && data?.possible_reasons) {
+        renderDebugCard(data);
+      } else if (data?.write_proposals || data?.proposals) {
+        renderProposalCards(data.write_proposals || data.proposals);
       } else if (data?.title && data?.text) {
         renderFetchedNote(data);
+      } else if (data?.error) {
+        renderErrorState(data.error.message, data.error.code);
       } else if (data) {
         const pre = el("pre");
         pre.textContent = JSON.stringify(data, null, 2);
@@ -1033,6 +1197,14 @@ function chatGptResultsComponentHtml(): string {
       window.openai?.notifyIntrinsicHeight?.();
     }
 
+    function scheduleRenderRetries(attempt = 0) {
+      if (extractStructuredContent() || extractSummary() || attempt >= 20) return;
+      window.setTimeout(() => {
+        render();
+        scheduleRenderRetries(attempt + 1);
+      }, attempt < 4 ? 100 : 250);
+    }
+
     window.addEventListener("openai:set_globals", (event) => {
       if (event.detail?.globals && window.openai) {
         Object.assign(window.openai, event.detail.globals);
@@ -1041,6 +1213,7 @@ function chatGptResultsComponentHtml(): string {
     });
 
     render();
+    scheduleRenderRetries();
   </script>
 </body>
 </html>`;

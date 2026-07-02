@@ -45,7 +45,8 @@ Bearer dev-access-token
 
 - This server exposes read-only discovery and fetch tools: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, and `debug_search`.
 - Search, list, fetch, status, and diagnostics tools now return ChatGPT-friendly text summaries in addition to structured JSON.
-- High-value tools advertise the `ui://vault-mcp/results.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact result cards; clients that do not support it still receive readable text and `structuredContent`.
+- High-value tools advertise the `ui://vault-mcp/results-v2.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact cards for search results, note lists, fetched notes, vault lists, vault status, diagnostics, errors, and future write proposals. The component also retries briefly for delayed ChatGPT globals so first render is less fragile. Clients that do not support it still receive readable text and `structuredContent`.
+- Run `npm run smoke:mcp-ui` before client acceptance to exercise that component without live ChatGPT. The smoke uses a fake DOM and delayed tool globals to catch first-render regressions.
 - The local build is suitable for MCP contract testing. Production deployment still requires a real domain, TLS, Postgres, and OAuth provider configuration.
 
 See [acceptance.md](acceptance.md) for the final MCP Inspector, ChatGPT, and Claude acceptance runbook.

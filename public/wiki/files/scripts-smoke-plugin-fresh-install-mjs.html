@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>scripts/smoke-plugin-fresh-install.mjs - Line Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Line-by-line file reference</p>
+        <h1><code>scripts/smoke-plugin-fresh-install.mjs</code></h1>
+        <p class="lead">Node script used for smoke testing, deployment, or wiki generation.</p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
+      </section>
+
+      <section>
+        <h2>How to read this file</h2>
+        <div class="card">
+          <p>Read this file as an end-to-end gate. It starts or contacts a server and proves the critical runtime behavior still works.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Source with explanatory notes</h2>
+        <table class="line-table">
+          <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="line-number" id="L1"><a href="#L1">1</a></td>
+              <td class="source"><pre>#!/usr/bin/env node</pre></td>
+              <td>Shebang line: lets the operating system run this script with the named interpreter.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L2"><a href="#L2">2</a></td>
+              <td class="source"><pre>import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from &quot;node:fs/promises&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L3"><a href="#L3">3</a></td>
+              <td class="source"><pre>import { spawn } from &quot;node:child_process&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L4"><a href="#L4">4</a></td>
+              <td class="source"><pre>import { createHash } from &quot;node:crypto&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L5"><a href="#L5">5</a></td>
+              <td class="source"><pre>import os from &quot;node:os&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L6"><a href="#L6">6</a></td>
+              <td class="source"><pre>import path from &quot;node:path&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L7"><a href="#L7">7</a></td>
+              <td class="source"><pre>import process from &quot;node:process&quot;;</pre></td>
+              <td>Imports code from another module so this file can reuse it.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L8"><a href="#L8">8</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L9"><a href="#L9">9</a></td>
+              <td class="source"><pre>const repoRoot = path.resolve(import.meta.dirname, &quot;..&quot;);</pre></td>
+              <td>Declares repoRoot, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L10"><a href="#L10">10</a></td>
+              <td class="source"><pre>const packageRoot = path.join(repoRoot, &quot;dist&quot;, &quot;obsidian-plugin&quot;);</pre></td>
+              <td>Declares packageRoot, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre>const args = parseArgs(process.argv.slice(2));</pre></td>
+              <td>Declares args, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="source"><pre>const keep = Boolean(args.keep);</pre></td>
+              <td>Declares keep, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="source"><pre>let vaultRoot = args.vault ? path.resolve(args.vault) : null;</pre></td>
+              <td>Declares vaultRoot, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="source"><pre>let createdTempVault = false;</pre></td>
+              <td>Declares createdTempVault, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="source"><pre>const releaseManifestPath = path.resolve(args[&quot;release-manifest&quot;] ?? await findReleaseManifest(packageRoot));</pre></td>
+              <td>Declares releaseManifestPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="source"><pre>const releaseManifest = JSON.parse(await readFile(releaseManifestPath, &quot;utf8&quot;));</pre></td>
+              <td>Declares releaseManifest, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="source"><pre>validateReleaseManifestShape(releaseManifest, releaseManifestPath);</pre></td>
+              <td>Line 18 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="source"><pre>const pluginId = releaseManifest.plugin.id;</pre></td>
+              <td>Declares pluginId, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="source"><pre>const pluginVersion = releaseManifest.plugin.version;</pre></td>
+              <td>Declares pluginVersion, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>const zipPath = path.resolve(args.zip ?? path.join(path.dirname(releaseManifestPath), releaseManifest.package.zip));</pre></td>
+              <td>Declares zipPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre>const checksumPath = path.resolve(args.checksum ?? path.join(path.dirname(releaseManifestPath), releaseManifest.package.checksum));</pre></td>
+              <td>Declares checksumPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="source"><pre>const releaseNotesPath = path.resolve(args[&quot;release-notes&quot;] ?? path.join(path.dirname(releaseManifestPath), releaseManifest.package.releaseNotes));</pre></td>
+              <td>Declares releaseNotesPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="source"><pre>await assertFile(zipPath, &quot;plugin zip&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="source"><pre>await assertFile(checksumPath, &quot;plugin checksum&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="source"><pre>await assertFile(releaseNotesPath, &quot;plugin release notes&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="source"><pre>const expectedChecksum = await readChecksum(checksumPath, path.basename(zipPath));</pre></td>
+              <td>Declares expectedChecksum, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="source"><pre>const actualChecksum = await sha256File(zipPath);</pre></td>
+              <td>Declares actualChecksum, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="source"><pre>assert(actualChecksum === expectedChecksum, `Checksum mismatch for ${zipPath}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre>assert(releaseManifest.package.sha256 === actualChecksum, &quot;Release manifest SHA256 does not match package checksum&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="source"><pre>const releaseNotes = await readFile(releaseNotesPath, &quot;utf8&quot;);</pre></td>
+              <td>Declares releaseNotes, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="source"><pre>assert(releaseNotes.includes(pluginVersion), `Release notes must mention version ${pluginVersion}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="source"><pre>assert(releaseNotes.includes(&quot;Private-alpha&quot;), &quot;Release notes must state private-alpha status&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="source"><pre>if (!vaultRoot) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="source"><pre>  vaultRoot = await mkdtemp(path.join(os.tmpdir(), &quot;vault-mcp-fresh-install-&quot;));</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="source"><pre>  createdTempVault = true;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="source"><pre>const obsidianDir = path.join(vaultRoot, &quot;.obsidian&quot;);</pre></td>
+              <td>Declares obsidianDir, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="source"><pre>const pluginsDir = path.join(obsidianDir, &quot;plugins&quot;);</pre></td>
+              <td>Declares pluginsDir, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="source"><pre>const installedPluginDir = path.join(pluginsDir, pluginId);</pre></td>
+              <td>Declares installedPluginDir, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="source"><pre>const extractionRoot = await mkdtemp(path.join(os.tmpdir(), &quot;vault-mcp-release-unzip-&quot;));</pre></td>
+              <td>Declares extractionRoot, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre>  await mkdir(pluginsDir, { recursive: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>  await writeFile(path.join(vaultRoot, &quot;Welcome.md&quot;), &quot;# Disposable Vault MCP install smoke\n&quot;, &quot;utf8&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>  await run(&quot;unzip&quot;, [&quot;-q&quot;, &quot;-o&quot;, zipPath, &quot;-d&quot;, extractionRoot], repoRoot);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>  const extractedPluginDir = path.join(extractionRoot, pluginId);</pre></td>
+              <td>Declares extractedPluginDir, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>  await assertDirectory(extractedPluginDir, &quot;extracted plugin folder&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>  await rm(installedPluginDir, { recursive: true, force: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre>  await mkdir(installedPluginDir, { recursive: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>  for (const file of releaseManifest.package.runtimeFiles) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="source"><pre>    await copyFile(path.join(extractedPluginDir, file), path.join(installedPluginDir, file));</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre>  await writeFile(path.join(obsidianDir, &quot;community-plugins.json&quot;), `${JSON.stringify([pluginId], null, 2)}\n`, &quot;utf8&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="source"><pre>  const runtimeFiles = [&quot;manifest.json&quot;, &quot;main.js&quot;, &quot;styles.css&quot;];</pre></td>
+              <td>Declares runtimeFiles, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="source"><pre>  assert(JSON.stringify(releaseManifest.package.runtimeFiles) === JSON.stringify(runtimeFiles), &quot;Release manifest runtime file set is not the private-alpha runtime set&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>  for (const file of runtimeFiles) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>    await assertFile(path.join(installedPluginDir, file), file);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>    await assertNonEmpty(path.join(installedPluginDir, file), file);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre>  const installedManifest = JSON.parse(await readFile(path.join(installedPluginDir, &quot;manifest.json&quot;), &quot;utf8&quot;));</pre></td>
+              <td>Declares installedManifest, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>  for (const key of [&quot;id&quot;, &quot;name&quot;, &quot;version&quot;, &quot;minAppVersion&quot;, &quot;description&quot;]) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>    assert(installedManifest[key] === releaseManifest.plugin[key], `Installed manifest ${key} does not match release manifest`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>  await assertMissing(path.join(installedPluginDir, pluginId, &quot;manifest.json&quot;), &quot;double-nested manifest&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre>  const enabledPlugins = JSON.parse(await readFile(path.join(obsidianDir, &quot;community-plugins.json&quot;), &quot;utf8&quot;));</pre></td>
+              <td>Declares enabledPlugins, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre>  assert(Array.isArray(enabledPlugins) &amp;&amp; enabledPlugins.includes(pluginId), &quot;Disposable vault did not enable the plugin id in community-plugins.json&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="source"><pre>  const report = {</pre></td>
+              <td>Declares report, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="source"><pre>    ok: true,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="source"><pre>    purpose: &quot;fresh-user private-alpha zip install smoke&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre>    plugin: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre>      id: installedManifest.id,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>      name: installedManifest.name,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre>      version: installedManifest.version,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="source"><pre>      minAppVersion: installedManifest.minAppVersion,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>    release: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre>      zipPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="source"><pre>      checksumPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="source"><pre>      releaseNotesPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre>      releaseManifestPath,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre>      sha256: actualChecksum,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>    disposableVault: {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>      vaultRoot,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>      installedPluginDir,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre>      enabledPluginsFile: path.join(obsidianDir, &quot;community-plugins.json&quot;),</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>      createdTempVault,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre>      kept: keep,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>    },</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>    verified: [</pre></td>
+              <td>Line 104 participates in the surrounding block; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>      &quot;release manifest is self-consistent&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>      &quot;zip checksum matches .sha256 and release manifest&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>      &quot;release notes mention version and private-alpha status&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>      &quot;zip extracts to one plugin folder&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre>      &quot;runtime files install under .obsidian/plugins/vault-mcp&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre>      &quot;installed manifest matches release manifest&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>      &quot;main.js and styles.css are non-empty&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>      &quot;double-nested plugin folder is absent&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>      &quot;community-plugins.json enables vault-mcp&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>    ],</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre>  };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>  if (args.report) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>    const reportPath = path.resolve(args.report);</pre></td>
+              <td>Declares reportPath, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre>    await mkdir(path.dirname(reportPath), { recursive: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>    await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, &quot;utf8&quot;);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>    report.reportPath = reportPath;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre>  console.log(JSON.stringify(report, null, 2));</pre></td>
+              <td>Line 124 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>} finally {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>  await rm(extractionRoot, { recursive: true, force: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre>  if (createdTempVault &amp;&amp; !keep) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre>    await rm(vaultRoot, { recursive: true, force: true });</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>async function findReleaseManifest(root) {</pre></td>
+              <td>Defines findReleaseManifest, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="source"><pre>  const entries = await readdir(root).catch(() =&gt; []);</pre></td>
+              <td>Declares entries, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>  const matches = entries.filter((entry) =&gt; entry.endsWith(&quot;-release.json&quot;));</pre></td>
+              <td>Declares matches, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>  assert(matches.length === 1, `Expected exactly one release manifest in ${root}; found ${matches.length}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>  return path.join(root, matches[0]);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="source"><pre>async function readChecksum(file, zipName) {</pre></td>
+              <td>Defines readChecksum, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="source"><pre>  const text = await readFile(file, &quot;utf8&quot;);</pre></td>
+              <td>Declares text, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="source"><pre>  const line = text.split(/\r?\n/).find((entry) =&gt; entry.trim().length &gt; 0);</pre></td>
+              <td>Declares line, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
+              <td class="source"><pre>  assert(line, `Checksum file is empty: ${file}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="source"><pre>  const [hash, name] = line.trim().split(/\s+/);</pre></td>
+              <td>Declares a local value used by the surrounding code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>  assert(/^[a-f0-9]{64}$/i.test(hash), `Checksum file does not start with a SHA256 hash: ${file}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="source"><pre>  assert(!name || name === zipName, `Checksum file references ${name}, expected ${zipName}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
+              <td class="source"><pre>  return hash.toLowerCase();</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
+              <td class="source"><pre>async function sha256File(file) {</pre></td>
+              <td>Defines sha256File, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="source"><pre>  const buffer = await readFile(file);</pre></td>
+              <td>Declares buffer, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>  return createHash(&quot;sha256&quot;).update(buffer).digest(&quot;hex&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>async function assertDirectory(value, label) {</pre></td>
+              <td>Defines assertDirectory, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
+              <td>Declares result, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>  assert(result?.isDirectory(), `Expected ${label} to exist: ${value}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L158"><a href="#L158">158</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L159"><a href="#L159">159</a></td>
+              <td class="source"><pre>async function assertFile(value, label) {</pre></td>
+              <td>Defines assertFile, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L160"><a href="#L160">160</a></td>
+              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
+              <td>Declares result, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="source"><pre>  assert(result?.isFile(), `Expected ${label} to exist: ${value}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>async function assertMissing(value, label) {</pre></td>
+              <td>Defines assertMissing, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
+              <td>Declares result, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>  assert(!result, `Unexpected ${label}: ${value}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre>async function assertNonEmpty(value, label) {</pre></td>
+              <td>Defines assertNonEmpty, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>  const result = await stat(value).catch(() =&gt; null);</pre></td>
+              <td>Declares result, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre>  assert(result?.isFile() &amp;&amp; result.size &gt; 0, `Expected non-empty ${label}: ${value}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="source"><pre>async function run(command, commandArgs, cwd) {</pre></td>
+              <td>Defines run, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="source"><pre>  await new Promise((resolve, reject) =&gt; {</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="source"><pre>    const child = spawn(command, commandArgs, {</pre></td>
+              <td>Declares child, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="source"><pre>      cwd,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
+              <td class="source"><pre>      stdio: &quot;inherit&quot;,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="source"><pre>      shell: false,</pre></td>
+              <td>Provides one item in an object, array, argument list, or configuration list.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="source"><pre>    child.on(&quot;error&quot;, reject);</pre></td>
+              <td>Line 181 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre>    child.on(&quot;exit&quot;, (code) =&gt; {</pre></td>
+              <td>Opens a block; the following indented lines belong to this statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="source"><pre>      if (code === 0) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="source"><pre>        resolve();</pre></td>
+              <td>Line 184 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="source"><pre>      } else {</pre></td>
+              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="source"><pre>        reject(new Error(`${command} ${commandArgs.join(&quot; &quot;)} exited with ${code}`));</pre></td>
+              <td>Line 186 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="source"><pre>    });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="source"><pre>  });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
+              <td class="source"><pre>function parseArgs(argv) {</pre></td>
+              <td>Defines parseArgs, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
+              <td class="source"><pre>  const parsed = {};</pre></td>
+              <td>Declares parsed, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
+              <td class="source"><pre>  for (let index = 0; index &lt; argv.length; index += 1) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L195"><a href="#L195">195</a></td>
+              <td class="source"><pre>    const arg = argv[index];</pre></td>
+              <td>Declares arg, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L196"><a href="#L196">196</a></td>
+              <td class="source"><pre>    if (arg === &quot;--zip&quot; || arg === &quot;--checksum&quot; || arg === &quot;--release-notes&quot; || arg === &quot;--release-manifest&quot; || arg === &quot;--vault&quot; || arg === &quot;--report&quot;) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="source"><pre>      parsed[arg.slice(2)] = argv[index + 1];</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="source"><pre>      index += 1;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="source"><pre>    } else if (arg === &quot;--keep&quot;) {</pre></td>
+              <td>Continues the previous conditional with another test when earlier tests were false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="source"><pre>      parsed.keep = true;</pre></td>
+              <td>Assigns or compares values as part of the surrounding logic.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="source"><pre>    } else {</pre></td>
+              <td>Fallback branch for the previous condition when no earlier branch matched.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="source"><pre>      throw new Error(`Unknown argument: ${arg}`);</pre></td>
+              <td>Line 202 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
+              <td class="source"><pre>  return parsed;</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L206"><a href="#L206">206</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="source"><pre>function validateReleaseManifestShape(value, file) {</pre></td>
+              <td>Defines validateReleaseManifestShape, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="source"><pre>  assert(value &amp;&amp; typeof value === &quot;object&quot;, `Release manifest must be an object: ${file}`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="source"><pre>  for (const key of [&quot;id&quot;, &quot;name&quot;, &quot;version&quot;, &quot;minAppVersion&quot;, &quot;description&quot;]) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="source"><pre>    assert(typeof value.plugin?.[key] === &quot;string&quot; &amp;&amp; value.plugin[key].length &gt; 0, `Release manifest plugin.${key} is missing`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
+              <td class="source"><pre>  for (const key of [&quot;zip&quot;, &quot;checksum&quot;, &quot;releaseNotes&quot;, &quot;sha256&quot;]) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
+              <td class="source"><pre>    assert(typeof value.package?.[key] === &quot;string&quot; &amp;&amp; value.package[key].length &gt; 0, `Release manifest package.${key} is missing`);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
+              <td class="source"><pre>  assert(Array.isArray(value.package.runtimeFiles), &quot;Release manifest package.runtimeFiles must be an array&quot;);</pre></td>
+              <td>Checks a condition in a smoke script and throws an error if the condition is false.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
+              <td class="source"><pre>function assert(condition, message) {</pre></td>
+              <td>Defines assert, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
+              <td class="source"><pre>  if (!condition) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L221"><a href="#L221">221</a></td>
+              <td class="source"><pre>    throw new Error(message);</pre></td>
+              <td>Line 221 participates in the surrounding function call or expression; read it with the neighboring lines for full context.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L222"><a href="#L222">222</a></td>
+              <td class="source"><pre>  }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L223"><a href="#L223">223</a></td>
+              <td class="source"><pre>}</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr></tbody>
+        </table>
+      </section>
+  </main>
+</body>
+</html>

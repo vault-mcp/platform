@@ -313,7 +313,7 @@
             </tr>
             <tr>
               <td class="line-number" id="L48"><a href="#L48">48</a></td>
-              <td class="source"><pre>- High-value tools advertise the `ui://vault-mcp/results.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact result cards; clients that do not support it still receive readable text and `structuredContent`.</pre></td>
+              <td class="source"><pre>- High-value tools advertise the `ui://vault-mcp/results-v2.html` output template through `_meta.ui.resourceUri` and the ChatGPT-compatible `openai/outputTemplate` field. Clients that support MCP Apps-style UI resources can render that `text/html;profile=mcp-app` template as compact cards for search results, note lists, fetched notes, vault lists, vault status, diagnostics, errors, and future write proposals. The component also retries briefly for delayed ChatGPT globals so first render is less fragile. Clients that do not support it still receive readable text and `structuredContent`.</pre></td>
               <td>Markdown bullet item; it records one list entry.</td>
             </tr>
             <tr>

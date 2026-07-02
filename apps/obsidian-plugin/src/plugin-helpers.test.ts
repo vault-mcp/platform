@@ -4,8 +4,10 @@ import {
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
+  parsePluginSetupBundle,
   pluginConfigurationChecklist,
   pluginSafetyDisclosure,
+  pluginSetupGuide,
   summarizeServerStatus,
   summarizeSyncResponse,
 } from "./plugin-helpers";
@@ -23,6 +25,47 @@ describe("plugin helpers", () => {
     expect(describeHttpFailure("proposal check", 404, "")).toContain("endpoint was not found");
     expect(describeHttpFailure("sync", 500, "database unavailable")).toContain("server failed");
     expect(describeCaughtError("sync", new Error("Load failed"))).toContain("could not reach the server");
+  });
+
+  it("parses plugin setup bundles from the hosted setup page", () => {
+    const bundle = parsePluginSetupBundle(JSON.stringify({
+      type: "vault-mcp-plugin-setup",
+      version: 1,
+      serverUrl: "https://example-vault-mcp.vercel.app/",
+      syncToken: "sync-token",
+      tenantId: "personal",
+      vaultId: "main-vault",
+      indexMode: "manual_only",
+      writeMode: "review_required",
+    }));
+
+    expect(bundle).toEqual({
+      serverUrl: "https://example-vault-mcp.vercel.app",
+      syncToken: "sync-token",
+      tenantId: "personal",
+      vaultId: "main-vault",
+      indexMode: "manual_only",
+      writeMode: "review_required",
+    });
+  });
+
+  it("defaults optional setup bundle fields to safe private-alpha values", () => {
+    const bundle = parsePluginSetupBundle(JSON.stringify({
+      serverUrl: "https://example-vault-mcp.vercel.app",
+      syncToken: "sync-token",
+    }));
+
+    expect(bundle.tenantId).toBe("default");
+    expect(bundle.vaultId).toBe("default");
+    expect(bundle.indexMode).toBe("rules_plus_approvals");
+    expect(bundle.writeMode).toBe("review_required");
+  });
+
+  it("rejects invalid plugin setup bundles", () => {
+    expect(() => parsePluginSetupBundle("not json")).toThrow("valid JSON");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ type: "other", serverUrl: "https://example.com", syncToken: "secret" }))).toThrow("not a Vault MCP");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ serverUrl: "https://example.com/mcp", syncToken: "secret" }))).toThrow("base server URL");
+    expect(() => parsePluginSetupBundle(JSON.stringify({ serverUrl: "https://example.com", syncToken: "secret", indexMode: "everything" }))).toThrow("indexMode");
   });
 
   it("summarizes sync responses using server and local counts", () => {
@@ -129,6 +172,60 @@ describe("plugin helpers", () => {
     expect(checklist.readyToSync).toBe(true);
     expect(checklist.items.find((item) => item.label === "Write mode")?.status).toBe("warning");
     expect(checklist.items.find((item) => item.label === "Index scope")?.message).toContain("Manual-only");
+  });
+
+  it("builds a plugin-first setup guide with hosting and client cards", () => {
+    const guide = pluginSetupGuide({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "sync-secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+    });
+
+    expect(guide.title).toBe("Start here");
+    expect(guide.summary).toContain("start from this plugin");
+    expect(guide.endpoint).toBe("https://vault-mcp-connector.vercel.app/mcp");
+    expect(guide.steps.map((step) => step.label)).toContain("Choose hosting");
+    expect(guide.steps.find((step) => step.label === "Add the sync token")?.status).toBe("done");
+    expect(guide.hostingOptions.map((option) => option.label)).toEqual([
+      "Managed Vault MCP",
+      "Guided Vercel self-host",
+      "Advanced manual hosting",
+    ]);
+    expect(guide.hostingOptions.find((option) => option.label === "Guided Vercel self-host")?.actionUrl)
+      .toBe("https://vault-mcp-connector.vercel.app/setup/vercel");
+    expect(guide.clientCards.map((card) => card.label)).toEqual([
+      "ChatGPT",
+      "Claude",
+      "Codex",
+      "MCP Inspector",
+    ]);
+    expect(guide.clientCards.find((card) => card.label === "ChatGPT")?.auth).toContain("Do not paste the sync token");
+    expect(guide.recoveryActions.join("\n")).toContain("Rotate the server admin sync token");
+  });
+
+  it("blocks setup steps when the server URL and sync token are missing", () => {
+    const guide = pluginSetupGuide({
+      serverUrl: "not a url",
+      syncToken: "",
+      vaultId: "",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "",
+      includePrefixes: [],
+      excludePrefixes: [],
+    });
+
+    expect(guide.endpoint).toBe("Set a valid server URL first.");
+    expect(guide.hostingOptions.find((option) => option.label === "Guided Vercel self-host")?.actionUrl)
+      .toBe("https://vault-mcp-connector.vercel.app/setup/vercel");
+    expect(guide.steps.find((step) => step.label === "Choose hosting")?.status).toBe("next");
+    expect(guide.steps.find((step) => step.label === "Add the sync token")?.status).toBe("blocked");
+    expect(guide.steps.find((step) => step.label === "Connect an MCP client")?.message).toContain("Clients use OAuth");
   });
 
   it("summarizes a healthy server and authorized vault status", () => {

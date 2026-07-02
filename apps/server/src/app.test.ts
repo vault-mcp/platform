@@ -64,6 +64,20 @@ describe("server MCP contract", () => {
     expect(html).toContain("Build The Indexer");
   });
 
+  it("serves the guided Vercel setup page without authentication", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/setup/vercel`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    const html = await response.text();
+    expect(html).toContain("No-terminal Vercel setup");
+    expect(html).toContain("Obsidian plugin setup bundle");
+  });
+
   it("returns versioned health and storage status", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
@@ -158,6 +172,12 @@ describe("server MCP contract", () => {
     expect(component.result.contents?.[0].mimeType).toBe("text/html;profile=mcp-app");
     expect(component.result.contents?.[0].text).toContain("Vault MCP Results");
     expect(component.result.contents?.[0].text).toContain("renderMarkdown");
+    expect(component.result.contents?.[0].text).toContain("parseFrontmatter");
+    expect(component.result.contents?.[0].text).toContain("renderVaultCards");
+    expect(component.result.contents?.[0].text).toContain("renderStatusCard");
+    expect(component.result.contents?.[0].text).toContain("renderProposalCards");
+    expect(component.result.contents?.[0].text).toContain("renderErrorState");
+    expect(component.result.contents?.[0].text).toContain("scheduleRenderRetries");
     expect(component.result.contents?.[0].text).toContain("vault-mcp/structuredContent");
     expect(component.result.contents?.[0].text).toContain("openai:set_globals");
     expect(component.result.contents?.[0].text).toContain("toolResponseMetadata");
@@ -213,6 +233,9 @@ describe("server MCP contract", () => {
       arguments: { path: "02 Daily/2026-06-10.md" },
     });
     expect(deniedByPath.result.isError).toBe(true);
+    expect(deniedByPath.result._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results-v2.html");
+    const deniedStructured = deniedByPath.result._meta?.["vault-mcp/structuredContent"] as { error?: { code?: string } } | undefined;
+    expect(deniedStructured?.error?.code).toBe("NOT_FOUND_OR_NOT_AVAILABLE");
     expect(deniedByPath.result.content?.[0].text).toContain("Try search, list_notes, or fetch_note_by_path");
 
     const status = await mcp(baseUrl, accessToken, 23, "tools/call", {
@@ -221,6 +244,7 @@ describe("server MCP contract", () => {
     });
     expect(status.result.structuredContent.indexed_note_count).toBe(1);
     expect(status.result.structuredContent.excluded_scopes).toContain("02 Daily/");
+    expect(status.result._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results-v2.html");
 
     const fetched = await mcp(baseUrl, accessToken, 3, "tools/call", {
       name: "fetch",

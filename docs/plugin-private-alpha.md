@@ -13,10 +13,66 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Syncs allowed Markdown chunks to the server through the per-vault sync endpoint.
 - Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
+- Shows a first-run setup guide in settings and the dashboard with hosting choices, setup steps, client cards, copyable MCP endpoints, test prompts, and recovery actions.
 - Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
+
+## Plugin-First Setup Direction
+
+The publishable product should start from Obsidian, not from a terminal.
+
+The plugin dashboard and settings now include a `Start here` guide. It is the
+first private-alpha version of the no-terminal setup flow:
+
+1. Install and enable the plugin.
+2. Choose hosting:
+   - managed Vault MCP, planned as the simplest future path
+   - guided Vercel self-hosting, the target private-alpha self-host path
+   - advanced manual hosting, for developers and custom infrastructure
+3. Paste the server URL and admin sync token into the plugin.
+4. Run `Check connection` to verify server health, storage readiness,
+   migrations, and the configured vault status.
+5. Run `Preview index` before syncing.
+6. Review denied and review-required notes.
+7. Sync only approved context.
+8. Use the built-in client cards for ChatGPT, Claude, Codex, or MCP Inspector.
+
+The client cards show the MCP endpoint, authentication guidance, a short setup
+sequence, and a test prompt. They also repeat the critical token boundary:
+ordinary MCP clients use OAuth or a minted access token. They should not receive
+the plugin's admin sync token.
+
+The current private-alpha plugin does not yet create a Vercel project by itself,
+but the guided self-host option now points to the hosted setup walkthrough:
+
+```text
+https://vault-mcp-connector.vercel.app/setup/vercel
+```
+
+That page walks a no-terminal user through the browser-based Vercel path,
+generates private env values in the browser, creates a JSON plugin setup bundle,
+and explains the plugin handoff and client setup. Paste the generated JSON into
+`Import setup bundle` in the plugin settings, then click `Import bundle`.
+
+The bundle fills:
+
+- Server URL
+- Admin sync token
+- Tenant id
+- Vault id
+- Index mode
+- Write mode
+
+After importing, run `Check connection`, then `Preview index`, then review the
+queue before syncing.
+
+The next product step is to replace the manual Vercel import portion with a
+one-click template flow that returns the generated server URL and token values
+back to the plugin. Users may still need to approve Vercel, Neon, GitHub,
+ChatGPT, Claude, or other account screens; the goal is to remove terminal work,
+not bypass account consent.
 
 ## Safe Test Install
 
@@ -54,6 +110,17 @@ Build a local installable package:
 npm run plugin:package
 ```
 
+Before sharing a private-alpha package, run the wiki-free local release gate:
+
+```bash
+npm run release:check:local
+```
+
+That command rebuilds the server/plugin, runs API/type/test/audit checks,
+executes the MCP UI smoke, rebuilds and verifies the plugin package, tests fresh
+install and lifecycle behavior, and runs local MCP static and OAuth smokes. It
+deliberately skips generated wiki updates unless explicitly requested.
+
 This validates the plugin manifest, builds the plugin, stages the three Obsidian runtime files, and writes:
 
 ```text
@@ -88,21 +155,187 @@ To keep the generated disposable vault for inspection:
 npm run plugin:verify-package -- --keep
 ```
 
-This is a private-alpha artifact for copied-vault install testing. It is not yet a BRAT release or an Obsidian community-plugin submission.
+Smoke-test the private-alpha zip from a fresh-user perspective:
+
+```bash
+npm run plugin:smoke-fresh-install
+```
+
+This uses the release manifest, zip, checksum, and release notes as the source
+of truth. It creates a disposable vault, installs the package under
+`.obsidian/plugins/vault-mcp`, writes `.obsidian/community-plugins.json` to
+enable the plugin id, verifies the runtime files and manifest, and catches
+double-nested plugin installs. It removes the disposable vault by default.
+
+To keep the disposable vault or write a report:
+
+```bash
+npm run plugin:smoke-fresh-install -- --keep
+npm run plugin:smoke-fresh-install -- --report dist/obsidian-plugin/fresh-install-smoke.json
+```
+
+Smoke-test private-alpha upgrade and uninstall behavior:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
+This creates a disposable vault with an existing `vault-mcp` plugin install,
+an existing plugin `data.json`, a normal note, and a write-audit note. It
+upgrades runtime files from the release zip, verifies `data.json` is preserved
+exactly, then uninstalls the plugin and confirms normal vault notes plus write
+audit notes remain in place.
+
+To keep the disposable vault or write a report:
+
+```bash
+npm run plugin:smoke-lifecycle -- --keep
+npm run plugin:smoke-lifecycle -- --report dist/obsidian-plugin/lifecycle-smoke.json
+```
+
+This is a private-alpha artifact for copied-vault install testing. It is still
+useful even after BRAT is enabled because it proves direct zip install and
+upgrade behavior without relying on GitHub or BRAT.
+
+## BRAT Private Alpha Install
+
+BRAT installs Obsidian plugins from GitHub release assets. For Vault MCP, the
+release tag, release name, and the `version` inside the released
+`manifest.json` must match exactly.
+
+Prepare BRAT release assets:
+
+```bash
+npm run plugin:brat:prepare
+```
+
+If the plugin was already built during a local release check, skip the rebuild:
+
+```bash
+npm run plugin:brat:prepare -- --skip-build
+```
+
+Verify the BRAT asset folder:
+
+```bash
+npm run plugin:brat:verify
+```
+
+That creates and verifies:
+
+```text
+dist/brat/vault-mcp/manifest.json
+dist/brat/vault-mcp/main.js
+dist/brat/vault-mcp/styles.css
+dist/brat/vault-mcp-0.1.0-brat-release.json
+```
+
+To test through BRAT:
+
+1. Run `npm run release:check:local`.
+2. Use the existing private-alpha GitHub prerelease:
+
+```text
+https://github.com/vault-mcp/platform/releases/tag/0.1.0
+```
+
+3. To recreate or replace that release, create a GitHub prerelease on
+   `vault-mcp/platform` named `0.1.0` with tag `0.1.0`, then upload these assets
+   from `dist/brat/vault-mcp/`:
+
+```text
+manifest.json
+main.js
+styles.css
+```
+
+4. Verify the published GitHub prerelease assets:
+
+```bash
+npm run plugin:brat:verify-github
+```
+
+5. Check the copied vault's BRAT readiness:
+
+```bash
+npm run plugin:brat:check-copy -- --check-github-release
+```
+
+6. If needed, enable BRAT and add the Vault MCP repo to BRAT's copied-vault
+   config:
+
+```bash
+npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-release
+```
+
+7. Install the BRAT plugin in a copied or disposable Obsidian vault.
+8. In BRAT, add the beta plugin from the GitHub repository if it is not already
+   listed:
+
+```text
+vault-mcp/platform
+```
+
+9. Enable `Vault MCP` in Obsidian community plugins.
+10. Open Vault MCP settings, import the setup bundle or paste the server values,
+   run `Check connection`, then run `Preview index` before syncing.
+11. Verify the copied-vault installed files match the GitHub BRAT release
+    assets:
+
+```bash
+npm run plugin:brat:verify-copy-install
+```
+
+12. Prepare screenshot-backed BRAT UI evidence, capture the screenshots, and
+    verify the report:
+
+```bash
+npm run plugin:brat:prepare-ui-evidence
+npm run plugin:brat:evidence-status
+npm run plugin:brat:verify-ui-evidence
+```
+
+Use [BRAT Private Alpha Walkthrough](brat-private-alpha-walkthrough.md) for the
+required screenshots, report JSON shape, and pass/fail criteria.
+
+For a private GitHub repository, BRAT needs GitHub read access. The practical
+private-alpha path is to add a fine-grained GitHub token in BRAT that has
+read-only Contents access to the selected private repository. For wider testers,
+use a public release repo or a dedicated public plugin repo before inviting
+people who should not receive private-org repository access.
+
+The local BRAT scripts prove the release asset shape, copied-vault BRAT config,
+and installed-file parity. They do not prove the human Obsidian UI walkthrough.
+The final real BRAT gate is a screenshot-backed install/update pass in a copied
+vault from the GitHub prerelease assets.
 
 ## Manual Zip Install
 
 For a private-alpha user who does not want to build from source:
 
-1. Create this folder inside the test vault:
+1. Confirm the private-alpha release bundle includes:
 
 ```text
-.obsidian/plugins/vault-mcp
+vault-mcp-0.1.0.zip
+vault-mcp-0.1.0.zip.sha256
+vault-mcp-0.1.0-release-notes.md
+vault-mcp-0.1.0-release.json
 ```
 
-2. Unzip `vault-mcp-0.1.0.zip`.
-3. Copy the inner `vault-mcp` folder contents into `.obsidian/plugins/vault-mcp`.
-4. Confirm these files exist:
+2. Verify the checksum before installing:
+
+```bash
+cd /path/to/release/files
+shasum -a 256 -c vault-mcp-0.1.0.zip.sha256
+```
+
+3. Extract `vault-mcp-0.1.0.zip` into the test vault's plugin folder:
+
+```text
+.obsidian/plugins/
+```
+
+The zip contains a single `vault-mcp` folder, so the final layout should be:
 
 ```text
 .obsidian/plugins/vault-mcp/manifest.json
@@ -110,10 +343,11 @@ For a private-alpha user who does not want to build from source:
 .obsidian/plugins/vault-mcp/styles.css
 ```
 
-5. Restart Obsidian or reload community plugins.
-6. Open Settings -> Community plugins and enable `Vault MCP`.
+4. Restart Obsidian or reload community plugins.
+5. Open Settings -> Community plugins and enable `Vault MCP`.
+6. Open the Vault MCP settings, confirm the safety disclosure and readiness checklist, then run `Check connection` before syncing.
 
-For first private-alpha testing, use a copied or disposable vault. Do not use a live vault until the copied-vault UI verification gate passes.
+For first private-alpha testing, use a copied or disposable vault. Do not use a live vault until the private-alpha safety review and release walkthrough gates pass.
 
 ## Upgrade
 
@@ -140,6 +374,14 @@ styles.css
 
 If the new version changes settings shape, the release notes must say so explicitly before a private-alpha user upgrades.
 
+The automated lifecycle smoke verifies this upgrade invariant by writing a
+sentinel `data.json`, applying the release zip runtime files, and checking the
+settings file is byte-for-byte unchanged:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
 ## Uninstall
 
 Manual uninstall:
@@ -158,6 +400,16 @@ This removes the plugin and local plugin settings. It does not delete notes that
 ```text
 00 System/Vault MCP Write Audit
 ```
+
+The lifecycle smoke also verifies uninstall behavior in a disposable vault:
+
+```bash
+npm run plugin:smoke-lifecycle
+```
+
+It confirms the plugin folder is removed, `vault-mcp` is removed from
+`.obsidian/community-plugins.json`, and normal vault notes plus audit notes
+remain in place.
 
 ## Troubleshooting
 
@@ -220,12 +472,13 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 ## Known Limitations
 
 - The plugin is private-alpha software and should be tested against copied vaults first.
-- There is no BRAT release or Obsidian community-plugin release yet.
+- BRAT release assets can be prepared and verified locally, but the GitHub prerelease install still needs screenshot-backed copied-vault proof.
+- There is no Obsidian community-plugin release yet.
 - `patch_note` proposals are rejected until a safe parser/apply implementation exists.
 - `direct_apply` should stay disabled until separately reviewed.
 - The server stores a derived searchable index; it should not be treated as the canonical vault.
 - The current production smoke uses the copied vault, not the live vault.
-- Manual Obsidian UI click-through is still required before calling the plugin publish-ready.
+- The copied-vault Obsidian UI click-through passed for create, append, replace, frontmatter, and rename proposals, but there is still no dedicated automated Obsidian UI/test harness for modal flows.
 - Multi-vault support exists in the architecture, but needs more leakage tests before public release.
 
 ## Privacy And Security Notes
@@ -244,7 +497,7 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 
 ## Seed Write Proposals For UI Testing
 
-Use the preparation script before manual UI verification. It installs the current plugin build into the copied vault, writes safe UI-smoke settings, seeds a fresh set of pending write proposals, and verifies the batch in initial mode.
+Use the preparation script before repeated manual UI verification. It installs the current plugin build into the copied vault, writes safe UI-smoke settings, seeds a fresh set of pending write proposals, and verifies the batch in initial mode.
 
 The safe settings intentionally use:
 
@@ -441,7 +694,7 @@ Expected results:
 - `update_frontmatter` changes `status` to `active`, adds test tags, and removes `remove_me`.
 - `rename_note` renames `Rename Target.md` to `Renamed By Proposal.md`.
 
-This manual pass is still required before treating the plugin as publish-ready, because automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app.
+Run this manual pass after meaningful write-path or plugin UI changes, because the automated tests do not exercise Obsidian modal rendering or button wiring inside the actual app. The copied-vault run `ui-smoke-20260625-154056` passed this gate for create, append, replace, frontmatter, and rename proposals.
 
 After applying all five proposals in Obsidian, verify the copied-vault files, proposal statuses, and audit notes:
 
