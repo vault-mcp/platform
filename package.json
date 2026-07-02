@@ -46,6 +46,8 @@
     "selfhost:prepare": "node scripts/selfhost-evidence.mjs prepare",
     "selfhost:status": "node scripts/selfhost-evidence.mjs status",
     "selfhost:verify": "node scripts/selfhost-evidence.mjs verify",
+    "release:readiness": "node scripts/release-readiness-status.mjs",
+    "release:readiness:verify": "node scripts/release-readiness-status.mjs verify",
     "index": "npm run dev --workspace @vault-mcp/cli --",
     "release:check:local": "node scripts/release-check-local.mjs",
     "wiki:generate": "node scripts/generate-wiki-reference.mjs",

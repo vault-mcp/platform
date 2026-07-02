@@ -31,6 +31,23 @@ It intentionally skips wiki generation unless explicitly requested. It also does
 not replace the remote OAuth, remote multi-vault, MCP Inspector, ChatGPT, Claude,
 Codex, or real BRAT UI acceptance gates.
 
+After preparing the evidence reports for BRAT UI, fresh self-hosting, real
+clients, and security review, check the aggregate release-readiness status:
+
+```bash
+npm run release:readiness
+```
+
+Strict aggregate gate:
+
+```bash
+npm run release:readiness:verify
+```
+
+This command does not run the external/manual gates for you. It reads the local
+evidence reports and shows which release-readiness reports are complete,
+missing, or still incomplete.
+
 For focused reruns:
 
 ```bash
