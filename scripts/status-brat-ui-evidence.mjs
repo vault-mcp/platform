@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { REQUIRED_BRAT_REVIEW_FLAGS, REQUIRED_BRAT_SCREENSHOTS } from "./brat-ui-evidence-constants.mjs";
 import { duplicateScreenshotFailures, inspectScreenshot } from "./brat-ui-evidence-utils.mjs";
+import { readPluginManifestVersion } from "./brat-manifest-version.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
@@ -16,7 +17,7 @@ if (args.help) {
 const evidenceDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", "ui-evidence"));
 const reportPath = path.resolve(args.report ?? path.join(evidenceDir, "report.json"));
 const strict = Boolean(args.strict);
-const expectedTag = args.tag ?? readPackageVersionFallback();
+const expectedTag = args.tag ?? await readPluginManifestVersion(repoRoot);
 const expectedRepo = args.repo ?? "vault-mcp/platform";
 const liveVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault";
 const requiredCommands = [
@@ -103,14 +104,17 @@ const complete = reportResult.ok
   && missingScreenshots.length === 0
   && invalidScreenshots.length === 0
   && incompleteReviews.length === 0;
+const failedChecks = checks.filter((item) => !item.ok);
 const status = complete
   ? "complete"
   : reportResult.ok
-    ? invalidScreenshots.length > 0
-      ? "invalid_screenshots"
-      : missingScreenshots.length > 0
-        ? "waiting_for_screenshots"
-        : "waiting_for_review"
+    ? failedChecks.length > 0
+      ? "waiting_for_prerequisites"
+      : invalidScreenshots.length > 0
+        ? "invalid_screenshots"
+        : missingScreenshots.length > 0
+          ? "waiting_for_screenshots"
+          : "waiting_for_review"
     : "missing_or_invalid_report";
 const output = {
   ok: true,
@@ -134,13 +138,7 @@ const output = {
   nextActions: complete
     ? ["Run npm run plugin:brat:verify-ui-evidence for the strict final gate."]
     : reportResult.ok
-      ? [
-          "Capture the missing screenshots into the expected paths.",
-          "Replace any invalid screenshots with readable PNG/JPEG files.",
-          "Inspect each screenshot and mark it reviewed with npm run plugin:brat:review.",
-          "Avoid token fields and private note content in screenshots.",
-          "Run npm run plugin:brat:verify-ui-evidence after all screenshots are present.",
-        ]
+      ? nextActionsForStatus(status)
       : [
           "Run npm run plugin:brat:prepare-ui-evidence to create the report scaffold.",
           "Then capture the seven screenshots named in the report.",
@@ -208,6 +206,36 @@ function secretScanFailures(report) {
     .map((pattern) => `report appears to contain a secret-like value matching ${pattern}`);
 }
 
+function nextActionsForStatus(value) {
+  if (value === "waiting_for_prerequisites") {
+    return [
+      "Run npm run plugin:brat:ready without --skip-checks so GitHub release, copied-vault config, and installed-file checks pass.",
+      "If the copied vault is not configured yet, run npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-release.",
+      "Only capture screenshots after the prerequisite command checks are true.",
+    ];
+  }
+  if (value === "invalid_screenshots") {
+    return [
+      "Replace invalid screenshots with readable PNG/JPEG files at the expected paths.",
+      "Inspect each replacement before marking it reviewed.",
+      "Run npm run plugin:brat:evidence-status again.",
+    ];
+  }
+  if (value === "waiting_for_screenshots") {
+    return [
+      "Capture the missing screenshots into the expected paths.",
+      "Avoid token fields and private note content in screenshots.",
+      "Inspect each screenshot and mark it reviewed with npm run plugin:brat:review.",
+      "Run npm run plugin:brat:verify-ui-evidence after all screenshots are present.",
+    ];
+  }
+  return [
+    "Inspect each screenshot and mark it reviewed with npm run plugin:brat:review.",
+    "Confirm every review says it shows the required screen, copied/safe context, and no secrets.",
+    "Run npm run plugin:brat:verify-ui-evidence.",
+  ];
+}
+
 function parseArgs(argv) {
   const parsed = {};
   for (let index = 0; index < argv.length; index += 1) {
@@ -226,10 +254,6 @@ function parseArgs(argv) {
   return parsed;
 }
 
-function readPackageVersionFallback() {
-  return process.env.npm_package_version ?? "0.1.0";
-}
-
 function printHelp() {
   console.log(`Usage: npm run plugin:brat:evidence-status -- [options]
 
@@ -238,7 +262,7 @@ Reports the current BRAT screenshot evidence status without failing by default.
 Options:
   --dir <path>       Evidence directory. Defaults to dist/brat/ui-evidence.
   --report <path>    Report JSON path. Defaults to <dir>/report.json.
-  --tag <version>    Expected release tag. Defaults to npm package version.
+  --tag <version>    Expected release tag. Defaults to the Obsidian plugin manifest version.
   --repo <owner/repo> Expected GitHub repo. Defaults to vault-mcp/platform.
   --strict           Exit non-zero unless all evidence is complete.
 `);

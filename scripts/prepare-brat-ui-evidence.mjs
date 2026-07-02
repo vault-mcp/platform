@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { defaultScreenshotReview } from "./brat-ui-evidence-constants.mjs";
+import { readPluginManifestVersion } from "./brat-manifest-version.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
@@ -18,7 +19,7 @@ const reportPath = path.resolve(args.report ?? path.join(evidenceDir, "report.js
 const vaultRoot = path.resolve(args.vault ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
 const vaultKind = args["vault-kind"] ?? (vaultRoot.toLowerCase().includes("copy") ? "copied" : "disposable");
 const repo = args.repo ?? "vault-mcp/platform";
-const releaseTag = args.tag ?? readPackageVersionFallback();
+const releaseTag = args.tag ?? await readPluginManifestVersion(repoRoot);
 const skipChecks = Boolean(args["skip-checks"]);
 
 if (!["copied", "disposable"].includes(vaultKind)) {
@@ -126,10 +127,6 @@ function parseArgs(argv) {
   return parsed;
 }
 
-function readPackageVersionFallback() {
-  return process.env.npm_package_version ?? "0.1.0";
-}
-
 function printHelp() {
   console.log(`Usage: npm run plugin:brat:prepare-ui-evidence -- [options]
 
@@ -142,7 +139,7 @@ Options:
   --vault <path>      Copied or disposable vault root.
   --vault-kind <kind> copied or disposable. Inferred from the vault path when omitted.
   --repo <owner/repo> GitHub repo. Defaults to vault-mcp/platform.
-  --tag <version>     Release tag. Defaults to npm package version.
+  --tag <version>     Release tag. Defaults to the Obsidian plugin manifest version.
   --skip-checks       Write the report template without running prerequisite checks.
 `);
 }

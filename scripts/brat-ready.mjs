@@ -2,6 +2,7 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
+import { readPluginManifestVersion } from "./brat-manifest-version.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
@@ -14,7 +15,7 @@ if (args.help) {
 const evidenceDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", "ui-evidence"));
 const copiedVaultRoot = path.resolve(args.vault ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
 const repo = args.repo ?? "vault-mcp/platform";
-const tag = args.tag ?? readPackageVersionFallback();
+const tag = args.tag ?? await readPluginManifestVersion(repoRoot);
 const liveVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault";
 
 if (copiedVaultRoot === liveVaultRoot) {
@@ -155,10 +156,6 @@ function parseArgs(argv) {
   return parsed;
 }
 
-function readPackageVersionFallback() {
-  return process.env.npm_package_version ?? "0.1.0";
-}
-
 function obsidianVaultUrl(vaultRoot) {
   const vaultName = encodeURIComponent(path.basename(vaultRoot)).replaceAll("'", "%27");
   return `obsidian://open?vault=${vaultName}`;
@@ -174,6 +171,6 @@ Options:
   --dir <path>        Evidence directory. Defaults to dist/brat/ui-evidence.
   --vault <path>      Copied or disposable vault root.
   --repo <owner/repo> GitHub repo. Defaults to vault-mcp/platform.
-  --tag <version>     Release tag. Defaults to npm package version.
+  --tag <version>     Release tag. Defaults to the Obsidian plugin manifest version.
 `);
 }
