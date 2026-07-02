@@ -226,6 +226,45 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 9. Call `fetch` with `guessed-denied-id` and confirm it returns a tool error.
 10. Call `fetch_note_by_path` with a denied path such as `02 Daily/2026-06-10.md` and confirm it returns a tool error.
 
+## Structured Client Evidence
+
+The real-client checks are manual, but the evidence should still be structured.
+Before starting MCP Inspector, ChatGPT, Codex, and Claude or another non-OpenAI
+client, prepare a local report:
+
+```bash
+npm run acceptance:prepare
+```
+
+This writes:
+
+```text
+dist/acceptance/client-acceptance-report.json
+```
+
+Fill it with non-secret evidence after each client pass. Do not paste OAuth
+passwords, bearer tokens, sync tokens, GitHub tokens, or private note bodies
+into the report. Use `evidenceRefs` for local screenshot paths, browser URLs,
+log file paths, PR/check URLs, or short non-secret notes.
+
+Check progress without failing:
+
+```bash
+npm run acceptance:status
+```
+
+Final strict gate:
+
+```bash
+npm run acceptance:verify
+```
+
+The verifier requires every real client to connect, list only the read-only tool
+surface, search, fetch, deny guessed ids, deny denied paths, and include at
+least one evidence reference. ChatGPT also requires first-render MCP UI and
+clean fetched-note rendering evidence. The Claude slot can be filled by Claude
+or another non-OpenAI MCP client, but the report must name the client.
+
 ## ChatGPT
 
 1. Enable developer mode in the ChatGPT workspace.
