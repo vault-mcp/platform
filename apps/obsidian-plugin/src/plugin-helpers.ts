@@ -18,6 +18,9 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   vaultId: string;
   includePrefixes: string[];
   excludePrefixes: string[];
+  localServerModeEnabled?: boolean;
+  localServerPort?: number;
+  localServerKeepAlive?: boolean;
 };
 
 export type PluginSafetyDisclosure = {
@@ -110,6 +113,15 @@ export type PluginServerStatusSummary = {
   status: "ready" | "warning" | "blocked";
   title: string;
   message: string;
+  facts: string[];
+};
+
+export type PluginLocalServerStatus = {
+  status: "planned" | "invalid";
+  title: string;
+  message: string;
+  endpoint: string;
+  canStart: boolean;
   facts: string[];
 };
 
@@ -359,6 +371,44 @@ export function pluginConfigurationChecklist(settings: PluginConfigurationSettin
     readyToPreview: !items.some((item) => item.label === "Server URL" && item.status === "blocked"),
     readyToSync: !items.some((item) => item.status === "blocked"),
     items,
+  };
+}
+
+export function pluginLocalServerStatus(settings: PluginConfigurationSettings): PluginLocalServerStatus {
+  const port = normalizeLocalServerPort(settings.localServerPort);
+  const endpoint = port ? `http://127.0.0.1:${port}/mcp` : "Choose a port from 1024 to 65535.";
+  const enabled = Boolean(settings.localServerModeEnabled);
+  const keepAlive = Boolean(settings.localServerKeepAlive);
+
+  if (!port) {
+    return {
+      status: "invalid",
+      title: "Local desktop server needs a valid port",
+      message: "Choose a localhost port from 1024 to 65535 before local mode can be enabled in a future build.",
+      endpoint,
+      canStart: false,
+      facts: [
+        "Sidecar status: not bundled in this private-alpha build",
+        "Bind address: 127.0.0.1 only",
+        "Port range: 1024-65535",
+      ],
+    };
+  }
+
+  return {
+    status: "planned",
+    title: enabled ? "Local desktop server is selected but not implemented yet" : "Local desktop server is planned",
+    message: enabled
+      ? "This build saves the local-mode preference, but it cannot start a localhost MCP sidecar yet. Use guided Vercel self-hosting or managed hosting until the sidecar is bundled."
+      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open.",
+    endpoint,
+    canStart: false,
+    facts: [
+      "Sidecar status: not bundled in this private-alpha build",
+      "Bind address: 127.0.0.1 only",
+      `Keep running after Obsidian exits: ${keepAlive ? "planned opt-in" : "off by default"}`,
+      "Credentials: future local-only MCP and admin tokens",
+    ],
   };
 }
 
@@ -622,6 +672,13 @@ function readOptionalString(record: Record<string, unknown>, key: string): strin
     throw new Error(`Setup bundle ${key} must be a string.`);
   }
   return value.trim() || null;
+}
+
+function normalizeLocalServerPort(value: number | undefined): number | null {
+  if (typeof value !== "number" || !Number.isInteger(value)) {
+    return 38791;
+  }
+  return value >= 1024 && value <= 65535 ? value : null;
 }
 
 function safeJson(value: string): unknown | null {

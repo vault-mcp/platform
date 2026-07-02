@@ -9,6 +9,7 @@ import {
   normalizeServerBaseUrl,
   parsePluginSetupBundle,
   pluginConfigurationChecklist,
+  pluginLocalServerStatus,
   pluginSafetyDisclosure,
   pluginSetupGuide,
   summarizeSyncResponse,
@@ -45,6 +46,9 @@ type VaultMcpPluginSettings = {
   manualAllowPrefixes: string[];
   syncIntervalMinutes: number;
   writeAuditFolder: string;
+  localServerModeEnabled: boolean;
+  localServerPort: number;
+  localServerKeepAlive: boolean;
 };
 
 type SyncHistoryEntry = {
@@ -124,6 +128,9 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   manualAllowPrefixes: [],
   syncIntervalMinutes: 0,
   writeAuditFolder: "00 System/Vault MCP Write Audit",
+  localServerModeEnabled: false,
+  localServerPort: 38791,
+  localServerKeepAlive: false,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -203,6 +210,9 @@ export default class VaultMcpPlugin extends Plugin {
       excludePrefixes: saved?.excludePrefixes ?? DEFAULT_SETTINGS.excludePrefixes,
       manualAllowPaths: saved?.manualAllowPaths ?? DEFAULT_SETTINGS.manualAllowPaths,
       manualAllowPrefixes: saved?.manualAllowPrefixes ?? DEFAULT_SETTINGS.manualAllowPrefixes,
+      localServerModeEnabled: saved?.localServerModeEnabled ?? DEFAULT_SETTINGS.localServerModeEnabled,
+      localServerPort: saved?.localServerPort ?? DEFAULT_SETTINGS.localServerPort,
+      localServerKeepAlive: saved?.localServerKeepAlive ?? DEFAULT_SETTINGS.localServerKeepAlive,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -1032,6 +1042,8 @@ class VaultMcpSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
+    addLocalServerSection(containerEl, this.plugin);
+
     new Setting(containerEl)
       .setName("Sync token")
       .setDesc("Admin sync token used by the plugin to register and sync this vault.")
@@ -1218,6 +1230,58 @@ function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettin
   for (const point of disclosure.points) {
     list.createEl("li", { text: point });
   }
+}
+
+function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
+  const status = pluginLocalServerStatus(plugin.settings);
+  new Setting(parent).setName("Local desktop server").setHeading();
+
+  const box = parent.createDiv({ cls: `vault-mcp-server-check vault-mcp-server-check--${status.status}` });
+  box.createDiv({ cls: "vault-mcp-server-check__title", text: status.title });
+  box.createDiv({ cls: "vault-mcp-server-check__message", text: status.message });
+  const endpoint = box.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+  endpoint.createDiv({ cls: "vault-mcp-copy-value__text", text: status.endpoint });
+  new Setting(endpoint.createDiv({ cls: "vault-mcp-copy-value__action" }))
+    .addButton((button) => button
+      .setButtonText("Copy endpoint")
+      .onClick(() => void copyToClipboard("local MCP endpoint", status.endpoint)));
+  const facts = box.createEl("ul", { cls: "vault-mcp-server-check__facts" });
+  for (const fact of status.facts) {
+    facts.createEl("li", { text: fact });
+  }
+
+  new Setting(parent)
+    .setName("Run local MCP server")
+    .setDesc("Planned desktop-only mode. This toggle is disabled until the local sidecar is bundled.")
+    .addToggle((toggle) => {
+      toggle.setValue(plugin.settings.localServerModeEnabled);
+      toggle.setDisabled(true);
+    });
+
+  new Setting(parent)
+    .setName("Local server port")
+    .setDesc("Future localhost port for the sidecar. The planned default is 38791.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1024";
+      text.inputEl.max = "65535";
+      text.setValue(String(plugin.settings.localServerPort))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localServerPort = Number.isInteger(parsed) ? parsed : DEFAULT_SETTINGS.localServerPort;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Keep local server running")
+    .setDesc("Future opt-in. The safe default will stop the sidecar when Obsidian unloads.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.localServerKeepAlive)
+      .onChange(async (value) => {
+        plugin.settings.localServerKeepAlive = value;
+        await plugin.saveSettings();
+      }));
 }
 
 function addConfigurationChecklist(parent: HTMLElement, settings: VaultMcpPluginSettings) {

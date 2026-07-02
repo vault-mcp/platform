@@ -120,12 +120,18 @@ universal ChatGPT web replacement.
 
 ## Implementation Slices
 
+Current private-alpha status: Slice 1 is partially implemented. The plugin now
+shows a `Local desktop server` settings section, saves the planned local port
+and keep-alive preference, renders the future localhost MCP endpoint, and keeps
+the `Run local MCP server` toggle disabled until a sidecar exists. No local
+server process is started yet.
+
 ### Slice 1 - Design And Compatibility
 
-- Add local server mode to plugin setup guide as planned.
-- Add this architecture doc.
-- Add settings fields but keep the toggle disabled until the sidecar exists.
-- Document desktop-only and localhost-client limitations.
+- [x] Add local server mode to plugin setup guide as planned.
+- [x] Add this architecture doc.
+- [x] Add settings fields but keep the toggle disabled until the sidecar exists.
+- [x] Document desktop-only and localhost-client limitations.
 
 ### Slice 2 - Sidecar Build
 

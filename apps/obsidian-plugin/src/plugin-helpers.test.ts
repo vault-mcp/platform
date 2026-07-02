@@ -6,6 +6,7 @@ import {
   normalizeServerBaseUrl,
   parsePluginSetupBundle,
   pluginConfigurationChecklist,
+  pluginLocalServerStatus,
   pluginSafetyDisclosure,
   pluginSetupGuide,
   summarizeServerStatus,
@@ -172,6 +173,46 @@ describe("plugin helpers", () => {
     expect(checklist.readyToSync).toBe(true);
     expect(checklist.items.find((item) => item.label === "Write mode")?.status).toBe("warning");
     expect(checklist.items.find((item) => item.label === "Index scope")?.message).toContain("Manual-only");
+  });
+
+  it("describes planned local desktop server mode without claiming it can start", () => {
+    const status = pluginLocalServerStatus({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerModeEnabled: true,
+      localServerPort: 38791,
+      localServerKeepAlive: false,
+    });
+
+    expect(status.status).toBe("planned");
+    expect(status.endpoint).toBe("http://127.0.0.1:38791/mcp");
+    expect(status.canStart).toBe(false);
+    expect(status.message).toContain("cannot start");
+    expect(status.facts.join("\n")).toContain("not bundled");
+  });
+
+  it("rejects invalid local desktop server ports", () => {
+    const status = pluginLocalServerStatus({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 80,
+    });
+
+    expect(status.status).toBe("invalid");
+    expect(status.endpoint).toContain("1024");
+    expect(status.canStart).toBe(false);
   });
 
   it("builds a plugin-first setup guide with hosting and client cards", () => {

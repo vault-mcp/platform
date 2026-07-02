@@ -14,6 +14,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
 - Shows a first-run setup guide in settings and the dashboard with hosting choices, setup steps, client cards, copyable MCP endpoints, test prompts, and recovery actions.
+- Shows a planned `Local desktop server` settings section with a copyable future localhost MCP endpoint. The start toggle is disabled until the sidecar exists.
 - Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.

@@ -307,11 +307,13 @@
 }
 
 .vault-mcp-server-check--warning,
-.vault-mcp-server-check--unknown {
+.vault-mcp-server-check--unknown,
+.vault-mcp-server-check--planned {
   border-color: rgba(var(--color-orange-rgb), 0.45);
 }
 
-.vault-mcp-server-check--blocked {
+.vault-mcp-server-check--blocked,
+.vault-mcp-server-check--invalid {
   border-color: rgba(var(--color-red-rgb), 0.45);
 }
 
