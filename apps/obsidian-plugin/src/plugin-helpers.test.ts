@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { SyncPayload } from "@vault-mcp/core";
 import {
+  buildLocalServerLaunchCommand,
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
@@ -213,6 +214,63 @@ describe("plugin helpers", () => {
     expect(status.status).toBe("invalid");
     expect(status.endpoint).toContain("1024");
     expect(status.canStart).toBe(false);
+  });
+
+  it("reports generated local credentials and data folder", () => {
+    const status = pluginLocalServerStatus({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp-local-token",
+      localServerSyncToken: "sync-local-token",
+      localServerCredentialsCreatedAt: "2026-07-02T12:00:00.000Z",
+    });
+
+    expect(status.facts.join("\n")).toContain("Local credentials: generated");
+    expect(status.facts.join("\n")).toContain("Credentials created: 2026-07-02T12:00:00.000Z");
+    expect(status.facts.join("\n")).toContain("Local data folder: Plugin Data/Local Server");
+  });
+
+  it("builds a local server launch command only when credentials are ready", () => {
+    expect(buildLocalServerLaunchCommand({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+    })).toBeNull();
+
+    const command = buildLocalServerLaunchCommand({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp token",
+      localServerSyncToken: "sync'token",
+    });
+
+    expect(command).toContain("npm run local-server -- --port 38791");
+    expect(command).toContain("--data-dir 'Plugin Data/Local Server'");
+    expect(command).toContain("--mcp-token 'mcp token'");
+    expect(command).toContain("--sync-token 'sync'\\''token'");
   });
 
   it("builds a plugin-first setup guide with hosting and client cards", () => {

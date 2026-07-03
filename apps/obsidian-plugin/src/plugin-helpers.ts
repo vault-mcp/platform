@@ -21,6 +21,10 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localServerModeEnabled?: boolean;
   localServerPort?: number;
   localServerKeepAlive?: boolean;
+  localServerDataDir?: string;
+  localServerMcpToken?: string;
+  localServerSyncToken?: string;
+  localServerCredentialsCreatedAt?: string | null;
 };
 
 export type PluginSafetyDisclosure = {
@@ -379,6 +383,8 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   const endpoint = port ? `http://127.0.0.1:${port}/mcp` : "Choose a port from 1024 to 65535.";
   const enabled = Boolean(settings.localServerModeEnabled);
   const keepAlive = Boolean(settings.localServerKeepAlive);
+  const mcpTokenReady = Boolean(settings.localServerMcpToken?.trim());
+  const syncTokenReady = Boolean(settings.localServerSyncToken?.trim());
 
   if (!port) {
     return {
@@ -391,6 +397,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
         "Sidecar status: not bundled in this private-alpha build",
         "Bind address: 127.0.0.1 only",
         "Port range: 1024-65535",
+        `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
       ],
     };
   }
@@ -403,13 +410,44 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open.",
     endpoint,
     canStart: false,
-    facts: [
+    facts: localServerStatusFacts([
       "Sidecar status: not bundled in this private-alpha build",
       "Bind address: 127.0.0.1 only",
       `Keep running after Obsidian exits: ${keepAlive ? "planned opt-in" : "off by default"}`,
-      "Credentials: future local-only MCP and admin tokens",
-    ],
+      `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
+      settings.localServerCredentialsCreatedAt ? `Credentials created: ${settings.localServerCredentialsCreatedAt}` : null,
+      `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
+    ]),
   };
+}
+
+export function buildLocalServerLaunchCommand(settings: PluginConfigurationSettings): string | null {
+  const port = normalizeLocalServerPort(settings.localServerPort);
+  const mcpToken = settings.localServerMcpToken?.trim();
+  const syncToken = settings.localServerSyncToken?.trim();
+  if (!port || !mcpToken || !syncToken) {
+    return null;
+  }
+  const dataDir = settings.localServerDataDir?.trim() || "data/local-server";
+  return [
+    "npm run local-server --",
+    "--port",
+    String(port),
+    "--data-dir",
+    shellQuote(dataDir),
+    "--mcp-token",
+    shellQuote(mcpToken),
+    "--sync-token",
+    shellQuote(syncToken),
+  ].join(" ");
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, "'\\''")}'`;
+}
+
+function localServerStatusFacts(facts: Array<string | null>): string[] {
+  return facts.filter((fact): fact is string => Boolean(fact));
 }
 
 export function pluginSetupGuide(settings: PluginSetupGuideSettings): PluginSetupGuide {

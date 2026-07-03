@@ -122,18 +122,20 @@ universal ChatGPT web replacement.
 
 Current private-alpha status: Slice 1 is implemented and Slice 2 has a
 developer/Node-required launcher. The plugin now shows a `Local desktop server`
-settings section, saves the planned local port and keep-alive preference,
-renders the future localhost MCP endpoint, and keeps the `Run local MCP server`
-toggle disabled until plugin-managed lifecycle exists. The repo also includes
-`npm run local-server`, which starts the existing server with localhost-only
-defaults, JSON storage, generated local tokens, and MCP Inspector origins.
+settings section, saves the planned local port, keep-alive preference, local
+data folder, and local-only MCP/admin tokens, renders the future localhost MCP
+endpoint, can generate or rotate those local credentials, and can copy a
+developer launch command. The `Run local MCP server` toggle stays disabled
+until plugin-managed lifecycle exists. The repo also includes `npm run
+local-server`, which starts the existing server with localhost-only defaults,
+JSON storage, generated or provided local tokens, and MCP Inspector origins.
 `npm run smoke:local-server` verifies that profile against the synthetic
 `fixtures/vault` demo vault.
 
 Developer local-server start:
 
 ```bash
-npm run local-server -- --port 38791 --data-dir data/local-server
+npm run local-server -- --port 38791 --data-dir data/local-server --mcp-token <local-mcp-token> --sync-token <local-sync-token>
 ```
 
 Headless local-server verification:
@@ -156,9 +158,10 @@ The command prints:
 - generated plugin/admin sync token for local sync
 
 These printed tokens are local secrets. Do not paste them into docs,
-screenshots, or chat transcripts. The future plugin-managed version should
-generate and store these values inside the plugin flow instead of asking the
-user to run this command.
+screenshots, or chat transcripts. The current plugin can generate and store
+these values, then copy a developer launch command that passes them to the
+Node-required local profile. A future plugin-managed version should start and
+stop the sidecar directly instead of asking the user to run that command.
 
 ### Slice 1 - Design And Compatibility
 
@@ -181,14 +184,15 @@ user to run this command.
 
 - Start/stop the sidecar from the plugin.
 - Auto-select a port.
-- Generate local tokens.
+- [x] Generate local tokens for the developer launch path.
 - Health-check and version-check the sidecar.
 - Sync the current vault after preview/approval.
-- Show copyable local MCP setup values.
+- [x] Show copyable local MCP endpoint, tokens, and developer launch command.
 
 ### Slice 4 - Verification
 
-- Unit-test local settings and setup-guide states.
+- [x] Unit-test local settings, setup-guide states, credential facts, and launch
+  command generation.
 - [x] Add a headless local-server smoke gate.
 - Add a disposable-vault Obsidian smoke for toggle/start/sync/stop.
 - Add MCP Inspector acceptance against `http://127.0.0.1:<port>/mcp`.

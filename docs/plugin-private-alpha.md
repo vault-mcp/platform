@@ -14,7 +14,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Shows a human-readable sync summary with scanned, denied, review-required, redacted, local chunk, and server-indexed counts.
 - Converts common sync/proposal errors into actionable messages for missing token, bad server URL, unauthorized requests, missing endpoints, unreachable server, and server failures.
 - Shows a first-run setup guide in settings and the dashboard with hosting choices, setup steps, client cards, copyable MCP endpoints, test prompts, and recovery actions.
-- Shows a planned `Local desktop server` settings section with a copyable future localhost MCP endpoint. The start toggle is disabled until the sidecar exists.
+- Shows a planned `Local desktop server` settings section with a copyable future localhost MCP endpoint, editable local data folder, local credential generation/rotation, copyable local MCP/admin tokens, and a copyable developer launch command. The start toggle is disabled until the sidecar exists.
 - Shows a safety boundary notice in settings and the dashboard explaining that the server stores a derived index, preview should run before sync, excludes win, the server does not directly edit Obsidian files, and local writes require plugin-side checks, backups, and audit notes.
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
@@ -79,10 +79,12 @@ not bypass account consent.
 Another planned path is local desktop server mode. In that mode the user would
 install the plugin, toggle `Run local MCP server`, and let Obsidian start a
 localhost MCP server while the vault is open. This is the likely simplest
-privacy-first setup for desktop MCP clients, but it is not implemented in this
-release. For developer testing before plugin-managed lifecycle exists, run
-`npm run local-server`. Verify the profile with `npm run smoke:local-server`.
-See [Local Desktop Server Mode](local-server-mode.md).
+privacy-first setup for desktop MCP clients. In this release, the plugin can
+generate local credentials and copy the developer launch command, but it cannot
+start or stop the sidecar by itself yet. For developer testing before
+plugin-managed lifecycle exists, generate local credentials in settings, copy
+the developer command, run it from the repo, and verify the profile with
+`npm run smoke:local-server`. See [Local Desktop Server Mode](local-server-mode.md).
 
 ## Safe Test Install
 

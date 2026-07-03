@@ -4,6 +4,7 @@ import {
   buildDiffPreview,
 } from "./write-helpers";
 import {
+  buildLocalServerLaunchCommand,
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
@@ -49,6 +50,10 @@ type VaultMcpPluginSettings = {
   localServerModeEnabled: boolean;
   localServerPort: number;
   localServerKeepAlive: boolean;
+  localServerDataDir: string;
+  localServerMcpToken: string;
+  localServerSyncToken: string;
+  localServerCredentialsCreatedAt: string | null;
 };
 
 type SyncHistoryEntry = {
@@ -131,6 +136,10 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localServerModeEnabled: false,
   localServerPort: 38791,
   localServerKeepAlive: false,
+  localServerDataDir: "data/local-server",
+  localServerMcpToken: "",
+  localServerSyncToken: "",
+  localServerCredentialsCreatedAt: null,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -213,6 +222,10 @@ export default class VaultMcpPlugin extends Plugin {
       localServerModeEnabled: saved?.localServerModeEnabled ?? DEFAULT_SETTINGS.localServerModeEnabled,
       localServerPort: saved?.localServerPort ?? DEFAULT_SETTINGS.localServerPort,
       localServerKeepAlive: saved?.localServerKeepAlive ?? DEFAULT_SETTINGS.localServerKeepAlive,
+      localServerDataDir: saved?.localServerDataDir ?? DEFAULT_SETTINGS.localServerDataDir,
+      localServerMcpToken: saved?.localServerMcpToken ?? DEFAULT_SETTINGS.localServerMcpToken,
+      localServerSyncToken: saved?.localServerSyncToken ?? DEFAULT_SETTINGS.localServerSyncToken,
+      localServerCredentialsCreatedAt: saved?.localServerCredentialsCreatedAt ?? DEFAULT_SETTINGS.localServerCredentialsCreatedAt,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -222,6 +235,17 @@ export default class VaultMcpPlugin extends Plugin {
       ...this.settings,
       syncHistory: this.syncHistory.slice(0, 20),
     });
+  }
+
+  async generateLocalServerCredentials() {
+    this.settings = {
+      ...this.settings,
+      localServerMcpToken: generateLocalToken(),
+      localServerSyncToken: generateLocalToken(),
+      localServerCredentialsCreatedAt: new Date().toISOString(),
+    };
+    await this.saveSettings();
+    new Notice("Vault MCP: generated local server credentials.");
   }
 
   async importSetupBundle(value: string) {
@@ -1274,6 +1298,39 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
     });
 
   new Setting(parent)
+    .setName("Local server data folder")
+    .setDesc("Future local JSON storage folder for the sidecar. Relative paths resolve from the repo for developer testing.")
+    .addText((text) => text
+      .setValue(plugin.settings.localServerDataDir)
+      .onChange(async (value) => {
+        plugin.settings.localServerDataDir = value.trim() || DEFAULT_SETTINGS.localServerDataDir;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Local credentials")
+    .setDesc("Generates separate local-only tokens for MCP clients and plugin/admin sync. These are for the future sidecar and developer launcher.")
+    .addButton((button) => button
+      .setButtonText(plugin.settings.localServerMcpToken && plugin.settings.localServerSyncToken ? "Rotate" : "Generate")
+      .onClick(async () => {
+        await plugin.generateLocalServerCredentials();
+        button.setButtonText("Rotate");
+      }))
+    .addButton((button) => button
+      .setButtonText("Copy MCP token")
+      .onClick(() => void copyToClipboard("local MCP token", plugin.settings.localServerMcpToken)))
+    .addButton((button) => button
+      .setButtonText("Copy sync token")
+      .onClick(() => void copyToClipboard("local sync token", plugin.settings.localServerSyncToken)));
+
+  new Setting(parent)
+    .setName("Developer launch command")
+    .setDesc("Starts the current Node-required local profile with this plugin's port, data folder, and local tokens.")
+    .addButton((button) => button
+      .setButtonText("Copy command")
+      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(plugin.settings) ?? "")));
+
+  new Setting(parent)
     .setName("Keep local server running")
     .setDesc("Future opt-in. The safe default will stop the sidecar when Obsidian unloads.")
     .addToggle((toggle) => toggle
@@ -1603,7 +1660,7 @@ function addListSetting(containerEl: HTMLElement, name: string, desc: string, va
 }
 
 async function copyToClipboard(label: string, value: string) {
-  if (value === "Set a valid server URL first.") {
+  if (!value || value === "Set a valid server URL first.") {
     new Notice(`Vault MCP: ${label} is not ready to copy.`);
     return;
   }
@@ -1613,6 +1670,19 @@ async function copyToClipboard(label: string, value: string) {
   } catch {
     new Notice(`Vault MCP: could not copy ${label}. Select and copy it manually.`);
   }
+}
+
+function generateLocalToken(byteLength = 24): string {
+  const bytes = new Uint8Array(byteLength);
+  globalThis.crypto.getRandomValues(bytes);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return globalThis.btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 }
 
 function openExternalUrl(value: string) {
