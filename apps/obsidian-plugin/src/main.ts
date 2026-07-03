@@ -5,6 +5,7 @@ import {
 } from "./write-helpers";
 import {
   buildLocalServerLaunchCommand,
+  buildLocalServerSpawnConfig,
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
@@ -17,6 +18,7 @@ import {
   summarizeServerStatus,
 } from "./plugin-helpers";
 import type { PluginServerHealthSnapshot, PluginServerStatusSummary, PluginVaultStatusSnapshot } from "./plugin-helpers";
+import type { LocalServerSpawnConfig } from "./plugin-helpers";
 import type {
   LocalApplyResult,
   ProposalSafetyAnalysis,
@@ -54,10 +56,12 @@ type VaultMcpPluginSettings = {
   localServerMcpToken: string;
   localServerSyncToken: string;
   localServerCredentialsCreatedAt: string | null;
+  localServerProjectDir: string;
+  localServerCommand: string;
 };
 
 type SyncHistoryEntry = {
-  type: "preview" | "sync" | "approval" | "server-check" | "setup-import" | "proposal-check" | "proposal-update" | "error";
+  type: "preview" | "sync" | "approval" | "server-check" | "setup-import" | "proposal-check" | "proposal-update" | "local-server" | "error";
   message: string;
   createdAt: string;
   scanned?: number;
@@ -69,6 +73,28 @@ type SyncHistoryEntry = {
 
 type VaultMcpPluginData = Partial<VaultMcpPluginSettings> & {
   syncHistory?: SyncHistoryEntry[];
+};
+
+type LocalServerChildProcess = {
+  pid?: number;
+  kill(signal?: string): boolean;
+  on(event: "error", listener: (error: Error) => void): LocalServerChildProcess;
+  on(event: "exit", listener: (code: number | null, signal: string | null) => void): LocalServerChildProcess;
+  unref?(): void;
+};
+
+type ChildProcessModule = {
+  spawn(
+    command: string,
+    args: string[],
+    options: {
+      cwd: string;
+      detached: boolean;
+      shell: boolean;
+      stdio: "ignore";
+      env?: Record<string, string | undefined>;
+    },
+  ): LocalServerChildProcess;
 };
 
 type SyncSummary = {
@@ -140,6 +166,8 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localServerMcpToken: "",
   localServerSyncToken: "",
   localServerCredentialsCreatedAt: null,
+  localServerProjectDir: "",
+  localServerCommand: "npm",
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -162,6 +190,8 @@ export default class VaultMcpPlugin extends Plugin {
   indexPreview: IndexPreview | null = null;
   writeProposals: WriteProposal[] = [];
   syncHistory: SyncHistoryEntry[] = [];
+  localServerProcess: LocalServerChildProcess | null = null;
+  localServerStartedAt: string | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -208,6 +238,28 @@ export default class VaultMcpPlugin extends Plugin {
         void this.checkWriteProposals();
       },
     });
+
+    this.addCommand({
+      id: "start-local-server",
+      name: "Start local desktop server",
+      callback: () => {
+        void this.startLocalServer();
+      },
+    });
+
+    this.addCommand({
+      id: "stop-local-server",
+      name: "Stop local desktop server",
+      callback: () => {
+        void this.stopLocalServer();
+      },
+    });
+  }
+
+  onunload() {
+    if (this.localServerProcess && !this.settings.localServerKeepAlive) {
+      void this.stopLocalServer("Plugin unloaded.");
+    }
   }
 
   async loadSettings() {
@@ -226,6 +278,8 @@ export default class VaultMcpPlugin extends Plugin {
       localServerMcpToken: saved?.localServerMcpToken ?? DEFAULT_SETTINGS.localServerMcpToken,
       localServerSyncToken: saved?.localServerSyncToken ?? DEFAULT_SETTINGS.localServerSyncToken,
       localServerCredentialsCreatedAt: saved?.localServerCredentialsCreatedAt ?? DEFAULT_SETTINGS.localServerCredentialsCreatedAt,
+      localServerProjectDir: saved?.localServerProjectDir ?? DEFAULT_SETTINGS.localServerProjectDir,
+      localServerCommand: saved?.localServerCommand ?? DEFAULT_SETTINGS.localServerCommand,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -246,6 +300,82 @@ export default class VaultMcpPlugin extends Plugin {
     };
     await this.saveSettings();
     new Notice("Vault MCP: generated local server credentials.");
+  }
+
+  async startLocalServer() {
+    if (this.localServerProcess) {
+      new Notice(`Vault MCP local server is already running${this.localServerProcess.pid ? ` (pid ${this.localServerProcess.pid})` : ""}.`);
+      return;
+    }
+
+    if (!this.settings.localServerMcpToken.trim() || !this.settings.localServerSyncToken.trim()) {
+      await this.generateLocalServerCredentials();
+    }
+
+    const config = buildLocalServerSpawnConfig(this.settings);
+    if (!config) {
+      const message = "Set the local server project folder, command, valid port, and local credentials before starting the developer local server.";
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
+      this.settings.localServerModeEnabled = false;
+      await this.saveSettings();
+      return;
+    }
+
+    try {
+      const child = spawnLocalServerProcess(config);
+      this.localServerProcess = child;
+      this.localServerStartedAt = new Date().toISOString();
+      this.settings.localServerModeEnabled = true;
+      await this.saveSettings();
+      await this.addHistory({ type: "local-server", message: `Started developer local server on ${localServerEndpoint(this.settings)}.` });
+      child.on("error", (error) => {
+        if (this.localServerProcess === child) {
+          this.localServerProcess = null;
+          this.localServerStartedAt = null;
+          this.settings.localServerModeEnabled = false;
+          void this.saveSettings();
+        }
+        void this.addHistory({ type: "error", message: `Local server failed to start: ${error.message}` });
+        new Notice(`Vault MCP local server failed to start: ${error.message}`);
+      });
+      child.on("exit", (code, signal) => {
+        if (this.localServerProcess === child) {
+          this.localServerProcess = null;
+          this.localServerStartedAt = null;
+          this.settings.localServerModeEnabled = false;
+          void this.saveSettings();
+        }
+        const reason = signal ? `signal ${signal}` : `exit code ${code ?? "unknown"}`;
+        void this.addHistory({ type: "local-server", message: `Developer local server stopped (${reason}).` });
+      });
+      new Notice(`Vault MCP local server starting on ${localServerEndpoint(this.settings)}.`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.localServerProcess = null;
+      this.localServerStartedAt = null;
+      this.settings.localServerModeEnabled = false;
+      await this.saveSettings();
+      await this.addHistory({ type: "error", message: `Local server start failed: ${message}` });
+      new Notice(`Vault MCP local server start failed: ${message}`);
+    }
+  }
+
+  async stopLocalServer(reason = "Stopped by user.") {
+    const child = this.localServerProcess;
+    if (!child) {
+      this.settings.localServerModeEnabled = false;
+      await this.saveSettings();
+      new Notice("Vault MCP local server is not running.");
+      return;
+    }
+    this.localServerProcess = null;
+    this.localServerStartedAt = null;
+    this.settings.localServerModeEnabled = false;
+    await this.saveSettings();
+    child.kill("SIGTERM");
+    await this.addHistory({ type: "local-server", message: reason });
+    new Notice("Vault MCP local server stop requested.");
   }
 
   async importSetupBundle(value: string) {
@@ -1276,11 +1406,17 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Run local MCP server")
-    .setDesc("Planned desktop-only mode. This toggle is disabled until the local sidecar is bundled.")
-    .addToggle((toggle) => {
-      toggle.setValue(plugin.settings.localServerModeEnabled);
-      toggle.setDisabled(true);
-    });
+    .setDesc("Starts or stops the Node-required developer local server profile. The packaged sidecar is still future work.")
+    .addToggle((toggle) => toggle
+      .setValue(Boolean(plugin.localServerProcess) || plugin.settings.localServerModeEnabled)
+      .onChange(async (value) => {
+        if (value) {
+          await plugin.startLocalServer();
+        } else {
+          await plugin.stopLocalServer();
+        }
+        openPluginSettings(plugin.app, plugin);
+      }));
 
   new Setting(parent)
     .setName("Local server port")
@@ -1308,6 +1444,28 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       }));
 
   new Setting(parent)
+    .setName("Developer project folder")
+    .setDesc("Private-alpha path to the Vault MCP platform repo. Required until a packaged sidecar is bundled with the plugin.")
+    .addText((text) => text
+      .setPlaceholder("/absolute/path/to/vault-mcp/platform")
+      .setValue(plugin.settings.localServerProjectDir)
+      .onChange(async (value) => {
+        plugin.settings.localServerProjectDir = value.trim();
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Developer command")
+    .setDesc("Executable used to run npm scripts. Use an absolute npm path if Obsidian cannot find npm from the macOS app environment.")
+    .addText((text) => text
+      .setPlaceholder("npm")
+      .setValue(plugin.settings.localServerCommand)
+      .onChange(async (value) => {
+        plugin.settings.localServerCommand = value.trim() || DEFAULT_SETTINGS.localServerCommand;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
     .setName("Local credentials")
     .setDesc("Generates separate local-only tokens for MCP clients and plugin/admin sync. These are for the future sidecar and developer launcher.")
     .addButton((button) => button
@@ -1331,8 +1489,29 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(plugin.settings) ?? "")));
 
   new Setting(parent)
+    .setName("Developer server session")
+    .setDesc(plugin.localServerProcess
+      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}.`
+      : "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.")
+    .addButton((button) => button
+      .setButtonText("Start")
+      .setCta()
+      .setDisabled(Boolean(plugin.localServerProcess))
+      .onClick(async () => {
+        await plugin.startLocalServer();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Stop")
+      .setDisabled(!plugin.localServerProcess)
+      .onClick(async () => {
+        await plugin.stopLocalServer();
+        openPluginSettings(plugin.app, plugin);
+      }));
+
+  new Setting(parent)
     .setName("Keep local server running")
-    .setDesc("Future opt-in. The safe default will stop the sidecar when Obsidian unloads.")
+    .setDesc("Opt-in. The safe default stops the developer sidecar when Obsidian unloads.")
     .addToggle((toggle) => toggle
       .setValue(plugin.settings.localServerKeepAlive)
       .onChange(async (value) => {
@@ -1683,6 +1862,57 @@ function generateLocalToken(byteLength = 24): string {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
+}
+
+function spawnLocalServerProcess(config: LocalServerSpawnConfig): LocalServerChildProcess {
+  const { spawn } = requireNodeModule<ChildProcessModule>("child_process");
+  return spawn(config.command, config.args, {
+    cwd: config.cwd,
+    detached: false,
+    shell: false,
+    stdio: "ignore",
+    env: localServerSpawnEnv(config),
+  });
+}
+
+function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {
+  const baseEnv = { ...getNodeProcessEnv() };
+  const commandDir = executableDirectory(config.command);
+  if (!commandDir) {
+    return baseEnv;
+  }
+  const pathKey = baseEnv.Path !== undefined ? "Path" : "PATH";
+  const currentPath = baseEnv[pathKey] ?? "";
+  baseEnv[pathKey] = currentPath ? `${commandDir}:${currentPath}` : commandDir;
+  return baseEnv;
+}
+
+function executableDirectory(command: string): string | null {
+  const trimmed = command.trim();
+  const slashIndex = Math.max(trimmed.lastIndexOf("/"), trimmed.lastIndexOf("\\"));
+  if (slashIndex <= 0) {
+    return null;
+  }
+  return trimmed.slice(0, slashIndex);
+}
+
+function getNodeProcessEnv(): Record<string, string | undefined> {
+  const maybeProcess = (globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } }).process;
+  return maybeProcess?.env ?? {};
+}
+
+function requireNodeModule<T>(name: string): T {
+  const maybeWindow = window as Window & { require?: (moduleName: string) => unknown };
+  const maybeGlobal = globalThis as typeof globalThis & { require?: (moduleName: string) => unknown };
+  const requireFn = maybeWindow.require ?? maybeGlobal.require;
+  if (!requireFn) {
+    throw new Error("Obsidian desktop Node runtime is unavailable. Local server launch only works in the desktop app.");
+  }
+  return requireFn(name) as T;
+}
+
+function localServerEndpoint(settings: VaultMcpPluginSettings): string {
+  return `http://127.0.0.1:${settings.localServerPort}/mcp`;
 }
 
 function openExternalUrl(value: string) {

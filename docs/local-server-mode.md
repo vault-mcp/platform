@@ -125,12 +125,13 @@ developer/Node-required launcher. The plugin now shows a `Local desktop server`
 settings section, saves the planned local port, keep-alive preference, local
 data folder, and local-only MCP/admin tokens, renders the future localhost MCP
 endpoint, can generate or rotate those local credentials, and can copy a
-developer launch command. The `Run local MCP server` toggle stays disabled
-until plugin-managed lifecycle exists. The repo also includes `npm run
-local-server`, which starts the existing server with localhost-only defaults,
-JSON storage, generated or provided local tokens, and MCP Inspector origins.
-`npm run smoke:local-server` verifies that profile against the synthetic
-`fixtures/vault` demo vault.
+developer launch command. It can also start and stop the Node-required
+developer local server profile when the tester configures the platform repo
+folder and npm command. A packaged sidecar bundled with the plugin is still
+future work. The repo also includes `npm run local-server`, which starts the
+existing server with localhost-only defaults, JSON storage, generated or
+provided local tokens, and MCP Inspector origins. `npm run smoke:local-server`
+verifies that profile against the synthetic `fixtures/vault` demo vault.
 
 Developer local-server start:
 
@@ -159,9 +160,11 @@ The command prints:
 
 These printed tokens are local secrets. Do not paste them into docs,
 screenshots, or chat transcripts. The current plugin can generate and store
-these values, then copy a developer launch command that passes them to the
-Node-required local profile. A future plugin-managed version should start and
-stop the sidecar directly instead of asking the user to run that command.
+these values, copy a developer launch command that passes them to the
+Node-required local profile, and start or stop that developer profile from the
+plugin when the project folder and command are configured. A future packaged
+version should remove the repo-folder requirement and launch a bundled sidecar
+directly.
 
 ### Slice 1 - Design And Compatibility
 
@@ -182,12 +185,14 @@ stop the sidecar directly instead of asking the user to run that command.
 
 ### Slice 3 - Plugin Lifecycle
 
-- Start/stop the sidecar from the plugin.
+- [x] Start/stop the Node-required developer sidecar from the plugin.
 - Auto-select a port.
 - [x] Generate local tokens for the developer launch path.
 - Health-check and version-check the sidecar.
 - Sync the current vault after preview/approval.
 - [x] Show copyable local MCP endpoint, tokens, and developer launch command.
+- Bundle a platform-specific sidecar so non-developer users do not need a repo
+  checkout or npm command.
 
 ### Slice 4 - Verification
 

@@ -25,6 +25,8 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localServerMcpToken?: string;
   localServerSyncToken?: string;
   localServerCredentialsCreatedAt?: string | null;
+  localServerProjectDir?: string;
+  localServerCommand?: string;
 };
 
 export type PluginSafetyDisclosure = {
@@ -127,6 +129,12 @@ export type PluginLocalServerStatus = {
   endpoint: string;
   canStart: boolean;
   facts: string[];
+};
+
+export type LocalServerSpawnConfig = {
+  command: string;
+  args: string[];
+  cwd: string;
 };
 
 type VaultSyncResponse = {
@@ -385,6 +393,9 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   const keepAlive = Boolean(settings.localServerKeepAlive);
   const mcpTokenReady = Boolean(settings.localServerMcpToken?.trim());
   const syncTokenReady = Boolean(settings.localServerSyncToken?.trim());
+  const projectDirReady = Boolean(settings.localServerProjectDir?.trim());
+  const commandReady = Boolean((settings.localServerCommand?.trim() || "npm"));
+  const canStart = Boolean(port && mcpTokenReady && syncTokenReady && projectDirReady && commandReady);
 
   if (!port) {
     return {
@@ -398,25 +409,32 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
         "Bind address: 127.0.0.1 only",
         "Port range: 1024-65535",
         `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
+        `Developer project folder: ${projectDirReady ? "configured" : "not configured"}`,
       ],
     };
   }
 
   return {
     status: "planned",
-    title: enabled ? "Local desktop server is selected but not implemented yet" : "Local desktop server is planned",
+    title: canStart
+      ? "Local desktop server developer launcher is ready"
+      : enabled ? "Local desktop server is selected but needs setup" : "Local desktop server is planned",
     message: enabled
-      ? "This build saves the local-mode preference, but it cannot start a localhost MCP sidecar yet. Use guided Vercel self-hosting or managed hosting until the sidecar is bundled."
-      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open.",
+      ? canStart
+        ? "This build can start the Node-required developer local server with the configured project folder, command, port, and local credentials. A packaged sidecar is still future work."
+        : "This build cannot start the developer local server until the project folder, command, port, and local credentials are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
+      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open. This private-alpha build can also launch the Node-required developer profile.",
     endpoint,
-    canStart: false,
+    canStart,
     facts: localServerStatusFacts([
-      "Sidecar status: not bundled in this private-alpha build",
+      canStart ? "Sidecar status: developer launcher configured" : "Sidecar status: not bundled in this private-alpha build",
       "Bind address: 127.0.0.1 only",
       `Keep running after Obsidian exits: ${keepAlive ? "planned opt-in" : "off by default"}`,
       `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
       settings.localServerCredentialsCreatedAt ? `Credentials created: ${settings.localServerCredentialsCreatedAt}` : null,
       `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
+      `Developer project folder: ${settings.localServerProjectDir?.trim() || "not configured"}`,
+      `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
     ]),
   };
 }
@@ -429,8 +447,12 @@ export function buildLocalServerLaunchCommand(settings: PluginConfigurationSetti
     return null;
   }
   const dataDir = settings.localServerDataDir?.trim() || "data/local-server";
-  return [
-    "npm run local-server --",
+  const command = settings.localServerCommand?.trim() || "npm";
+  const launch = [
+    shellCommand(command),
+    "run",
+    "local-server",
+    "--",
     "--port",
     String(port),
     "--data-dir",
@@ -440,10 +462,56 @@ export function buildLocalServerLaunchCommand(settings: PluginConfigurationSetti
     "--sync-token",
     shellQuote(syncToken),
   ].join(" ");
+  const projectDir = settings.localServerProjectDir?.trim();
+  return projectDir ? `cd ${shellQuote(projectDir)} && ${launch}` : launch;
+}
+
+export function buildLocalServerSpawnConfig(settings: PluginConfigurationSettings): LocalServerSpawnConfig | null {
+  const port = normalizeLocalServerPort(settings.localServerPort);
+  const mcpToken = settings.localServerMcpToken?.trim();
+  const syncToken = settings.localServerSyncToken?.trim();
+  const cwd = settings.localServerProjectDir?.trim();
+  const command = settings.localServerCommand?.trim() || "npm";
+  if (!port || !mcpToken || !syncToken || !cwd) {
+    return null;
+  }
+  return {
+    command: managedLocalServerCommand(command),
+    cwd,
+    args: [
+      "scripts/start-local-server.mjs",
+      "--port",
+      String(port),
+      "--data-dir",
+      settings.localServerDataDir?.trim() || "data/local-server",
+      "--mcp-token",
+      mcpToken,
+      "--sync-token",
+      syncToken,
+    ],
+  };
+}
+
+function managedLocalServerCommand(command: string): string {
+  const trimmed = command.trim() || "npm";
+  const slashIndex = Math.max(trimmed.lastIndexOf("/"), trimmed.lastIndexOf("\\"));
+  const directory = slashIndex > 0 ? trimmed.slice(0, slashIndex + 1) : "";
+  const executable = slashIndex > 0 ? trimmed.slice(slashIndex + 1).toLowerCase() : trimmed.toLowerCase();
+  if (executable === "npm" || executable === "npm-cli.js") {
+    return `${directory}node`;
+  }
+  if (executable === "npm.cmd" || executable === "npm.exe") {
+    return `${directory}node.exe`;
+  }
+  return trimmed;
 }
 
 function shellQuote(value: string): string {
   return `'${value.replace(/'/g, "'\\''")}'`;
+}
+
+function shellCommand(value: string): string {
+  return /^[A-Za-z0-9._/-]+$/.test(value) ? value : shellQuote(value);
 }
 
 function localServerStatusFacts(facts: Array<string | null>): string[] {

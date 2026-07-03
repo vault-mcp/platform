@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SyncPayload } from "@vault-mcp/core";
 import {
   buildLocalServerLaunchCommand,
+  buildLocalServerSpawnConfig,
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
@@ -231,14 +232,19 @@ describe("plugin helpers", () => {
       localServerMcpToken: "mcp-local-token",
       localServerSyncToken: "sync-local-token",
       localServerCredentialsCreatedAt: "2026-07-02T12:00:00.000Z",
+      localServerProjectDir: "/Users/example/vault-mcp/platform",
+      localServerCommand: "/opt/homebrew/bin/npm",
     });
 
+    expect(status.canStart).toBe(true);
     expect(status.facts.join("\n")).toContain("Local credentials: generated");
     expect(status.facts.join("\n")).toContain("Credentials created: 2026-07-02T12:00:00.000Z");
     expect(status.facts.join("\n")).toContain("Local data folder: Plugin Data/Local Server");
+    expect(status.facts.join("\n")).toContain("Developer project folder: /Users/example/vault-mcp/platform");
+    expect(status.facts.join("\n")).toContain("Developer command: /opt/homebrew/bin/npm");
   });
 
-  it("builds a local server launch command only when credentials are ready", () => {
+  it("builds local server launch and spawn commands only when credentials are ready", () => {
     expect(buildLocalServerLaunchCommand({
       serverUrl: "https://vault-mcp-connector.vercel.app",
       syncToken: "secret",
@@ -250,6 +256,21 @@ describe("plugin helpers", () => {
       excludePrefixes: ["02 Daily/"],
       localServerPort: 38791,
       localServerDataDir: "Plugin Data/Local Server",
+    })).toBeNull();
+
+    expect(buildLocalServerSpawnConfig({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp token",
+      localServerSyncToken: "sync token",
     })).toBeNull();
 
     const command = buildLocalServerLaunchCommand({
@@ -265,12 +286,44 @@ describe("plugin helpers", () => {
       localServerDataDir: "Plugin Data/Local Server",
       localServerMcpToken: "mcp token",
       localServerSyncToken: "sync'token",
+      localServerProjectDir: "/Users/example/Vault MCP/platform",
     });
 
-    expect(command).toContain("npm run local-server -- --port 38791");
+    expect(command).toContain("cd '/Users/example/Vault MCP/platform' && npm run local-server -- --port 38791");
     expect(command).toContain("--data-dir 'Plugin Data/Local Server'");
     expect(command).toContain("--mcp-token 'mcp token'");
     expect(command).toContain("--sync-token 'sync'\\''token'");
+
+    expect(buildLocalServerSpawnConfig({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp token",
+      localServerSyncToken: "sync token",
+      localServerProjectDir: "/Users/example/vault-mcp/platform",
+      localServerCommand: "/opt/homebrew/bin/npm",
+    })).toEqual({
+      command: "/opt/homebrew/bin/node",
+      cwd: "/Users/example/vault-mcp/platform",
+      args: [
+        "scripts/start-local-server.mjs",
+        "--port",
+        "38791",
+        "--data-dir",
+        "Plugin Data/Local Server",
+        "--mcp-token",
+        "mcp token",
+        "--sync-token",
+        "sync token",
+      ],
+    });
   });
 
   it("builds a plugin-first setup guide with hosting and client cards", () => {
