@@ -81,7 +81,8 @@ install the plugin, toggle `Run local MCP server`, and let Obsidian start a
 localhost MCP server while the vault is open. This is the likely simplest
 privacy-first setup for desktop MCP clients, but it is not implemented in this
 release. For developer testing before plugin-managed lifecycle exists, run
-`npm run local-server`. See [Local Desktop Server Mode](local-server-mode.md).
+`npm run local-server`. Verify the profile with `npm run smoke:local-server`.
+See [Local Desktop Server Mode](local-server-mode.md).
 
 ## Safe Test Install
 

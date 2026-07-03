@@ -127,12 +127,25 @@ renders the future localhost MCP endpoint, and keeps the `Run local MCP server`
 toggle disabled until plugin-managed lifecycle exists. The repo also includes
 `npm run local-server`, which starts the existing server with localhost-only
 defaults, JSON storage, generated local tokens, and MCP Inspector origins.
+`npm run smoke:local-server` verifies that profile against the synthetic
+`fixtures/vault` demo vault.
 
 Developer local-server start:
 
 ```bash
 npm run local-server -- --port 38791 --data-dir data/local-server
 ```
+
+Headless local-server verification:
+
+```bash
+npm run smoke:local-server
+```
+
+That smoke starts the local profile with fixed test-only tokens, syncs the
+synthetic demo vault, verifies JSON storage, checks MCP authentication,
+searches/fetches an allowed demo note, confirms a denied daily-note path stays
+unavailable, checks scoped vault status, and removes its temporary data folder.
 
 The command prints:
 
@@ -176,7 +189,7 @@ user to run this command.
 ### Slice 4 - Verification
 
 - Unit-test local settings and setup-guide states.
-- Add a headless local-server smoke gate.
+- [x] Add a headless local-server smoke gate.
 - Add a disposable-vault Obsidian smoke for toggle/start/sync/stop.
 - Add MCP Inspector acceptance against `http://127.0.0.1:<port>/mcp`.
 - Add client docs for Codex, Claude Desktop, ChatGPT Desktop if supported, and
