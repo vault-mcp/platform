@@ -25,6 +25,7 @@ const syncToken = args.syncToken ?? process.env.MCP_SYNC_TOKEN ?? randomToken();
 const localFsAccessMode = args.fsAccess ?? process.env.LOCAL_FS_ACCESS_MODE ?? "off";
 const localFsReadRoots = args.fsRoots ?? process.env.LOCAL_FS_READ_ROOTS ?? process.env.LOCAL_FS_ROOTS ?? "";
 const localFsWriteRoots = args.fsWriteRoots ?? process.env.LOCAL_FS_WRITE_ROOTS ?? "";
+const localFsWriteOperations = args.fsWriteOperations ?? process.env.LOCAL_FS_WRITE_OPERATIONS ?? "write_file";
 const localFsMaxReadBytes = args.fsMaxReadBytes ?? process.env.LOCAL_FS_MAX_READ_BYTES ?? "524288";
 const allowedOrigins = args.allowedOrigins
   ?? process.env.ALLOWED_ORIGINS
@@ -48,6 +49,7 @@ Object.assign(process.env, {
   LOCAL_FS_ACCESS_MODE: localFsAccessMode,
   LOCAL_FS_READ_ROOTS: localFsReadRoots,
   LOCAL_FS_WRITE_ROOTS: localFsWriteRoots,
+  LOCAL_FS_WRITE_OPERATIONS: localFsWriteOperations,
   LOCAL_FS_MAX_READ_BYTES: localFsMaxReadBytes,
 });
 delete process.env.DATABASE_URL;
@@ -63,6 +65,7 @@ if (localFsReadRoots) {
 if (localFsWriteRoots) {
   console.log(`Local write roots: ${localFsWriteRoots}`);
 }
+console.log(`Local write operations: ${localFsWriteOperations}`);
 console.log(`MCP access token: ${mcpAccessToken}`);
 console.log(`Plugin sync token: ${syncToken}`);
 console.log("Keep these local tokens private. Stop with Ctrl+C.");
@@ -113,6 +116,10 @@ function parseArgs(values) {
       parsed.fsWriteRoots = readValue(values, ++index, value);
       continue;
     }
+    if (value === "--fs-write-operations") {
+      parsed.fsWriteOperations = readValue(values, ++index, value);
+      continue;
+    }
     if (value === "--fs-max-read-bytes") {
       parsed.fsMaxReadBytes = readValue(values, ++index, value);
       continue;
@@ -158,6 +165,7 @@ Options:
   --fs-access <mode>            Local filesystem tools: off, read, write, or god. Defaults to off.
   --fs-roots <paths>            Comma-separated read roots for local filesystem tools.
   --fs-write-roots <paths>      Comma-separated write roots for local filesystem tools.
+  --fs-write-operations <ops>   Comma-separated write_file,create_directory,move_path,delete_path. Defaults to write_file.
   --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
   --help                        Show this help.
 

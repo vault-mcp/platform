@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { LocalFsAccessMode, LocalFsPolicy } from "@vault-mcp/core";
+import type { LocalFsAccessMode, LocalFsPolicy, LocalFsWriteOperation } from "@vault-mcp/core";
 
 export type ServerConfig = {
   host: string;
@@ -76,6 +76,7 @@ function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
     mode,
     read_roots: parsePathList(env.LOCAL_FS_READ_ROOTS ?? env.LOCAL_FS_ROOTS),
     write_roots: parsePathList(env.LOCAL_FS_WRITE_ROOTS),
+    write_operations: parseLocalFsWriteOperations(env.LOCAL_FS_WRITE_OPERATIONS),
     max_read_bytes: normalizePositiveInteger(env.LOCAL_FS_MAX_READ_BYTES, 512 * 1024),
   };
 }
@@ -98,6 +99,24 @@ function parsePathList(value: string | undefined): string[] {
 
 function uniquePathList(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+function parseLocalFsWriteOperations(value: string | undefined): LocalFsWriteOperation[] {
+  const rawOperations = value?.trim()
+    ? value.split(",").map((entry) => entry.trim()).filter(Boolean)
+    : ["write_file"];
+  const operations = rawOperations.map((operation) => {
+    if (
+      operation === "write_file"
+      || operation === "create_directory"
+      || operation === "move_path"
+      || operation === "delete_path"
+    ) {
+      return operation;
+    }
+    throw new Error("LOCAL_FS_WRITE_OPERATIONS must contain only: write_file, create_directory, move_path, delete_path.");
+  });
+  return [...new Set(operations)];
 }
 
 function normalizePositiveInteger(value: string | undefined, fallback: number): number {

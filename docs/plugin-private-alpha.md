@@ -90,8 +90,11 @@ smoke:local-server`. See [Local Desktop Server Mode](local-server-mode.md).
 Local filesystem access is controlled in the same `Local desktop server`
 section. It is off by default. Testers can choose `Read inside roots`,
 `Read/write inside roots`, or `God mode`, then configure absolute read and
-write roots. These settings only affect the localhost developer server profile;
-the hosted server remains derived-index-only and read-only.
+write roots plus allowed write operations. The operation toggles separately
+enable file writes, directory creation, move/rename, and deletion. Deletion
+still requires an explicit confirmation string in the MCP tool call. These
+settings only affect the localhost developer server profile; the hosted server
+remains derived-index-only and read-only.
 
 ## Safe Test Install
 

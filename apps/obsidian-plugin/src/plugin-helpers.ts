@@ -1,5 +1,5 @@
 import type { SyncPayload } from "@vault-mcp/core";
-import type { LocalFsAccessMode } from "@vault-mcp/core";
+import type { LocalFsAccessMode, LocalFsWriteOperation } from "@vault-mcp/core";
 
 export type SyncResultSummary = {
   message: string;
@@ -31,6 +31,7 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localFsAccessMode?: LocalFsAccessMode;
   localFsReadRoots?: string[];
   localFsWriteRoots?: string[];
+  localFsWriteOperations?: LocalFsWriteOperation[];
   localFsMaxReadBytes?: number;
 };
 
@@ -443,6 +444,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,
       `Local filesystem read roots: ${settings.localFsReadRoots?.length ? settings.localFsReadRoots.join(", ") : "none"}`,
       `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,
+      `Local filesystem write operations: ${settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
     ]),
   };
 }
@@ -517,6 +519,11 @@ function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean
   if (writeRoots.length > 0) {
     const value = writeRoots.join(",");
     args.push("--fs-write-roots", quote ? shellQuote(value) : value);
+  }
+  const writeOperations = settings.localFsWriteOperations?.filter(Boolean) ?? ["write_file"];
+  if (writeOperations.length > 0) {
+    const value = writeOperations.join(",");
+    args.push("--fs-write-operations", quote ? shellQuote(value) : value);
   }
   if (settings.localFsMaxReadBytes) {
     const value = String(settings.localFsMaxReadBytes);

@@ -20,10 +20,13 @@ export type WriteMode = "review_required" | "direct_apply";
 
 export type LocalFsAccessMode = "off" | "read" | "write" | "god";
 
+export type LocalFsWriteOperation = "write_file" | "create_directory" | "move_path" | "delete_path";
+
 export type LocalFsPolicy = {
   mode: LocalFsAccessMode;
   read_roots: string[];
   write_roots: string[];
+  write_operations: LocalFsWriteOperation[];
   max_read_bytes: number;
 };
 

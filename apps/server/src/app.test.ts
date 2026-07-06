@@ -295,6 +295,7 @@ describe("server MCP contract", () => {
         mode: "read",
         read_roots: [root],
         write_roots: [],
+        write_operations: ["write_file"],
         max_read_bytes: 12,
       },
     });
@@ -318,6 +319,7 @@ describe("server MCP contract", () => {
       mode: "read",
       read_roots: [root],
       write_roots: [],
+      write_operations: [],
       god_mode: false,
     });
 
@@ -355,6 +357,7 @@ describe("server MCP contract", () => {
         mode: "write",
         read_roots: [root],
         write_roots: [root],
+        write_operations: ["write_file", "create_directory", "move_path", "delete_path"],
         max_read_bytes: 512,
       },
     });
@@ -364,6 +367,9 @@ describe("server MCP contract", () => {
 
     const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_move_path");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_delete_path");
 
     const written = await mcp(baseUrl, accessToken, 96, "tools/call", {
       name: "local_write_file",
@@ -380,6 +386,50 @@ describe("server MCP contract", () => {
       bytes_written: 24,
     });
     expect(await fs.readFile(writtenPath, "utf8")).toBe("created by local fs test");
+
+    const createdDirectory = await mcp(baseUrl, accessToken, 98, "tools/call", {
+      name: "local_create_directory",
+      arguments: { path: "new-folder" },
+    });
+    expect(createdDirectory.result.structuredContent.path).toBe(path.join(root, "new-folder"));
+    expect((await fs.stat(path.join(root, "new-folder"))).isDirectory()).toBe(true);
+
+    const moved = await mcp(baseUrl, accessToken, 99, "tools/call", {
+      name: "local_move_path",
+      arguments: {
+        source_path: "nested/new-note.md",
+        destination_path: "new-folder/moved-note.md",
+      },
+    });
+    const movedPath = path.join(root, "new-folder/moved-note.md");
+    expect(moved.result.structuredContent).toMatchObject({
+      source_path: writtenPath,
+      destination_path: movedPath,
+      overwritten: false,
+    });
+    expect(await fs.readFile(movedPath, "utf8")).toBe("created by local fs test");
+
+    const deniedDelete = await mcp(baseUrl, accessToken, 100, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "new-folder/moved-note.md",
+        confirm: "yes",
+      },
+    });
+    expect(deniedDelete.result.isError).toBe(true);
+
+    const deleted = await mcp(baseUrl, accessToken, 101, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "new-folder/moved-note.md",
+        confirm: "delete",
+      },
+    });
+    expect(deleted.result.structuredContent).toMatchObject({
+      path: movedPath,
+      deleted: true,
+    });
+    await expect(fs.stat(movedPath)).rejects.toThrow();
 
     const deniedWrite = await mcp(baseUrl, accessToken, 97, "tools/call", {
       name: "local_write_file",
@@ -1005,6 +1055,7 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
       mode: "off",
       read_roots: [],
       write_roots: [],
+      write_operations: ["write_file"],
       max_read_bytes: 512 * 1024,
     },
     ...overrides,

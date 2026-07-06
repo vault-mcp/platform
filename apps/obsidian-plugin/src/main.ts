@@ -33,7 +33,7 @@ import {
   Setting,
   TFile,
 } from "obsidian";
-import type { IndexMode, LocalFsAccessMode, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
+import type { IndexMode, LocalFsAccessMode, LocalFsWriteOperation, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -61,6 +61,7 @@ type VaultMcpPluginSettings = {
   localFsAccessMode: LocalFsAccessMode;
   localFsReadRoots: string[];
   localFsWriteRoots: string[];
+  localFsWriteOperations: LocalFsWriteOperation[];
   localFsMaxReadBytes: number;
 };
 
@@ -175,6 +176,7 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localFsAccessMode: "off",
   localFsReadRoots: [],
   localFsWriteRoots: [],
+  localFsWriteOperations: ["write_file"],
   localFsMaxReadBytes: 512 * 1024,
 };
 
@@ -291,6 +293,7 @@ export default class VaultMcpPlugin extends Plugin {
       localFsAccessMode: saved?.localFsAccessMode ?? DEFAULT_SETTINGS.localFsAccessMode,
       localFsReadRoots: saved?.localFsReadRoots ?? DEFAULT_SETTINGS.localFsReadRoots,
       localFsWriteRoots: saved?.localFsWriteRoots ?? DEFAULT_SETTINGS.localFsWriteRoots,
+      localFsWriteOperations: saved?.localFsWriteOperations ?? DEFAULT_SETTINGS.localFsWriteOperations,
       localFsMaxReadBytes: saved?.localFsMaxReadBytes ?? DEFAULT_SETTINGS.localFsMaxReadBytes,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
@@ -1512,6 +1515,8 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
     openPluginSettings(plugin.app, plugin);
   });
 
+  addLocalFsWriteOperationToggles(parent, plugin);
+
   new Setting(parent)
     .setName("Local max read bytes")
     .setDesc("Upper bound for one local_read_file result. The server also caps tool-provided max_bytes to this value.")
@@ -1579,6 +1584,35 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         plugin.settings.localServerKeepAlive = value;
         await plugin.saveSettings();
       }));
+}
+
+function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPlugin) {
+  new Setting(parent)
+    .setName("Allowed local write operations")
+    .setDesc("These only apply when local filesystem access is Write or God mode. Keep destructive operations off until you deliberately need them.");
+  const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
+    { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files." },
+    { value: "create_directory", label: "Create directories", description: "Create folders inside allowed write roots." },
+    { value: "move_path", label: "Move or rename", description: "Rename or move files and folders inside allowed write roots." },
+    { value: "delete_path", label: "Delete paths", description: "Delete files or folders; tool calls require an explicit confirmation string." },
+  ];
+  for (const option of options) {
+    new Setting(parent)
+      .setName(option.label)
+      .setDesc(option.description)
+      .addToggle((toggle) => toggle
+        .setValue(plugin.settings.localFsWriteOperations.includes(option.value))
+        .onChange(async (enabled) => {
+          const current = new Set(plugin.settings.localFsWriteOperations);
+          if (enabled) {
+            current.add(option.value);
+          } else {
+            current.delete(option.value);
+          }
+          plugin.settings.localFsWriteOperations = Array.from(current);
+          await plugin.saveSettings();
+        }));
+  }
 }
 
 function addRootShortcut(parent: HTMLElement, name: string, root: string | null, onUse: (root: string) => Promise<void>) {

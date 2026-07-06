@@ -25,8 +25,9 @@ Hosted tools are read-only. Denied or non-indexed paths remain unavailable even
 if a client guesses an id or exact path.
 
 The local desktop/developer server can additionally expose `local_fs_policy`,
-`local_list_files`, `local_read_file`, and, in write or god mode only,
-`local_write_file`. These tools are off by default and are intended for
+`local_list_files`, `local_read_file`, and selected write tools such as
+`local_write_file`, `local_create_directory`, `local_move_path`, and
+`local_delete_path`. These tools are off by default and are intended for
 explicit user-directed local interactions, not automatic vault enumeration.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more

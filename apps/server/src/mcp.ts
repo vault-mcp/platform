@@ -510,6 +510,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       mode: z.string(),
       read_roots: z.array(z.string()),
       write_roots: z.array(z.string()),
+      write_operations: z.array(z.string()),
       max_read_bytes: z.number().int().positive(),
       god_mode: z.boolean(),
     },
@@ -520,6 +521,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       mode: policy.mode,
       read_roots: policy.read_roots,
       write_roots: effectiveWriteRoots(policy),
+      write_operations: effectiveWriteOperations(policy),
       max_read_bytes: policy.max_read_bytes,
       god_mode: policy.mode === "god",
     };
@@ -620,7 +622,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     }
   });
 
-  if (policy.mode === "write" || policy.mode === "god") {
+  if (canWrite(policy) && hasWriteOperation(policy, "write_file")) {
     server.registerTool("local_write_file", {
       title: "Write local file",
       description: "Write one explicitly allowed local file. This is available only in write or god local filesystem mode.",
@@ -658,6 +660,119 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         }, `Wrote ${Buffer.byteLength(content, "utf8")} byte(s) to ${check.path}.`);
       } catch (error) {
         return localFsDeniedResult(`Could not write local file: ${describeUnknownError(error)}`);
+      }
+    });
+  }
+
+  if (canWrite(policy) && hasWriteOperation(policy, "create_directory")) {
+    server.registerTool("local_create_directory", {
+      title: "Create local directory",
+      description: "Create one local directory inside an explicitly allowed write root.",
+      inputSchema: {
+        path: z.string().min(1).describe("Absolute path, or a path relative to the first configured write root."),
+        recursive: z.boolean().optional().describe("Create missing parent folders. Defaults to true."),
+      },
+      outputSchema: {
+        path: z.string(),
+        recursive: z.boolean(),
+      },
+      annotations: writeAnnotations(),
+      _meta: chatGptToolMeta("Creating local directory"),
+    }, async ({ path: requestedPath, recursive }) => {
+      const check = checkLocalFsWrite(policy, requestedPath);
+      if (!check.ok) {
+        return localFsDeniedResult(check.message);
+      }
+      try {
+        await fs.mkdir(check.path, { recursive: recursive ?? true });
+        return jsonToolResult({
+          path: check.path,
+          recursive: recursive ?? true,
+        }, `Created local directory: ${check.path}`);
+      } catch (error) {
+        return localFsDeniedResult(`Could not create local directory: ${describeUnknownError(error)}`);
+      }
+    });
+  }
+
+  if (canWrite(policy) && hasWriteOperation(policy, "move_path")) {
+    server.registerTool("local_move_path", {
+      title: "Move or rename local path",
+      description: "Move or rename one local file or directory. Source and destination must both be inside allowed write roots unless god mode is enabled.",
+      inputSchema: {
+        source_path: z.string().min(1).describe("Existing source path, absolute or relative to the first configured write root."),
+        destination_path: z.string().min(1).describe("Destination path, absolute or relative to the first configured write root."),
+        overwrite: z.boolean().optional().describe("If true, remove an existing destination before moving. Defaults to false."),
+      },
+      outputSchema: {
+        source_path: z.string(),
+        destination_path: z.string(),
+        overwritten: z.boolean(),
+      },
+      annotations: writeAnnotations(),
+      _meta: chatGptToolMeta("Moving local path"),
+    }, async ({ source_path, destination_path, overwrite }) => {
+      const source = checkLocalFsWrite(policy, source_path);
+      if (!source.ok) {
+        return localFsDeniedResult(source.message);
+      }
+      const destination = checkLocalFsWrite(policy, destination_path);
+      if (!destination.ok) {
+        return localFsDeniedResult(destination.message);
+      }
+      try {
+        if (overwrite) {
+          await fs.rm(destination.path, { recursive: true, force: true });
+        } else if (await pathExists(destination.path)) {
+          return localFsDeniedResult(`Destination already exists: ${destination.path}`);
+        }
+        await fs.mkdir(path.dirname(destination.path), { recursive: true });
+        await fs.rename(source.path, destination.path);
+        return jsonToolResult({
+          source_path: source.path,
+          destination_path: destination.path,
+          overwritten: Boolean(overwrite),
+        }, `Moved ${source.path} to ${destination.path}.`);
+      } catch (error) {
+        return localFsDeniedResult(`Could not move local path: ${describeUnknownError(error)}`);
+      }
+    });
+  }
+
+  if (canWrite(policy) && hasWriteOperation(policy, "delete_path")) {
+    server.registerTool("local_delete_path", {
+      title: "Delete local path",
+      description: "Delete one local file or directory inside an allowed write root. Requires an explicit confirmation string.",
+      inputSchema: {
+        path: z.string().min(1).describe("Path to delete, absolute or relative to the first configured write root."),
+        recursive: z.boolean().optional().describe("Allow directory deletion. Defaults to false."),
+        confirm: z.string().describe("Must be exactly 'delete' for files or empty directories, or 'delete recursively' when recursive is true."),
+      },
+      outputSchema: {
+        path: z.string(),
+        recursive: z.boolean(),
+        deleted: z.boolean(),
+      },
+      annotations: writeAnnotations(),
+      _meta: chatGptToolMeta("Deleting local path"),
+    }, async ({ path: requestedPath, recursive, confirm }) => {
+      const expectedConfirm = recursive ? "delete recursively" : "delete";
+      if (confirm !== expectedConfirm) {
+        return localFsDeniedResult(`Deletion requires confirm="${expectedConfirm}".`);
+      }
+      const check = checkLocalFsWrite(policy, requestedPath);
+      if (!check.ok) {
+        return localFsDeniedResult(check.message);
+      }
+      try {
+        await fs.rm(check.path, { recursive: recursive ?? false });
+        return jsonToolResult({
+          path: check.path,
+          recursive: recursive ?? false,
+          deleted: true,
+        }, `Deleted local path: ${check.path}`);
+      } catch (error) {
+        return localFsDeniedResult(`Could not delete local path: ${describeUnknownError(error)}`);
       }
     });
   }
@@ -752,7 +867,7 @@ function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): LocalFs
 }
 
 function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): LocalFsPathCheck {
-  if (policy.mode !== "write" && policy.mode !== "god") {
+  if (!canWrite(policy)) {
     return { ok: false, message: `Local filesystem write access is disabled in ${policy.mode} mode.` };
   }
   if (policy.mode === "god") {
@@ -766,6 +881,21 @@ function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): LocalF
   return isWithinAnyRoot(resolved, roots)
     ? { ok: true, path: resolved }
     : { ok: false, message: `Local path is outside the configured write roots: ${resolved}` };
+}
+
+function canWrite(policy: LocalFsPolicy): boolean {
+  return policy.mode === "write" || policy.mode === "god";
+}
+
+function hasWriteOperation(policy: LocalFsPolicy, operation: LocalFsPolicy["write_operations"][number]): boolean {
+  return canWrite(policy) && effectiveWriteOperations(policy).includes(operation);
+}
+
+function effectiveWriteOperations(policy: LocalFsPolicy): LocalFsPolicy["write_operations"] {
+  if (!canWrite(policy)) {
+    return [];
+  }
+  return policy.write_operations.length > 0 ? policy.write_operations : ["write_file"];
 }
 
 function effectiveWriteRoots(policy: LocalFsPolicy): string[] {
@@ -789,6 +919,15 @@ function isWithinAnyRoot(resolvedPath: string, roots: string[]): boolean {
     const relative = path.relative(resolvedRoot, resolvedPath);
     return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
   });
+}
+
+async function pathExists(value: string): Promise<boolean> {
+  try {
+    await fs.access(value);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function describeUnknownError(error: unknown): string {
@@ -911,6 +1050,7 @@ function describeLocalFsPolicy(policy: {
   mode: string;
   read_roots: string[];
   write_roots: string[];
+  write_operations: string[];
   max_read_bytes: number;
   god_mode: boolean;
 }): string {
@@ -925,6 +1065,9 @@ function describeLocalFsPolicy(policy: {
     "",
     "Write roots:",
     ...(policy.write_roots.length ? policy.write_roots.map((root) => `- ${root}`) : ["- none"]),
+    "",
+    "Write operations:",
+    ...(policy.write_operations.length ? policy.write_operations.map((operation) => `- ${operation}`) : ["- none"]),
     "",
     "Use local filesystem tools only for explicit local-file requests from the user.",
   ].join("\n");

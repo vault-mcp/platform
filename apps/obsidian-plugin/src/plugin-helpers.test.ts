@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { SyncPayload } from "@vault-mcp/core";
+import type { LocalFsWriteOperation, SyncPayload } from "@vault-mcp/core";
 import {
   buildLocalServerLaunchCommand,
   buildLocalServerSpawnConfig,
@@ -344,6 +344,7 @@ describe("plugin helpers", () => {
       localFsAccessMode: "write" as const,
       localFsReadRoots: ["/Users/example/Vault One", "/Users/example/Reference"],
       localFsWriteRoots: ["/Users/example/Vault One"],
+      localFsWriteOperations: ["write_file", "create_directory", "move_path", "delete_path"] as LocalFsWriteOperation[],
       localFsMaxReadBytes: 4096,
     };
 
@@ -351,11 +352,13 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local filesystem access: write");
     expect(status.facts.join("\n")).toContain("Local filesystem read roots: /Users/example/Vault One, /Users/example/Reference");
     expect(status.facts.join("\n")).toContain("Local filesystem write roots: /Users/example/Vault One");
+    expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, create_directory, move_path, delete_path");
 
     const command = buildLocalServerLaunchCommand(settings);
     expect(command).toContain("--fs-access 'write'");
     expect(command).toContain("--fs-roots '/Users/example/Vault One,/Users/example/Reference'");
     expect(command).toContain("--fs-write-roots '/Users/example/Vault One'");
+    expect(command).toContain("--fs-write-operations 'write_file,create_directory,move_path,delete_path'");
     expect(command).toContain("--fs-max-read-bytes '4096'");
 
     expect(buildLocalServerSpawnConfig(settings)?.args).toEqual([
@@ -374,6 +377,8 @@ describe("plugin helpers", () => {
       "/Users/example/Vault One,/Users/example/Reference",
       "--fs-write-roots",
       "/Users/example/Vault One",
+      "--fs-write-operations",
+      "write_file,create_directory,move_path,delete_path",
       "--fs-max-read-bytes",
       "4096",
     ]);

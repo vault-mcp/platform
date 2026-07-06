@@ -104,6 +104,9 @@ Minimum private-alpha rules:
 - In `read` mode, only configured read roots may be listed or read.
 - In `write` mode, configured read roots still control listing/reading and
   configured write roots control writes.
+- Write operations are separately allowlisted. The private-alpha operations are
+  `write_file`, `create_directory`, `move_path`, and `delete_path`.
+- `delete_path` requires an explicit confirmation string in the tool arguments.
 - In `god` mode, the localhost server removes root limits. This should be a
   deliberate user choice for high-trust local sessions only.
 - Do not enumerate, read, or write local files unless the user asks for that
@@ -160,12 +163,13 @@ npm run local-server -- \
   --fs-access write \
   --fs-roots "/absolute/path/to/vault" \
   --fs-write-roots "/absolute/path/to/vault/20 Projects" \
+  --fs-write-operations "write_file,create_directory,move_path,delete_path" \
   --fs-max-read-bytes 524288
 ```
 
 The plugin settings UI can generate the same flags from `Local filesystem
 access`, `Local filesystem read roots`, `Local filesystem write roots`, and
-`Local max read bytes`.
+`Allowed local write operations`, and `Local max read bytes`.
 
 Headless local-server verification:
 
