@@ -1,8 +1,19 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
+import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const repoRoot = fileURLToPath(new URL("..", import.meta.url));
+const npmInvocation = process.env.npm_execpath
+  ? {
+    command: process.execPath,
+    prefixArgs: [process.env.npm_execpath],
+  }
+  : {
+    command: process.platform === "win32" ? "npm.cmd" : "npm",
+    prefixArgs: [],
+  };
 const startedAt = new Date();
 const steps = [
   {
@@ -20,6 +31,10 @@ const steps = [
   {
     name: "smoke:mcp-ui",
     args: ["run", "smoke:mcp-ui"],
+  },
+  {
+    name: "smoke:local-fs",
+    args: ["run", "smoke:local-fs"],
   },
   {
     name: "audit",
@@ -104,8 +119,8 @@ try {
 
 function runStep(step) {
   return new Promise((resolve, reject) => {
-    const child = spawn(npmCommand, step.args, {
-      cwd: new URL("..", import.meta.url).pathname,
+    const child = spawn(npmInvocation.command, [...npmInvocation.prefixArgs, ...step.args], {
+      cwd: repoRoot,
       env: step.env ?? process.env,
       stdio: "inherit",
     });
@@ -129,5 +144,8 @@ function cleanSmokeEnv() {
       env[key] = process.env[key];
     }
   }
+  env.PATH = env.PATH
+    ? `${path.dirname(process.execPath)}${path.delimiter}${env.PATH}`
+    : path.dirname(process.execPath);
   return env;
 }

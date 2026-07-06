@@ -125,10 +125,10 @@ Or run the wiki-free local release gate:
 npm run release:check:local
 ```
 
-That command runs build, API check, tests, MCP UI smoke, audit, plugin
-package/verify/BRAT/fresh-install/lifecycle checks, clean-env local smoke, and
-OAuth local smoke. It does not regenerate the wiki, run production smokes, or
-replace real MCP client acceptance.
+That command runs build, API check, tests, MCP UI smoke, local filesystem MCP
+smoke, audit, plugin package/verify/BRAT/fresh-install/lifecycle checks,
+clean-env local smoke, and OAuth local smoke. It does not regenerate the wiki,
+run production smokes, or replace real MCP client acceptance.
 
 To prepare the Obsidian plugin for BRAT private-alpha testing:
 
@@ -155,6 +155,7 @@ For a smaller manual subset:
 
 ```bash
 npm run smoke:mcp-ui
+npm run smoke:local-fs
 npm run smoke:local
 npm run smoke:oauth-local
 ```
@@ -263,4 +264,7 @@ Obsidian plugin start a localhost MCP server while the vault is open, but it is
 not fully packaged in the current private-alpha release. Developer testing can
 generate local credentials in the plugin, configure the platform repo folder and
 npm command, start or stop the Node-required local profile from the plugin, and
-verify the same profile with `npm run smoke:local-server`.
+verify the same profile with `npm run smoke:local-server`. The explicit local
+filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
+read/write roots, denied outside paths, destructive confirmation, and god-mode
+absolute-path access in temporary directories.

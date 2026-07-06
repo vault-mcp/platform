@@ -1,17 +1,28 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import { SignJWT } from "jose";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = fileURLToPath(new URL("..", import.meta.url));
+const defaultVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault copy";
+const usingFixtureVault = !process.env.VAULT_ROOT && !existsSync(defaultVaultRoot);
 const port = process.env.PORT ?? "3335";
 const baseUrl = `http://127.0.0.1:${port}`;
 const syncToken = process.env.MCP_SYNC_TOKEN ?? "dev-sync-token";
 const issuer = "https://auth.local.test";
 const audience = `${baseUrl}/mcp`;
 const jwtSecret = "local-oauth-smoke-secret";
-const vaultRoot = process.env.VAULT_ROOT ?? "/Users/tjt/Documents/Tristan's Personal vault copy";
-const vaultName = process.env.VAULT_NAME ?? "Tristan's Personal vault copy";
+const vaultRoot = process.env.VAULT_ROOT ?? (usingFixtureVault ? path.join(root, "fixtures", "vault") : defaultVaultRoot);
+const vaultName = process.env.VAULT_NAME ?? (usingFixtureVault ? "Vault MCP fixture vault" : "Tristan's Personal vault copy");
+const expectedProjectPath = usingFixtureVault ? "20 Projects/Test Project/Project Home.md" : "20 Projects/Vault MCP Connector/Project Home.md";
+const expectedProjectScope = usingFixtureVault ? "20 Projects/Test Project/" : "20 Projects/Vault MCP Connector/";
+const expectedProjectTitle = usingFixtureVault ? "Test Project" : "Vault MCP Connector";
+const expectedSearchQuery = usingFixtureVault ? "connector discovery improvements" : "Vault MCP Connector";
+const deniedScope = usingFixtureVault ? "Daily Notes/" : "02 Daily/";
+const deniedPath = usingFixtureVault ? "Daily Notes/2026-06-10.md" : "02 Daily/2026-06-10.md";
 const expectedTools = [
   "search",
   "search_notes",
@@ -27,7 +38,7 @@ const expectedTools = [
   "debug_search",
 ];
 
-const server = spawn("node", ["apps/server/dist/index.js"], {
+const server = spawn(process.execPath, ["apps/server/dist/index.js"], {
   cwd: root,
   env: {
     ...process.env,
@@ -77,34 +88,34 @@ try {
 
   const search = await mcp(2, "tools/call", {
     name: "search",
-    arguments: { query: "Vault MCP Connector", limit: 1 },
+    arguments: { query: expectedSearchQuery, limit: 1 },
   }, accessToken);
   const first = search.body.result.structuredContent.results[0];
-  assert(first?.metadata?.path === "20 Projects/Vault MCP Connector/Project Home.md", "expected Vault MCP Connector project search result");
+  assert(first?.metadata?.path === expectedProjectPath, `expected project search result at ${expectedProjectPath}`);
 
   const fetched = await mcp(3, "tools/call", {
     name: "fetch",
     arguments: { id: first.id },
   }, accessToken);
-  assert(fetched.body.result.structuredContent.title.includes("Vault MCP Connector"), "expected fetched Vault MCP Connector chunk");
+  assert(fetched.body.result.structuredContent.title.includes(expectedProjectTitle), `expected fetched ${expectedProjectTitle} chunk`);
 
   const listed = await mcp(30, "tools/call", {
     name: "list_notes",
-    arguments: { scope: "20 Projects/Vault MCP Connector/", limit: 1 },
+    arguments: { scope: expectedProjectScope, limit: 1 },
   }, accessToken);
-  assert(listed.body.result.structuredContent.notes[0]?.path === "20 Projects/Vault MCP Connector/Project Home.md", "expected list_notes to find project home");
+  assert(listed.body.result.structuredContent.notes[0]?.path === expectedProjectPath, "expected list_notes to find project home");
 
   const deniedScopeList = await mcp(31, "tools/call", {
     name: "list_notes",
-    arguments: { scope: "02 Daily/", limit: 5 },
+    arguments: { scope: deniedScope, limit: 5 },
   }, accessToken);
   assert(deniedScopeList.body.result.structuredContent.notes.length === 0, "expected denied daily scope to be unavailable");
 
-  const deniedPath = await mcp(32, "tools/call", {
+  const deniedPathFetch = await mcp(32, "tools/call", {
     name: "fetch_note_by_path",
-    arguments: { path: "02 Daily/2026-06-10.md" },
+    arguments: { path: deniedPath },
   }, accessToken);
-  assert(deniedPath.body.result.isError === true, "expected denied path fetch to fail");
+  assert(deniedPathFetch.body.result.isError === true, "expected denied path fetch to fail");
 
   console.log(JSON.stringify({
     ok: true,

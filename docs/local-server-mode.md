@@ -181,12 +181,22 @@ Headless local-server verification:
 
 ```bash
 npm run smoke:local-server
+npm run smoke:local-fs
 ```
 
-That smoke starts the local profile with fixed test-only tokens, syncs the
-synthetic demo vault, verifies JSON storage, checks MCP authentication,
-searches/fetches an allowed demo note, confirms a denied daily-note path stays
-unavailable, checks scoped vault status, and removes its temporary data folder.
+`smoke:local-server` starts the local profile with fixed test-only tokens,
+syncs the synthetic demo vault, verifies JSON storage, checks MCP
+authentication, searches/fetches an allowed demo note, confirms a denied
+daily-note path stays unavailable, checks scoped vault status, and removes its
+temporary data folder.
+
+`smoke:local-fs` starts separate localhost servers with enabled filesystem
+policies. It verifies scoped write mode exposes the expected local tools,
+lists/reads/finds/searches only inside the configured read root, writes,
+creates directories, moves, and deletes only inside the configured write root,
+denies outside paths, requires delete confirmation, and verifies god mode can
+read/write/search/move/delete an absolute temporary path without configured
+roots.
 
 The command prints:
 
@@ -239,6 +249,7 @@ directly.
 - [x] Unit-test local settings, setup-guide states, credential facts, and launch
   command generation.
 - [x] Add a headless local-server smoke gate.
+- [x] Add a headless enabled local-filesystem MCP policy smoke gate.
 - Add a disposable-vault Obsidian smoke for toggle/start/sync/stop.
 - Add MCP Inspector acceptance against `http://127.0.0.1:<port>/mcp`.
 - Add client docs for Codex, Claude Desktop, ChatGPT Desktop if supported, and
