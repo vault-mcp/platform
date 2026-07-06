@@ -346,6 +346,8 @@ describe("plugin helpers", () => {
       localFsWriteRoots: ["/Users/example/Vault One"],
       localFsWriteOperations: ["write_file", "create_directory", "move_path", "delete_path"] as LocalFsWriteOperation[],
       localFsMaxReadBytes: 4096,
+      localFsMaxSearchResults: 25,
+      localFsMaxSearchFiles: 500,
     };
 
     const status = pluginLocalServerStatus(settings);
@@ -353,6 +355,7 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local filesystem read roots: /Users/example/Vault One, /Users/example/Reference");
     expect(status.facts.join("\n")).toContain("Local filesystem write roots: /Users/example/Vault One");
     expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, create_directory, move_path, delete_path");
+    expect(status.facts.join("\n")).toContain("Local filesystem search caps: 25 results, 500 files");
 
     const command = buildLocalServerLaunchCommand(settings);
     expect(command).toContain("--fs-access 'write'");
@@ -360,6 +363,8 @@ describe("plugin helpers", () => {
     expect(command).toContain("--fs-write-roots '/Users/example/Vault One'");
     expect(command).toContain("--fs-write-operations 'write_file,create_directory,move_path,delete_path'");
     expect(command).toContain("--fs-max-read-bytes '4096'");
+    expect(command).toContain("--fs-max-search-results '25'");
+    expect(command).toContain("--fs-max-search-files '500'");
 
     expect(buildLocalServerSpawnConfig(settings)?.args).toEqual([
       "scripts/start-local-server.mjs",
@@ -381,6 +386,10 @@ describe("plugin helpers", () => {
       "write_file,create_directory,move_path,delete_path",
       "--fs-max-read-bytes",
       "4096",
+      "--fs-max-search-results",
+      "25",
+      "--fs-max-search-files",
+      "500",
     ]);
   });
 

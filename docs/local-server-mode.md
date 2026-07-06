@@ -101,9 +101,12 @@ Minimum private-alpha rules:
 - Keep local filesystem access off by default. When enabled, expose it as an
   explicit local-only policy with four modes: `off`, `read`, `write`, and
   `god`.
-- In `read` mode, only configured read roots may be listed or read.
+- In `read` mode, only configured read roots may be listed, searched, or read.
 - In `write` mode, configured read roots still control listing/reading and
   configured write roots control writes.
+- Local discovery is on-demand through `local_find_files` and
+  `local_search_text`; it should happen only after a chat request, not as a
+  background vault scan.
 - Write operations are separately allowlisted. The private-alpha operations are
   `write_file`, `create_directory`, `move_path`, and `delete_path`.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
@@ -164,12 +167,15 @@ npm run local-server -- \
   --fs-roots "/absolute/path/to/vault" \
   --fs-write-roots "/absolute/path/to/vault/20 Projects" \
   --fs-write-operations "write_file,create_directory,move_path,delete_path" \
-  --fs-max-read-bytes 524288
+  --fs-max-read-bytes 524288 \
+  --fs-max-search-results 100 \
+  --fs-max-search-files 2000
 ```
 
 The plugin settings UI can generate the same flags from `Local filesystem
 access`, `Local filesystem read roots`, `Local filesystem write roots`, and
-`Allowed local write operations`, and `Local max read bytes`.
+`Allowed local write operations`, `Local max read bytes`, `Local max search
+results`, and `Local max searched files`.
 
 Headless local-server verification:
 

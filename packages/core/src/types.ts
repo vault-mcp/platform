@@ -28,6 +28,8 @@ export type LocalFsPolicy = {
   write_roots: string[];
   write_operations: LocalFsWriteOperation[];
   max_read_bytes: number;
+  max_search_results: number;
+  max_search_files: number;
 };
 
 export type IndexRuleAction = "allow" | "deny" | "review";

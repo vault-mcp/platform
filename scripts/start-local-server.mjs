@@ -27,6 +27,8 @@ const localFsReadRoots = args.fsRoots ?? process.env.LOCAL_FS_READ_ROOTS ?? proc
 const localFsWriteRoots = args.fsWriteRoots ?? process.env.LOCAL_FS_WRITE_ROOTS ?? "";
 const localFsWriteOperations = args.fsWriteOperations ?? process.env.LOCAL_FS_WRITE_OPERATIONS ?? "write_file";
 const localFsMaxReadBytes = args.fsMaxReadBytes ?? process.env.LOCAL_FS_MAX_READ_BYTES ?? "524288";
+const localFsMaxSearchResults = args.fsMaxSearchResults ?? process.env.LOCAL_FS_MAX_SEARCH_RESULTS ?? "100";
+const localFsMaxSearchFiles = args.fsMaxSearchFiles ?? process.env.LOCAL_FS_MAX_SEARCH_FILES ?? "2000";
 const allowedOrigins = args.allowedOrigins
   ?? process.env.ALLOWED_ORIGINS
   ?? [
@@ -51,6 +53,8 @@ Object.assign(process.env, {
   LOCAL_FS_WRITE_ROOTS: localFsWriteRoots,
   LOCAL_FS_WRITE_OPERATIONS: localFsWriteOperations,
   LOCAL_FS_MAX_READ_BYTES: localFsMaxReadBytes,
+  LOCAL_FS_MAX_SEARCH_RESULTS: localFsMaxSearchResults,
+  LOCAL_FS_MAX_SEARCH_FILES: localFsMaxSearchFiles,
 });
 delete process.env.DATABASE_URL;
 
@@ -66,6 +70,7 @@ if (localFsWriteRoots) {
   console.log(`Local write roots: ${localFsWriteRoots}`);
 }
 console.log(`Local write operations: ${localFsWriteOperations}`);
+console.log(`Local search caps: ${localFsMaxSearchResults} results, ${localFsMaxSearchFiles} files scanned`);
 console.log(`MCP access token: ${mcpAccessToken}`);
 console.log(`Plugin sync token: ${syncToken}`);
 console.log("Keep these local tokens private. Stop with Ctrl+C.");
@@ -124,6 +129,14 @@ function parseArgs(values) {
       parsed.fsMaxReadBytes = readValue(values, ++index, value);
       continue;
     }
+    if (value === "--fs-max-search-results") {
+      parsed.fsMaxSearchResults = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-max-search-files") {
+      parsed.fsMaxSearchFiles = readValue(values, ++index, value);
+      continue;
+    }
     throw new Error(`Unknown option: ${value}`);
   }
   return parsed;
@@ -167,6 +180,8 @@ Options:
   --fs-write-roots <paths>      Comma-separated write roots for local filesystem tools.
   --fs-write-operations <ops>   Comma-separated write_file,create_directory,move_path,delete_path. Defaults to write_file.
   --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
+  --fs-max-search-results <n>   Max local find/search results. Defaults to 100.
+  --fs-max-search-files <n>     Max files scanned by local_search_text. Defaults to 2000.
   --help                        Show this help.
 
 Run npm run build --workspace @vault-mcp/server before starting directly.

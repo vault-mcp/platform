@@ -27,8 +27,10 @@ if a client guesses an id or exact path.
 The local desktop/developer server can additionally expose `local_fs_policy`,
 `local_list_files`, `local_read_file`, and selected write tools such as
 `local_write_file`, `local_create_directory`, `local_move_path`, and
-`local_delete_path`. These tools are off by default and are intended for
-explicit user-directed local interactions, not automatic vault enumeration.
+`local_delete_path`. Read modes can also expose `local_find_files` and
+`local_search_text` for on-demand local discovery without building an index.
+These tools are off by default and are intended for explicit user-directed
+local interactions, not automatic vault enumeration.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear

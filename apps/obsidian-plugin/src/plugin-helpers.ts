@@ -33,6 +33,8 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localFsWriteRoots?: string[];
   localFsWriteOperations?: LocalFsWriteOperation[];
   localFsMaxReadBytes?: number;
+  localFsMaxSearchResults?: number;
+  localFsMaxSearchFiles?: number;
 };
 
 export type PluginSafetyDisclosure = {
@@ -445,6 +447,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local filesystem read roots: ${settings.localFsReadRoots?.length ? settings.localFsReadRoots.join(", ") : "none"}`,
       `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,
       `Local filesystem write operations: ${settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
+      `Local filesystem search caps: ${settings.localFsMaxSearchResults ?? 100} results, ${settings.localFsMaxSearchFiles ?? 2000} files`,
     ]),
   };
 }
@@ -528,6 +531,14 @@ function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean
   if (settings.localFsMaxReadBytes) {
     const value = String(settings.localFsMaxReadBytes);
     args.push("--fs-max-read-bytes", quote ? shellQuote(value) : value);
+  }
+  if (settings.localFsMaxSearchResults) {
+    const value = String(settings.localFsMaxSearchResults);
+    args.push("--fs-max-search-results", quote ? shellQuote(value) : value);
+  }
+  if (settings.localFsMaxSearchFiles) {
+    const value = String(settings.localFsMaxSearchFiles);
+    args.push("--fs-max-search-files", quote ? shellQuote(value) : value);
   }
   return args;
 }

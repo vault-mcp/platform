@@ -63,6 +63,8 @@ type VaultMcpPluginSettings = {
   localFsWriteRoots: string[];
   localFsWriteOperations: LocalFsWriteOperation[];
   localFsMaxReadBytes: number;
+  localFsMaxSearchResults: number;
+  localFsMaxSearchFiles: number;
 };
 
 type SyncHistoryEntry = {
@@ -178,6 +180,8 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localFsWriteRoots: [],
   localFsWriteOperations: ["write_file"],
   localFsMaxReadBytes: 512 * 1024,
+  localFsMaxSearchResults: 100,
+  localFsMaxSearchFiles: 2000,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -295,6 +299,8 @@ export default class VaultMcpPlugin extends Plugin {
       localFsWriteRoots: saved?.localFsWriteRoots ?? DEFAULT_SETTINGS.localFsWriteRoots,
       localFsWriteOperations: saved?.localFsWriteOperations ?? DEFAULT_SETTINGS.localFsWriteOperations,
       localFsMaxReadBytes: saved?.localFsMaxReadBytes ?? DEFAULT_SETTINGS.localFsMaxReadBytes,
+      localFsMaxSearchResults: saved?.localFsMaxSearchResults ?? DEFAULT_SETTINGS.localFsMaxSearchResults,
+      localFsMaxSearchFiles: saved?.localFsMaxSearchFiles ?? DEFAULT_SETTINGS.localFsMaxSearchFiles,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -1527,6 +1533,34 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         .onChange(async (value) => {
           const parsed = Number.parseInt(value, 10);
           plugin.settings.localFsMaxReadBytes = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxReadBytes;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local max search results")
+    .setDesc("Upper bound for one local_find_files or local_search_text result set.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxSearchResults))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxSearchResults = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxSearchResults;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local max searched files")
+    .setDesc("Upper bound for files scanned by one local_search_text call.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxSearchFiles))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxSearchFiles = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxSearchFiles;
           await plugin.saveSettings();
         });
     });

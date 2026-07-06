@@ -78,6 +78,8 @@ function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
     write_roots: parsePathList(env.LOCAL_FS_WRITE_ROOTS),
     write_operations: parseLocalFsWriteOperations(env.LOCAL_FS_WRITE_OPERATIONS),
     max_read_bytes: normalizePositiveInteger(env.LOCAL_FS_MAX_READ_BYTES, 512 * 1024),
+    max_search_results: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_RESULTS, 100),
+    max_search_files: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_FILES, 2000),
   };
 }
 

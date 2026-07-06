@@ -287,6 +287,8 @@ describe("server MCP contract", () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-read-"));
     const filePath = path.join(root, "allowed.md");
     await fs.writeFile(filePath, "hello from local filesystem", "utf8");
+    await fs.mkdir(path.join(root, "nested"));
+    await fs.writeFile(path.join(root, "nested", "project-note.md"), "alpha project note\nsecond line", "utf8");
     const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-${Date.now()}.md`);
     await fs.writeFile(outsidePath, "outside", "utf8");
 
@@ -296,7 +298,9 @@ describe("server MCP contract", () => {
         read_roots: [root],
         write_roots: [],
         write_operations: ["write_file"],
-        max_read_bytes: 12,
+        max_read_bytes: 512,
+        max_search_results: 10,
+        max_search_files: 100,
       },
     });
     const server = await listen(createApp(config, store));
@@ -308,6 +312,8 @@ describe("server MCP contract", () => {
       "local_fs_policy",
       "local_list_files",
       "local_read_file",
+      "local_find_files",
+      "local_search_text",
       ...expectedTools,
     ]);
 
@@ -320,6 +326,8 @@ describe("server MCP contract", () => {
       read_roots: [root],
       write_roots: [],
       write_operations: [],
+      max_search_results: 10,
+      max_search_files: 100,
       god_mode: false,
     });
 
@@ -331,7 +339,7 @@ describe("server MCP contract", () => {
 
     const read = await mcp(baseUrl, accessToken, 93, "tools/call", {
       name: "local_read_file",
-      arguments: { path: filePath },
+      arguments: { path: filePath, max_bytes: 12 },
     });
     expect(read.result.structuredContent).toMatchObject({
       path: filePath,
@@ -346,6 +354,35 @@ describe("server MCP contract", () => {
     });
     expect(denied.result.isError).toBe(true);
     expect(denied.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+
+    const found = await mcp(baseUrl, accessToken, 102, "tools/call", {
+      name: "local_find_files",
+      arguments: { root, query: "project", extensions: [".md"], limit: 5 },
+    });
+    expect(found.result.structuredContent.results).toEqual([
+      expect.objectContaining({
+        path: path.join(root, "nested", "project-note.md"),
+        type: "file",
+      }),
+    ]);
+
+    const searched = await mcp(baseUrl, accessToken, 103, "tools/call", {
+      name: "local_search_text",
+      arguments: { root, query: "alpha", extensions: ["md"], limit: 5 },
+    });
+    expect(searched.result.structuredContent.matches).toEqual([
+      {
+        path: path.join(root, "nested", "project-note.md"),
+        line: 1,
+        preview: "alpha project note",
+      },
+    ]);
+
+    const deniedSearch = await mcp(baseUrl, accessToken, 104, "tools/call", {
+      name: "local_search_text",
+      arguments: { root: os.tmpdir(), query: "outside" },
+    });
+    expect(deniedSearch.result.isError).toBe(true);
   });
 
   it("exposes local filesystem write tools only inside configured write roots", async () => {
@@ -359,6 +396,8 @@ describe("server MCP contract", () => {
         write_roots: [root],
         write_operations: ["write_file", "create_directory", "move_path", "delete_path"],
         max_read_bytes: 512,
+        max_search_results: 100,
+        max_search_files: 2000,
       },
     });
     const server = await listen(createApp(config, store));
@@ -1057,6 +1096,8 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
       write_roots: [],
       write_operations: ["write_file"],
       max_read_bytes: 512 * 1024,
+      max_search_results: 100,
+      max_search_files: 2000,
     },
     ...overrides,
   };
