@@ -72,6 +72,7 @@ try {
   assert(toolNames.includes("search_notes"), "expected search_notes tool");
   assert(toolNames.includes("fetch_note_by_path"), "expected fetch_note_by_path tool");
   assert(toolNames.includes("get_vault_status"), "expected get_vault_status tool");
+  assert(!toolNames.some((name) => name.startsWith("local_")), "expected local filesystem tools to stay disabled by default");
 
   const search = await mcp(2, "tools/call", {
     name: "search",

@@ -98,6 +98,16 @@ Minimum private-alpha rules:
   mode.
 - Keep writes proposal-first; the local server may store proposals, but the
   plugin still applies writes after local review/hash checks.
+- Keep local filesystem access off by default. When enabled, expose it as an
+  explicit local-only policy with four modes: `off`, `read`, `write`, and
+  `god`.
+- In `read` mode, only configured read roots may be listed or read.
+- In `write` mode, configured read roots still control listing/reading and
+  configured write roots control writes.
+- In `god` mode, the localhost server removes root limits. This should be a
+  deliberate user choice for high-trust local sessions only.
+- Do not enumerate, read, or write local files unless the user asks for that
+  specific interaction in the chat.
 
 ## Client Setup
 
@@ -138,6 +148,24 @@ Developer local-server start:
 ```bash
 npm run local-server -- --port 38791 --data-dir data/local-server --mcp-token <local-mcp-token> --sync-token <local-sync-token>
 ```
+
+Developer local-server start with scoped local filesystem access:
+
+```bash
+npm run local-server -- \
+  --port 38791 \
+  --data-dir data/local-server \
+  --mcp-token <local-mcp-token> \
+  --sync-token <local-sync-token> \
+  --fs-access write \
+  --fs-roots "/absolute/path/to/vault" \
+  --fs-write-roots "/absolute/path/to/vault/20 Projects" \
+  --fs-max-read-bytes 524288
+```
+
+The plugin settings UI can generate the same flags from `Local filesystem
+access`, `Local filesystem read roots`, `Local filesystem write roots`, and
+`Local max read bytes`.
 
 Headless local-server verification:
 
@@ -191,6 +219,8 @@ directly.
 - Health-check and version-check the sidecar.
 - Sync the current vault after preview/approval.
 - [x] Show copyable local MCP endpoint, tokens, and developer launch command.
+- [x] Add plugin-controlled local filesystem access settings and local MCP
+  tools for policy, listing, reading, and scoped writing.
 - Bundle a platform-specific sidecar so non-developer users do not need a repo
   checkout or npm command.
 

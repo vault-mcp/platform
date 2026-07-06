@@ -326,6 +326,59 @@ describe("plugin helpers", () => {
     });
   });
 
+  it("adds local filesystem launch flags only when filesystem access is enabled", () => {
+    const settings = {
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals" as const,
+      writeMode: "review_required" as const,
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp token",
+      localServerSyncToken: "sync token",
+      localServerProjectDir: "/Users/example/vault-mcp/platform",
+      localFsAccessMode: "write" as const,
+      localFsReadRoots: ["/Users/example/Vault One", "/Users/example/Reference"],
+      localFsWriteRoots: ["/Users/example/Vault One"],
+      localFsMaxReadBytes: 4096,
+    };
+
+    const status = pluginLocalServerStatus(settings);
+    expect(status.facts.join("\n")).toContain("Local filesystem access: write");
+    expect(status.facts.join("\n")).toContain("Local filesystem read roots: /Users/example/Vault One, /Users/example/Reference");
+    expect(status.facts.join("\n")).toContain("Local filesystem write roots: /Users/example/Vault One");
+
+    const command = buildLocalServerLaunchCommand(settings);
+    expect(command).toContain("--fs-access 'write'");
+    expect(command).toContain("--fs-roots '/Users/example/Vault One,/Users/example/Reference'");
+    expect(command).toContain("--fs-write-roots '/Users/example/Vault One'");
+    expect(command).toContain("--fs-max-read-bytes '4096'");
+
+    expect(buildLocalServerSpawnConfig(settings)?.args).toEqual([
+      "scripts/start-local-server.mjs",
+      "--port",
+      "38791",
+      "--data-dir",
+      "Plugin Data/Local Server",
+      "--mcp-token",
+      "mcp token",
+      "--sync-token",
+      "sync token",
+      "--fs-access",
+      "write",
+      "--fs-roots",
+      "/Users/example/Vault One,/Users/example/Reference",
+      "--fs-write-roots",
+      "/Users/example/Vault One",
+      "--fs-max-read-bytes",
+      "4096",
+    ]);
+  });
+
   it("builds a plugin-first setup guide with hosting and client cards", () => {
     const guide = pluginSetupGuide({
       serverUrl: "https://vault-mcp-connector.vercel.app",

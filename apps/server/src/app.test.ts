@@ -282,6 +282,116 @@ describe("server MCP contract", () => {
     await expectMcpSseProbe(baseUrl, accessToken);
   });
 
+  it("exposes local filesystem read tools only when local read mode is enabled", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-read-"));
+    const filePath = path.join(root, "allowed.md");
+    await fs.writeFile(filePath, "hello from local filesystem", "utf8");
+    const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-${Date.now()}.md`);
+    await fs.writeFile(outsidePath, "outside", "utf8");
+
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "read",
+        read_roots: [root],
+        write_roots: [],
+        max_read_bytes: 12,
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 90, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      "local_fs_policy",
+      "local_list_files",
+      "local_read_file",
+      ...expectedTools,
+    ]);
+
+    const policy = await mcp(baseUrl, accessToken, 91, "tools/call", {
+      name: "local_fs_policy",
+      arguments: {},
+    });
+    expect(policy.result.structuredContent).toMatchObject({
+      mode: "read",
+      read_roots: [root],
+      write_roots: [],
+      god_mode: false,
+    });
+
+    const listed = await mcp(baseUrl, accessToken, 92, "tools/call", {
+      name: "local_list_files",
+      arguments: { path: root },
+    });
+    expect(listed.result.structuredContent.entries.map((entry: { name: string }) => entry.name)).toContain("allowed.md");
+
+    const read = await mcp(baseUrl, accessToken, 93, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: filePath },
+    });
+    expect(read.result.structuredContent).toMatchObject({
+      path: filePath,
+      text: "hello from l",
+      bytes_read: 12,
+      truncated: true,
+    });
+
+    const denied = await mcp(baseUrl, accessToken, 94, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: outsidePath },
+    });
+    expect(denied.result.isError).toBe(true);
+    expect(denied.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+  });
+
+  it("exposes local filesystem write tools only inside configured write roots", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-write-"));
+    const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-write-${Date.now()}.md`);
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "write",
+        read_roots: [root],
+        write_roots: [root],
+        max_read_bytes: 512,
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
+
+    const written = await mcp(baseUrl, accessToken, 96, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: "nested/new-note.md",
+        content: "created by local fs test",
+        create_dirs: true,
+      },
+    });
+    const writtenPath = path.join(root, "nested/new-note.md");
+    expect(written.result.structuredContent).toMatchObject({
+      path: writtenPath,
+      mode: "overwrite",
+      bytes_written: 24,
+    });
+    expect(await fs.readFile(writtenPath, "utf8")).toBe("created by local fs test");
+
+    const deniedWrite = await mcp(baseUrl, accessToken, 97, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: outsidePath,
+        content: "denied",
+      },
+    });
+    expect(deniedWrite.result.isError).toBe(true);
+    expect(deniedWrite.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+  });
+
   it("treats admin sync as an idempotent full replacement", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
@@ -891,6 +1001,12 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
     syncToken: "test-sync",
     allowedOrigins: ["http://127.0.0.1", "http://localhost"],
     oauth: null,
+    localFs: {
+      mode: "off",
+      read_roots: [],
+      write_roots: [],
+      max_read_bytes: 512 * 1024,
+    },
     ...overrides,
   };
 }

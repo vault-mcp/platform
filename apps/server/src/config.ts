@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { LocalFsAccessMode, LocalFsPolicy } from "@vault-mcp/core";
 
 export type ServerConfig = {
   host: string;
@@ -12,6 +13,7 @@ export type ServerConfig = {
   syncToken: string;
   allowedOrigins: string[];
   oauth: OAuthResourceConfig | null;
+  localFs: LocalFsPolicy;
 };
 
 export type OAuthResourceConfig = {
@@ -60,11 +62,53 @@ export function loadConfig(env = process.env): ServerConfig {
       publicBaseUrl,
     ]),
     oauth,
+    localFs: loadLocalFsPolicy(env),
   };
 }
 
 function uniqueOrigins(origins: string[]): string[] {
   return [...new Set(origins.map((origin) => origin.replace(/\/$/, "")))];
+}
+
+function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
+  const mode = normalizeLocalFsMode(env.LOCAL_FS_ACCESS_MODE);
+  return {
+    mode,
+    read_roots: parsePathList(env.LOCAL_FS_READ_ROOTS ?? env.LOCAL_FS_ROOTS),
+    write_roots: parsePathList(env.LOCAL_FS_WRITE_ROOTS),
+    max_read_bytes: normalizePositiveInteger(env.LOCAL_FS_MAX_READ_BYTES, 512 * 1024),
+  };
+}
+
+function normalizeLocalFsMode(value: string | undefined): LocalFsAccessMode {
+  const normalized = (value ?? "off").trim().toLowerCase();
+  if (normalized === "off" || normalized === "read" || normalized === "write" || normalized === "god") {
+    return normalized;
+  }
+  throw new Error("LOCAL_FS_ACCESS_MODE must be one of: off, read, write, god.");
+}
+
+function parsePathList(value: string | undefined): string[] {
+  return uniquePathList((value ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => path.resolve(entry)));
+}
+
+function uniquePathList(values: string[]): string[] {
+  return [...new Set(values)];
+}
+
+function normalizePositiveInteger(value: string | undefined, fallback: number): number {
+  if (!value) {
+    return fallback;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    throw new Error("LOCAL_FS_MAX_READ_BYTES must be a positive integer.");
+  }
+  return parsed;
 }
 
 function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {

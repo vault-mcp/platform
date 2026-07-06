@@ -1,6 +1,8 @@
 # Vault MCP Connector
 
-Private, read-only MCP connector for selected Obsidian vault context.
+Private MCP connector for selected Obsidian vault context. Hosted deployments
+serve a derived read-only index; the localhost developer profile can optionally
+enable plugin-controlled local filesystem tools.
 
 ## MCP Tools
 
@@ -19,7 +21,13 @@ The server currently exposes these read-only MCP tools:
 - `get_vault_status` - return sync, policy, and document-count status for one vault.
 - `debug_search` - explain query normalization and why a search may return few or no results.
 
-All tools are read-only. Denied or non-indexed paths remain unavailable even if a client guesses an id or exact path.
+Hosted tools are read-only. Denied or non-indexed paths remain unavailable even
+if a client guesses an id or exact path.
+
+The local desktop/developer server can additionally expose `local_fs_policy`,
+`local_list_files`, `local_read_file`, and, in write or god mode only,
+`local_write_file`. These tools are off by default and are intended for
+explicit user-directed local interactions, not automatic vault enumeration.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear

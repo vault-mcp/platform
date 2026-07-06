@@ -22,6 +22,10 @@ const dataDir = path.resolve(repoRoot, args.dataDir ?? process.env.VAULT_MCP_LOC
 const indexFile = path.join(dataDir, "index.json");
 const mcpAccessToken = args.mcpToken ?? process.env.MCP_ACCESS_TOKEN ?? randomToken();
 const syncToken = args.syncToken ?? process.env.MCP_SYNC_TOKEN ?? randomToken();
+const localFsAccessMode = args.fsAccess ?? process.env.LOCAL_FS_ACCESS_MODE ?? "off";
+const localFsReadRoots = args.fsRoots ?? process.env.LOCAL_FS_READ_ROOTS ?? process.env.LOCAL_FS_ROOTS ?? "";
+const localFsWriteRoots = args.fsWriteRoots ?? process.env.LOCAL_FS_WRITE_ROOTS ?? "";
+const localFsMaxReadBytes = args.fsMaxReadBytes ?? process.env.LOCAL_FS_MAX_READ_BYTES ?? "524288";
 const allowedOrigins = args.allowedOrigins
   ?? process.env.ALLOWED_ORIGINS
   ?? [
@@ -41,6 +45,10 @@ Object.assign(process.env, {
   MCP_ACCESS_TOKEN: mcpAccessToken,
   MCP_SYNC_TOKEN: syncToken,
   ALLOWED_ORIGINS: allowedOrigins,
+  LOCAL_FS_ACCESS_MODE: localFsAccessMode,
+  LOCAL_FS_READ_ROOTS: localFsReadRoots,
+  LOCAL_FS_WRITE_ROOTS: localFsWriteRoots,
+  LOCAL_FS_MAX_READ_BYTES: localFsMaxReadBytes,
 });
 delete process.env.DATABASE_URL;
 
@@ -48,6 +56,13 @@ console.log("Vault MCP local desktop server profile");
 console.log(`MCP endpoint: ${publicBaseUrl}/mcp`);
 console.log(`Health check: ${publicBaseUrl}/healthz`);
 console.log(`Index file: ${indexFile}`);
+console.log(`Local filesystem access: ${localFsAccessMode}`);
+if (localFsReadRoots) {
+  console.log(`Local read roots: ${localFsReadRoots}`);
+}
+if (localFsWriteRoots) {
+  console.log(`Local write roots: ${localFsWriteRoots}`);
+}
 console.log(`MCP access token: ${mcpAccessToken}`);
 console.log(`Plugin sync token: ${syncToken}`);
 console.log("Keep these local tokens private. Stop with Ctrl+C.");
@@ -84,6 +99,22 @@ function parseArgs(values) {
     }
     if (value === "--allowed-origins") {
       parsed.allowedOrigins = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-access") {
+      parsed.fsAccess = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-roots") {
+      parsed.fsRoots = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-write-roots") {
+      parsed.fsWriteRoots = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-max-read-bytes") {
+      parsed.fsMaxReadBytes = readValue(values, ++index, value);
       continue;
     }
     throw new Error(`Unknown option: ${value}`);
@@ -124,6 +155,10 @@ Options:
   --mcp-token <token>           MCP client bearer token. Defaults to a generated local token.
   --sync-token <token>          Plugin/admin sync token. Defaults to a generated local token.
   --allowed-origins <origins>   Comma-separated allowed browser origins.
+  --fs-access <mode>            Local filesystem tools: off, read, write, or god. Defaults to off.
+  --fs-roots <paths>            Comma-separated read roots for local filesystem tools.
+  --fs-write-roots <paths>      Comma-separated write roots for local filesystem tools.
+  --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
   --help                        Show this help.
 
 Run npm run build --workspace @vault-mcp/server before starting directly.

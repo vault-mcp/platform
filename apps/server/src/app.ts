@@ -238,7 +238,7 @@ export function createApp(config: ServerConfig, store: IndexStore) {
 
   const handleMcp = async (req: Request, res: Response) => {
     try {
-      await handleStatelessMcpRequest(req, res, store);
+      await handleStatelessMcpRequest(req, res, store, config);
     } catch (error) {
       console.error("Error handling MCP request:", error);
       if (!res.headersSent) {

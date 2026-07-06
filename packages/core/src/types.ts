@@ -18,6 +18,15 @@ export type IndexMode = "rules_plus_approvals" | "manual_only" | "rules_only";
 
 export type WriteMode = "review_required" | "direct_apply";
 
+export type LocalFsAccessMode = "off" | "read" | "write" | "god";
+
+export type LocalFsPolicy = {
+  mode: LocalFsAccessMode;
+  read_roots: string[];
+  write_roots: string[];
+  max_read_bytes: number;
+};
+
 export type IndexRuleAction = "allow" | "deny" | "review";
 
 export type IndexRuleKind = "path_prefix" | "path_exact" | "tag" | "status";

@@ -33,7 +33,7 @@ import {
   Setting,
   TFile,
 } from "obsidian";
-import type { IndexMode, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
+import type { IndexMode, LocalFsAccessMode, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -58,6 +58,10 @@ type VaultMcpPluginSettings = {
   localServerCredentialsCreatedAt: string | null;
   localServerProjectDir: string;
   localServerCommand: string;
+  localFsAccessMode: LocalFsAccessMode;
+  localFsReadRoots: string[];
+  localFsWriteRoots: string[];
+  localFsMaxReadBytes: number;
 };
 
 type SyncHistoryEntry = {
@@ -168,6 +172,10 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localServerCredentialsCreatedAt: null,
   localServerProjectDir: "",
   localServerCommand: "npm",
+  localFsAccessMode: "off",
+  localFsReadRoots: [],
+  localFsWriteRoots: [],
+  localFsMaxReadBytes: 512 * 1024,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -280,6 +288,10 @@ export default class VaultMcpPlugin extends Plugin {
       localServerCredentialsCreatedAt: saved?.localServerCredentialsCreatedAt ?? DEFAULT_SETTINGS.localServerCredentialsCreatedAt,
       localServerProjectDir: saved?.localServerProjectDir ?? DEFAULT_SETTINGS.localServerProjectDir,
       localServerCommand: saved?.localServerCommand ?? DEFAULT_SETTINGS.localServerCommand,
+      localFsAccessMode: saved?.localFsAccessMode ?? DEFAULT_SETTINGS.localFsAccessMode,
+      localFsReadRoots: saved?.localFsReadRoots ?? DEFAULT_SETTINGS.localFsReadRoots,
+      localFsWriteRoots: saved?.localFsWriteRoots ?? DEFAULT_SETTINGS.localFsWriteRoots,
+      localFsMaxReadBytes: saved?.localFsMaxReadBytes ?? DEFAULT_SETTINGS.localFsMaxReadBytes,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -1466,6 +1478,55 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       }));
 
   new Setting(parent)
+    .setName("Local filesystem access")
+    .setDesc("Default is off. Read and write modes stay inside configured roots. God mode removes root limits for this localhost server.")
+    .addDropdown((dropdown) => dropdown
+      .addOption("off", "Off")
+      .addOption("read", "Read inside roots")
+      .addOption("write", "Read/write inside roots")
+      .addOption("god", "God mode")
+      .setValue(plugin.settings.localFsAccessMode)
+      .onChange(async (value) => {
+        plugin.settings.localFsAccessMode = value as LocalFsAccessMode;
+        await plugin.saveSettings();
+      }));
+
+  const vaultBasePath = getVaultBasePath(plugin.app);
+  addListSetting(parent, "Local filesystem read roots", "Absolute folders the local MCP server may list and read. Leave empty when access is off or when using god mode.", plugin.settings.localFsReadRoots, async (values) => {
+    plugin.settings.localFsReadRoots = values;
+    await plugin.saveSettings();
+  });
+  addRootShortcut(parent, "Use vault folder for read root", vaultBasePath, async (root) => {
+    plugin.settings.localFsReadRoots = uniqueStrings([...plugin.settings.localFsReadRoots, root]);
+    await plugin.saveSettings();
+    openPluginSettings(plugin.app, plugin);
+  });
+
+  addListSetting(parent, "Local filesystem write roots", "Absolute folders the local MCP server may write to when write mode is enabled. Keep this narrower than read roots unless you deliberately need broad write access.", plugin.settings.localFsWriteRoots, async (values) => {
+    plugin.settings.localFsWriteRoots = values;
+    await plugin.saveSettings();
+  });
+  addRootShortcut(parent, "Use vault folder for write root", vaultBasePath, async (root) => {
+    plugin.settings.localFsWriteRoots = uniqueStrings([...plugin.settings.localFsWriteRoots, root]);
+    await plugin.saveSettings();
+    openPluginSettings(plugin.app, plugin);
+  });
+
+  new Setting(parent)
+    .setName("Local max read bytes")
+    .setDesc("Upper bound for one local_read_file result. The server also caps tool-provided max_bytes to this value.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxReadBytes))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxReadBytes = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxReadBytes;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
     .setName("Local credentials")
     .setDesc("Generates separate local-only tokens for MCP clients and plugin/admin sync. These are for the future sidecar and developer launcher.")
     .addButton((button) => button
@@ -1518,6 +1579,28 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         plugin.settings.localServerKeepAlive = value;
         await plugin.saveSettings();
       }));
+}
+
+function addRootShortcut(parent: HTMLElement, name: string, root: string | null, onUse: (root: string) => Promise<void>) {
+  if (!root) {
+    return;
+  }
+  new Setting(parent)
+    .setName(name)
+    .setDesc(root)
+    .addButton((button) => button
+      .setButtonText("Add")
+      .onClick(() => void onUse(root)));
+}
+
+function getVaultBasePath(app: App): string | null {
+  const adapter = app.vault.adapter as { getBasePath?: () => string };
+  const basePath = adapter.getBasePath?.();
+  return basePath?.trim() || null;
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function addConfigurationChecklist(parent: HTMLElement, settings: VaultMcpPluginSettings) {

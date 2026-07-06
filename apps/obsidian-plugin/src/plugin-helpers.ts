@@ -1,4 +1,5 @@
 import type { SyncPayload } from "@vault-mcp/core";
+import type { LocalFsAccessMode } from "@vault-mcp/core";
 
 export type SyncResultSummary = {
   message: string;
@@ -27,6 +28,10 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localServerCredentialsCreatedAt?: string | null;
   localServerProjectDir?: string;
   localServerCommand?: string;
+  localFsAccessMode?: LocalFsAccessMode;
+  localFsReadRoots?: string[];
+  localFsWriteRoots?: string[];
+  localFsMaxReadBytes?: number;
 };
 
 export type PluginSafetyDisclosure = {
@@ -435,6 +440,9 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
       `Developer project folder: ${settings.localServerProjectDir?.trim() || "not configured"}`,
       `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
+      `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,
+      `Local filesystem read roots: ${settings.localFsReadRoots?.length ? settings.localFsReadRoots.join(", ") : "none"}`,
+      `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,
     ]),
   };
 }
@@ -461,6 +469,7 @@ export function buildLocalServerLaunchCommand(settings: PluginConfigurationSetti
     shellQuote(mcpToken),
     "--sync-token",
     shellQuote(syncToken),
+    ...localFsLaunchArgs(settings, true),
   ].join(" ");
   const projectDir = settings.localServerProjectDir?.trim();
   return projectDir ? `cd ${shellQuote(projectDir)} && ${launch}` : launch;
@@ -488,8 +497,32 @@ export function buildLocalServerSpawnConfig(settings: PluginConfigurationSetting
       mcpToken,
       "--sync-token",
       syncToken,
+      ...localFsLaunchArgs(settings, false),
     ],
   };
+}
+
+function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean): string[] {
+  const mode = settings.localFsAccessMode ?? "off";
+  if (mode === "off") {
+    return [];
+  }
+  const args = ["--fs-access", quote ? shellQuote(mode) : mode];
+  const readRoots = settings.localFsReadRoots?.filter(Boolean) ?? [];
+  const writeRoots = settings.localFsWriteRoots?.filter(Boolean) ?? [];
+  if (readRoots.length > 0) {
+    const value = readRoots.join(",");
+    args.push("--fs-roots", quote ? shellQuote(value) : value);
+  }
+  if (writeRoots.length > 0) {
+    const value = writeRoots.join(",");
+    args.push("--fs-write-roots", quote ? shellQuote(value) : value);
+  }
+  if (settings.localFsMaxReadBytes) {
+    const value = String(settings.localFsMaxReadBytes);
+    args.push("--fs-max-read-bytes", quote ? shellQuote(value) : value);
+  }
+  return args;
 }
 
 function managedLocalServerCommand(command: string): string {
