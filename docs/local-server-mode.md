@@ -153,11 +153,14 @@ still future work. After spawning the local profile, the plugin waits for
 fails, it stops the child process and leaves local mode disabled. It also
 requires the health response to identify `vault-mcp-connector`, match the
 plugin manifest version, and advertise the expected localhost MCP endpoint, so
-a stale or unrelated process on the same port is not treated as ready. The repo
-also includes `npm run local-server`, which starts the existing server with
-localhost-only defaults, JSON storage, generated or provided local tokens, and
-MCP Inspector origins. `npm run smoke:local-server` verifies that profile
-against the synthetic `fixtures/vault` demo vault.
+a stale or unrelated process on the same port is not treated as ready. Start
+treats the configured port as preferred: if that port is free it uses it, if a
+compatible Vault MCP server is already listening it reuses that server, and if
+the port is occupied by something incompatible it scans upward for the next
+available port. The repo also includes `npm run local-server`, which starts the
+existing server with localhost-only defaults, JSON storage, generated or
+provided local tokens, and MCP Inspector origins. `npm run smoke:local-server`
+verifies that profile against the synthetic `fixtures/vault` demo vault.
 
 Developer local-server start:
 
@@ -261,7 +264,7 @@ fallback.
 ### Slice 3 - Plugin Lifecycle
 
 - [x] Start/stop the Node-required developer sidecar from the plugin.
-- Auto-select a port.
+- [x] Auto-select a port.
 - [x] Generate local tokens for the developer launch path.
 - [x] Health-check the sidecar before marking local mode ready.
 - [x] Version-check the sidecar before marking local mode ready.

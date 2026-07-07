@@ -153,6 +153,7 @@ export type LocalServerSpawnConfig = {
   cwd: string;
 };
 
+const DEFAULT_LOCAL_SERVER_PORT = 38791;
 const EXPECTED_LOCAL_SERVICE_NAME = "vault-mcp-connector";
 
 type VaultSyncResponse = {
@@ -560,6 +561,20 @@ export function buildLocalServerSpawnConfig(settings: PluginConfigurationSetting
       ...localFsLaunchArgs(settings, false),
     ],
   };
+}
+
+export function localServerPortCandidates(preferredPort: number | undefined, scanLimit = 30): number[] {
+  const firstPort = normalizeLocalServerPort(preferredPort) ?? DEFAULT_LOCAL_SERVER_PORT;
+  const limit = Math.max(1, Math.trunc(scanLimit));
+  const candidates: number[] = [];
+  for (let offset = 0; offset < limit; offset += 1) {
+    const candidate = firstPort + offset;
+    if (candidate > 65535) {
+      break;
+    }
+    candidates.push(candidate);
+  }
+  return candidates;
 }
 
 export function validateLocalServerCompatibility(

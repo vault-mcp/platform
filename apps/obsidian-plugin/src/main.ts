@@ -8,6 +8,7 @@ import {
   buildLocalServerSpawnConfig,
   describeCaughtError,
   describeHttpFailure,
+  localServerPortCandidates,
   normalizeServerBaseUrl,
   parsePluginSetupBundle,
   pluginConfigurationChecklist,
@@ -110,8 +111,25 @@ type FsModule = {
   existsSync(path: string): boolean;
 };
 
+type NetSocket = {
+  once(event: "connect" | "error", listener: () => void): NetSocket;
+  setTimeout(timeout: number, listener: () => void): NetSocket;
+  destroy(): void;
+};
+
+type NetModule = {
+  createConnection(options: { host: string; port: number }): NetSocket;
+};
+
 type PathModule = {
   join(...segments: string[]): string;
+};
+
+type LocalPortSelection = {
+  port: number;
+  reused: boolean;
+  health: PluginServerHealthSnapshot | null;
+  message: string;
 };
 
 type SyncSummary = {
@@ -354,17 +372,32 @@ export default class VaultMcpPlugin extends Plugin {
       await this.generateLocalServerCredentials();
     }
 
-    const config = buildLocalServerSpawnConfig(this.localServerSettingsWithSidecar());
-    if (!config) {
-      const message = "Set the local server project folder, command, valid port, and local credentials before starting the developer local server.";
-      await this.addHistory({ type: "error", message });
-      new Notice(`Vault MCP: ${message}`);
-      this.settings.localServerModeEnabled = false;
-      await this.saveSettings();
-      return;
-    }
-
     try {
+      const portSelection = await selectLocalServerPort(this.settings, this.manifest.version);
+      if (portSelection.port !== this.settings.localServerPort) {
+        this.settings.localServerPort = portSelection.port;
+        await this.saveSettings();
+      }
+      await this.addHistory({ type: "local-server", message: portSelection.message });
+      if (portSelection.reused && portSelection.health) {
+        this.localServerStartedAt = new Date().toISOString();
+        this.localServerHealth = portSelection.health;
+        this.settings.localServerModeEnabled = true;
+        await this.saveSettings();
+        new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
+        return;
+      }
+
+      const config = buildLocalServerSpawnConfig(this.localServerSettingsWithSidecar());
+      if (!config) {
+        const message = "Set the local server project folder, command, valid port, and local credentials before starting the developer local server.";
+        await this.addHistory({ type: "error", message });
+        new Notice(`Vault MCP: ${message}`);
+        this.settings.localServerModeEnabled = false;
+        await this.saveSettings();
+        return;
+      }
+
       const child = spawnLocalServerProcess(config);
       this.localServerProcess = child;
       this.localServerStartedAt = new Date().toISOString();
@@ -418,6 +451,15 @@ export default class VaultMcpPlugin extends Plugin {
   async stopLocalServer(reason = "Stopped by user.") {
     const child = this.localServerProcess;
     if (!child) {
+      if (this.settings.localServerModeEnabled || this.localServerHealth) {
+        this.localServerStartedAt = null;
+        this.localServerHealth = null;
+        this.settings.localServerModeEnabled = false;
+        await this.saveSettings();
+        await this.addHistory({ type: "local-server", message: "Disconnected from the compatible local server. No Obsidian-owned process was running." });
+        new Notice("Vault MCP local server disconnected. No Obsidian-owned process was running.");
+        return;
+      }
       this.settings.localServerModeEnabled = false;
       await this.saveSettings();
       new Notice("Vault MCP local server is not running.");
@@ -1487,7 +1529,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Run local MCP server")
-    .setDesc("Starts or stops the Node-required developer local server profile. The packaged sidecar is still future work.")
+    .setDesc("Starts or stops the packaged local sidecar when available, or the Node-required developer local server profile as a fallback.")
     .addToggle((toggle) => toggle
       .setValue(Boolean(plugin.localServerProcess) || plugin.settings.localServerModeEnabled)
       .onChange(async (value) => {
@@ -1501,7 +1543,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Local server port")
-    .setDesc("Future localhost port for the sidecar. The planned default is 38791.")
+    .setDesc("Preferred localhost port. If it is occupied, start scans upward for the next available compatible port.")
     .addText((text) => {
       text.inputEl.type = "number";
       text.inputEl.min = "1024";
@@ -1516,7 +1558,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Local server data folder")
-    .setDesc("Future local JSON storage folder for the sidecar. Relative paths resolve from the repo for developer testing.")
+    .setDesc("Local JSON storage folder for the sidecar. Relative paths resolve from the sidecar folder or repo profile.")
     .addText((text) => text
       .setValue(plugin.settings.localServerDataDir)
       .onChange(async (value) => {
@@ -1664,9 +1706,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Developer server session")
-    .setDesc(plugin.localServerProcess
-      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"})` : "; waiting for health and version check"}. Refresh restarts the local server with a new filesystem access window.`
-      : "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.")
+    .setDesc(localServerSessionDescription(plugin))
     .addButton((button) => button
       .setButtonText("Start")
       .setCta()
@@ -1684,7 +1724,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       }))
     .addButton((button) => button
       .setButtonText("Stop")
-      .setDisabled(!plugin.localServerProcess)
+      .setDisabled(!plugin.localServerProcess && !plugin.settings.localServerModeEnabled)
       .onClick(async () => {
         await plugin.stopLocalServer();
         openPluginSettings(plugin.app, plugin);
@@ -1699,6 +1739,16 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         plugin.settings.localServerKeepAlive = value;
         await plugin.saveSettings();
       }));
+}
+
+function localServerSessionDescription(plugin: VaultMcpPlugin): string {
+  if (plugin.localServerProcess) {
+    return `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"})` : "; waiting for health and version check"}. Refresh restarts the local server with a new filesystem access window.`;
+  }
+  if (plugin.settings.localServerModeEnabled && plugin.localServerHealth) {
+    return `Connected to an existing compatible local server on ${localServerEndpoint(plugin.settings)} (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"}). Stop disconnects this plugin; it cannot stop a process started outside this Obsidian session.`;
+  }
+  return "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.";
 }
 
 function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPlugin) {
@@ -2130,30 +2180,95 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function selectLocalServerPort(settings: VaultMcpPluginSettings, expectedVersion: string): Promise<LocalPortSelection> {
+  const candidates = localServerPortCandidates(settings.localServerPort);
+  let lastOccupiedReason: string | null = null;
+  for (const port of candidates) {
+    const candidateSettings = { ...settings, localServerPort: port };
+    const portOpen = await isLocalTcpPortOpen(port);
+    if (!portOpen) {
+      const preferredPort = candidates[0];
+      return {
+        port,
+        reused: false,
+        health: null,
+        message: port === preferredPort
+          ? `Local server port ${port} is available.`
+          : `Local server port ${preferredPort} is occupied; selected available port ${port}.`,
+      };
+    }
+
+    try {
+      const health = await fetchLocalServerHealth(candidateSettings);
+      const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(candidateSettings));
+      if (compatibility.ok) {
+        return {
+          port,
+          reused: true,
+          health,
+          message: `Reusing compatible local server on ${localServerEndpoint(candidateSettings)}.`,
+        };
+      }
+      lastOccupiedReason = `port ${port}: ${compatibility.message}`;
+    } catch (error) {
+      lastOccupiedReason = `port ${port}: ${describeCaughtError("local server port check", error)}`;
+    }
+  }
+
+  throw new Error(`No local server port was available from ${candidates[0]} to ${candidates[candidates.length - 1]}. ${lastOccupiedReason ?? ""}`.trim());
+}
+
 async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, expectedVersion: string, timeoutMs = 6000): Promise<PluginServerHealthSnapshot> {
   const deadline = Date.now() + timeoutMs;
   let lastError = "Local server did not answer /healthz yet.";
   while (Date.now() < deadline) {
     try {
-      const response = await requestUrl({
-        url: localServerHealthUrl(settings),
-        method: "GET",
-      });
-      if (response.status >= 200 && response.status < 300) {
-        const health = parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
-        const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(settings));
-        if (!compatibility.ok) {
-          throw new Error(compatibility.message);
-        }
-        return health;
+      const health = await fetchLocalServerHealth(settings);
+      const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(settings));
+      if (!compatibility.ok) {
+        throw new Error(compatibility.message);
       }
-      lastError = describeHttpFailure("local server health check", response.status, response.text);
+      return health;
     } catch (error) {
       lastError = describeCaughtError("local server health check", error);
     }
     await delay(250);
   }
   throw new Error(`Local server did not become healthy and compatible at ${localServerHealthUrl(settings)} within ${timeoutMs}ms. ${lastError}`);
+}
+
+async function fetchLocalServerHealth(settings: VaultMcpPluginSettings): Promise<PluginServerHealthSnapshot> {
+  const response = await requestUrl({
+    url: localServerHealthUrl(settings),
+    method: "GET",
+  });
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(describeHttpFailure("local server health check", response.status, response.text));
+  }
+  return parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
+}
+
+async function isLocalTcpPortOpen(port: number, timeoutMs = 250): Promise<boolean> {
+  try {
+    const net = requireNodeModule<NetModule>("net");
+    return await new Promise<boolean>((resolve) => {
+      let settled = false;
+      const socket = net.createConnection({ host: "127.0.0.1", port });
+      const finish = (open: boolean) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        socket.destroy();
+        resolve(open);
+      };
+      socket.once("connect", () => finish(true));
+      socket.once("error", () => finish(false));
+      socket.setTimeout(timeoutMs, () => finish(false));
+    });
+  } catch {
+    return false;
+  }
 }
 
 function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {

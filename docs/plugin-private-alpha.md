@@ -86,7 +86,9 @@ profile after the tester configures the platform repo folder and npm command.
 After spawning the local profile, the plugin waits for `/healthz` and only marks
 the local server ready when the response names `vault-mcp-connector`, matches
 the plugin version, reports healthy storage, and advertises the expected
-localhost MCP endpoint.
+localhost MCP endpoint. If the preferred local port is already occupied, start
+will reuse a compatible Vault MCP server on that port or scan upward to the next
+available port before spawning a new sidecar.
 This is still not the final public binary sidecar: non-developer users should
 not need to think about Node once platform-native sidecars exist. Verify the
 profile with `npm run smoke:local-server`. See

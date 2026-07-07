@@ -11,6 +11,7 @@ import {
   pluginLocalServerStatus,
   pluginSafetyDisclosure,
   pluginSetupGuide,
+  localServerPortCandidates,
   summarizeServerStatus,
   summarizeSyncResponse,
   validateLocalServerCompatibility,
@@ -217,6 +218,13 @@ describe("plugin helpers", () => {
     expect(status.status).toBe("invalid");
     expect(status.endpoint).toContain("1024");
     expect(status.canStart).toBe(false);
+  });
+
+  it("builds local server port candidates from the preferred port", () => {
+    expect(localServerPortCandidates(38791, 4)).toEqual([38791, 38792, 38793, 38794]);
+    expect(localServerPortCandidates(80, 3)).toEqual([38791, 38792, 38793]);
+    expect(localServerPortCandidates(65534, 5)).toEqual([65534, 65535]);
+    expect(localServerPortCandidates(38791, 0)).toEqual([38791]);
   });
 
   it("reports generated local credentials and data folder", () => {
