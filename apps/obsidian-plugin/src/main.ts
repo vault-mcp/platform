@@ -4,6 +4,7 @@ import {
   buildDiffPreview,
 } from "./write-helpers";
 import {
+  buildLocalClientConnectionBundle,
   buildLocalServerLaunchCommand,
   buildLocalServerSpawnConfig,
   describeCaughtError,
@@ -1696,6 +1697,17 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
     .addButton((button) => button
       .setButtonText("Copy sync token")
       .onClick(() => void copyToClipboard("local sync token", plugin.settings.localServerSyncToken)));
+
+  const localClientBundle = buildLocalClientConnectionBundle(plugin.settings);
+  new Setting(parent)
+    .setName("Local client connection")
+    .setDesc("Copy values for local-capable MCP clients. This includes the local MCP client token, never the plugin/admin sync token.")
+    .addButton((button) => button
+      .setButtonText("Copy auth header")
+      .onClick(() => void copyToClipboard("local MCP authorization header", localClientBundle?.authorization_header ?? "")))
+    .addButton((button) => button
+      .setButtonText("Copy JSON")
+      .onClick(() => void copyToClipboard("local MCP client JSON", localClientBundle ? JSON.stringify(localClientBundle, null, 2) : "")));
 
   new Setting(parent)
     .setName("Developer launch command")

@@ -138,6 +138,28 @@ export type LocalServerCompatibilityCheck = {
   message: string;
 };
 
+export type LocalClientConnectionBundle = {
+  type: "vault-mcp-local-client";
+  version: 1;
+  endpoint: string;
+  authorization_header: string;
+  token_type: "Bearer";
+  bearer_token: string;
+  suggested_server_name: string;
+  notes: string[];
+  example_mcp_config: {
+    mcpServers: {
+      "vault-mcp-local": {
+        type: "http";
+        url: string;
+        headers: {
+          Authorization: string;
+        };
+      };
+    };
+  };
+};
+
 export type PluginLocalServerStatus = {
   status: "planned" | "invalid";
   title: string;
@@ -575,6 +597,41 @@ export function localServerPortCandidates(preferredPort: number | undefined, sca
     candidates.push(candidate);
   }
   return candidates;
+}
+
+export function buildLocalClientConnectionBundle(settings: PluginConfigurationSettings): LocalClientConnectionBundle | null {
+  const port = normalizeLocalServerPort(settings.localServerPort);
+  const token = settings.localServerMcpToken?.trim();
+  if (!port || !token) {
+    return null;
+  }
+  const endpoint = `http://127.0.0.1:${port}/mcp`;
+  const authorization = `Bearer ${token}`;
+  return {
+    type: "vault-mcp-local-client",
+    version: 1,
+    endpoint,
+    authorization_header: authorization,
+    token_type: "Bearer",
+    bearer_token: token,
+    suggested_server_name: "vault-mcp-local",
+    notes: [
+      "Use this only with local-capable MCP clients that can reach 127.0.0.1 on this computer.",
+      "This bundle intentionally includes the local MCP client token, not the plugin/admin sync token.",
+      "Keep Obsidian running while the local server is needed.",
+    ],
+    example_mcp_config: {
+      mcpServers: {
+        "vault-mcp-local": {
+          type: "http",
+          url: endpoint,
+          headers: {
+            Authorization: authorization,
+          },
+        },
+      },
+    },
+  };
 }
 
 export function validateLocalServerCompatibility(

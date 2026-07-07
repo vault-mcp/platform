@@ -274,7 +274,9 @@ npm command as a fallback. The plugin waits for `/healthz` and requires the
 local service name, version, storage status, and MCP endpoint to match before it
 marks the sidecar ready. The configured local port is treated as preferred; the
 plugin can reuse a compatible existing local server or scan upward to the next
-available port before spawning. Verify the same profile with
+available port before spawning. The plugin can also copy a local client
+connection bundle with the localhost endpoint and bearer auth header; it does
+not include the plugin/admin sync token. Verify the same profile with
 `npm run smoke:local-server`. The explicit local
 filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
 read/write roots, denied outside paths, destructive confirmation, session

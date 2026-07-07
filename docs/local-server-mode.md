@@ -239,9 +239,13 @@ These printed tokens are local secrets. Do not paste them into docs,
 screenshots, or chat transcripts. The current plugin can generate and store
 these values, copy a launch command that passes them to the packaged or
 developer local profile, and start or stop that local profile from the plugin.
-The ZIP package removes the repo-folder requirement by including a bundled Node
-sidecar; BRAT/dev installs without that folder still use the developer repo
-fallback.
+It can also copy a local client connection bundle for local-capable MCP clients:
+the bundle includes the localhost `/mcp` endpoint, an `Authorization: Bearer ...`
+header built from the local MCP client token, and a generic `mcpServers`
+configuration example. It intentionally does not include the plugin/admin sync
+token. The ZIP package removes the repo-folder requirement by including a
+bundled Node sidecar; BRAT/dev installs without that folder still use the
+developer repo fallback.
 
 ### Slice 1 - Design And Compatibility
 

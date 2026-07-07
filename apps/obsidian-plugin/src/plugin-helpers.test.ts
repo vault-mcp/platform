@@ -3,6 +3,7 @@ import type { LocalFsWriteOperation, SyncPayload } from "@vault-mcp/core";
 import {
   buildLocalServerLaunchCommand,
   buildLocalServerSpawnConfig,
+  buildLocalClientConnectionBundle,
   describeCaughtError,
   describeHttpFailure,
   normalizeServerBaseUrl,
@@ -252,6 +253,40 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local data folder: Plugin Data/Local Server");
     expect(status.facts.join("\n")).toContain("Developer project folder: /Users/example/vault-mcp/platform");
     expect(status.facts.join("\n")).toContain("Developer command: /opt/homebrew/bin/npm");
+  });
+
+  it("builds a local client connection bundle without exposing the sync token", () => {
+    const bundle = buildLocalClientConnectionBundle({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "remote-sync-secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerMcpToken: "mcp-local-token",
+      localServerSyncToken: "sync-local-token",
+    });
+
+    expect(bundle?.endpoint).toBe("http://127.0.0.1:38791/mcp");
+    expect(bundle?.authorization_header).toBe("Bearer mcp-local-token");
+    expect(bundle?.example_mcp_config.mcpServers["vault-mcp-local"].headers.Authorization).toBe("Bearer mcp-local-token");
+    expect(JSON.stringify(bundle)).not.toContain("sync-local-token");
+    expect(JSON.stringify(bundle)).not.toContain("remote-sync-secret");
+    expect(buildLocalClientConnectionBundle({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "remote-sync-secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 80,
+      localServerMcpToken: "mcp-local-token",
+    })).toBeNull();
   });
 
   it("builds local server launch and spawn commands only when credentials are ready", () => {
