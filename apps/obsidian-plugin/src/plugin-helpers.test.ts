@@ -348,6 +348,7 @@ describe("plugin helpers", () => {
       localFsMaxReadBytes: 4096,
       localFsMaxSearchResults: 25,
       localFsMaxSearchFiles: 500,
+      localFsAccessTtlMinutes: 45,
     };
 
     const status = pluginLocalServerStatus(settings);
@@ -356,6 +357,7 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local filesystem write roots: /Users/example/Vault One");
     expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, create_directory, move_path, delete_path");
     expect(status.facts.join("\n")).toContain("Local filesystem search caps: 25 results, 500 files");
+    expect(status.facts.join("\n")).toContain("Local filesystem session: 45 minute window");
 
     const command = buildLocalServerLaunchCommand(settings);
     expect(command).toContain("--fs-access 'write'");
@@ -365,6 +367,7 @@ describe("plugin helpers", () => {
     expect(command).toContain("--fs-max-read-bytes '4096'");
     expect(command).toContain("--fs-max-search-results '25'");
     expect(command).toContain("--fs-max-search-files '500'");
+    expect(command).toContain("--fs-access-ttl-minutes '45'");
 
     expect(buildLocalServerSpawnConfig(settings)?.args).toEqual([
       "scripts/start-local-server.mjs",
@@ -390,6 +393,8 @@ describe("plugin helpers", () => {
       "25",
       "--fs-max-search-files",
       "500",
+      "--fs-access-ttl-minutes",
+      "45",
     ]);
   });
 

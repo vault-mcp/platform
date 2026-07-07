@@ -30,7 +30,10 @@ The local desktop/developer server can additionally expose `local_fs_policy`,
 `local_delete_path`. Read modes can also expose `local_find_files` and
 `local_search_text` for on-demand local discovery without building an index.
 These tools are off by default and are intended for explicit user-directed
-local interactions, not automatic vault enumeration.
+local interactions, not automatic vault enumeration. The plugin launcher can
+time-box enabled filesystem access with a session expiry window; once expired,
+the local MCP surface falls back to `local_fs_policy` only until the server is
+restarted or refreshed.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear
@@ -126,7 +129,7 @@ npm run release:check:local
 ```
 
 That command runs build, API check, tests, MCP UI smoke, local filesystem MCP
-smoke, local MCP Inspector-origin smoke, audit, plugin
+smoke including session-expiry behavior, local MCP Inspector-origin smoke, audit, plugin
 package/verify/BRAT/fresh-install/lifecycle checks, clean-env local smoke, and
 OAuth local smoke. It does not regenerate the wiki, run production smokes, or
 replace real MCP client acceptance.
@@ -268,8 +271,9 @@ generate local credentials in the plugin, configure the platform repo folder and
 npm command, start or stop the Node-required local profile from the plugin, and
 verify the same profile with `npm run smoke:local-server`. The explicit local
 filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
-read/write roots, denied outside paths, destructive confirmation, and god-mode
-absolute-path access in temporary directories. `npm run smoke:local-inspector`
+read/write roots, denied outside paths, destructive confirmation, session
+expiry, and god-mode absolute-path access in temporary directories.
+`npm run smoke:local-inspector`
 checks the MCP Inspector localhost origins, preflight behavior, authenticated
 SSE, forbidden-origin rejection, and local filesystem tool calls through an
 Inspector-origin request.

@@ -35,6 +35,7 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localFsMaxReadBytes?: number;
   localFsMaxSearchResults?: number;
   localFsMaxSearchFiles?: number;
+  localFsAccessTtlMinutes?: number;
 };
 
 export type PluginSafetyDisclosure = {
@@ -448,6 +449,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,
       `Local filesystem write operations: ${settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
       `Local filesystem search caps: ${settings.localFsMaxSearchResults ?? 100} results, ${settings.localFsMaxSearchFiles ?? 2000} files`,
+      `Local filesystem session: ${(settings.localFsAccessTtlMinutes ?? 0) > 0 ? `${settings.localFsAccessTtlMinutes} minute window` : "no automatic expiry"}`,
     ]),
   };
 }
@@ -539,6 +541,10 @@ function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean
   if (settings.localFsMaxSearchFiles) {
     const value = String(settings.localFsMaxSearchFiles);
     args.push("--fs-max-search-files", quote ? shellQuote(value) : value);
+  }
+  if ((settings.localFsAccessTtlMinutes ?? 0) > 0) {
+    const value = String(settings.localFsAccessTtlMinutes);
+    args.push("--fs-access-ttl-minutes", quote ? shellQuote(value) : value);
   }
   return args;
 }

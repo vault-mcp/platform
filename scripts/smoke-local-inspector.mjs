@@ -39,6 +39,8 @@ const server = spawn(process.execPath, [
   writeRoot,
   "--fs-write-operations",
   "write_file,create_directory,move_path,delete_path",
+  "--fs-access-ttl-minutes",
+  "30",
 ], {
   cwd: repoRoot,
   env: process.env,
@@ -70,6 +72,8 @@ try {
 
   const policy = await callTool(2, "local_fs_policy", {}, inspectorOrigins[0]);
   assert(policy.result.structuredContent.mode === "write", "expected Inspector smoke write policy");
+  assert(typeof policy.result.structuredContent.expires_at === "string", "expected Inspector smoke expiry timestamp");
+  assert(policy.result.structuredContent.expired === false, "expected Inspector smoke active filesystem access");
 
   const search = await callTool(3, "local_search_text", {
     root: readRoot,

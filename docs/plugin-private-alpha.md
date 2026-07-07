@@ -95,9 +95,11 @@ enable file writes, directory creation, move/rename, and deletion. Deletion
 still requires an explicit confirmation string in the MCP tool call. Read mode
 also exposes on-demand file discovery and text search through policy-capped
 local tools, so a user can ask a local-capable MCP client to inspect the vault
-without first syncing every note into the remote index. These settings only
-affect the localhost developer server profile; the hosted server remains
-derived-index-only and read-only.
+without first syncing every note into the remote index. Testers can also set a
+local access session window; after it expires, the local MCP server advertises
+only `local_fs_policy` until the server is restarted or refreshed. These
+settings only affect the localhost developer server profile; the hosted server
+remains derived-index-only and read-only.
 
 ## Safe Test Install
 

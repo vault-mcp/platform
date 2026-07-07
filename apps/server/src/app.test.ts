@@ -301,6 +301,7 @@ describe("server MCP contract", () => {
         max_read_bytes: 512,
         max_search_results: 10,
         max_search_files: 100,
+        expires_at: null,
       },
     });
     const server = await listen(createApp(config, store));
@@ -328,6 +329,8 @@ describe("server MCP contract", () => {
       write_operations: [],
       max_search_results: 10,
       max_search_files: 100,
+      expires_at: null,
+      expired: false,
       god_mode: false,
     });
 
@@ -385,6 +388,43 @@ describe("server MCP contract", () => {
     expect(deniedSearch.result.isError).toBe(true);
   });
 
+  it("exposes only the local filesystem policy when local filesystem access is expired", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-expired-"));
+    const expiredAt = "2000-01-01T00:00:00.000Z";
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "read",
+        read_roots: [root],
+        write_roots: [],
+        write_operations: ["write_file"],
+        max_read_bytes: 512,
+        max_search_results: 10,
+        max_search_files: 100,
+        expires_at: expiredAt,
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 105, "tools/list", {});
+    const toolNames = tools.result.tools?.map((tool) => tool.name);
+    expect(toolNames).toContain("local_fs_policy");
+    expect(toolNames).not.toContain("local_read_file");
+    expect(toolNames).not.toContain("local_search_text");
+
+    const policy = await mcp(baseUrl, accessToken, 106, "tools/call", {
+      name: "local_fs_policy",
+      arguments: {},
+    });
+    expect(policy.result.structuredContent).toMatchObject({
+      mode: "read",
+      expires_at: expiredAt,
+      expired: true,
+    });
+  });
+
   it("exposes local filesystem write tools only inside configured write roots", async () => {
     const { store, indexFile } = await createStore();
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-write-"));
@@ -398,6 +438,7 @@ describe("server MCP contract", () => {
         max_read_bytes: 512,
         max_search_results: 100,
         max_search_files: 2000,
+        expires_at: null,
       },
     });
     const server = await listen(createApp(config, store));
@@ -1098,6 +1139,7 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
       max_read_bytes: 512 * 1024,
       max_search_results: 100,
       max_search_files: 2000,
+      expires_at: null,
     },
     ...overrides,
   };

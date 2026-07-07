@@ -65,6 +65,7 @@ type VaultMcpPluginSettings = {
   localFsMaxReadBytes: number;
   localFsMaxSearchResults: number;
   localFsMaxSearchFiles: number;
+  localFsAccessTtlMinutes: number;
 };
 
 type SyncHistoryEntry = {
@@ -182,6 +183,7 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localFsMaxReadBytes: 512 * 1024,
   localFsMaxSearchResults: 100,
   localFsMaxSearchFiles: 2000,
+  localFsAccessTtlMinutes: 120,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -301,6 +303,7 @@ export default class VaultMcpPlugin extends Plugin {
       localFsMaxReadBytes: saved?.localFsMaxReadBytes ?? DEFAULT_SETTINGS.localFsMaxReadBytes,
       localFsMaxSearchResults: saved?.localFsMaxSearchResults ?? DEFAULT_SETTINGS.localFsMaxSearchResults,
       localFsMaxSearchFiles: saved?.localFsMaxSearchFiles ?? DEFAULT_SETTINGS.localFsMaxSearchFiles,
+      localFsAccessTtlMinutes: saved?.localFsAccessTtlMinutes ?? DEFAULT_SETTINGS.localFsAccessTtlMinutes,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -1561,6 +1564,20 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         .onChange(async (value) => {
           const parsed = Number.parseInt(value, 10);
           plugin.settings.localFsMaxSearchFiles = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxSearchFiles;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local access session minutes")
+    .setDesc("Expiry window for the next local server start. Use 0 only when you deliberately want filesystem access to stay available until the server stops.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "0";
+      text.setValue(String(plugin.settings.localFsAccessTtlMinutes))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsAccessTtlMinutes = Number.isInteger(parsed) && parsed >= 0 ? parsed : DEFAULT_SETTINGS.localFsAccessTtlMinutes;
           await plugin.saveSettings();
         });
     });

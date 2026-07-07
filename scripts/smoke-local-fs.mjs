@@ -14,11 +14,13 @@ const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-fs-smo
 try {
   const scoped = await runScopedWriteModeSmoke();
   const god = await runGodModeSmoke();
+  const expired = await runExpiredAccessSmoke();
   console.log(JSON.stringify({
     ok: true,
     purpose: "local filesystem MCP smoke",
     scoped,
     god,
+    expired,
   }, null, 2));
 } finally {
   await fs.rm(tempRoot, { recursive: true, force: true });
@@ -50,6 +52,7 @@ async function runScopedWriteModeSmoke() {
       "--fs-max-read-bytes", "256",
       "--fs-max-search-results", "5",
       "--fs-max-search-files", "20",
+      "--fs-access-ttl-minutes", "30",
     ],
   }, async ({ baseUrl }) => {
     const tools = await mcp(baseUrl, 1, "tools/list", {});
@@ -74,6 +77,8 @@ async function runScopedWriteModeSmoke() {
     assert(policy.result.structuredContent.write_roots.includes(writeRoot), "expected scoped write root");
     assert(policy.result.structuredContent.max_search_results === 5, "expected max search results cap");
     assert(policy.result.structuredContent.max_search_files === 20, "expected max search files cap");
+    assert(typeof policy.result.structuredContent.expires_at === "string", "expected scoped access expiry timestamp");
+    assert(policy.result.structuredContent.expired === false, "expected scoped access to be active");
 
     const list = await callTool(baseUrl, 3, "local_list_files", { path: readRoot });
     assert(list.result.structuredContent.entries.some((entry) => entry.name === "20 Projects"), "expected read root listing");
@@ -163,11 +168,14 @@ async function runGodModeSmoke() {
       "--fs-max-read-bytes", "512",
       "--fs-max-search-results", "10",
       "--fs-max-search-files", "50",
+      "--fs-access-ttl-minutes", "30",
     ],
   }, async ({ baseUrl }) => {
     const policy = await callTool(baseUrl, 101, "local_fs_policy", {});
     assert(policy.result.structuredContent.mode === "god", "expected god mode");
     assert(policy.result.structuredContent.god_mode === true, "expected god_mode true");
+    assert(typeof policy.result.structuredContent.expires_at === "string", "expected god access expiry timestamp");
+    assert(policy.result.structuredContent.expired === false, "expected god access to be active");
 
     await callTool(baseUrl, 102, "local_write_file", {
       path: filePath,
@@ -202,6 +210,41 @@ async function runGodModeSmoke() {
       mode: "god",
       target_root: godRoot,
       absolute_paths_checked: true,
+    };
+  });
+}
+
+async function runExpiredAccessSmoke() {
+  const readRoot = path.join(tempRoot, "expired", "read");
+  const dataDir = path.join(tempRoot, "expired", "data");
+  const expiredAt = "2000-01-01T00:00:00.000Z";
+  await fs.mkdir(readRoot, { recursive: true });
+  await fs.writeFile(path.join(readRoot, "expired-note.md"), "Expired session phrase.\n", "utf8");
+
+  return withServer({
+    port: "38795",
+    dataDir,
+    args: [
+      "--fs-access", "read",
+      "--fs-roots", readRoot,
+      "--fs-access-expires-at", expiredAt,
+    ],
+  }, async ({ baseUrl }) => {
+    const tools = await mcp(baseUrl, 201, "tools/list", {});
+    const toolNames = tools.result.tools.map((tool) => tool.name);
+    assert(toolNames.includes("local_fs_policy"), "expected expired policy tool");
+    assert(!toolNames.includes("local_read_file"), "expected expired read tool to be hidden");
+    assert(!toolNames.includes("local_search_text"), "expected expired search tool to be hidden");
+
+    const policy = await callTool(baseUrl, 202, "local_fs_policy", {});
+    assert(policy.result.structuredContent.mode === "read", "expected expired read mode");
+    assert(policy.result.structuredContent.expires_at === expiredAt, "expected expired timestamp");
+    assert(policy.result.structuredContent.expired === true, "expected expired flag");
+
+    return {
+      mode: "read",
+      expired_at: expiredAt,
+      policy_only: true,
     };
   });
 }

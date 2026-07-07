@@ -514,6 +514,8 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       max_read_bytes: z.number().int().positive(),
       max_search_results: z.number().int().positive(),
       max_search_files: z.number().int().positive(),
+      expires_at: z.string().nullable(),
+      expired: z.boolean(),
       god_mode: z.boolean(),
     },
     annotations: readOnlyAnnotations(),
@@ -527,10 +529,16 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       max_read_bytes: policy.max_read_bytes,
       max_search_results: policy.max_search_results,
       max_search_files: policy.max_search_files,
+      expires_at: policy.expires_at,
+      expired: localFsAccessExpired(policy),
       god_mode: policy.mode === "god",
     };
     return jsonToolResult(structuredContent, describeLocalFsPolicy(structuredContent));
   });
+
+  if (localFsAccessExpired(policy)) {
+    return;
+  }
 
   server.registerTool("local_list_files", {
     title: "List local files",
@@ -958,6 +966,9 @@ function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): LocalFs
   if (policy.mode === "off") {
     return { ok: false, message: "Local filesystem access is disabled." };
   }
+  if (localFsAccessExpired(policy)) {
+    return { ok: false, message: localFsExpiredMessage(policy) };
+  }
   if (policy.mode === "god") {
     return { ok: true, path: resolveLocalPath(requestedPath, [process.cwd()]) };
   }
@@ -971,6 +982,9 @@ function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): LocalFs
 }
 
 function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): LocalFsPathCheck {
+  if (localFsAccessExpired(policy)) {
+    return { ok: false, message: localFsExpiredMessage(policy) };
+  }
   if (!canWrite(policy)) {
     return { ok: false, message: `Local filesystem write access is disabled in ${policy.mode} mode.` };
   }
@@ -993,6 +1007,14 @@ function canWrite(policy: LocalFsPolicy): boolean {
 
 function hasWriteOperation(policy: LocalFsPolicy, operation: LocalFsPolicy["write_operations"][number]): boolean {
   return canWrite(policy) && effectiveWriteOperations(policy).includes(operation);
+}
+
+function localFsAccessExpired(policy: LocalFsPolicy): boolean {
+  return Boolean(policy.expires_at && Date.parse(policy.expires_at) <= Date.now());
+}
+
+function localFsExpiredMessage(policy: LocalFsPolicy): string {
+  return `Local filesystem access expired at ${policy.expires_at}. Restart or refresh the local server session from the Obsidian plugin to enable it again.`;
 }
 
 function effectiveWriteOperations(policy: LocalFsPolicy): LocalFsPolicy["write_operations"] {
@@ -1334,6 +1356,8 @@ function describeLocalFsPolicy(policy: {
   max_read_bytes: number;
   max_search_results: number;
   max_search_files: number;
+  expires_at: string | null;
+  expired: boolean;
   god_mode: boolean;
 }): string {
   return [
@@ -1343,6 +1367,8 @@ function describeLocalFsPolicy(policy: {
     `Max read: ${policy.max_read_bytes} bytes`,
     `Max search results: ${policy.max_search_results}`,
     `Max searched files: ${policy.max_search_files}`,
+    `Expires: ${policy.expires_at ?? "not set"}`,
+    `Expired: ${policy.expired ? "yes" : "no"}`,
     "",
     "Read roots:",
     ...(policy.read_roots.length ? policy.read_roots.map((root) => `- ${root}`) : ["- none"]),

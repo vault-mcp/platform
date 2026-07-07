@@ -30,6 +30,7 @@ export type LocalFsPolicy = {
   max_read_bytes: number;
   max_search_results: number;
   max_search_files: number;
+  expires_at: string | null;
 };
 
 export type IndexRuleAction = "allow" | "deny" | "review";

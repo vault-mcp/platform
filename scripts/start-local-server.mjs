@@ -29,6 +29,9 @@ const localFsWriteOperations = args.fsWriteOperations ?? process.env.LOCAL_FS_WR
 const localFsMaxReadBytes = args.fsMaxReadBytes ?? process.env.LOCAL_FS_MAX_READ_BYTES ?? "524288";
 const localFsMaxSearchResults = args.fsMaxSearchResults ?? process.env.LOCAL_FS_MAX_SEARCH_RESULTS ?? "100";
 const localFsMaxSearchFiles = args.fsMaxSearchFiles ?? process.env.LOCAL_FS_MAX_SEARCH_FILES ?? "2000";
+const localFsAccessExpiresAt = args.fsAccessExpiresAt
+  ?? process.env.LOCAL_FS_ACCESS_EXPIRES_AT
+  ?? expiresAtFromTtl(args.fsAccessTtlMinutes ?? process.env.LOCAL_FS_ACCESS_TTL_MINUTES);
 const allowedOrigins = args.allowedOrigins
   ?? process.env.ALLOWED_ORIGINS
   ?? [
@@ -55,6 +58,7 @@ Object.assign(process.env, {
   LOCAL_FS_MAX_READ_BYTES: localFsMaxReadBytes,
   LOCAL_FS_MAX_SEARCH_RESULTS: localFsMaxSearchResults,
   LOCAL_FS_MAX_SEARCH_FILES: localFsMaxSearchFiles,
+  LOCAL_FS_ACCESS_EXPIRES_AT: localFsAccessExpiresAt,
 });
 delete process.env.DATABASE_URL;
 
@@ -71,6 +75,9 @@ if (localFsWriteRoots) {
 }
 console.log(`Local write operations: ${localFsWriteOperations}`);
 console.log(`Local search caps: ${localFsMaxSearchResults} results, ${localFsMaxSearchFiles} files scanned`);
+if (localFsAccessExpiresAt) {
+  console.log(`Local filesystem access expires: ${localFsAccessExpiresAt}`);
+}
 console.log(`MCP access token: ${mcpAccessToken}`);
 console.log(`Plugin sync token: ${syncToken}`);
 console.log("Keep these local tokens private. Stop with Ctrl+C.");
@@ -137,6 +144,14 @@ function parseArgs(values) {
       parsed.fsMaxSearchFiles = readValue(values, ++index, value);
       continue;
     }
+    if (value === "--fs-access-expires-at") {
+      parsed.fsAccessExpiresAt = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-access-ttl-minutes") {
+      parsed.fsAccessTtlMinutes = readValue(values, ++index, value);
+      continue;
+    }
     throw new Error(`Unknown option: ${value}`);
   }
   return parsed;
@@ -162,6 +177,20 @@ function randomToken() {
   return crypto.randomBytes(24).toString("base64url");
 }
 
+function expiresAtFromTtl(value) {
+  if (!value) {
+    return "";
+  }
+  const minutes = Number.parseInt(value, 10);
+  if (!Number.isInteger(minutes) || minutes < 0) {
+    throw new Error("--fs-access-ttl-minutes must be 0 or a positive integer.");
+  }
+  if (minutes === 0) {
+    return "";
+  }
+  return new Date(Date.now() + minutes * 60_000).toISOString();
+}
+
 function printHelp() {
   console.log(`Start a local-only Vault MCP server profile.
 
@@ -182,6 +211,8 @@ Options:
   --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
   --fs-max-search-results <n>   Max local find/search results. Defaults to 100.
   --fs-max-search-files <n>     Max files scanned by local_search_text. Defaults to 2000.
+  --fs-access-ttl-minutes <n>   Optional local filesystem access window. 0 disables expiry.
+  --fs-access-expires-at <iso>  Optional explicit local filesystem access expiry timestamp.
   --help                        Show this help.
 
 Run npm run build --workspace @vault-mcp/server before starting directly.

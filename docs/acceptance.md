@@ -68,7 +68,8 @@ npm run smoke:oauth-local
 Run server-starting local smoke scripts sequentially unless they use distinct
 ports. `smoke:local` and `smoke:oauth-local` use the local server app profile;
 `smoke:local-fs` starts dedicated localhost servers on test ports for scoped
-write mode and god mode. `smoke:local-inspector` starts a localhost server and
+write mode, god mode, and expired-session policy-only behavior.
+`smoke:local-inspector` starts a localhost server and
 simulates MCP Inspector browser-origin traffic from `http://localhost:6274` and
 `http://127.0.0.1:6274`.
 `smoke:mcp-ui` does not start a server or use live ChatGPT. It loads the MCP Apps

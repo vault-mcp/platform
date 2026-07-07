@@ -101,6 +101,8 @@ Minimum private-alpha rules:
 - Keep local filesystem access off by default. When enabled, expose it as an
   explicit local-only policy with four modes: `off`, `read`, `write`, and
   `god`.
+- Time-box enabled filesystem access with an optional session expiry. The
+  plugin default is a 120-minute access window for each local-server start.
 - In `read` mode, only configured read roots may be listed, searched, or read.
 - In `write` mode, configured read roots still control listing/reading and
   configured write roots control writes.
@@ -169,13 +171,17 @@ npm run local-server -- \
   --fs-write-operations "write_file,create_directory,move_path,delete_path" \
   --fs-max-read-bytes 524288 \
   --fs-max-search-results 100 \
-  --fs-max-search-files 2000
+  --fs-max-search-files 2000 \
+  --fs-access-ttl-minutes 120
 ```
 
 The plugin settings UI can generate the same flags from `Local filesystem
 access`, `Local filesystem read roots`, `Local filesystem write roots`, and
 `Allowed local write operations`, `Local max read bytes`, `Local max search
-results`, and `Local max searched files`.
+results`, `Local max searched files`, and `Local access session minutes`.
+When the session window expires, the server keeps `local_fs_policy` visible so
+clients can explain what happened, but it stops advertising local list, read,
+search, and write tools until the local server is restarted or refreshed.
 
 Headless local-server verification:
 
@@ -195,9 +201,10 @@ temporary data folder.
 policies. It verifies scoped write mode exposes the expected local tools,
 lists/reads/finds/searches only inside the configured read root, writes,
 creates directories, moves, and deletes only inside the configured write root,
-denies outside paths, requires delete confirmation, and verifies god mode can
-read/write/search/move/delete an absolute temporary path without configured
-roots.
+denies outside paths, requires delete confirmation, verifies active session
+expiry metadata, verifies an expired session exposes policy-only behavior, and
+verifies god mode can read/write/search/move/delete an absolute temporary path
+without configured roots.
 
 `smoke:local-inspector` starts a localhost server with Inspector-compatible
 origins and verifies CORS preflight from `http://localhost:6274` and

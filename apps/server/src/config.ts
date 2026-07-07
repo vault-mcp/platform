@@ -80,6 +80,7 @@ function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
     max_read_bytes: normalizePositiveInteger(env.LOCAL_FS_MAX_READ_BYTES, 512 * 1024),
     max_search_results: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_RESULTS, 100),
     max_search_files: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_FILES, 2000),
+    expires_at: normalizeOptionalIsoDate(env.LOCAL_FS_ACCESS_EXPIRES_AT, "LOCAL_FS_ACCESS_EXPIRES_AT"),
   };
 }
 
@@ -130,6 +131,18 @@ function normalizePositiveInteger(value: string | undefined, fallback: number): 
     throw new Error("LOCAL_FS_MAX_READ_BYTES must be a positive integer.");
   }
   return parsed;
+}
+
+function normalizeOptionalIsoDate(value: string | undefined, name: string): string | null {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const time = Date.parse(trimmed);
+  if (!Number.isFinite(time)) {
+    throw new Error(`${name} must be an ISO timestamp.`);
+  }
+  return new Date(time).toISOString();
 }
 
 function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {
