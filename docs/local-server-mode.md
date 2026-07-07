@@ -148,10 +148,13 @@ developer launch command. It can start and stop the packaged sidecar when the
 installed plugin folder contains `sidecar/start-local-server.mjs`, or fall back
 to the Node-required developer local server profile when the tester configures
 the platform repo folder and npm command. A platform-native binary sidecar is
-still future work. The repo also includes `npm run local-server`, which starts the
-existing server with localhost-only defaults, JSON storage, generated or
-provided local tokens, and MCP Inspector origins. `npm run smoke:local-server`
-verifies that profile against the synthetic `fixtures/vault` demo vault.
+still future work. After spawning the local profile, the plugin waits for
+`/healthz` before showing the server as ready; if health or storage readiness
+fails, it stops the child process and leaves local mode disabled. The repo also
+includes `npm run local-server`, which starts the existing server with
+localhost-only defaults, JSON storage, generated or provided local tokens, and
+MCP Inspector origins. `npm run smoke:local-server` verifies that profile
+against the synthetic `fixtures/vault` demo vault.
 
 Developer local-server start:
 
@@ -257,7 +260,8 @@ fallback.
 - [x] Start/stop the Node-required developer sidecar from the plugin.
 - Auto-select a port.
 - [x] Generate local tokens for the developer launch path.
-- Health-check and version-check the sidecar.
+- [x] Health-check the sidecar before marking local mode ready.
+- Version-check the sidecar before marking local mode ready.
 - Sync the current vault after preview/approval.
 - [x] Show copyable local MCP endpoint, tokens, and developer launch command.
 - [x] Add plugin-controlled local filesystem access settings and local MCP

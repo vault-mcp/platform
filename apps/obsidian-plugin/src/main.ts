@@ -216,6 +216,7 @@ export default class VaultMcpPlugin extends Plugin {
   syncHistory: SyncHistoryEntry[] = [];
   localServerProcess: LocalServerChildProcess | null = null;
   localServerStartedAt: string | null = null;
+  localServerHealth: PluginServerHealthSnapshot | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -366,13 +367,15 @@ export default class VaultMcpPlugin extends Plugin {
       const child = spawnLocalServerProcess(config);
       this.localServerProcess = child;
       this.localServerStartedAt = new Date().toISOString();
+      this.localServerHealth = null;
       this.settings.localServerModeEnabled = true;
       await this.saveSettings();
-      await this.addHistory({ type: "local-server", message: `Started developer local server on ${localServerEndpoint(this.settings)}.` });
+      await this.addHistory({ type: "local-server", message: `Starting local server on ${localServerEndpoint(this.settings)}.` });
       child.on("error", (error) => {
         if (this.localServerProcess === child) {
           this.localServerProcess = null;
           this.localServerStartedAt = null;
+          this.localServerHealth = null;
           this.settings.localServerModeEnabled = false;
           void this.saveSettings();
         }
@@ -383,6 +386,7 @@ export default class VaultMcpPlugin extends Plugin {
         if (this.localServerProcess === child) {
           this.localServerProcess = null;
           this.localServerStartedAt = null;
+          this.localServerHealth = null;
           this.settings.localServerModeEnabled = false;
           void this.saveSettings();
         }
@@ -390,10 +394,19 @@ export default class VaultMcpPlugin extends Plugin {
         void this.addHistory({ type: "local-server", message: `Developer local server stopped (${reason}).` });
       });
       new Notice(`Vault MCP local server starting on ${localServerEndpoint(this.settings)}.`);
+      const health = await waitForLocalServerHealth(this.settings);
+      if (this.localServerProcess !== child) {
+        return;
+      }
+      this.localServerHealth = health;
+      await this.addHistory({ type: "local-server", message: `Local server ready on ${localServerEndpoint(this.settings)} (${health.storage?.kind ?? "unknown"} storage).` });
+      new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      this.localServerProcess?.kill("SIGTERM");
       this.localServerProcess = null;
       this.localServerStartedAt = null;
+      this.localServerHealth = null;
       this.settings.localServerModeEnabled = false;
       await this.saveSettings();
       await this.addHistory({ type: "error", message: `Local server start failed: ${message}` });
@@ -411,6 +424,7 @@ export default class VaultMcpPlugin extends Plugin {
     }
     this.localServerProcess = null;
     this.localServerStartedAt = null;
+    this.localServerHealth = null;
     this.settings.localServerModeEnabled = false;
     await this.saveSettings();
     child.kill("SIGTERM");
@@ -428,6 +442,7 @@ export default class VaultMcpPlugin extends Plugin {
     const child = this.localServerProcess;
     this.localServerProcess = null;
     this.localServerStartedAt = null;
+    this.localServerHealth = null;
     this.settings.localServerModeEnabled = false;
     await this.saveSettings();
     child.kill("SIGTERM");
@@ -1649,7 +1664,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
   new Setting(parent)
     .setName("Developer server session")
     .setDesc(plugin.localServerProcess
-      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}. Refresh restarts the local server with a new filesystem access window.`
+      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage)` : "; waiting for health check"}. Refresh restarts the local server with a new filesystem access window.`
       : "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.")
     .addButton((button) => button
       .setButtonText("Start")
@@ -2114,6 +2129,31 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, timeoutMs = 6000): Promise<PluginServerHealthSnapshot> {
+  const deadline = Date.now() + timeoutMs;
+  let lastError = "Local server did not answer /healthz yet.";
+  while (Date.now() < deadline) {
+    try {
+      const response = await requestUrl({
+        url: localServerHealthUrl(settings),
+        method: "GET",
+      });
+      if (response.status >= 200 && response.status < 300) {
+        const health = parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
+        if (health.ok === false || health.storage?.ok === false) {
+          throw new Error("Local server answered /healthz, but reported unhealthy storage.");
+        }
+        return health;
+      }
+      lastError = describeHttpFailure("local server health check", response.status, response.text);
+    } catch (error) {
+      lastError = describeCaughtError("local server health check", error);
+    }
+    await delay(250);
+  }
+  throw new Error(`Local server did not become healthy at ${localServerHealthUrl(settings)} within ${timeoutMs}ms. ${lastError}`);
+}
+
 function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {
   const baseEnv = { ...getNodeProcessEnv() };
   const commandDir = executableDirectory(config.command);
@@ -2152,6 +2192,10 @@ function requireNodeModule<T>(name: string): T {
 
 function localServerEndpoint(settings: VaultMcpPluginSettings): string {
   return `http://127.0.0.1:${settings.localServerPort}/mcp`;
+}
+
+function localServerHealthUrl(settings: VaultMcpPluginSettings): string {
+  return `http://127.0.0.1:${settings.localServerPort}/healthz`;
 }
 
 function openExternalUrl(value: string) {
