@@ -33,7 +33,9 @@ These tools are off by default and are intended for explicit user-directed
 local interactions, not automatic vault enumeration. The plugin launcher can
 time-box enabled filesystem access with a session expiry window; once expired,
 the local MCP surface falls back to `local_fs_policy` only until the server is
-restarted or refreshed.
+restarted or refreshed. The Obsidian plugin includes a `Refresh session` action
+for intentionally renewing that local access window while working with a local
+MCP client.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear

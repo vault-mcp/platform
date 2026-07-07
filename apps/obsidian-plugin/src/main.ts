@@ -270,6 +270,14 @@ export default class VaultMcpPlugin extends Plugin {
         void this.stopLocalServer();
       },
     });
+
+    this.addCommand({
+      id: "refresh-local-filesystem-session",
+      name: "Refresh local filesystem access session",
+      callback: () => {
+        void this.refreshLocalServerSession();
+      },
+    });
   }
 
   onunload() {
@@ -400,6 +408,25 @@ export default class VaultMcpPlugin extends Plugin {
     child.kill("SIGTERM");
     await this.addHistory({ type: "local-server", message: reason });
     new Notice("Vault MCP local server stop requested.");
+  }
+
+  async refreshLocalServerSession() {
+    if (!this.localServerProcess) {
+      await this.addHistory({ type: "local-server", message: "Starting developer local server to create a fresh local filesystem access session." });
+      await this.startLocalServer();
+      return;
+    }
+
+    const child = this.localServerProcess;
+    this.localServerProcess = null;
+    this.localServerStartedAt = null;
+    this.settings.localServerModeEnabled = false;
+    await this.saveSettings();
+    child.kill("SIGTERM");
+    await this.addHistory({ type: "local-server", message: `Refreshing local filesystem access session on ${localServerEndpoint(this.settings)}.` });
+    new Notice("Vault MCP local server session refresh requested.");
+    await delay(750);
+    await this.startLocalServer();
   }
 
   async importSetupBundle(value: string) {
@@ -1608,7 +1635,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
   new Setting(parent)
     .setName("Developer server session")
     .setDesc(plugin.localServerProcess
-      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}.`
+      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}. Refresh restarts the local server with a new filesystem access window.`
       : "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.")
     .addButton((button) => button
       .setButtonText("Start")
@@ -1616,6 +1643,13 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       .setDisabled(Boolean(plugin.localServerProcess))
       .onClick(async () => {
         await plugin.startLocalServer();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Refresh session")
+      .setDisabled(!plugin.localServerProcess)
+      .onClick(async () => {
+        await plugin.refreshLocalServerSession();
         openPluginSettings(plugin.app, plugin);
       }))
     .addButton((button) => button
@@ -2041,6 +2075,10 @@ function spawnLocalServerProcess(config: LocalServerSpawnConfig): LocalServerChi
     stdio: "ignore",
     env: localServerSpawnEnv(config),
   });
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {

@@ -97,7 +97,10 @@ also exposes on-demand file discovery and text search through policy-capped
 local tools, so a user can ask a local-capable MCP client to inspect the vault
 without first syncing every note into the remote index. Testers can also set a
 local access session window; after it expires, the local MCP server advertises
-only `local_fs_policy` until the server is restarted or refreshed. These
+only `local_fs_policy` until the server is restarted or refreshed. Use the
+settings `Refresh session` button or the `Refresh local filesystem access
+session` command-palette action when you are intentionally working with a local
+MCP client again. These
 settings only affect the localhost developer server profile; the hosted server
 remains derived-index-only and read-only.
 

@@ -182,6 +182,9 @@ results`, `Local max searched files`, and `Local access session minutes`.
 When the session window expires, the server keeps `local_fs_policy` visible so
 clients can explain what happened, but it stops advertising local list, read,
 search, and write tools until the local server is restarted or refreshed.
+The plugin settings UI exposes `Refresh session` and the command palette
+exposes `Refresh local filesystem access session`; both restart the developer
+local server profile with a fresh expiry window.
 
 Headless local-server verification:
 
