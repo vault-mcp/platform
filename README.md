@@ -35,7 +35,10 @@ time-box enabled filesystem access with a session expiry window; once expired,
 the local MCP surface falls back to `local_fs_policy` only until the server is
 restarted or refreshed. The Obsidian plugin includes a `Refresh session` action
 for intentionally renewing that local access window while working with a local
-MCP client.
+MCP client. By default, every local filesystem tool call except
+`local_fs_policy` must also include the exact policy phrase as `user_intent`
+(`use local filesystem` unless the plugin setting changes it), so clients have
+to make the current local-file interaction explicit in the tool arguments.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear
@@ -280,7 +283,8 @@ not include the plugin/admin sync token. Verify the same profile with
 `npm run smoke:local-server`. The explicit local
 filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
 read/write roots, denied outside paths, destructive confirmation, session
-expiry, and god-mode absolute-path access in temporary directories.
+expiry, required `user_intent`, and god-mode absolute-path access in temporary
+directories.
 `npm run smoke:local-inspector`
 checks the MCP Inspector localhost origins, preflight behavior, authenticated
 SSE, forbidden-origin rejection, and local filesystem tool calls through an

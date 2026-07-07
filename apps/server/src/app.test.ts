@@ -302,6 +302,8 @@ describe("server MCP contract", () => {
         max_search_results: 10,
         max_search_files: 100,
         expires_at: null,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
       },
     });
     const server = await listen(createApp(config, store));
@@ -332,17 +334,27 @@ describe("server MCP contract", () => {
       expires_at: null,
       expired: false,
       god_mode: false,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
     });
+
+    const missingIntent = await mcp(baseUrl, accessToken, 107, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: filePath },
+    });
+    expect(missingIntent.result.isError).toBe(true);
+    expect(missingIntent.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+    expect(missingIntent.result.structuredContent.error.message).toContain("user_intent=\"use local filesystem\"");
 
     const listed = await mcp(baseUrl, accessToken, 92, "tools/call", {
       name: "local_list_files",
-      arguments: { path: root },
+      arguments: { path: root, user_intent: "use local filesystem" },
     });
     expect(listed.result.structuredContent.entries.map((entry: { name: string }) => entry.name)).toContain("allowed.md");
 
     const read = await mcp(baseUrl, accessToken, 93, "tools/call", {
       name: "local_read_file",
-      arguments: { path: filePath, max_bytes: 12 },
+      arguments: { path: filePath, max_bytes: 12, user_intent: "use local filesystem" },
     });
     expect(read.result.structuredContent).toMatchObject({
       path: filePath,
@@ -353,14 +365,14 @@ describe("server MCP contract", () => {
 
     const denied = await mcp(baseUrl, accessToken, 94, "tools/call", {
       name: "local_read_file",
-      arguments: { path: outsidePath },
+      arguments: { path: outsidePath, user_intent: "use local filesystem" },
     });
     expect(denied.result.isError).toBe(true);
     expect(denied.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
 
     const found = await mcp(baseUrl, accessToken, 102, "tools/call", {
       name: "local_find_files",
-      arguments: { root, query: "project", extensions: [".md"], limit: 5 },
+      arguments: { root, query: "project", extensions: [".md"], limit: 5, user_intent: "use local filesystem" },
     });
     expect(found.result.structuredContent.results).toEqual([
       expect.objectContaining({
@@ -371,7 +383,7 @@ describe("server MCP contract", () => {
 
     const searched = await mcp(baseUrl, accessToken, 103, "tools/call", {
       name: "local_search_text",
-      arguments: { root, query: "alpha", extensions: ["md"], limit: 5 },
+      arguments: { root, query: "alpha", extensions: ["md"], limit: 5, user_intent: "use local filesystem" },
     });
     expect(searched.result.structuredContent.matches).toEqual([
       {
@@ -383,7 +395,7 @@ describe("server MCP contract", () => {
 
     const deniedSearch = await mcp(baseUrl, accessToken, 104, "tools/call", {
       name: "local_search_text",
-      arguments: { root: os.tmpdir(), query: "outside" },
+      arguments: { root: os.tmpdir(), query: "outside", user_intent: "use local filesystem" },
     });
     expect(deniedSearch.result.isError).toBe(true);
   });
@@ -402,6 +414,8 @@ describe("server MCP contract", () => {
         max_search_results: 10,
         max_search_files: 100,
         expires_at: expiredAt,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
       },
     });
     const server = await listen(createApp(config, store));
@@ -422,6 +436,8 @@ describe("server MCP contract", () => {
       mode: "read",
       expires_at: expiredAt,
       expired: true,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
     });
   });
 
@@ -439,6 +455,8 @@ describe("server MCP contract", () => {
         max_search_results: 100,
         max_search_files: 2000,
         expires_at: null,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
       },
     });
     const server = await listen(createApp(config, store));
@@ -457,6 +475,7 @@ describe("server MCP contract", () => {
         path: "nested/new-note.md",
         content: "created by local fs test",
         create_dirs: true,
+        user_intent: "use local filesystem",
       },
     });
     const writtenPath = path.join(root, "nested/new-note.md");
@@ -469,7 +488,7 @@ describe("server MCP contract", () => {
 
     const createdDirectory = await mcp(baseUrl, accessToken, 98, "tools/call", {
       name: "local_create_directory",
-      arguments: { path: "new-folder" },
+      arguments: { path: "new-folder", user_intent: "use local filesystem" },
     });
     expect(createdDirectory.result.structuredContent.path).toBe(path.join(root, "new-folder"));
     expect((await fs.stat(path.join(root, "new-folder"))).isDirectory()).toBe(true);
@@ -479,6 +498,7 @@ describe("server MCP contract", () => {
       arguments: {
         source_path: "nested/new-note.md",
         destination_path: "new-folder/moved-note.md",
+        user_intent: "use local filesystem",
       },
     });
     const movedPath = path.join(root, "new-folder/moved-note.md");
@@ -494,6 +514,7 @@ describe("server MCP contract", () => {
       arguments: {
         path: "new-folder/moved-note.md",
         confirm: "yes",
+        user_intent: "use local filesystem",
       },
     });
     expect(deniedDelete.result.isError).toBe(true);
@@ -503,6 +524,7 @@ describe("server MCP contract", () => {
       arguments: {
         path: "new-folder/moved-note.md",
         confirm: "delete",
+        user_intent: "use local filesystem",
       },
     });
     expect(deleted.result.structuredContent).toMatchObject({
@@ -516,6 +538,7 @@ describe("server MCP contract", () => {
       arguments: {
         path: outsidePath,
         content: "denied",
+        user_intent: "use local filesystem",
       },
     });
     expect(deniedWrite.result.isError).toBe(true);
@@ -1140,6 +1163,8 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
       max_search_results: 100,
       max_search_files: 2000,
       expires_at: null,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
     },
     ...overrides,
   };

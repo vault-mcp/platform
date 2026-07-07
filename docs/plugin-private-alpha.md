@@ -107,10 +107,13 @@ local access session window; after it expires, the local MCP server advertises
 only `local_fs_policy` until the server is restarted or refreshed. Use the
 settings `Refresh session` button or the `Refresh local filesystem access
 session` command-palette action when you are intentionally working with a local
-MCP client again. The same section can copy a local client connection bundle
-with the localhost MCP endpoint, bearer authorization header, and a generic
-`mcpServers` JSON example. That bundle includes only the local MCP client token,
-not the plugin/admin sync token. These
+MCP client again. By default, every local filesystem tool call except
+`local_fs_policy` must include the exact configured `user_intent` phrase. The
+default phrase is `use local filesystem`, and testers can change it or disable
+the requirement from the same settings section. The same section can copy a
+local client connection bundle with the localhost MCP endpoint, bearer
+authorization header, and a generic `mcpServers` JSON example. That bundle
+includes only the local MCP client token, not the plugin/admin sync token. These
 settings only affect the localhost developer server profile; the hosted server
 remains derived-index-only and read-only.
 

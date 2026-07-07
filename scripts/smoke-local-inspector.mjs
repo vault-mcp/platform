@@ -11,6 +11,7 @@ const port = process.env.PORT ?? "38794";
 const baseUrl = `http://127.0.0.1:${port}`;
 const accessToken = process.env.MCP_ACCESS_TOKEN ?? "local-inspector-smoke-access-token";
 const syncToken = process.env.MCP_SYNC_TOKEN ?? "local-inspector-smoke-sync-token";
+const userIntentPhrase = "use local filesystem";
 const inspectorOrigins = ["http://localhost:6274", "http://127.0.0.1:6274"];
 const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-inspector-smoke-"));
 const readRoot = path.join(tempRoot, "read");
@@ -74,6 +75,7 @@ try {
   assert(policy.result.structuredContent.mode === "write", "expected Inspector smoke write policy");
   assert(typeof policy.result.structuredContent.expires_at === "string", "expected Inspector smoke expiry timestamp");
   assert(policy.result.structuredContent.expired === false, "expected Inspector smoke active filesystem access");
+  assert(policy.result.structuredContent.require_user_intent === true, "expected Inspector smoke to require user intent");
 
   const search = await callTool(3, "local_search_text", {
     root: readRoot,
@@ -166,9 +168,12 @@ async function expectSseFromInspectorOrigin(origin) {
 }
 
 async function callTool(id, name, args, origin) {
+  const argumentsWithIntent = name.startsWith("local_") && name !== "local_fs_policy"
+    ? { ...args, user_intent: args.user_intent ?? userIntentPhrase }
+    : args;
   return mcp(id, "tools/call", {
     name,
-    arguments: args,
+    arguments: argumentsWithIntent,
   }, origin);
 }
 

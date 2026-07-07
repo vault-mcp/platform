@@ -81,6 +81,8 @@ function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
     max_search_results: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_RESULTS, 100),
     max_search_files: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_FILES, 2000),
     expires_at: normalizeOptionalIsoDate(env.LOCAL_FS_ACCESS_EXPIRES_AT, "LOCAL_FS_ACCESS_EXPIRES_AT"),
+    require_user_intent: normalizeBoolean(env.LOCAL_FS_REQUIRE_USER_INTENT, mode !== "off"),
+    user_intent_phrase: normalizeIntentPhrase(env.LOCAL_FS_USER_INTENT_PHRASE),
   };
 }
 
@@ -143,6 +145,28 @@ function normalizeOptionalIsoDate(value: string | undefined, name: string): stri
     throw new Error(`${name} must be an ISO timestamp.`);
   }
   return new Date(time).toISOString();
+}
+
+function normalizeBoolean(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined || value.trim() === "") {
+    return fallback;
+  }
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return true;
+  }
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return false;
+  }
+  throw new Error("LOCAL_FS_REQUIRE_USER_INTENT must be true or false.");
+}
+
+function normalizeIntentPhrase(value: string | undefined): string {
+  const phrase = value?.trim() || "use local filesystem";
+  if (!phrase) {
+    throw new Error("LOCAL_FS_USER_INTENT_PHRASE must not be empty.");
+  }
+  return phrase;
 }
 
 function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {

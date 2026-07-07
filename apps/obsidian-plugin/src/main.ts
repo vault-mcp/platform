@@ -69,6 +69,8 @@ type VaultMcpPluginSettings = {
   localFsMaxSearchResults: number;
   localFsMaxSearchFiles: number;
   localFsAccessTtlMinutes: number;
+  localFsRequireUserIntent: boolean;
+  localFsUserIntentPhrase: string;
 };
 
 type SyncHistoryEntry = {
@@ -212,6 +214,8 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localFsMaxSearchResults: 100,
   localFsMaxSearchFiles: 2000,
   localFsAccessTtlMinutes: 120,
+  localFsRequireUserIntent: true,
+  localFsUserIntentPhrase: "use local filesystem",
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -341,6 +345,8 @@ export default class VaultMcpPlugin extends Plugin {
       localFsMaxSearchResults: saved?.localFsMaxSearchResults ?? DEFAULT_SETTINGS.localFsMaxSearchResults,
       localFsMaxSearchFiles: saved?.localFsMaxSearchFiles ?? DEFAULT_SETTINGS.localFsMaxSearchFiles,
       localFsAccessTtlMinutes: saved?.localFsAccessTtlMinutes ?? DEFAULT_SETTINGS.localFsAccessTtlMinutes,
+      localFsRequireUserIntent: saved?.localFsRequireUserIntent ?? DEFAULT_SETTINGS.localFsRequireUserIntent,
+      localFsUserIntentPhrase: saved?.localFsUserIntentPhrase ?? DEFAULT_SETTINGS.localFsUserIntentPhrase,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -1681,6 +1687,26 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
           await plugin.saveSettings();
         });
     });
+
+  new Setting(parent)
+    .setName("Require local user intent")
+    .setDesc("Requires MCP clients to include the exact user intent phrase on every local filesystem tool call. Keep this on unless you are testing.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.localFsRequireUserIntent)
+      .onChange(async (value) => {
+        plugin.settings.localFsRequireUserIntent = value;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Local user intent phrase")
+    .setDesc("Exact phrase MCP clients must send as user_intent before local filesystem tools run.")
+    .addText((text) => text
+      .setValue(plugin.settings.localFsUserIntentPhrase)
+      .onChange(async (value) => {
+        plugin.settings.localFsUserIntentPhrase = value.trim() || DEFAULT_SETTINGS.localFsUserIntentPhrase;
+        await plugin.saveSettings();
+      }));
 
   new Setting(parent)
     .setName("Local credentials")

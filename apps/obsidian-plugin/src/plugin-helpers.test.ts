@@ -402,6 +402,8 @@ describe("plugin helpers", () => {
     expect(command).toContain("cd '/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar' && /opt/homebrew/bin/node start-local-server.mjs");
     expect(command).toContain("--fs-access 'read'");
     expect(command).toContain("--fs-access-ttl-minutes '30'");
+    expect(command).toContain("--fs-require-user-intent 'true'");
+    expect(command).toContain("--fs-user-intent-phrase 'use local filesystem'");
 
     expect(buildLocalServerSpawnConfig(settings)).toEqual({
       command: "/opt/homebrew/bin/node",
@@ -424,6 +426,10 @@ describe("plugin helpers", () => {
         "write_file",
         "--fs-access-ttl-minutes",
         "30",
+        "--fs-require-user-intent",
+        "true",
+        "--fs-user-intent-phrase",
+        "use local filesystem",
       ],
     });
   });
@@ -499,6 +505,8 @@ describe("plugin helpers", () => {
       localFsMaxSearchResults: 25,
       localFsMaxSearchFiles: 500,
       localFsAccessTtlMinutes: 45,
+      localFsRequireUserIntent: true,
+      localFsUserIntentPhrase: "approve local access",
     };
 
     const status = pluginLocalServerStatus(settings);
@@ -508,6 +516,7 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, create_directory, move_path, delete_path");
     expect(status.facts.join("\n")).toContain("Local filesystem search caps: 25 results, 500 files");
     expect(status.facts.join("\n")).toContain("Local filesystem session: 45 minute window");
+    expect(status.facts.join("\n")).toContain("Local filesystem user intent: required (approve local access)");
 
     const command = buildLocalServerLaunchCommand(settings);
     expect(command).toContain("--fs-access 'write'");
@@ -518,6 +527,8 @@ describe("plugin helpers", () => {
     expect(command).toContain("--fs-max-search-results '25'");
     expect(command).toContain("--fs-max-search-files '500'");
     expect(command).toContain("--fs-access-ttl-minutes '45'");
+    expect(command).toContain("--fs-require-user-intent 'true'");
+    expect(command).toContain("--fs-user-intent-phrase 'approve local access'");
 
     expect(buildLocalServerSpawnConfig(settings)?.args).toEqual([
       "scripts/start-local-server.mjs",
@@ -545,6 +556,10 @@ describe("plugin helpers", () => {
       "500",
       "--fs-access-ttl-minutes",
       "45",
+      "--fs-require-user-intent",
+      "true",
+      "--fs-user-intent-phrase",
+      "approve local access",
     ]);
   });
 

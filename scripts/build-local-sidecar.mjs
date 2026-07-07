@@ -115,6 +115,8 @@ const localFsWriteOperations = args.fsWriteOperations ?? process.env.LOCAL_FS_WR
 const localFsMaxReadBytes = args.fsMaxReadBytes ?? process.env.LOCAL_FS_MAX_READ_BYTES ?? "524288";
 const localFsMaxSearchResults = args.fsMaxSearchResults ?? process.env.LOCAL_FS_MAX_SEARCH_RESULTS ?? "100";
 const localFsMaxSearchFiles = args.fsMaxSearchFiles ?? process.env.LOCAL_FS_MAX_SEARCH_FILES ?? "2000";
+const localFsRequireUserIntent = args.fsRequireUserIntent ?? process.env.LOCAL_FS_REQUIRE_USER_INTENT ?? "true";
+const localFsUserIntentPhrase = args.fsUserIntentPhrase ?? process.env.LOCAL_FS_USER_INTENT_PHRASE ?? "use local filesystem";
 const localFsAccessExpiresAt = args.fsAccessExpiresAt
   ?? process.env.LOCAL_FS_ACCESS_EXPIRES_AT
   ?? expiresAtFromTtl(args.fsAccessTtlMinutes ?? process.env.LOCAL_FS_ACCESS_TTL_MINUTES);
@@ -145,6 +147,8 @@ Object.assign(process.env, {
   LOCAL_FS_MAX_SEARCH_RESULTS: localFsMaxSearchResults,
   LOCAL_FS_MAX_SEARCH_FILES: localFsMaxSearchFiles,
   LOCAL_FS_ACCESS_EXPIRES_AT: localFsAccessExpiresAt,
+  LOCAL_FS_REQUIRE_USER_INTENT: localFsRequireUserIntent,
+  LOCAL_FS_USER_INTENT_PHRASE: localFsUserIntentPhrase,
 });
 delete process.env.DATABASE_URL;
 
@@ -161,6 +165,8 @@ if (localFsWriteRoots) {
 }
 console.log(\`Local write operations: \${localFsWriteOperations}\`);
 console.log(\`Local search caps: \${localFsMaxSearchResults} results, \${localFsMaxSearchFiles} files scanned\`);
+console.log(\`Local user intent required: \${localFsRequireUserIntent}\`);
+console.log(\`Local user intent phrase: \${localFsUserIntentPhrase}\`);
 if (localFsAccessExpiresAt) {
   console.log(\`Local filesystem access expires: \${localFsAccessExpiresAt}\`);
 }
@@ -230,6 +236,14 @@ function parseArgs(values) {
       parsed.fsMaxSearchFiles = readValue(values, ++index, value);
       continue;
     }
+    if (value === "--fs-require-user-intent") {
+      parsed.fsRequireUserIntent = readValue(values, ++index, value);
+      continue;
+    }
+    if (value === "--fs-user-intent-phrase") {
+      parsed.fsUserIntentPhrase = readValue(values, ++index, value);
+      continue;
+    }
     if (value === "--fs-access-expires-at") {
       parsed.fsAccessExpiresAt = readValue(values, ++index, value);
       continue;
@@ -297,6 +311,8 @@ Options:
   --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
   --fs-max-search-results <n>   Max local find/search results. Defaults to 100.
   --fs-max-search-files <n>     Max files scanned by local_search_text. Defaults to 2000.
+  --fs-require-user-intent <b>  Require user_intent on local filesystem tools. Defaults to true.
+  --fs-user-intent-phrase <s>   Exact user_intent phrase. Defaults to "use local filesystem".
   --fs-access-ttl-minutes <n>   Optional local filesystem access window. 0 disables expiry.
   --fs-access-expires-at <iso>  Optional explicit local filesystem access expiry timestamp.
   --help                        Show this help.

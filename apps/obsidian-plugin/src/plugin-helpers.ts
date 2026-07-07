@@ -37,6 +37,8 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localFsMaxSearchResults?: number;
   localFsMaxSearchFiles?: number;
   localFsAccessTtlMinutes?: number;
+  localFsRequireUserIntent?: boolean;
+  localFsUserIntentPhrase?: string;
 };
 
 export type PluginSafetyDisclosure = {
@@ -487,6 +489,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local filesystem write operations: ${settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
       `Local filesystem search caps: ${settings.localFsMaxSearchResults ?? 100} results, ${settings.localFsMaxSearchFiles ?? 2000} files`,
       `Local filesystem session: ${(settings.localFsAccessTtlMinutes ?? 0) > 0 ? `${settings.localFsAccessTtlMinutes} minute window` : "no automatic expiry"}`,
+      `Local filesystem user intent: ${settings.localFsRequireUserIntent ?? true ? `required (${settings.localFsUserIntentPhrase?.trim() || "use local filesystem"})` : "not required"}`,
     ]),
   };
 }
@@ -717,6 +720,9 @@ function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean
     const value = String(settings.localFsAccessTtlMinutes);
     args.push("--fs-access-ttl-minutes", quote ? shellQuote(value) : value);
   }
+  args.push("--fs-require-user-intent", quote ? shellQuote(String(settings.localFsRequireUserIntent ?? true)) : String(settings.localFsRequireUserIntent ?? true));
+  const phrase = settings.localFsUserIntentPhrase?.trim() || "use local filesystem";
+  args.push("--fs-user-intent-phrase", quote ? shellQuote(phrase) : phrase);
   return args;
 }
 

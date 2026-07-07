@@ -31,6 +31,8 @@ export type LocalFsPolicy = {
   max_search_results: number;
   max_search_files: number;
   expires_at: string | null;
+  require_user_intent: boolean;
+  user_intent_phrase: string;
 };
 
 export type IndexRuleAction = "allow" | "deny" | "review";

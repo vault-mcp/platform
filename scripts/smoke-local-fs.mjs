@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const accessToken = process.env.MCP_ACCESS_TOKEN ?? "local-fs-smoke-access-token";
 const syncToken = process.env.MCP_SYNC_TOKEN ?? "local-fs-smoke-sync-token";
+const userIntentPhrase = "use local filesystem";
 
 const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-fs-smoke-"));
 
@@ -79,6 +80,14 @@ async function runScopedWriteModeSmoke() {
     assert(policy.result.structuredContent.max_search_files === 20, "expected max search files cap");
     assert(typeof policy.result.structuredContent.expires_at === "string", "expected scoped access expiry timestamp");
     assert(policy.result.structuredContent.expired === false, "expected scoped access to be active");
+    assert(policy.result.structuredContent.require_user_intent === true, "expected scoped access to require user intent");
+    assert(policy.result.structuredContent.user_intent_phrase === userIntentPhrase, "expected default user intent phrase");
+
+    const missingIntent = await mcp(baseUrl, 14, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md") },
+    });
+    assert(missingIntent.result.isError === true, "expected local filesystem read without user_intent to be denied");
 
     const list = await callTool(baseUrl, 3, "local_list_files", { path: readRoot });
     assert(list.result.structuredContent.entries.some((entry) => entry.name === "20 Projects"), "expected read root listing");
@@ -309,9 +318,12 @@ async function waitForHealth(baseUrl, server, getServerOutput) {
 }
 
 async function callTool(baseUrl, id, name, args) {
+  const argumentsWithIntent = name.startsWith("local_") && name !== "local_fs_policy"
+    ? { ...args, user_intent: args.user_intent ?? userIntentPhrase }
+    : args;
   return mcp(baseUrl, id, "tools/call", {
     name,
-    arguments: args,
+    arguments: argumentsWithIntent,
   });
 }
 

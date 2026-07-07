@@ -109,6 +109,9 @@ Minimum private-alpha rules:
 - Local discovery is on-demand through `local_find_files` and
   `local_search_text`; it should happen only after a chat request, not as a
   background vault scan.
+- Require a per-tool `user_intent` phrase by default for local filesystem tools.
+  `local_fs_policy` exposes whether this is required and the exact phrase the
+  client must send.
 - Write operations are separately allowlisted. The private-alpha operations are
   `write_file`, `create_directory`, `move_path`, and `delete_path`.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
@@ -183,19 +186,38 @@ npm run local-server -- \
   --fs-max-read-bytes 524288 \
   --fs-max-search-results 100 \
   --fs-max-search-files 2000 \
-  --fs-access-ttl-minutes 120
+  --fs-access-ttl-minutes 120 \
+  --fs-require-user-intent true \
+  --fs-user-intent-phrase "use local filesystem"
 ```
 
 The plugin settings UI can generate the same flags from `Local filesystem
 access`, `Local filesystem read roots`, `Local filesystem write roots`, and
 `Allowed local write operations`, `Local max read bytes`, `Local max search
-results`, `Local max searched files`, and `Local access session minutes`.
+results`, `Local max searched files`, `Local access session minutes`,
+`Require local user intent`, and `Local user intent phrase`.
 When the session window expires, the server keeps `local_fs_policy` visible so
 clients can explain what happened, but it stops advertising local list, read,
 search, and write tools until the local server is restarted or refreshed.
 The plugin settings UI exposes `Refresh session` and the command palette
 exposes `Refresh local filesystem access session`; both restart the developer
 local server profile with a fresh expiry window.
+
+When intent is required, local clients should first call `local_fs_policy`.
+Then any `local_list_files`, `local_read_file`, `local_find_files`,
+`local_search_text`, `local_write_file`, `local_create_directory`,
+`local_move_path`, or `local_delete_path` call must include:
+
+```json
+{
+  "user_intent": "use local filesystem"
+}
+```
+
+Changing the phrase in the plugin changes the value clients must send. This is
+not a replacement for the bearer token, roots, write-operation allowlist,
+session expiry, or delete confirmation; it is an additional local interaction
+gate.
 
 Headless local-server verification:
 
@@ -215,10 +237,11 @@ temporary data folder.
 policies. It verifies scoped write mode exposes the expected local tools,
 lists/reads/finds/searches only inside the configured read root, writes,
 creates directories, moves, and deletes only inside the configured write root,
-denies outside paths, requires delete confirmation, verifies active session
-expiry metadata, verifies an expired session exposes policy-only behavior, and
-verifies god mode can read/write/search/move/delete an absolute temporary path
-without configured roots.
+denies missing `user_intent`, denies outside paths, requires delete
+confirmation, verifies active session expiry metadata, verifies an expired
+session exposes policy-only behavior, and verifies god mode can
+read/write/search/move/delete an absolute temporary path without configured
+roots.
 
 `smoke:local-inspector` starts a localhost server with Inspector-compatible
 origins and verifies CORS preflight from `http://localhost:6274` and
