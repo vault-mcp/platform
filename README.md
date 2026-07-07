@@ -267,11 +267,11 @@ runtime and platform details.
 
 For the planned no-cloud desktop path, see
 [docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
-Obsidian plugin start a localhost MCP server while the vault is open, but it is
-not fully packaged in the current private-alpha release. Developer testing can
-generate local credentials in the plugin, configure the platform repo folder and
-npm command, start or stop the Node-required local profile from the plugin, and
-verify the same profile with `npm run smoke:local-server`. The explicit local
+Obsidian plugin start a localhost MCP server while the vault is open. The ZIP
+package now includes a Node-required local sidecar under `sidecar/`; BRAT/dev
+installs without that folder can still configure the platform repo folder and
+npm command as a fallback. Verify the same profile with
+`npm run smoke:local-server`. The explicit local
 filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
 read/write roots, denied outside paths, destructive confirmation, session
 expiry, and god-mode absolute-path access in temporary directories.

@@ -196,7 +196,8 @@ describe("plugin helpers", () => {
     expect(status.endpoint).toBe("http://127.0.0.1:38791/mcp");
     expect(status.canStart).toBe(false);
     expect(status.message).toContain("cannot start");
-    expect(status.facts.join("\n")).toContain("not bundled");
+    expect(status.facts.join("\n")).toContain("Sidecar status: not configured");
+    expect(status.facts.join("\n")).toContain("Bundled sidecar: not installed");
   });
 
   it("rejects invalid local desktop server ports", () => {
@@ -322,6 +323,63 @@ describe("plugin helpers", () => {
         "mcp token",
         "--sync-token",
         "sync token",
+      ],
+    });
+  });
+
+  it("prefers a bundled sidecar over the developer project folder when present", () => {
+    const settings = {
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals" as const,
+      writeMode: "review_required" as const,
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerDataDir: "Plugin Data/Local Server",
+      localServerMcpToken: "mcp token",
+      localServerSyncToken: "sync token",
+      localServerSidecarDir: "/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar",
+      localServerCommand: "/opt/homebrew/bin/npm",
+      localFsAccessMode: "read" as const,
+      localFsReadRoots: ["/Users/example/Vault"],
+      localFsAccessTtlMinutes: 30,
+    };
+
+    const status = pluginLocalServerStatus(settings);
+    expect(status.canStart).toBe(true);
+    expect(status.title).toBe("Local desktop server bundled sidecar is ready");
+    expect(status.facts.join("\n")).toContain("Sidecar status: packaged sidecar installed");
+    expect(status.facts.join("\n")).toContain("Bundled sidecar: /Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar");
+
+    const command = buildLocalServerLaunchCommand(settings);
+    expect(command).toContain("cd '/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar' && /opt/homebrew/bin/node start-local-server.mjs");
+    expect(command).toContain("--fs-access 'read'");
+    expect(command).toContain("--fs-access-ttl-minutes '30'");
+
+    expect(buildLocalServerSpawnConfig(settings)).toEqual({
+      command: "/opt/homebrew/bin/node",
+      cwd: "/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar",
+      args: [
+        "start-local-server.mjs",
+        "--port",
+        "38791",
+        "--data-dir",
+        "Plugin Data/Local Server",
+        "--mcp-token",
+        "mcp token",
+        "--sync-token",
+        "sync token",
+        "--fs-access",
+        "read",
+        "--fs-roots",
+        "/Users/example/Vault",
+        "--fs-write-operations",
+        "write_file",
+        "--fs-access-ttl-minutes",
+        "30",
       ],
     });
   });

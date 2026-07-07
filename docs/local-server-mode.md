@@ -138,15 +138,17 @@ universal ChatGPT web replacement.
 
 ## Implementation Slices
 
-Current private-alpha status: Slice 1 is implemented and Slice 2 has a
-developer/Node-required launcher. The plugin now shows a `Local desktop server`
+Current private-alpha status: Slice 1 is implemented, Slice 2 has a
+Node-required launcher, and the ZIP package includes a bundled Node sidecar
+artifact. The plugin now shows a `Local desktop server`
 settings section, saves the planned local port, keep-alive preference, local
 data folder, and local-only MCP/admin tokens, renders the future localhost MCP
 endpoint, can generate or rotate those local credentials, and can copy a
-developer launch command. It can also start and stop the Node-required
-developer local server profile when the tester configures the platform repo
-folder and npm command. A packaged sidecar bundled with the plugin is still
-future work. The repo also includes `npm run local-server`, which starts the
+developer launch command. It can start and stop the packaged sidecar when the
+installed plugin folder contains `sidecar/start-local-server.mjs`, or fall back
+to the Node-required developer local server profile when the tester configures
+the platform repo folder and npm command. A platform-native binary sidecar is
+still future work. The repo also includes `npm run local-server`, which starts the
 existing server with localhost-only defaults, JSON storage, generated or
 provided local tokens, and MCP Inspector origins. `npm run smoke:local-server`
 verifies that profile against the synthetic `fixtures/vault` demo vault.
@@ -226,11 +228,11 @@ The command prints:
 
 These printed tokens are local secrets. Do not paste them into docs,
 screenshots, or chat transcripts. The current plugin can generate and store
-these values, copy a developer launch command that passes them to the
-Node-required local profile, and start or stop that developer profile from the
-plugin when the project folder and command are configured. A future packaged
-version should remove the repo-folder requirement and launch a bundled sidecar
-directly.
+these values, copy a launch command that passes them to the packaged or
+developer local profile, and start or stop that local profile from the plugin.
+The ZIP package removes the repo-folder requirement by including a bundled Node
+sidecar; BRAT/dev installs without that folder still use the developer repo
+fallback.
 
 ### Slice 1 - Design And Compatibility
 
@@ -243,8 +245,9 @@ directly.
 
 - [x] Add a Node-required `scripts/start-local-server.mjs` local server profile
   that wraps the existing server app with localhost defaults.
-- Build a single sidecar artifact for macOS, Windows, and Linux, or document a
-  Node-required private-alpha path first.
+- [x] Build a bundled Node sidecar artifact for the ZIP/plugin package.
+- Build a platform-native binary sidecar for macOS, Windows, and Linux, or keep
+  documenting the Node-required private-alpha path.
 - [x] Reuse existing `/healthz`, `/mcp`, `/admin/vaults/:vaultId/sync`,
   `/admin/vaults`, and write-proposal endpoints in local profile.
 - [x] Use local JSON storage by default, not Postgres.
@@ -259,8 +262,10 @@ directly.
 - [x] Show copyable local MCP endpoint, tokens, and developer launch command.
 - [x] Add plugin-controlled local filesystem access settings and local MCP
   tools for policy, listing, reading, and scoped writing.
-- Bundle a platform-specific sidecar so non-developer users do not need a repo
-  checkout or npm command.
+- [x] Bundle a Node sidecar in the ZIP package so users do not need a repo
+  checkout when the installed package includes the `sidecar` folder.
+- Bundle a platform-specific binary sidecar so non-developer users do not need
+  any Node/npm command.
 
 ### Slice 4 - Verification
 

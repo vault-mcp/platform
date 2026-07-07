@@ -68,18 +68,23 @@ try {
   }, null, 2)}\n`, "utf8");
   await writeFile(path.join(installedPluginDir, "main.js"), "module.exports = {};\n", "utf8");
   await writeFile(path.join(installedPluginDir, "styles.css"), ".vault-mcp-old {}\n", "utf8");
+  await mkdir(path.join(installedPluginDir, "sidecar"), { recursive: true });
+  await writeFile(path.join(installedPluginDir, "sidecar", "start-local-server.mjs"), "console.log('old sidecar');\n", "utf8");
+  await writeFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "console.log('old server');\n", "utf8");
+  await writeFile(path.join(installedPluginDir, "sidecar", "sidecar-manifest.json"), "{}\n", "utf8");
   await writeFile(dataPath, `${JSON.stringify(preservedSettings, null, 2)}\n`, "utf8");
 
   const dataBeforeUpgrade = await readFile(dataPath, "utf8");
   const oldMain = await readFile(path.join(installedPluginDir, "main.js"), "utf8");
   const oldStyles = await readFile(path.join(installedPluginDir, "styles.css"), "utf8");
+  const oldSidecar = await readFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "utf8");
 
   await run("unzip", ["-q", "-o", zipPath, "-d", extractionRoot], repoRoot);
   const extractedPluginDir = path.join(extractionRoot, pluginId);
   await assertDirectory(extractedPluginDir, "extracted plugin folder");
 
   for (const file of releaseManifest.package.runtimeFiles) {
-    await copyFile(path.join(extractedPluginDir, file), path.join(installedPluginDir, file));
+    await copyRuntimeFile(path.join(extractedPluginDir, file), path.join(installedPluginDir, file));
   }
 
   const installedManifest = JSON.parse(await readFile(path.join(installedPluginDir, "manifest.json"), "utf8"));
@@ -91,6 +96,9 @@ try {
   assert(dataAfterUpgrade === dataBeforeUpgrade, "Upgrade did not preserve data.json exactly");
   assert(await readFile(path.join(installedPluginDir, "main.js"), "utf8") !== oldMain, "Upgrade did not replace main.js");
   assert(await readFile(path.join(installedPluginDir, "styles.css"), "utf8") !== oldStyles, "Upgrade did not replace styles.css");
+  assert(await readFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "utf8") !== oldSidecar, "Upgrade did not replace sidecar server bundle");
+  await assertFile(path.join(installedPluginDir, "sidecar", "start-local-server.mjs"), "sidecar launcher after upgrade");
+  await assertFile(path.join(installedPluginDir, "sidecar", "sidecar-manifest.json"), "sidecar manifest after upgrade");
   await assertMissing(path.join(installedPluginDir, pluginId, "manifest.json"), "double-nested manifest");
 
   await rm(installedPluginDir, { recursive: true, force: true });
@@ -129,7 +137,7 @@ try {
     },
     verified: [
       "release manifest, checksum, and zip are self-consistent",
-      "upgrade replaces manifest.json, main.js, and styles.css from the release zip",
+      "upgrade replaces manifest.json, main.js, styles.css, and sidecar files from the release zip",
       "upgrade preserves existing .obsidian/plugins/vault-mcp/data.json exactly",
       "upgrade avoids double-nested plugin folders",
       "uninstall removes the plugin folder",
@@ -189,6 +197,11 @@ async function assertFile(value, label) {
 async function assertMissing(value, label) {
   const result = await stat(value).catch(() => null);
   assert(!result, `Unexpected ${label}: ${value}`);
+}
+
+async function copyRuntimeFile(source, destination) {
+  await mkdir(path.dirname(destination), { recursive: true });
+  await copyFile(source, destination);
 }
 
 async function run(command, commandArgs, cwd) {

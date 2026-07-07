@@ -57,12 +57,12 @@ try {
   await mkdir(installedPluginDir, { recursive: true });
 
   for (const file of releaseManifest.package.runtimeFiles) {
-    await copyFile(path.join(extractedPluginDir, file), path.join(installedPluginDir, file));
+    await copyRuntimeFile(path.join(extractedPluginDir, file), path.join(installedPluginDir, file));
   }
 
   await writeFile(path.join(obsidianDir, "community-plugins.json"), `${JSON.stringify([pluginId], null, 2)}\n`, "utf8");
 
-  const runtimeFiles = ["manifest.json", "main.js", "styles.css"];
+  const runtimeFiles = expectedRuntimeFiles();
   assert(JSON.stringify(releaseManifest.package.runtimeFiles) === JSON.stringify(runtimeFiles), "Release manifest runtime file set is not the private-alpha runtime set");
   for (const file of runtimeFiles) {
     await assertFile(path.join(installedPluginDir, file), file);
@@ -107,8 +107,9 @@ try {
       "release notes mention version and private-alpha status",
       "zip extracts to one plugin folder",
       "runtime files install under .obsidian/plugins/vault-mcp",
+      "packaged local sidecar files install under .obsidian/plugins/vault-mcp/sidecar",
       "installed manifest matches release manifest",
-      "main.js and styles.css are non-empty",
+      "main.js, styles.css, and sidecar files are non-empty",
       "double-nested plugin folder is absent",
       "community-plugins.json enables vault-mcp",
     ],
@@ -159,6 +160,22 @@ async function assertDirectory(value, label) {
 async function assertFile(value, label) {
   const result = await stat(value).catch(() => null);
   assert(result?.isFile(), `Expected ${label} to exist: ${value}`);
+}
+
+async function copyRuntimeFile(source, destination) {
+  await mkdir(path.dirname(destination), { recursive: true });
+  await copyFile(source, destination);
+}
+
+function expectedRuntimeFiles() {
+  return [
+    "manifest.json",
+    "main.js",
+    "styles.css",
+    "sidecar/start-local-server.mjs",
+    "sidecar/vault-mcp-local-server.mjs",
+    "sidecar/sidecar-manifest.json",
+  ];
 }
 
 async function assertMissing(value, label) {

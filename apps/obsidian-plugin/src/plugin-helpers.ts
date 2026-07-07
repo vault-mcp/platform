@@ -28,6 +28,7 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localServerCredentialsCreatedAt?: string | null;
   localServerProjectDir?: string;
   localServerCommand?: string;
+  localServerSidecarDir?: string;
   localFsAccessMode?: LocalFsAccessMode;
   localFsReadRoots?: string[];
   localFsWriteRoots?: string[];
@@ -402,9 +403,10 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   const keepAlive = Boolean(settings.localServerKeepAlive);
   const mcpTokenReady = Boolean(settings.localServerMcpToken?.trim());
   const syncTokenReady = Boolean(settings.localServerSyncToken?.trim());
+  const bundledSidecarReady = Boolean(settings.localServerSidecarDir?.trim());
   const projectDirReady = Boolean(settings.localServerProjectDir?.trim());
   const commandReady = Boolean((settings.localServerCommand?.trim() || "npm"));
-  const canStart = Boolean(port && mcpTokenReady && syncTokenReady && projectDirReady && commandReady);
+  const canStart = Boolean(port && mcpTokenReady && syncTokenReady && (bundledSidecarReady || (projectDirReady && commandReady)));
 
   if (!port) {
     return {
@@ -418,6 +420,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
         "Bind address: 127.0.0.1 only",
         "Port range: 1024-65535",
         `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
+        `Bundled sidecar: ${bundledSidecarReady ? "available" : "not installed"}`,
         `Developer project folder: ${projectDirReady ? "configured" : "not configured"}`,
       ],
     };
@@ -426,22 +429,25 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   return {
     status: "planned",
     title: canStart
-      ? "Local desktop server developer launcher is ready"
+      ? bundledSidecarReady ? "Local desktop server bundled sidecar is ready" : "Local desktop server developer launcher is ready"
       : enabled ? "Local desktop server is selected but needs setup" : "Local desktop server is planned",
     message: enabled
       ? canStart
-        ? "This build can start the Node-required developer local server with the configured project folder, command, port, and local credentials. A packaged sidecar is still future work."
-        : "This build cannot start the developer local server until the project folder, command, port, and local credentials are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
-      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open. This private-alpha build can also launch the Node-required developer profile.",
+        ? bundledSidecarReady
+          ? "This build can start the packaged local sidecar with the configured command, port, and local credentials."
+          : "This build can start the Node-required developer local server with the configured project folder, command, port, and local credentials."
+        : "This build cannot start the local server until local credentials plus either the packaged sidecar or a developer project folder are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
+      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open. This private-alpha build can launch the packaged sidecar when present or the Node-required developer profile.",
     endpoint,
     canStart,
     facts: localServerStatusFacts([
-      canStart ? "Sidecar status: developer launcher configured" : "Sidecar status: not bundled in this private-alpha build",
+      bundledSidecarReady ? "Sidecar status: packaged sidecar installed" : canStart ? "Sidecar status: developer launcher configured" : "Sidecar status: not configured",
       "Bind address: 127.0.0.1 only",
       `Keep running after Obsidian exits: ${keepAlive ? "planned opt-in" : "off by default"}`,
       `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
       settings.localServerCredentialsCreatedAt ? `Credentials created: ${settings.localServerCredentialsCreatedAt}` : null,
       `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
+      `Bundled sidecar: ${settings.localServerSidecarDir?.trim() || "not installed"}`,
       `Developer project folder: ${settings.localServerProjectDir?.trim() || "not configured"}`,
       `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
       `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,
@@ -463,6 +469,23 @@ export function buildLocalServerLaunchCommand(settings: PluginConfigurationSetti
   }
   const dataDir = settings.localServerDataDir?.trim() || "data/local-server";
   const command = settings.localServerCommand?.trim() || "npm";
+  const sidecarDir = settings.localServerSidecarDir?.trim();
+  if (sidecarDir) {
+    const launch = [
+      shellCommand(managedLocalServerCommand(command)),
+      "start-local-server.mjs",
+      "--port",
+      String(port),
+      "--data-dir",
+      shellQuote(dataDir),
+      "--mcp-token",
+      shellQuote(mcpToken),
+      "--sync-token",
+      shellQuote(syncToken),
+      ...localFsLaunchArgs(settings, true),
+    ].join(" ");
+    return `cd ${shellQuote(sidecarDir)} && ${launch}`;
+  }
   const launch = [
     shellCommand(command),
     "run",
@@ -486,9 +509,31 @@ export function buildLocalServerSpawnConfig(settings: PluginConfigurationSetting
   const port = normalizeLocalServerPort(settings.localServerPort);
   const mcpToken = settings.localServerMcpToken?.trim();
   const syncToken = settings.localServerSyncToken?.trim();
+  const sidecarDir = settings.localServerSidecarDir?.trim();
   const cwd = settings.localServerProjectDir?.trim();
   const command = settings.localServerCommand?.trim() || "npm";
-  if (!port || !mcpToken || !syncToken || !cwd) {
+  if (!port || !mcpToken || !syncToken) {
+    return null;
+  }
+  if (sidecarDir) {
+    return {
+      command: managedLocalServerCommand(command),
+      cwd: sidecarDir,
+      args: [
+        "start-local-server.mjs",
+        "--port",
+        String(port),
+        "--data-dir",
+        settings.localServerDataDir?.trim() || "data/local-server",
+        "--mcp-token",
+        mcpToken,
+        "--sync-token",
+        syncToken,
+        ...localFsLaunchArgs(settings, false),
+      ],
+    };
+  }
+  if (!cwd) {
     return null;
   }
   return {

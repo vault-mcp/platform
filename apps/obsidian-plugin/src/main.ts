@@ -105,6 +105,14 @@ type ChildProcessModule = {
   ): LocalServerChildProcess;
 };
 
+type FsModule = {
+  existsSync(path: string): boolean;
+};
+
+type PathModule = {
+  join(...segments: string[]): string;
+};
+
 type SyncSummary = {
   scanned: number;
   indexed: number;
@@ -344,7 +352,7 @@ export default class VaultMcpPlugin extends Plugin {
       await this.generateLocalServerCredentials();
     }
 
-    const config = buildLocalServerSpawnConfig(this.settings);
+    const config = buildLocalServerSpawnConfig(this.localServerSettingsWithSidecar());
     if (!config) {
       const message = "Set the local server project folder, command, valid port, and local credentials before starting the developer local server.";
       await this.addHistory({ type: "error", message });
@@ -427,6 +435,11 @@ export default class VaultMcpPlugin extends Plugin {
     new Notice("Vault MCP local server session refresh requested.");
     await delay(750);
     await this.startLocalServer();
+  }
+
+  localServerSettingsWithSidecar(): VaultMcpPluginSettings & { localServerSidecarDir?: string } {
+    const localServerSidecarDir = resolveBundledLocalSidecarDir(this.app, this.manifest);
+    return localServerSidecarDir ? { ...this.settings, localServerSidecarDir } : this.settings;
   }
 
   async importSetupBundle(value: string) {
@@ -1438,7 +1451,8 @@ function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettin
 }
 
 function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
-  const status = pluginLocalServerStatus(plugin.settings);
+  const localServerSettings = plugin.localServerSettingsWithSidecar();
+  const status = pluginLocalServerStatus(localServerSettings);
   new Setting(parent).setName("Local desktop server").setHeading();
 
   const box = parent.createDiv({ cls: `vault-mcp-server-check vault-mcp-server-check--${status.status}` });
@@ -1630,7 +1644,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
     .setDesc("Starts the current Node-required local profile with this plugin's port, data folder, and local tokens.")
     .addButton((button) => button
       .setButtonText("Copy command")
-      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(plugin.settings) ?? "")));
+      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(localServerSettings) ?? "")));
 
   new Setting(parent)
     .setName("Developer server session")
@@ -2075,6 +2089,25 @@ function spawnLocalServerProcess(config: LocalServerSpawnConfig): LocalServerChi
     stdio: "ignore",
     env: localServerSpawnEnv(config),
   });
+}
+
+function resolveBundledLocalSidecarDir(app: App, manifest: { dir?: string }): string | null {
+  const vaultBasePath = getVaultBasePath(app);
+  const pluginDir = manifest.dir?.trim();
+  if (!vaultBasePath || !pluginDir) {
+    return null;
+  }
+  try {
+    const pathModule = requireNodeModule<PathModule>("path");
+    const fsModule = requireNodeModule<FsModule>("fs");
+    const pluginPath = pathModule.join(vaultBasePath, pluginDir);
+    const sidecarDir = pathModule.join(pluginPath, "sidecar");
+    const launcherPath = pathModule.join(sidecarDir, "start-local-server.mjs");
+    const serverPath = pathModule.join(sidecarDir, "vault-mcp-local-server.mjs");
+    return fsModule.existsSync(launcherPath) && fsModule.existsSync(serverPath) ? sidecarDir : null;
+  } catch {
+    return null;
+  }
 }
 
 function delay(ms: number): Promise<void> {
