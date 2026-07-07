@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { LocalFsWriteOperation, SyncPayload } from "@vault-mcp/core";
 import {
+  buildLocalClientInstructions,
   buildLocalServerLaunchCommand,
   buildLocalServerSpawnConfig,
   buildLocalClientConnectionBundle,
@@ -268,11 +269,37 @@ describe("plugin helpers", () => {
       localServerPort: 38791,
       localServerMcpToken: "mcp-local-token",
       localServerSyncToken: "sync-local-token",
+      localFsAccessMode: "write",
+      localFsReadRoots: ["/Users/example/Vault"],
+      localFsWriteRoots: ["/Users/example/Vault/20 Projects"],
+      localFsWriteOperations: ["write_file", "move_path"] as LocalFsWriteOperation[],
+      localFsMaxReadBytes: 8192,
+      localFsMaxSearchResults: 12,
+      localFsMaxSearchFiles: 345,
+      localFsAccessTtlMinutes: 45,
+      localFsRequireUserIntent: true,
+      localFsUserIntentPhrase: "approve local access",
     });
 
     expect(bundle?.endpoint).toBe("http://127.0.0.1:38791/mcp");
     expect(bundle?.authorization_header).toBe("Bearer mcp-local-token");
     expect(bundle?.example_mcp_config.mcpServers["vault-mcp-local"].headers.Authorization).toBe("Bearer mcp-local-token");
+    expect(bundle?.local_filesystem).toMatchObject({
+      access_mode: "write",
+      read_roots: ["/Users/example/Vault"],
+      write_roots: ["/Users/example/Vault/20 Projects"],
+      write_operations: ["write_file", "move_path"],
+      max_read_bytes: 8192,
+      max_search_results: 12,
+      max_search_files: 345,
+      access_ttl_minutes: 45,
+      require_user_intent: true,
+      user_intent_phrase: "approve local access",
+      example_tool_arguments: {
+        user_intent: "approve local access",
+      },
+    });
+    expect(bundle?.local_filesystem.client_rules.join("\n")).toContain("local_fs_policy");
     expect(JSON.stringify(bundle)).not.toContain("sync-local-token");
     expect(JSON.stringify(bundle)).not.toContain("remote-sync-secret");
     expect(buildLocalClientConnectionBundle({
@@ -287,6 +314,34 @@ describe("plugin helpers", () => {
       localServerPort: 80,
       localServerMcpToken: "mcp-local-token",
     })).toBeNull();
+  });
+
+  it("builds local client instructions without embedding local secrets", () => {
+    const instructions = buildLocalClientInstructions({
+      serverUrl: "https://vault-mcp-connector.vercel.app",
+      syncToken: "remote-sync-secret",
+      vaultId: "default",
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "00 System/Vault MCP Write Audit",
+      includePrefixes: ["20 Projects/"],
+      excludePrefixes: ["02 Daily/"],
+      localServerPort: 38791,
+      localServerMcpToken: "mcp-local-token",
+      localServerSyncToken: "sync-local-token",
+      localFsAccessMode: "god",
+      localFsAccessTtlMinutes: 15,
+      localFsRequireUserIntent: true,
+      localFsUserIntentPhrase: "approve local access",
+    });
+
+    expect(instructions).toContain("Endpoint: http://127.0.0.1:38791/mcp");
+    expect(instructions).toContain('user_intent: "approve local access"');
+    expect(instructions).toContain("Filesystem mode: god");
+    expect(instructions).toContain("15 minutes after local server start or refresh");
+    expect(instructions).not.toContain("mcp-local-token");
+    expect(instructions).not.toContain("sync-local-token");
+    expect(instructions).not.toContain("remote-sync-secret");
   });
 
   it("builds local server launch and spawn commands only when credentials are ready", () => {

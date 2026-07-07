@@ -264,11 +264,17 @@ these values, copy a launch command that passes them to the packaged or
 developer local profile, and start or stop that local profile from the plugin.
 It can also copy a local client connection bundle for local-capable MCP clients:
 the bundle includes the localhost `/mcp` endpoint, an `Authorization: Bearer ...`
-header built from the local MCP client token, and a generic `mcpServers`
-configuration example. It intentionally does not include the plugin/admin sync
-token. The ZIP package removes the repo-folder requirement by including a
-bundled Node sidecar; BRAT/dev installs without that folder still use the
-developer repo fallback.
+header built from the local MCP client token, a generic `mcpServers`
+configuration example, and a `local_filesystem` section with the current mode,
+roots, write operations, caps, session window, and `user_intent` requirement.
+It intentionally does not include the plugin/admin sync token. The same setting
+can copy local client instructions without embedding any bearer or sync token;
+that prompt is meant for ChatGPT Desktop, Claude Desktop, Codex, MCP Inspector,
+or another local-capable client so it knows to call `local_fs_policy` before
+local file work and to include the exact `user_intent` phrase when required.
+The ZIP package removes the repo-folder requirement by including a bundled Node
+sidecar; BRAT/dev installs without that folder still use the developer repo
+fallback.
 
 ### Slice 1 - Design And Compatibility
 

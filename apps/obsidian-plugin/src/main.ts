@@ -5,6 +5,7 @@ import {
 } from "./write-helpers";
 import {
   buildLocalClientConnectionBundle,
+  buildLocalClientInstructions,
   buildLocalServerLaunchCommand,
   buildLocalServerSpawnConfig,
   describeCaughtError,
@@ -1733,7 +1734,10 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
       .onClick(() => void copyToClipboard("local MCP authorization header", localClientBundle?.authorization_header ?? "")))
     .addButton((button) => button
       .setButtonText("Copy JSON")
-      .onClick(() => void copyToClipboard("local MCP client JSON", localClientBundle ? JSON.stringify(localClientBundle, null, 2) : "")));
+      .onClick(() => void copyToClipboard("local MCP client JSON", localClientBundle ? JSON.stringify(localClientBundle, null, 2) : "")))
+    .addButton((button) => button
+      .setButtonText("Copy instructions")
+      .onClick(() => void copyToClipboard("local MCP client instructions", buildLocalClientInstructions(plugin.settings) ?? "")));
 
   new Setting(parent)
     .setName("Developer launch command")

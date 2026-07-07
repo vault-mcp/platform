@@ -112,10 +112,13 @@ MCP client again. By default, every local filesystem tool call except
 default phrase is `use local filesystem`, and testers can change it or disable
 the requirement from the same settings section. The same section can copy a
 local client connection bundle with the localhost MCP endpoint, bearer
-authorization header, and a generic `mcpServers` JSON example. That bundle
-includes only the local MCP client token, not the plugin/admin sync token. These
-settings only affect the localhost developer server profile; the hosted server
-remains derived-index-only and read-only.
+authorization header, a generic `mcpServers` JSON example, and the current
+local filesystem policy context. That bundle includes only the local MCP client
+token, not the plugin/admin sync token. The adjacent `Copy instructions` button
+copies a no-token prompt that tells local clients to call `local_fs_policy`,
+respect the configured local roots and write operations, and include
+`user_intent` when required. These settings only affect the localhost developer
+server profile; the hosted server remains derived-index-only and read-only.
 
 ## Safe Test Install
 
