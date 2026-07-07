@@ -83,6 +83,10 @@ privacy-first setup for desktop MCP clients. In this release, the ZIP package
 includes a bundled Node sidecar under `sidecar/`; the plugin starts it when the
 folder is installed, or falls back to the Node-required developer local server
 profile after the tester configures the platform repo folder and npm command.
+After spawning the local profile, the plugin waits for `/healthz` and only marks
+the local server ready when the response names `vault-mcp-connector`, matches
+the plugin version, reports healthy storage, and advertises the expected
+localhost MCP endpoint.
 This is still not the final public binary sidecar: non-developer users should
 not need to think about Node once platform-native sidecars exist. Verify the
 profile with `npm run smoke:local-server`. See

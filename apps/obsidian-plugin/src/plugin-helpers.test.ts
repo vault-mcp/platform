@@ -13,6 +13,7 @@ import {
   pluginSetupGuide,
   summarizeServerStatus,
   summarizeSyncResponse,
+  validateLocalServerCompatibility,
 } from "./plugin-helpers";
 
 describe("plugin helpers", () => {
@@ -382,6 +383,54 @@ describe("plugin helpers", () => {
         "30",
       ],
     });
+  });
+
+  it("accepts only the expected local server service, version, and endpoint", () => {
+    const healthy = validateLocalServerCompatibility({
+      ok: true,
+      service: {
+        name: "vault-mcp-connector",
+        version: "0.1.0",
+        mcp_resource_url: "http://127.0.0.1:38791/mcp",
+      },
+      storage: {
+        kind: "json",
+        ok: true,
+      },
+    }, "0.1.0", "http://127.0.0.1:38791/mcp");
+
+    expect(healthy.ok).toBe(true);
+    expect(healthy.message).toContain("compatible");
+
+    expect(validateLocalServerCompatibility({
+      ok: true,
+      service: {
+        name: "other-service",
+        version: "0.1.0",
+        mcp_resource_url: "http://127.0.0.1:38791/mcp",
+      },
+      storage: { ok: true },
+    }, "0.1.0", "http://127.0.0.1:38791/mcp").message).toContain("other-service");
+
+    expect(validateLocalServerCompatibility({
+      ok: true,
+      service: {
+        name: "vault-mcp-connector",
+        version: "0.0.9",
+        mcp_resource_url: "http://127.0.0.1:38791/mcp",
+      },
+      storage: { ok: true },
+    }, "0.1.0", "http://127.0.0.1:38791/mcp").message).toContain("does not match plugin version");
+
+    expect(validateLocalServerCompatibility({
+      ok: true,
+      service: {
+        name: "vault-mcp-connector",
+        version: "0.1.0",
+        mcp_resource_url: "http://127.0.0.1:39999/mcp",
+      },
+      storage: { ok: true },
+    }, "0.1.0", "http://127.0.0.1:38791/mcp").message).toContain("does not match expected endpoint");
   });
 
   it("adds local filesystem launch flags only when filesystem access is enabled", () => {

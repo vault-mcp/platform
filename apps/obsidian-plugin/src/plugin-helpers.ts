@@ -105,6 +105,7 @@ export type PluginSetupBundle = {
 export type PluginServerHealthSnapshot = {
   ok?: boolean;
   service?: {
+    name?: string;
     version?: string;
     mcp_resource_url?: string;
   };
@@ -132,6 +133,11 @@ export type PluginServerStatusSummary = {
   facts: string[];
 };
 
+export type LocalServerCompatibilityCheck = {
+  ok: boolean;
+  message: string;
+};
+
 export type PluginLocalServerStatus = {
   status: "planned" | "invalid";
   title: string;
@@ -146,6 +152,8 @@ export type LocalServerSpawnConfig = {
   args: string[];
   cwd: string;
 };
+
+const EXPECTED_LOCAL_SERVICE_NAME = "vault-mcp-connector";
 
 type VaultSyncResponse = {
   ok?: boolean;
@@ -551,6 +559,52 @@ export function buildLocalServerSpawnConfig(settings: PluginConfigurationSetting
       syncToken,
       ...localFsLaunchArgs(settings, false),
     ],
+  };
+}
+
+export function validateLocalServerCompatibility(
+  health: PluginServerHealthSnapshot,
+  expectedVersion: string,
+  expectedMcpResourceUrl: string,
+): LocalServerCompatibilityCheck {
+  if (health.ok === false || health.storage?.ok === false) {
+    return {
+      ok: false,
+      message: "Local server answered /healthz, but reported unhealthy storage.",
+    };
+  }
+
+  if (health.service?.name !== EXPECTED_LOCAL_SERVICE_NAME) {
+    return {
+      ok: false,
+      message: `Local server answered /healthz, but reported service ${health.service?.name ?? "unknown"} instead of ${EXPECTED_LOCAL_SERVICE_NAME}.`,
+    };
+  }
+
+  if (!health.service.version) {
+    return {
+      ok: false,
+      message: "Local server answered /healthz without a service version.",
+    };
+  }
+
+  if (health.service.version !== expectedVersion) {
+    return {
+      ok: false,
+      message: `Local server version ${health.service.version} does not match plugin version ${expectedVersion}.`,
+    };
+  }
+
+  if (health.service.mcp_resource_url !== expectedMcpResourceUrl) {
+    return {
+      ok: false,
+      message: `Local server MCP endpoint ${health.service.mcp_resource_url ?? "unknown"} does not match expected endpoint ${expectedMcpResourceUrl}.`,
+    };
+  }
+
+  return {
+    ok: true,
+    message: `Local server ${health.service.version} is compatible with this plugin.`,
   };
 }
 

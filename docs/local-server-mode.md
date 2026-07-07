@@ -150,8 +150,11 @@ to the Node-required developer local server profile when the tester configures
 the platform repo folder and npm command. A platform-native binary sidecar is
 still future work. After spawning the local profile, the plugin waits for
 `/healthz` before showing the server as ready; if health or storage readiness
-fails, it stops the child process and leaves local mode disabled. The repo also
-includes `npm run local-server`, which starts the existing server with
+fails, it stops the child process and leaves local mode disabled. It also
+requires the health response to identify `vault-mcp-connector`, match the
+plugin manifest version, and advertise the expected localhost MCP endpoint, so
+a stale or unrelated process on the same port is not treated as ready. The repo
+also includes `npm run local-server`, which starts the existing server with
 localhost-only defaults, JSON storage, generated or provided local tokens, and
 MCP Inspector origins. `npm run smoke:local-server` verifies that profile
 against the synthetic `fixtures/vault` demo vault.
@@ -261,7 +264,7 @@ fallback.
 - Auto-select a port.
 - [x] Generate local tokens for the developer launch path.
 - [x] Health-check the sidecar before marking local mode ready.
-- Version-check the sidecar before marking local mode ready.
+- [x] Version-check the sidecar before marking local mode ready.
 - Sync the current vault after preview/approval.
 - [x] Show copyable local MCP endpoint, tokens, and developer launch command.
 - [x] Add plugin-controlled local filesystem access settings and local MCP

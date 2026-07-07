@@ -16,6 +16,7 @@ import {
   pluginSetupGuide,
   summarizeSyncResponse,
   summarizeServerStatus,
+  validateLocalServerCompatibility,
 } from "./plugin-helpers";
 import type { PluginServerHealthSnapshot, PluginServerStatusSummary, PluginVaultStatusSnapshot } from "./plugin-helpers";
 import type { LocalServerSpawnConfig } from "./plugin-helpers";
@@ -394,12 +395,12 @@ export default class VaultMcpPlugin extends Plugin {
         void this.addHistory({ type: "local-server", message: `Developer local server stopped (${reason}).` });
       });
       new Notice(`Vault MCP local server starting on ${localServerEndpoint(this.settings)}.`);
-      const health = await waitForLocalServerHealth(this.settings);
+      const health = await waitForLocalServerHealth(this.settings, this.manifest.version);
       if (this.localServerProcess !== child) {
         return;
       }
       this.localServerHealth = health;
-      await this.addHistory({ type: "local-server", message: `Local server ready on ${localServerEndpoint(this.settings)} (${health.storage?.kind ?? "unknown"} storage).` });
+      await this.addHistory({ type: "local-server", message: `Local server ready on ${localServerEndpoint(this.settings)} (${health.storage?.kind ?? "unknown"} storage, version ${health.service?.version ?? "unknown"}).` });
       new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -1664,7 +1665,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
   new Setting(parent)
     .setName("Developer server session")
     .setDesc(plugin.localServerProcess
-      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage)` : "; waiting for health check"}. Refresh restarts the local server with a new filesystem access window.`
+      ? `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"})` : "; waiting for health and version check"}. Refresh restarts the local server with a new filesystem access window.`
       : "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.")
     .addButton((button) => button
       .setButtonText("Start")
@@ -2129,7 +2130,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, timeoutMs = 6000): Promise<PluginServerHealthSnapshot> {
+async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, expectedVersion: string, timeoutMs = 6000): Promise<PluginServerHealthSnapshot> {
   const deadline = Date.now() + timeoutMs;
   let lastError = "Local server did not answer /healthz yet.";
   while (Date.now() < deadline) {
@@ -2140,8 +2141,9 @@ async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, timeou
       });
       if (response.status >= 200 && response.status < 300) {
         const health = parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
-        if (health.ok === false || health.storage?.ok === false) {
-          throw new Error("Local server answered /healthz, but reported unhealthy storage.");
+        const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(settings));
+        if (!compatibility.ok) {
+          throw new Error(compatibility.message);
         }
         return health;
       }
@@ -2151,7 +2153,7 @@ async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, timeou
     }
     await delay(250);
   }
-  throw new Error(`Local server did not become healthy at ${localServerHealthUrl(settings)} within ${timeoutMs}ms. ${lastError}`);
+  throw new Error(`Local server did not become healthy and compatible at ${localServerHealthUrl(settings)} within ${timeoutMs}ms. ${lastError}`);
 }
 
 function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {
