@@ -37,6 +37,10 @@ const steps = [
     args: ["run", "smoke:local-fs"],
   },
   {
+    name: "smoke:local-inspector",
+    args: ["run", "smoke:local-inspector"],
+  },
+  {
     name: "audit",
     args: ["audit", "--audit-level=low"],
   },

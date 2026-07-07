@@ -126,9 +126,10 @@ npm run release:check:local
 ```
 
 That command runs build, API check, tests, MCP UI smoke, local filesystem MCP
-smoke, audit, plugin package/verify/BRAT/fresh-install/lifecycle checks,
-clean-env local smoke, and OAuth local smoke. It does not regenerate the wiki,
-run production smokes, or replace real MCP client acceptance.
+smoke, local MCP Inspector-origin smoke, audit, plugin
+package/verify/BRAT/fresh-install/lifecycle checks, clean-env local smoke, and
+OAuth local smoke. It does not regenerate the wiki, run production smokes, or
+replace real MCP client acceptance.
 
 To prepare the Obsidian plugin for BRAT private-alpha testing:
 
@@ -156,6 +157,7 @@ For a smaller manual subset:
 ```bash
 npm run smoke:mcp-ui
 npm run smoke:local-fs
+npm run smoke:local-inspector
 npm run smoke:local
 npm run smoke:oauth-local
 ```
@@ -267,4 +269,7 @@ npm command, start or stop the Node-required local profile from the plugin, and
 verify the same profile with `npm run smoke:local-server`. The explicit local
 filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
 read/write roots, denied outside paths, destructive confirmation, and god-mode
-absolute-path access in temporary directories.
+absolute-path access in temporary directories. `npm run smoke:local-inspector`
+checks the MCP Inspector localhost origins, preflight behavior, authenticated
+SSE, forbidden-origin rejection, and local filesystem tool calls through an
+Inspector-origin request.

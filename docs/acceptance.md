@@ -20,6 +20,7 @@ That wiki-free local release gate runs:
 - `npm test`
 - `npm run smoke:mcp-ui`
 - `npm run smoke:local-fs`
+- `npm run smoke:local-inspector`
 - `npm audit --audit-level=low`
 - `npm run plugin:package`
 - `npm run plugin:verify-package`
@@ -59,6 +60,7 @@ npm run check:api
 npm test
 npm run smoke:mcp-ui
 npm run smoke:local-fs
+npm run smoke:local-inspector
 npm run smoke:local
 npm run smoke:oauth-local
 ```
@@ -66,7 +68,9 @@ npm run smoke:oauth-local
 Run server-starting local smoke scripts sequentially unless they use distinct
 ports. `smoke:local` and `smoke:oauth-local` use the local server app profile;
 `smoke:local-fs` starts dedicated localhost servers on test ports for scoped
-write mode and god mode.
+write mode and god mode. `smoke:local-inspector` starts a localhost server and
+simulates MCP Inspector browser-origin traffic from `http://localhost:6274` and
+`http://127.0.0.1:6274`.
 `smoke:mcp-ui` does not start a server or use live ChatGPT. It loads the MCP Apps
 HTML component from the compiled server package and verifies delayed tool
 globals plus rendered search, note, status, error, and proposal card states in a
@@ -233,6 +237,19 @@ curl -i -X OPTIONS "https://vault-mcp.example.com/mcp" \
 Expected: `204` with `Access-Control-Allow-Origin: https://chatgpt.com`.
 
 ## MCP Inspector
+
+The automated local origin/protocol gate is:
+
+```bash
+npm run smoke:local-inspector
+```
+
+It verifies Inspector localhost origins, browser preflight, authenticated SSE,
+forbidden-origin rejection, and local filesystem tool calls through an
+Inspector-origin request. This does not replace clicking through the MCP
+Inspector UI.
+
+Remote/manual Inspector acceptance:
 
 1. Start from a synced endpoint.
 2. Run:

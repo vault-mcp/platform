@@ -182,6 +182,7 @@ Headless local-server verification:
 ```bash
 npm run smoke:local-server
 npm run smoke:local-fs
+npm run smoke:local-inspector
 ```
 
 `smoke:local-server` starts the local profile with fixed test-only tokens,
@@ -197,6 +198,13 @@ creates directories, moves, and deletes only inside the configured write root,
 denies outside paths, requires delete confirmation, and verifies god mode can
 read/write/search/move/delete an absolute temporary path without configured
 roots.
+
+`smoke:local-inspector` starts a localhost server with Inspector-compatible
+origins and verifies CORS preflight from `http://localhost:6274` and
+`http://127.0.0.1:6274`, authenticated SSE, forbidden-origin rejection, and
+local filesystem tool calls from an Inspector-origin request. It covers the
+server/protocol side of Inspector setup; a human still needs to verify the
+actual Inspector UI before release claims.
 
 The command prints:
 
@@ -250,6 +258,7 @@ directly.
   command generation.
 - [x] Add a headless local-server smoke gate.
 - [x] Add a headless enabled local-filesystem MCP policy smoke gate.
+- [x] Add a headless MCP Inspector-origin smoke gate for localhost local tools.
 - Add a disposable-vault Obsidian smoke for toggle/start/sync/stop.
 - Add MCP Inspector acceptance against `http://127.0.0.1:<port>/mcp`.
 - Add client docs for Codex, Claude Desktop, ChatGPT Desktop if supported, and

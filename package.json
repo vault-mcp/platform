@@ -58,6 +58,7 @@
     "local-server": "npm run build --workspace @vault-mcp/server && node scripts/start-local-server.mjs",
     "smoke:local-server": "npm run build --workspace @vault-mcp/server && npm run build --workspace @vault-mcp/cli && node scripts/smoke-local-server.mjs",
     "smoke:local-fs": "npm run build --workspace @vault-mcp/server && node scripts/smoke-local-fs.mjs",
+    "smoke:local-inspector": "npm run build --workspace @vault-mcp/server && node scripts/smoke-local-inspector.mjs",
     "smoke:mcp-ui": "npm run build --workspace @vault-mcp/server && node scripts/smoke-mcp-ui.mjs",
     "smoke:local": "npm run build && npm run check:api && node scripts/smoke-local.mjs",
     "smoke:oauth-local": "npm run build && npm run check:api && node scripts/smoke-oauth-local.mjs",
