@@ -39,7 +39,7 @@ const server = spawn(process.execPath, [
   "--fs-write-roots",
   writeRoot,
   "--fs-write-operations",
-  "write_file,create_directory,move_path,delete_path",
+  "write_file,create_directory,copy_path,move_path,delete_path",
   "--fs-access-ttl-minutes",
   "30",
 ], {
@@ -67,7 +67,7 @@ try {
 
   const tools = await mcp(1, "tools/list", {}, inspectorOrigins[0]);
   const toolNames = tools.result.tools.map((tool) => tool.name);
-  for (const name of ["local_fs_policy", "local_read_file", "local_search_text", "local_write_file"]) {
+  for (const name of ["local_fs_policy", "local_read_file", "local_file_info", "local_search_text", "local_write_file", "local_copy_path"]) {
     assert(toolNames.includes(name), `expected ${name} for local Inspector acceptance`);
   }
 
@@ -84,12 +84,24 @@ try {
   }, inspectorOrigins[0]);
   assert(search.result.structuredContent.matches.length === 1, "expected Inspector-origin text search");
 
+  const info = await callTool(5, "local_file_info", {
+    path: path.join(readRoot, "inspector-note.md"),
+  }, inspectorOrigins[0]);
+  assert(info.result.structuredContent.type === "file", "expected Inspector-origin file info");
+
   const writtenPath = path.join(writeRoot, "inspector-output.md");
   await callTool(4, "local_write_file", {
     path: writtenPath,
     content: "Written through Inspector-origin MCP smoke.\n",
   }, inspectorOrigins[0]);
   assert((await fs.readFile(writtenPath, "utf8")).includes("Inspector-origin"), "expected Inspector-origin write");
+
+  const copiedPath = path.join(writeRoot, "inspector-copy.md");
+  await callTool(6, "local_copy_path", {
+    source_path: path.join(readRoot, "inspector-note.md"),
+    destination_path: copiedPath,
+  }, inspectorOrigins[0]);
+  assert((await fs.readFile(copiedPath, "utf8")).includes("Inspector Note"), "expected Inspector-origin copy");
 
   console.log(JSON.stringify({
     ok: true,
@@ -101,7 +113,7 @@ try {
       "disallowed browser origin is rejected",
       "authenticated SSE probe works from Inspector origin",
       "authenticated tools/list and local filesystem tools work from Inspector origin",
-      "scoped local text search and write work through Inspector-origin MCP calls",
+      "scoped local metadata, text search, write, and copy work through Inspector-origin MCP calls",
     ],
   }, null, 2));
 } finally {

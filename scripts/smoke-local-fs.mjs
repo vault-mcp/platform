@@ -49,7 +49,7 @@ async function runScopedWriteModeSmoke() {
       "--fs-access", "write",
       "--fs-roots", readRoot,
       "--fs-write-roots", writeRoot,
-      "--fs-write-operations", "write_file,create_directory,move_path,delete_path",
+      "--fs-write-operations", "write_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes", "256",
       "--fs-max-search-results", "5",
       "--fs-max-search-files", "20",
@@ -62,10 +62,12 @@ async function runScopedWriteModeSmoke() {
       "local_fs_policy",
       "local_list_files",
       "local_read_file",
+      "local_file_info",
       "local_find_files",
       "local_search_text",
       "local_write_file",
       "local_create_directory",
+      "local_copy_path",
       "local_move_path",
       "local_delete_path",
     ]) {
@@ -111,6 +113,12 @@ async function runScopedWriteModeSmoke() {
     });
     assert(read.result.structuredContent.text.includes("Alpha searchable phrase"), "expected local_read_file text");
 
+    const info = await callTool(baseUrl, 15, "local_file_info", {
+      path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
+    });
+    assert(info.result.structuredContent.type === "file", "expected local_file_info file type");
+    assert(info.result.structuredContent.size > 0, "expected local_file_info size");
+
     const deniedRead = await callTool(baseUrl, 7, "local_read_file", {
       path: path.join(outsideRoot, "secret.md"),
     });
@@ -128,6 +136,13 @@ async function runScopedWriteModeSmoke() {
     const directoryPath = path.join(writeRoot, "created-dir");
     await callTool(baseUrl, 9, "local_create_directory", { path: directoryPath });
     assert((await fs.stat(directoryPath)).isDirectory(), "expected created directory");
+
+    const copiedPath = path.join(writeRoot, "generated", "copied.md");
+    await callTool(baseUrl, 16, "local_copy_path", {
+      source_path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
+      destination_path: copiedPath,
+    });
+    assert((await fs.readFile(copiedPath, "utf8")).includes("Alpha searchable phrase"), "expected copied file");
 
     const movedPath = path.join(writeRoot, "generated", "renamed.md");
     await callTool(baseUrl, 10, "local_move_path", {
@@ -158,7 +173,7 @@ async function runScopedWriteModeSmoke() {
       mode: "write",
       read_root: readRoot,
       write_root: writeRoot,
-      tools_checked: 9,
+      tools_checked: 11,
     };
   });
 }
@@ -173,7 +188,7 @@ async function runGodModeSmoke() {
     dataDir,
     args: [
       "--fs-access", "god",
-      "--fs-write-operations", "write_file,create_directory,move_path,delete_path",
+      "--fs-write-operations", "write_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes", "512",
       "--fs-max-search-results", "10",
       "--fs-max-search-files", "50",
@@ -193,6 +208,9 @@ async function runGodModeSmoke() {
     });
     const read = await callTool(baseUrl, 103, "local_read_file", { path: filePath });
     assert(read.result.structuredContent.text.includes("absolute path smoke phrase"), "expected god-mode read");
+
+    const info = await callTool(baseUrl, 107, "local_file_info", { path: filePath });
+    assert(info.result.structuredContent.type === "file", "expected god-mode file info");
 
     const search = await callTool(baseUrl, 104, "local_search_text", {
       root: godRoot,

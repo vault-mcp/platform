@@ -315,6 +315,7 @@ describe("server MCP contract", () => {
       "local_fs_policy",
       "local_list_files",
       "local_read_file",
+      "local_file_info",
       "local_find_files",
       "local_search_text",
       ...expectedTools,
@@ -361,6 +362,18 @@ describe("server MCP contract", () => {
       text: "hello from l",
       bytes_read: 12,
       truncated: true,
+    });
+
+    const info = await mcp(baseUrl, accessToken, 108, "tools/call", {
+      name: "local_file_info",
+      arguments: { path: filePath, user_intent: "use local filesystem" },
+    });
+    expect(info.result.structuredContent).toMatchObject({
+      path: filePath,
+      type: "file",
+      size: 27,
+      permissions_octal: expect.stringMatching(/^0[0-7]{3}$/),
+      symlink_target: null,
     });
 
     const denied = await mcp(baseUrl, accessToken, 94, "tools/call", {
@@ -450,7 +463,7 @@ describe("server MCP contract", () => {
         mode: "write",
         read_roots: [root],
         write_roots: [root],
-        write_operations: ["write_file", "create_directory", "move_path", "delete_path"],
+        write_operations: ["write_file", "create_directory", "copy_path", "move_path", "delete_path"],
         max_read_bytes: 512,
         max_search_results: 100,
         max_search_files: 2000,
@@ -466,6 +479,7 @@ describe("server MCP contract", () => {
     const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_copy_path");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_move_path");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_delete_path");
 
@@ -492,6 +506,23 @@ describe("server MCP contract", () => {
     });
     expect(createdDirectory.result.structuredContent.path).toBe(path.join(root, "new-folder"));
     expect((await fs.stat(path.join(root, "new-folder"))).isDirectory()).toBe(true);
+
+    const copied = await mcp(baseUrl, accessToken, 109, "tools/call", {
+      name: "local_copy_path",
+      arguments: {
+        source_path: "nested/new-note.md",
+        destination_path: "new-folder/copied-note.md",
+        user_intent: "use local filesystem",
+      },
+    });
+    const copiedPath = path.join(root, "new-folder/copied-note.md");
+    expect(copied.result.structuredContent).toMatchObject({
+      source_path: writtenPath,
+      destination_path: copiedPath,
+      recursive: false,
+      overwritten: false,
+    });
+    expect(await fs.readFile(copiedPath, "utf8")).toBe("created by local fs test");
 
     const moved = await mcp(baseUrl, accessToken, 99, "tools/call", {
       name: "local_move_path",

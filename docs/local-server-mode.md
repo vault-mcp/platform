@@ -113,7 +113,7 @@ Minimum private-alpha rules:
   `local_fs_policy` exposes whether this is required and the exact phrase the
   client must send.
 - Write operations are separately allowlisted. The private-alpha operations are
-  `write_file`, `create_directory`, `move_path`, and `delete_path`.
+  `write_file`, `create_directory`, `copy_path`, `move_path`, and `delete_path`.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
 - In `god` mode, the localhost server removes root limits. This should be a
   deliberate user choice for high-trust local sessions only.
@@ -182,7 +182,7 @@ npm run local-server -- \
   --fs-access write \
   --fs-roots "/absolute/path/to/vault" \
   --fs-write-roots "/absolute/path/to/vault/20 Projects" \
-  --fs-write-operations "write_file,create_directory,move_path,delete_path" \
+  --fs-write-operations "write_file,create_directory,copy_path,move_path,delete_path" \
   --fs-max-read-bytes 524288 \
   --fs-max-search-results 100 \
   --fs-max-search-files 2000 \
@@ -204,9 +204,10 @@ exposes `Refresh local filesystem access session`; both restart the developer
 local server profile with a fresh expiry window.
 
 When intent is required, local clients should first call `local_fs_policy`.
-Then any `local_list_files`, `local_read_file`, `local_find_files`,
-`local_search_text`, `local_write_file`, `local_create_directory`,
-`local_move_path`, or `local_delete_path` call must include:
+Then any `local_list_files`, `local_read_file`, `local_file_info`,
+`local_find_files`, `local_search_text`, `local_write_file`,
+`local_create_directory`, `local_copy_path`, `local_move_path`, or
+`local_delete_path` call must include:
 
 ```json
 {

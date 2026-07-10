@@ -1800,6 +1800,7 @@ function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPl
   const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
     { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files." },
     { value: "create_directory", label: "Create directories", description: "Create folders inside allowed write roots." },
+    { value: "copy_path", label: "Copy files or folders", description: "Copy readable files or folders into allowed write roots." },
     { value: "move_path", label: "Move or rename", description: "Rename or move files and folders inside allowed write roots." },
     { value: "delete_path", label: "Delete paths", description: "Delete files or folders; tool calls require an explicit confirmation string." },
   ];
