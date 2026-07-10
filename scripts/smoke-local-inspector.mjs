@@ -67,7 +67,7 @@ try {
 
   const tools = await mcp(1, "tools/list", {}, inspectorOrigins[0]);
   const toolNames = tools.result.tools.map((tool) => tool.name);
-  for (const name of ["local_fs_policy", "local_read_file", "local_read_file_bytes", "local_file_info", "local_search_text", "local_write_file", "local_write_file_bytes", "local_copy_path"]) {
+  for (const name of ["local_fs_policy", "local_fs_audit", "local_read_file", "local_read_file_bytes", "local_file_info", "local_search_text", "local_write_file", "local_write_file_bytes", "local_copy_path"]) {
     assert(toolNames.includes(name), `expected ${name} for local Inspector acceptance`);
   }
 
@@ -76,6 +76,7 @@ try {
   assert(typeof policy.result.structuredContent.expires_at === "string", "expected Inspector smoke expiry timestamp");
   assert(policy.result.structuredContent.expired === false, "expected Inspector smoke active filesystem access");
   assert(policy.result.structuredContent.require_user_intent === true, "expected Inspector smoke to require user intent");
+  assert(policy.result.structuredContent.audit_file.endsWith("local-fs-audit.jsonl"), "expected Inspector smoke audit file");
 
   const search = await callTool(3, "local_search_text", {
     root: readRoot,
@@ -117,6 +118,12 @@ try {
   }, inspectorOrigins[0]);
   assert((await fs.readFile(copiedPath, "utf8")).includes("Inspector Note"), "expected Inspector-origin copy");
 
+  const audit = await callTool(9, "local_fs_audit", { limit: 5 }, inspectorOrigins[0]);
+  const auditOperations = audit.result.structuredContent.entries.map((entry) => entry.operation);
+  assert(auditOperations.includes("write_file"), "expected Inspector-origin write audit entry");
+  assert(auditOperations.includes("write_file_bytes"), "expected Inspector-origin byte write audit entry");
+  assert(auditOperations.includes("copy_path"), "expected Inspector-origin copy audit entry");
+
   console.log(JSON.stringify({
     ok: true,
     purpose: "local MCP Inspector origin smoke",
@@ -127,7 +134,7 @@ try {
       "disallowed browser origin is rejected",
       "authenticated SSE probe works from Inspector origin",
       "authenticated tools/list and local filesystem tools work from Inspector origin",
-      "scoped local metadata, byte reads/writes, text search, write, and copy work through Inspector-origin MCP calls",
+      "scoped local metadata, byte reads/writes, text search, write, copy, and audit work through Inspector-origin MCP calls",
     ],
   }, null, 2));
 } finally {

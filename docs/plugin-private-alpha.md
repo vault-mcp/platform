@@ -105,10 +105,12 @@ text reads, base64 byte reads, and text search through policy-capped local
 tools, so a user can ask a local-capable MCP client to inspect the vault without
 first syncing every note into the remote index. Testers can also set a
 local access session window; after it expires, the local MCP server advertises
-only `local_fs_policy` until the server is restarted or refreshed. Use the
-settings `Refresh session` button or the `Refresh local filesystem access
-session` command-palette action when you are intentionally working with a local
-MCP client again. Scoped roots are checked against real filesystem targets, so
+only `local_fs_policy` and `local_fs_audit` until the server is restarted or
+refreshed. `local_fs_audit` shows recent successful local write-side operations
+from the server's local audit file. Use the settings `Refresh session` button or
+the `Refresh local filesystem access session` command-palette action when you
+are intentionally working with a local MCP client again. Scoped roots are
+checked against real filesystem targets, so
 symlinks that point outside the configured roots are denied for local reads,
 writes, copies, moves, and deletes. By default, every local filesystem tool call except
 `local_fs_policy` must include the exact configured `user_intent` phrase. The

@@ -28,6 +28,27 @@ const localFsUserIntentInput = {
   user_intent: z.string().optional().describe("Required when local_fs_policy.require_user_intent is true. Must exactly match local_fs_policy.user_intent_phrase."),
 };
 
+const localFsAuditFields = {
+  audit_recorded: z.boolean(),
+  audit_error: z.string().nullable(),
+  audit_file: z.string().nullable(),
+};
+
+const localFsAuditOperationSchema = z.enum(["write_file", "write_file_bytes", "create_directory", "copy_path", "move_path", "delete_path"]);
+
+const localFsAuditEntrySchema = z.object({
+  timestamp: z.string(),
+  operation: localFsAuditOperationSchema,
+  mode: z.string(),
+  path: z.string().optional(),
+  source_path: z.string().optional(),
+  destination_path: z.string().optional(),
+  bytes_written: z.number().int().nonnegative().optional(),
+  recursive: z.boolean().optional(),
+  overwritten: z.boolean().optional(),
+  deleted: z.boolean().optional(),
+});
+
 const noteSummarySchema = z.object({
   id: z.string(),
   vault_id: z.string().optional(),
@@ -93,7 +114,7 @@ export function createMcpServer(store: IndexStore, config: ServerConfig): McpSer
   });
 
   registerChatGptResources(server);
-  registerLocalFsTools(server, config.localFs);
+  registerLocalFsTools(server, config.localFs, config.localFsAuditFile);
 
   server.registerTool("search", {
     title: "Search vault context",
@@ -502,7 +523,7 @@ function registerChatGptResources(server: McpServer): void {
   }));
 }
 
-function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
+function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFile: string | null): void {
   if (policy.mode === "off") {
     return;
   }
@@ -524,6 +545,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       god_mode: z.boolean(),
       require_user_intent: z.boolean(),
       user_intent_phrase: z.string(),
+      audit_file: z.string().nullable(),
     },
     annotations: readOnlyAnnotations(),
     _meta: chatGptToolMeta("Checking local filesystem policy"),
@@ -541,8 +563,33 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       god_mode: policy.mode === "god",
       require_user_intent: policy.require_user_intent,
       user_intent_phrase: policy.user_intent_phrase,
+      audit_file: auditFile,
     };
     return jsonToolResult(structuredContent, describeLocalFsPolicy(structuredContent));
+  });
+
+  server.registerTool("local_fs_audit", {
+    title: "Show local filesystem audit trail",
+    description: "Show recent successful local filesystem write-side operations recorded by this local server.",
+    inputSchema: {
+      limit: z.number().int().min(1).max(200).optional().describe("Maximum audit entries to return. Defaults to 25."),
+      operation: localFsAuditOperationSchema.optional().describe("Optional operation filter."),
+      ...localFsUserIntentInput,
+    },
+    outputSchema: {
+      audit_file: z.string().nullable(),
+      entries: z.array(localFsAuditEntrySchema),
+      truncated: z.boolean(),
+    },
+    annotations: readOnlyAnnotations(),
+    _meta: chatGptToolMeta("Reading local filesystem audit"),
+  }, async ({ limit, operation, user_intent }) => {
+    const intent = checkLocalFsUserIntent(policy, user_intent);
+    if (!intent.ok) {
+      return localFsDeniedResult(intent.message);
+    }
+    const structuredContent = await readLocalFsAudit(auditFile, limit ?? 25, operation);
+    return jsonToolResult(structuredContent, describeLocalFsAudit(structuredContent.entries, structuredContent.truncated));
   });
 
   if (localFsAccessExpired(policy)) {
@@ -861,6 +908,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         path: z.string(),
         mode: z.string(),
         bytes_written: z.number().int().nonnegative(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Writing local file"),
@@ -882,10 +930,17 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         } else {
           await fs.writeFile(check.path, content, "utf8");
         }
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "write_file",
+          mode: policy.mode,
+          path: check.path,
+          bytes_written: Buffer.byteLength(content, "utf8"),
+        });
         return jsonToolResult({
           path: check.path,
           mode: mode ?? "overwrite",
           bytes_written: Buffer.byteLength(content, "utf8"),
+          ...audit,
         }, `Wrote ${Buffer.byteLength(content, "utf8")} byte(s) to ${check.path}.`);
       } catch (error) {
         return localFsDeniedResult(`Could not write local file: ${describeUnknownError(error)}`);
@@ -907,6 +962,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         mode: z.string(),
         encoding: z.literal("base64"),
         bytes_written: z.number().int().nonnegative(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Writing local file bytes"),
@@ -929,11 +985,18 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         } else {
           await fs.writeFile(check.path, content);
         }
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "write_file_bytes",
+          mode: policy.mode,
+          path: check.path,
+          bytes_written: content.byteLength,
+        });
         return jsonToolResult({
           path: check.path,
           mode: mode ?? "overwrite",
           encoding: "base64" as const,
           bytes_written: content.byteLength,
+          ...audit,
         }, `Wrote ${content.byteLength} byte(s) to ${check.path} from base64 content.`);
       } catch (error) {
         return localFsDeniedResult(`Could not write local file bytes: ${describeUnknownError(error)}`);
@@ -953,6 +1016,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       outputSchema: {
         path: z.string(),
         recursive: z.boolean(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Creating local directory"),
@@ -967,9 +1031,16 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       }
       try {
         await fs.mkdir(check.path, { recursive: recursive ?? true });
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "create_directory",
+          mode: policy.mode,
+          path: check.path,
+          recursive: recursive ?? true,
+        });
         return jsonToolResult({
           path: check.path,
           recursive: recursive ?? true,
+          ...audit,
         }, `Created local directory: ${check.path}`);
       } catch (error) {
         return localFsDeniedResult(`Could not create local directory: ${describeUnknownError(error)}`);
@@ -994,6 +1065,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         destination_path: z.string(),
         recursive: z.boolean(),
         overwritten: z.boolean(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Copying local path"),
@@ -1030,11 +1102,20 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
           }
           await fs.copyFile(source.path, destination.path);
         }
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "copy_path",
+          mode: policy.mode,
+          source_path: source.path,
+          destination_path: destination.path,
+          recursive: recursive ?? false,
+          overwritten: Boolean(overwrite && destinationExists),
+        });
         return jsonToolResult({
           source_path: source.path,
           destination_path: destination.path,
           recursive: recursive ?? false,
           overwritten: Boolean(overwrite && destinationExists),
+          ...audit,
         }, `Copied ${source.path} to ${destination.path}.`);
       } catch (error) {
         return localFsDeniedResult(`Could not copy local path: ${describeUnknownError(error)}`);
@@ -1056,6 +1137,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         source_path: z.string(),
         destination_path: z.string(),
         overwritten: z.boolean(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Moving local path"),
@@ -1080,10 +1162,18 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         }
         await fs.mkdir(path.dirname(destination.path), { recursive: true });
         await fs.rename(source.path, destination.path);
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "move_path",
+          mode: policy.mode,
+          source_path: source.path,
+          destination_path: destination.path,
+          overwritten: Boolean(overwrite),
+        });
         return jsonToolResult({
           source_path: source.path,
           destination_path: destination.path,
           overwritten: Boolean(overwrite),
+          ...audit,
         }, `Moved ${source.path} to ${destination.path}.`);
       } catch (error) {
         return localFsDeniedResult(`Could not move local path: ${describeUnknownError(error)}`);
@@ -1105,6 +1195,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
         path: z.string(),
         recursive: z.boolean(),
         deleted: z.boolean(),
+        ...localFsAuditFields,
       },
       annotations: writeAnnotations(),
       _meta: chatGptToolMeta("Deleting local path"),
@@ -1123,10 +1214,18 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       }
       try {
         await fs.rm(check.path, { recursive: recursive ?? false });
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "delete_path",
+          mode: policy.mode,
+          path: check.path,
+          recursive: recursive ?? false,
+          deleted: true,
+        });
         return jsonToolResult({
           path: check.path,
           recursive: recursive ?? false,
           deleted: true,
+          ...audit,
         }, `Deleted local path: ${check.path}`);
       } catch (error) {
         return localFsDeniedResult(`Could not delete local path: ${describeUnknownError(error)}`);
@@ -1197,6 +1296,73 @@ function localFsDeniedResult(message: string) {
       },
     ],
   };
+}
+
+type LocalFsAuditOperation = z.infer<typeof localFsAuditOperationSchema>;
+type LocalFsAuditEntry = z.infer<typeof localFsAuditEntrySchema>;
+
+type LocalFsAuditWriteInput = Omit<LocalFsAuditEntry, "timestamp">;
+
+type LocalFsAuditWriteResult = {
+  audit_recorded: boolean;
+  audit_error: string | null;
+  audit_file: string | null;
+};
+
+async function recordLocalFsAudit(auditFile: string | null, entry: LocalFsAuditWriteInput): Promise<LocalFsAuditWriteResult> {
+  if (!auditFile) {
+    return { audit_recorded: false, audit_error: null, audit_file: null };
+  }
+  try {
+    await fs.mkdir(path.dirname(auditFile), { recursive: true });
+    const auditEntry: LocalFsAuditEntry = {
+      timestamp: new Date().toISOString(),
+      ...entry,
+    };
+    await fs.appendFile(auditFile, `${JSON.stringify(auditEntry)}\n`, "utf8");
+    return { audit_recorded: true, audit_error: null, audit_file: auditFile };
+  } catch (error) {
+    return { audit_recorded: false, audit_error: describeUnknownError(error), audit_file: auditFile };
+  }
+}
+
+async function readLocalFsAudit(auditFile: string | null, limit: number, operation: LocalFsAuditOperation | undefined): Promise<{
+  audit_file: string | null;
+  entries: LocalFsAuditEntry[];
+  truncated: boolean;
+}> {
+  if (!auditFile) {
+    return { audit_file: null, entries: [], truncated: false };
+  }
+  let raw = "";
+  try {
+    raw = await fs.readFile(auditFile, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return { audit_file: auditFile, entries: [], truncated: false };
+    }
+    return { audit_file: auditFile, entries: [], truncated: false };
+  }
+  const entries = raw
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => parseLocalFsAuditLine(line))
+    .filter((entry): entry is LocalFsAuditEntry => Boolean(entry))
+    .filter((entry) => !operation || entry.operation === operation)
+    .reverse();
+  return {
+    audit_file: auditFile,
+    entries: entries.slice(0, limit),
+    truncated: entries.length > limit,
+  };
+}
+
+function parseLocalFsAuditLine(line: string): LocalFsAuditEntry | null {
+  try {
+    return localFsAuditEntrySchema.parse(JSON.parse(line));
+  } catch {
+    return null;
+  }
 }
 
 function checkLocalFsUserIntent(policy: LocalFsPolicy, userIntent: string | undefined): LocalFsPathCheck {
@@ -1721,6 +1887,7 @@ function describeLocalFsPolicy(policy: {
   god_mode: boolean;
   require_user_intent: boolean;
   user_intent_phrase: string;
+  audit_file: string | null;
 }): string {
   return [
     "Local filesystem policy",
@@ -1733,6 +1900,7 @@ function describeLocalFsPolicy(policy: {
     `Expired: ${policy.expired ? "yes" : "no"}`,
     `User intent required: ${policy.require_user_intent ? "yes" : "no"}`,
     `User intent phrase: ${policy.user_intent_phrase}`,
+    `Audit file: ${policy.audit_file ?? "disabled"}`,
     "",
     "Read roots:",
     ...(policy.read_roots.length ? policy.read_roots.map((root) => `- ${root}`) : ["- none"]),
@@ -1745,6 +1913,29 @@ function describeLocalFsPolicy(policy: {
     "",
     "Use local filesystem tools only for explicit local-file requests from the user.",
   ].join("\n");
+}
+
+function describeLocalFsAudit(entries: LocalFsAuditEntry[], truncated: boolean): string {
+  if (entries.length === 0) {
+    return "Local filesystem audit\n\nNo successful local filesystem write-side operations are recorded.";
+  }
+  const lines = [
+    "Local filesystem audit",
+    "",
+    `${entries.length} entr${entries.length === 1 ? "y" : "ies"}${truncated ? " shown, more available." : "."}`,
+  ];
+  for (const entry of entries.slice(0, 25)) {
+    const target = entry.path ?? entry.destination_path ?? entry.source_path ?? "unknown path";
+    const details = [
+      entry.source_path && entry.destination_path ? `${entry.source_path} -> ${entry.destination_path}` : target,
+      entry.bytes_written !== undefined ? `${entry.bytes_written} bytes` : null,
+      entry.recursive ? "recursive" : null,
+      entry.overwritten ? "overwritten" : null,
+      entry.deleted ? "deleted" : null,
+    ].filter(Boolean).join("; ");
+    lines.push(`- ${entry.timestamp} ${entry.operation} (${entry.mode}): ${details}`);
+  }
+  return lines.join("\n");
 }
 
 function describeLocalFileList(pathValue: string, entries: Array<{ name: string; type: string; size: number | null }>, truncated: boolean): string {

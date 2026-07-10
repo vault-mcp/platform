@@ -316,6 +316,7 @@ describe("server MCP contract", () => {
     const tools = await mcp(baseUrl, accessToken, 90, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
       "local_fs_policy",
+      "local_fs_audit",
       "local_list_files",
       "local_read_file",
       "local_read_file_bytes",
@@ -443,7 +444,7 @@ describe("server MCP contract", () => {
     expect(deniedSearch.result.isError).toBe(true);
   });
 
-  it("exposes only the local filesystem policy when local filesystem access is expired", async () => {
+  it("exposes only local filesystem policy and audit when local filesystem access is expired", async () => {
     const { store, indexFile } = await createStore();
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-expired-"));
     const expiredAt = "2000-01-01T00:00:00.000Z";
@@ -468,6 +469,7 @@ describe("server MCP contract", () => {
     const tools = await mcp(baseUrl, accessToken, 105, "tools/list", {});
     const toolNames = tools.result.tools?.map((tool) => tool.name);
     expect(toolNames).toContain("local_fs_policy");
+    expect(toolNames).toContain("local_fs_audit");
     expect(toolNames).not.toContain("local_read_file");
     expect(toolNames).not.toContain("local_read_file_bytes");
     expect(toolNames).not.toContain("local_search_text");
@@ -482,6 +484,16 @@ describe("server MCP contract", () => {
       expired: true,
       require_user_intent: true,
       user_intent_phrase: "use local filesystem",
+    });
+
+    const audit = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem" },
+    });
+    expect(audit.result.structuredContent).toMatchObject({
+      audit_file: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
+      entries: [],
+      truncated: false,
     });
   });
 
@@ -513,6 +525,7 @@ describe("server MCP contract", () => {
     const accessToken = config.accessToken ?? "";
 
     const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_fs_audit");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file_bytes");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
@@ -534,6 +547,9 @@ describe("server MCP contract", () => {
       path: writtenPath,
       mode: "overwrite",
       bytes_written: 24,
+      audit_recorded: true,
+      audit_error: null,
+      audit_file: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
     });
     expect(await fs.readFile(writtenPath, "utf8")).toBe("created by local fs test");
 
@@ -553,6 +569,8 @@ describe("server MCP contract", () => {
       mode: "overwrite",
       encoding: "base64",
       bytes_written: binaryContent.byteLength,
+      audit_recorded: true,
+      audit_error: null,
     });
     expect(await fs.readFile(bytesPath)).toEqual(binaryContent);
 
@@ -617,8 +635,37 @@ describe("server MCP contract", () => {
     expect(deleted.result.structuredContent).toMatchObject({
       path: movedPath,
       deleted: true,
+      audit_recorded: true,
+      audit_error: null,
     });
     await expect(fs.stat(movedPath)).rejects.toThrow();
+
+    const audit = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem", limit: 10 },
+    });
+    expect(audit.result.structuredContent.audit_file).toBe(path.join(path.dirname(indexFile), "local-fs-audit.jsonl"));
+    expect(audit.result.structuredContent.entries.map((entry: { operation: string }) => entry.operation)).toEqual([
+      "delete_path",
+      "move_path",
+      "copy_path",
+      "create_directory",
+      "write_file_bytes",
+      "write_file",
+    ]);
+    expect(audit.result.content?.[0].text).toContain("Local filesystem audit");
+
+    const filteredAudit = await mcp(baseUrl, accessToken, 117, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem", operation: "copy_path" },
+    });
+    expect(filteredAudit.result.structuredContent.entries).toEqual([
+      expect.objectContaining({
+        operation: "copy_path",
+        source_path: writtenPath,
+        destination_path: copiedPath,
+      }),
+    ]);
 
     const deniedWrite = await mcp(baseUrl, accessToken, 97, "tools/call", {
       name: "local_write_file",
@@ -1284,6 +1331,7 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
     publicBaseUrl: "http://127.0.0.1:0",
     mcpResourceUrl: "http://127.0.0.1:0/mcp",
     indexFile,
+    localFsAuditFile: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
     databaseUrl: null,
     accessToken: "test-access",
     syncToken: "test-sync",

@@ -60,6 +60,7 @@ async function runScopedWriteModeSmoke() {
     const toolNames = tools.result.tools.map((tool) => tool.name);
     for (const name of [
       "local_fs_policy",
+      "local_fs_audit",
       "local_list_files",
       "local_read_file",
       "local_read_file_bytes",
@@ -86,6 +87,7 @@ async function runScopedWriteModeSmoke() {
     assert(policy.result.structuredContent.expired === false, "expected scoped access to be active");
     assert(policy.result.structuredContent.require_user_intent === true, "expected scoped access to require user intent");
     assert(policy.result.structuredContent.user_intent_phrase === userIntentPhrase, "expected default user intent phrase");
+    assert(policy.result.structuredContent.audit_file.endsWith("local-fs-audit.jsonl"), "expected default local filesystem audit file");
 
     const missingIntent = await mcp(baseUrl, 14, "tools/call", {
       name: "local_read_file",
@@ -181,6 +183,13 @@ async function runScopedWriteModeSmoke() {
     });
     assert(!(await pathExists(movedPath)), "expected deleted file");
 
+    const audit = await callTool(baseUrl, 19, "local_fs_audit", { limit: 10 });
+    const auditOperations = audit.result.structuredContent.entries.map((entry) => entry.operation);
+    for (const operation of ["write_file", "write_file_bytes", "create_directory", "copy_path", "move_path", "delete_path"]) {
+      assert(auditOperations.includes(operation), `expected audit operation ${operation}`);
+    }
+    assert(audit.result.structuredContent.entries[0].operation === "delete_path", "expected newest audit entry first");
+
     const deniedWrite = await callTool(baseUrl, 13, "local_write_file", {
       path: path.join(outsideRoot, "blocked.md"),
       content: "blocked",
@@ -191,7 +200,7 @@ async function runScopedWriteModeSmoke() {
       mode: "write",
       read_root: readRoot,
       write_root: writeRoot,
-      tools_checked: 13,
+      tools_checked: 14,
     };
   });
 }
@@ -254,6 +263,10 @@ async function runGodModeSmoke() {
     });
     assert(!(await pathExists(godRoot)), "expected god-mode recursive delete");
 
+    const audit = await callTool(baseUrl, 109, "local_fs_audit", { operation: "delete_path" });
+    assert(audit.result.structuredContent.entries[0].mode === "god", "expected god-mode audit entry");
+    assert(audit.result.structuredContent.entries[0].path === godRoot, "expected god-mode audit path");
+
     return {
       mode: "god",
       target_root: godRoot,
@@ -281,6 +294,7 @@ async function runExpiredAccessSmoke() {
     const tools = await mcp(baseUrl, 201, "tools/list", {});
     const toolNames = tools.result.tools.map((tool) => tool.name);
     assert(toolNames.includes("local_fs_policy"), "expected expired policy tool");
+    assert(toolNames.includes("local_fs_audit"), "expected expired audit tool");
     assert(!toolNames.includes("local_read_file"), "expected expired read tool to be hidden");
     assert(!toolNames.includes("local_search_text"), "expected expired search tool to be hidden");
 
@@ -289,10 +303,13 @@ async function runExpiredAccessSmoke() {
     assert(policy.result.structuredContent.expires_at === expiredAt, "expected expired timestamp");
     assert(policy.result.structuredContent.expired === true, "expected expired flag");
 
+    const audit = await callTool(baseUrl, 203, "local_fs_audit", {});
+    assert(audit.result.structuredContent.entries.length === 0, "expected expired audit to be readable and empty");
+
     return {
       mode: "read",
       expired_at: expiredAt,
-      policy_only: true,
+      policy_and_audit_only: true,
     };
   });
 }

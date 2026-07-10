@@ -112,6 +112,8 @@ Minimum private-alpha rules:
 - Require a per-tool `user_intent` phrase by default for local filesystem tools.
   `local_fs_policy` exposes whether this is required and the exact phrase the
   client must send.
+- Record successful write-side operations in a local JSONL audit file and expose
+  recent entries through `local_fs_audit`.
 - Write operations are separately allowlisted. The private-alpha operations are
   `write_file`, `create_directory`, `copy_path`, `move_path`, and `delete_path`.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
@@ -199,8 +201,9 @@ access`, `Local filesystem read roots`, `Local filesystem write roots`, and
 `Allowed local write operations`, `Local max read bytes`, `Local max search
 results`, `Local max searched files`, `Local access session minutes`,
 `Require local user intent`, and `Local user intent phrase`.
-When the session window expires, the server keeps `local_fs_policy` visible so
-clients can explain what happened, but it stops advertising local list, read,
+When the session window expires, the server keeps `local_fs_policy` and
+`local_fs_audit` visible so clients can explain what happened and review recent
+successful write-side operations, but it stops advertising local list, read,
 byte-read, search, and write tools until the local server is restarted or
 refreshed.
 The plugin settings UI exposes `Refresh session` and the command palette
@@ -211,7 +214,8 @@ When intent is required, local clients should first call `local_fs_policy`.
 Then any `local_list_files`, `local_read_file`, `local_read_file_bytes`,
 `local_file_info`, `local_find_files`, `local_search_text`,
 `local_write_file`, `local_write_file_bytes`, `local_create_directory`,
-`local_copy_path`, `local_move_path`, or `local_delete_path` call must include:
+`local_copy_path`, `local_move_path`, `local_delete_path`, or `local_fs_audit`
+call must include:
 
 ```json
 {

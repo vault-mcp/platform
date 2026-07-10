@@ -8,6 +8,7 @@ export type ServerConfig = {
   publicBaseUrl: string;
   mcpResourceUrl: string;
   indexFile: string;
+  localFsAuditFile: string | null;
   databaseUrl: string | null;
   accessToken: string | null;
   syncToken: string;
@@ -43,6 +44,7 @@ export function loadConfig(env = process.env): ServerConfig {
   const indexFile = env.INDEX_FILE
     ? path.resolve(repoRoot, env.INDEX_FILE)
     : path.join(repoRoot, "data/index.json");
+  const localFsAuditFile = normalizeOptionalPath(env.LOCAL_FS_AUDIT_FILE, path.join(path.dirname(indexFile), "local-fs-audit.jsonl"), repoRoot);
   const publicBaseUrl = (env.PUBLIC_BASE_URL ?? "http://127.0.0.1:3333").replace(/\/$/, "");
 
   return {
@@ -51,6 +53,7 @@ export function loadConfig(env = process.env): ServerConfig {
     publicBaseUrl,
     mcpResourceUrl: `${publicBaseUrl}/mcp`,
     indexFile,
+    localFsAuditFile,
     databaseUrl: env.DATABASE_URL ?? null,
     accessToken,
     syncToken,
@@ -100,6 +103,14 @@ function parsePathList(value: string | undefined): string[] {
     .map((entry) => entry.trim())
     .filter(Boolean)
     .map((entry) => path.resolve(entry)));
+}
+
+function normalizeOptionalPath(value: string | undefined, fallback: string, repoRoot: string): string | null {
+  const trimmed = value?.trim();
+  if (trimmed?.toLowerCase() === "off") {
+    return null;
+  }
+  return path.resolve(repoRoot, trimmed || fallback);
 }
 
 function uniquePathList(values: string[]): string[] {
