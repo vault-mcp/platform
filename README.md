@@ -25,11 +25,12 @@ Hosted tools are read-only. Denied or non-indexed paths remain unavailable even
 if a client guesses an id or exact path.
 
 The local desktop/developer server can additionally expose `local_fs_policy`,
-`local_list_files`, `local_read_file`, `local_file_info`, and selected write
-tools such as `local_write_file`, `local_create_directory`, `local_copy_path`,
+`local_list_files`, `local_read_file`, `local_read_file_bytes`,
+`local_file_info`, and selected write tools such as `local_write_file`,
+`local_write_file_bytes`, `local_create_directory`, `local_copy_path`,
 `local_move_path`, and `local_delete_path`. Read modes can also expose
-`local_find_files` and `local_search_text` for on-demand local discovery without
-building an index.
+`local_find_files` and `local_search_text` for on-demand local discovery
+without building an index.
 These tools are off by default and are intended for explicit user-directed
 local interactions, not automatic vault enumeration. The plugin launcher can
 time-box enabled filesystem access with a session expiry window; once expired,

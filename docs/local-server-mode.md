@@ -198,22 +198,29 @@ results`, `Local max searched files`, `Local access session minutes`,
 `Require local user intent`, and `Local user intent phrase`.
 When the session window expires, the server keeps `local_fs_policy` visible so
 clients can explain what happened, but it stops advertising local list, read,
-search, and write tools until the local server is restarted or refreshed.
+byte-read, search, and write tools until the local server is restarted or
+refreshed.
 The plugin settings UI exposes `Refresh session` and the command palette
 exposes `Refresh local filesystem access session`; both restart the developer
 local server profile with a fresh expiry window.
 
 When intent is required, local clients should first call `local_fs_policy`.
-Then any `local_list_files`, `local_read_file`, `local_file_info`,
-`local_find_files`, `local_search_text`, `local_write_file`,
-`local_create_directory`, `local_copy_path`, `local_move_path`, or
-`local_delete_path` call must include:
+Then any `local_list_files`, `local_read_file`, `local_read_file_bytes`,
+`local_file_info`, `local_find_files`, `local_search_text`,
+`local_write_file`, `local_write_file_bytes`, `local_create_directory`,
+`local_copy_path`, `local_move_path`, or `local_delete_path` call must include:
 
 ```json
 {
   "user_intent": "use local filesystem"
 }
 ```
+
+Use `local_read_file` and `local_write_file` for UTF-8 text. Use
+`local_read_file_bytes` and `local_write_file_bytes` when exact bytes matter or
+the file is binary; those tools exchange content as standard base64 and still
+respect the configured read roots, write roots, `write_file` allowlist,
+session expiry, and `user_intent` requirement.
 
 Changing the phrase in the plugin changes the value clients must send. This is
 not a replacement for the bearer token, roots, write-operation allowlist,

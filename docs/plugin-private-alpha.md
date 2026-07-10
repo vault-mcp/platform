@@ -98,11 +98,12 @@ Local filesystem access is controlled in the same `Local desktop server`
 section. It is off by default. Testers can choose `Read inside roots`,
 `Read/write inside roots`, or `God mode`, then configure absolute read and
 write roots plus allowed write operations. The operation toggles separately
-enable file writes, directory creation, copy, move/rename, and deletion.
-Deletion still requires an explicit confirmation string in the MCP tool call. Read mode
-also exposes on-demand file discovery and text search through policy-capped
-local tools, so a user can ask a local-capable MCP client to inspect the vault
-without first syncing every note into the remote index. Testers can also set a
+enable text/base64 file writes, directory creation, copy, move/rename, and
+deletion. Deletion still requires an explicit confirmation string in the MCP
+tool call. Read mode also exposes on-demand file discovery, metadata lookup,
+text reads, base64 byte reads, and text search through policy-capped local
+tools, so a user can ask a local-capable MCP client to inspect the vault without
+first syncing every note into the remote index. Testers can also set a
 local access session window; after it expires, the local MCP server advertises
 only `local_fs_policy` until the server is restarted or refreshed. Use the
 settings `Refresh session` button or the `Refresh local filesystem access

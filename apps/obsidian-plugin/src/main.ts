@@ -1635,7 +1635,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Local max read bytes")
-    .setDesc("Upper bound for one local_read_file result. The server also caps tool-provided max_bytes to this value.")
+    .setDesc("Upper bound for one local_read_file or local_read_file_bytes result. The server also caps tool-provided max_bytes to this value.")
     .addText((text) => {
       text.inputEl.type = "number";
       text.inputEl.min = "1";
@@ -1798,7 +1798,7 @@ function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPl
     .setName("Allowed local write operations")
     .setDesc("These only apply when local filesystem access is Write or God mode. Keep destructive operations off until you deliberately need them.");
   const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
-    { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files." },
+    { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files and base64 byte files." },
     { value: "create_directory", label: "Create directories", description: "Create folders inside allowed write roots." },
     { value: "copy_path", label: "Copy files or folders", description: "Copy readable files or folders into allowed write roots." },
     { value: "move_path", label: "Move or rename", description: "Rename or move files and folders inside allowed write roots." },

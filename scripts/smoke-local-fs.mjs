@@ -62,10 +62,12 @@ async function runScopedWriteModeSmoke() {
       "local_fs_policy",
       "local_list_files",
       "local_read_file",
+      "local_read_file_bytes",
       "local_file_info",
       "local_find_files",
       "local_search_text",
       "local_write_file",
+      "local_write_file_bytes",
       "local_create_directory",
       "local_copy_path",
       "local_move_path",
@@ -113,6 +115,13 @@ async function runScopedWriteModeSmoke() {
     });
     assert(read.result.structuredContent.text.includes("Alpha searchable phrase"), "expected local_read_file text");
 
+    const bytesRead = await callTool(baseUrl, 17, "local_read_file_bytes", {
+      path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
+      max_bytes: 5,
+    });
+    assert(bytesRead.result.structuredContent.encoding === "base64", "expected local_read_file_bytes base64 encoding");
+    assert(Buffer.from(bytesRead.result.structuredContent.content_base64, "base64").toString("utf8") === "# Dem", "expected local_read_file_bytes content");
+
     const info = await callTool(baseUrl, 15, "local_file_info", {
       path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
     });
@@ -132,6 +141,15 @@ async function runScopedWriteModeSmoke() {
     });
     assert(write.result.structuredContent.path === writtenPath, "expected write path");
     assert((await fs.readFile(writtenPath, "utf8")).includes("Generated from"), "expected written file");
+
+    const binaryPath = path.join(writeRoot, "generated", "binary.bin");
+    const binaryContent = Buffer.from([0, 1, 2, 253, 254, 255]);
+    await callTool(baseUrl, 18, "local_write_file_bytes", {
+      path: binaryPath,
+      content_base64: binaryContent.toString("base64"),
+      create_dirs: true,
+    });
+    assert((await fs.readFile(binaryPath)).equals(binaryContent), "expected byte-level written file");
 
     const directoryPath = path.join(writeRoot, "created-dir");
     await callTool(baseUrl, 9, "local_create_directory", { path: directoryPath });
@@ -173,7 +191,7 @@ async function runScopedWriteModeSmoke() {
       mode: "write",
       read_root: readRoot,
       write_root: writeRoot,
-      tools_checked: 11,
+      tools_checked: 13,
     };
   });
 }
@@ -208,6 +226,9 @@ async function runGodModeSmoke() {
     });
     const read = await callTool(baseUrl, 103, "local_read_file", { path: filePath });
     assert(read.result.structuredContent.text.includes("absolute path smoke phrase"), "expected god-mode read");
+
+    const bytesRead = await callTool(baseUrl, 108, "local_read_file_bytes", { path: filePath, max_bytes: 8 });
+    assert(Buffer.from(bytesRead.result.structuredContent.content_base64, "base64").toString("utf8") === "God mode", "expected god-mode byte read");
 
     const info = await callTool(baseUrl, 107, "local_file_info", { path: filePath });
     assert(info.result.structuredContent.type === "file", "expected god-mode file info");

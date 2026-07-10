@@ -315,6 +315,7 @@ describe("server MCP contract", () => {
       "local_fs_policy",
       "local_list_files",
       "local_read_file",
+      "local_read_file_bytes",
       "local_file_info",
       "local_find_files",
       "local_search_text",
@@ -361,6 +362,18 @@ describe("server MCP contract", () => {
       path: filePath,
       text: "hello from l",
       bytes_read: 12,
+      truncated: true,
+    });
+
+    const bytesRead = await mcp(baseUrl, accessToken, 110, "tools/call", {
+      name: "local_read_file_bytes",
+      arguments: { path: filePath, max_bytes: 5, user_intent: "use local filesystem" },
+    });
+    expect(bytesRead.result.structuredContent).toMatchObject({
+      path: filePath,
+      encoding: "base64",
+      content_base64: Buffer.from("hello").toString("base64"),
+      bytes_read: 5,
       truncated: true,
     });
 
@@ -439,6 +452,7 @@ describe("server MCP contract", () => {
     const toolNames = tools.result.tools?.map((tool) => tool.name);
     expect(toolNames).toContain("local_fs_policy");
     expect(toolNames).not.toContain("local_read_file");
+    expect(toolNames).not.toContain("local_read_file_bytes");
     expect(toolNames).not.toContain("local_search_text");
 
     const policy = await mcp(baseUrl, accessToken, 106, "tools/call", {
@@ -478,6 +492,7 @@ describe("server MCP contract", () => {
 
     const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file_bytes");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_copy_path");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_move_path");
@@ -499,6 +514,25 @@ describe("server MCP contract", () => {
       bytes_written: 24,
     });
     expect(await fs.readFile(writtenPath, "utf8")).toBe("created by local fs test");
+
+    const bytesPath = path.join(root, "nested", "binary.bin");
+    const binaryContent = Buffer.from([0, 255, 65, 66, 10]);
+    const writtenBytes = await mcp(baseUrl, accessToken, 111, "tools/call", {
+      name: "local_write_file_bytes",
+      arguments: {
+        path: "nested/binary.bin",
+        content_base64: binaryContent.toString("base64"),
+        create_dirs: true,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(writtenBytes.result.structuredContent).toMatchObject({
+      path: bytesPath,
+      mode: "overwrite",
+      encoding: "base64",
+      bytes_written: binaryContent.byteLength,
+    });
+    expect(await fs.readFile(bytesPath)).toEqual(binaryContent);
 
     const createdDirectory = await mcp(baseUrl, accessToken, 98, "tools/call", {
       name: "local_create_directory",
