@@ -1799,6 +1799,7 @@ function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPl
     .setDesc("These only apply when local filesystem access is Write or God mode. Keep destructive operations off until you deliberately need them.");
   const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
     { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files and base64 byte files." },
+    { value: "edit_file", label: "Edit exact text", description: "Replace exact text in existing UTF-8 files only when the expected match count is confirmed." },
     { value: "create_directory", label: "Create directories", description: "Create folders inside allowed write roots." },
     { value: "copy_path", label: "Copy files or folders", description: "Copy readable files or folders into allowed write roots." },
     { value: "move_path", label: "Move or rename", description: "Rename or move files and folders inside allowed write roots." },

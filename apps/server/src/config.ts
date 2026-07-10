@@ -124,6 +124,7 @@ function parseLocalFsWriteOperations(value: string | undefined): LocalFsWriteOpe
   const operations = rawOperations.map((operation) => {
     if (
       operation === "write_file"
+      || operation === "edit_file"
       || operation === "create_directory"
       || operation === "copy_path"
       || operation === "move_path"
@@ -131,7 +132,7 @@ function parseLocalFsWriteOperations(value: string | undefined): LocalFsWriteOpe
     ) {
       return operation;
     }
-    throw new Error("LOCAL_FS_WRITE_OPERATIONS must contain only: write_file, create_directory, copy_path, move_path, delete_path.");
+    throw new Error("LOCAL_FS_WRITE_OPERATIONS must contain only: write_file, edit_file, create_directory, copy_path, move_path, delete_path.");
   });
   return [...new Set(operations)];
 }

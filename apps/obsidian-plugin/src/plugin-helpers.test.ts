@@ -555,7 +555,7 @@ describe("plugin helpers", () => {
       localFsAccessMode: "write" as const,
       localFsReadRoots: ["/Users/example/Vault One", "/Users/example/Reference"],
       localFsWriteRoots: ["/Users/example/Vault One"],
-      localFsWriteOperations: ["write_file", "create_directory", "copy_path", "move_path", "delete_path"] as LocalFsWriteOperation[],
+      localFsWriteOperations: ["write_file", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"] as LocalFsWriteOperation[],
       localFsMaxReadBytes: 4096,
       localFsMaxSearchResults: 25,
       localFsMaxSearchFiles: 500,
@@ -568,7 +568,7 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Local filesystem access: write");
     expect(status.facts.join("\n")).toContain("Local filesystem read roots: /Users/example/Vault One, /Users/example/Reference");
     expect(status.facts.join("\n")).toContain("Local filesystem write roots: /Users/example/Vault One");
-    expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, create_directory, copy_path, move_path, delete_path");
+    expect(status.facts.join("\n")).toContain("Local filesystem write operations: write_file, edit_file, create_directory, copy_path, move_path, delete_path");
     expect(status.facts.join("\n")).toContain("Local filesystem search caps: 25 results, 500 files");
     expect(status.facts.join("\n")).toContain("Local filesystem session: 45 minute window");
     expect(status.facts.join("\n")).toContain("Local filesystem user intent: required (approve local access)");
@@ -577,7 +577,7 @@ describe("plugin helpers", () => {
     expect(command).toContain("--fs-access 'write'");
     expect(command).toContain("--fs-roots '/Users/example/Vault One,/Users/example/Reference'");
     expect(command).toContain("--fs-write-roots '/Users/example/Vault One'");
-    expect(command).toContain("--fs-write-operations 'write_file,create_directory,copy_path,move_path,delete_path'");
+    expect(command).toContain("--fs-write-operations 'write_file,edit_file,create_directory,copy_path,move_path,delete_path'");
     expect(command).toContain("--fs-max-read-bytes '4096'");
     expect(command).toContain("--fs-max-search-results '25'");
     expect(command).toContain("--fs-max-search-files '500'");
@@ -602,7 +602,7 @@ describe("plugin helpers", () => {
       "--fs-write-roots",
       "/Users/example/Vault One",
       "--fs-write-operations",
-      "write_file,create_directory,copy_path,move_path,delete_path",
+      "write_file,edit_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes",
       "4096",
       "--fs-max-search-results",

@@ -20,7 +20,7 @@ export type WriteMode = "review_required" | "direct_apply";
 
 export type LocalFsAccessMode = "off" | "read" | "write" | "god";
 
-export type LocalFsWriteOperation = "write_file" | "create_directory" | "copy_path" | "move_path" | "delete_path";
+export type LocalFsWriteOperation = "write_file" | "edit_file" | "create_directory" | "copy_path" | "move_path" | "delete_path";
 
 export type LocalFsPolicy = {
   mode: LocalFsAccessMode;

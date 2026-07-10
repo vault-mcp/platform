@@ -511,7 +511,7 @@ describe("server MCP contract", () => {
         mode: "write",
         read_roots: [root],
         write_roots: [root],
-        write_operations: ["write_file", "create_directory", "copy_path", "move_path", "delete_path"],
+        write_operations: ["write_file", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"],
         max_read_bytes: 512,
         max_search_results: 100,
         max_search_files: 2000,
@@ -528,6 +528,7 @@ describe("server MCP contract", () => {
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_fs_audit");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file_bytes");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_edit_file");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_copy_path");
     expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_move_path");
@@ -574,6 +575,36 @@ describe("server MCP contract", () => {
     });
     expect(await fs.readFile(bytesPath)).toEqual(binaryContent);
 
+    const edited = await mcp(baseUrl, accessToken, 118, "tools/call", {
+      name: "local_edit_file",
+      arguments: {
+        path: "nested/new-note.md",
+        old_text: "local fs test",
+        new_text: "exact edit test",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(edited.result.structuredContent).toMatchObject({
+      path: writtenPath,
+      replacements: 1,
+      audit_recorded: true,
+      audit_error: null,
+    });
+    expect(await fs.readFile(writtenPath, "utf8")).toBe("created by exact edit test");
+
+    const deniedAmbiguousEdit = await mcp(baseUrl, accessToken, 119, "tools/call", {
+      name: "local_edit_file",
+      arguments: {
+        path: "nested/new-note.md",
+        old_text: "e",
+        new_text: "E",
+        expected_replacements: 1,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedAmbiguousEdit.result.isError).toBe(true);
+    expect(deniedAmbiguousEdit.result.structuredContent.error.message).toContain("Exact edit refused");
+
     const createdDirectory = await mcp(baseUrl, accessToken, 98, "tools/call", {
       name: "local_create_directory",
       arguments: { path: "new-folder", user_intent: "use local filesystem" },
@@ -596,7 +627,7 @@ describe("server MCP contract", () => {
       recursive: false,
       overwritten: false,
     });
-    expect(await fs.readFile(copiedPath, "utf8")).toBe("created by local fs test");
+    expect(await fs.readFile(copiedPath, "utf8")).toBe("created by exact edit test");
 
     const moved = await mcp(baseUrl, accessToken, 99, "tools/call", {
       name: "local_move_path",
@@ -612,7 +643,7 @@ describe("server MCP contract", () => {
       destination_path: movedPath,
       overwritten: false,
     });
-    expect(await fs.readFile(movedPath, "utf8")).toBe("created by local fs test");
+    expect(await fs.readFile(movedPath, "utf8")).toBe("created by exact edit test");
 
     const deniedDelete = await mcp(baseUrl, accessToken, 100, "tools/call", {
       name: "local_delete_path",
@@ -650,6 +681,7 @@ describe("server MCP contract", () => {
       "move_path",
       "copy_path",
       "create_directory",
+      "edit_file",
       "write_file_bytes",
       "write_file",
     ]);

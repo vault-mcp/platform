@@ -49,7 +49,7 @@ async function runScopedWriteModeSmoke() {
       "--fs-access", "write",
       "--fs-roots", readRoot,
       "--fs-write-roots", writeRoot,
-      "--fs-write-operations", "write_file,create_directory,copy_path,move_path,delete_path",
+      "--fs-write-operations", "write_file,edit_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes", "256",
       "--fs-max-search-results", "5",
       "--fs-max-search-files", "20",
@@ -69,6 +69,7 @@ async function runScopedWriteModeSmoke() {
       "local_search_text",
       "local_write_file",
       "local_write_file_bytes",
+      "local_edit_file",
       "local_create_directory",
       "local_copy_path",
       "local_move_path",
@@ -153,6 +154,21 @@ async function runScopedWriteModeSmoke() {
     });
     assert((await fs.readFile(binaryPath)).equals(binaryContent), "expected byte-level written file");
 
+    await callTool(baseUrl, 20, "local_edit_file", {
+      path: writtenPath,
+      old_text: "local filesystem smoke",
+      new_text: "exact local edit smoke",
+    });
+    assert((await fs.readFile(writtenPath, "utf8")).includes("exact local edit smoke"), "expected exact edited file");
+
+    const deniedEdit = await callTool(baseUrl, 21, "local_edit_file", {
+      path: writtenPath,
+      old_text: "e",
+      new_text: "E",
+      expected_replacements: 1,
+    });
+    assert(deniedEdit.result.isError === true, "expected ambiguous exact edit to be denied");
+
     const directoryPath = path.join(writeRoot, "created-dir");
     await callTool(baseUrl, 9, "local_create_directory", { path: directoryPath });
     assert((await fs.stat(directoryPath)).isDirectory(), "expected created directory");
@@ -169,7 +185,7 @@ async function runScopedWriteModeSmoke() {
       source_path: writtenPath,
       destination_path: movedPath,
     });
-    assert((await fs.readFile(movedPath, "utf8")).includes("Generated from"), "expected moved file");
+    assert((await fs.readFile(movedPath, "utf8")).includes("exact local edit smoke"), "expected moved file");
 
     const deniedDelete = await callTool(baseUrl, 11, "local_delete_path", {
       path: movedPath,
@@ -185,7 +201,7 @@ async function runScopedWriteModeSmoke() {
 
     const audit = await callTool(baseUrl, 19, "local_fs_audit", { limit: 10 });
     const auditOperations = audit.result.structuredContent.entries.map((entry) => entry.operation);
-    for (const operation of ["write_file", "write_file_bytes", "create_directory", "copy_path", "move_path", "delete_path"]) {
+    for (const operation of ["write_file", "write_file_bytes", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"]) {
       assert(auditOperations.includes(operation), `expected audit operation ${operation}`);
     }
     assert(audit.result.structuredContent.entries[0].operation === "delete_path", "expected newest audit entry first");
@@ -200,7 +216,7 @@ async function runScopedWriteModeSmoke() {
       mode: "write",
       read_root: readRoot,
       write_root: writeRoot,
-      tools_checked: 14,
+      tools_checked: 15,
     };
   });
 }
@@ -215,7 +231,7 @@ async function runGodModeSmoke() {
     dataDir,
     args: [
       "--fs-access", "god",
-      "--fs-write-operations", "write_file,create_directory,copy_path,move_path,delete_path",
+      "--fs-write-operations", "write_file,edit_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes", "512",
       "--fs-max-search-results", "10",
       "--fs-max-search-files", "50",

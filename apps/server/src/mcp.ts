@@ -34,7 +34,7 @@ const localFsAuditFields = {
   audit_file: z.string().nullable(),
 };
 
-const localFsAuditOperationSchema = z.enum(["write_file", "write_file_bytes", "create_directory", "copy_path", "move_path", "delete_path"]);
+const localFsAuditOperationSchema = z.enum(["write_file", "write_file_bytes", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"]);
 
 const localFsAuditEntrySchema = z.object({
   timestamp: z.string(),
@@ -44,6 +44,7 @@ const localFsAuditEntrySchema = z.object({
   source_path: z.string().optional(),
   destination_path: z.string().optional(),
   bytes_written: z.number().int().nonnegative().optional(),
+  replacements: z.number().int().nonnegative().optional(),
   recursive: z.boolean().optional(),
   overwritten: z.boolean().optional(),
   deleted: z.boolean().optional(),
@@ -1004,6 +1005,67 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     });
   }
 
+  if (canWrite(policy) && hasWriteOperation(policy, "edit_file")) {
+    server.registerTool("local_edit_file", {
+      title: "Edit local file by exact text",
+      description: "Edit one explicitly allowed UTF-8 local file by replacing exact old_text with new_text. This is safer than whole-file overwrite for targeted note or code edits.",
+      inputSchema: {
+        path: z.string().min(1).describe("Absolute path, or a path relative to the first configured write root."),
+        old_text: z.string().min(1).describe("Exact text to replace. The tool refuses the edit unless the replacement count matches expected_replacements."),
+        new_text: z.string().describe("Replacement text."),
+        expected_replacements: z.number().int().min(1).max(1000).optional().describe("Exact number of old_text occurrences expected. Defaults to 1."),
+        ...localFsUserIntentInput,
+      },
+      outputSchema: {
+        path: z.string(),
+        replacements: z.number().int().positive(),
+        bytes_written: z.number().int().nonnegative(),
+        ...localFsAuditFields,
+      },
+      annotations: writeAnnotations(),
+      _meta: chatGptToolMeta("Editing local file"),
+    }, async ({ path: requestedPath, old_text, new_text, expected_replacements, user_intent }) => {
+      const intent = checkLocalFsUserIntent(policy, user_intent);
+      if (!intent.ok) {
+        return localFsDeniedResult(intent.message);
+      }
+      const check = await checkLocalFsWrite(policy, requestedPath);
+      if (!check.ok) {
+        return localFsDeniedResult(check.message);
+      }
+      try {
+        const stat = await fs.stat(check.path);
+        if (!stat.isFile()) {
+          return localFsDeniedResult("The requested local path is not a file.");
+        }
+        const original = await fs.readFile(check.path, "utf8");
+        const expected = expected_replacements ?? 1;
+        const replacements = countExactOccurrences(original, old_text);
+        if (replacements !== expected) {
+          return localFsDeniedResult(`Exact edit refused: expected ${expected} replacement${expected === 1 ? "" : "s"} for old_text but found ${replacements}.`);
+        }
+        const updated = original.split(old_text).join(new_text);
+        await fs.writeFile(check.path, updated, "utf8");
+        const bytesWritten = Buffer.byteLength(updated, "utf8");
+        const audit = await recordLocalFsAudit(auditFile, {
+          operation: "edit_file",
+          mode: policy.mode,
+          path: check.path,
+          replacements,
+          bytes_written: bytesWritten,
+        });
+        return jsonToolResult({
+          path: check.path,
+          replacements,
+          bytes_written: bytesWritten,
+          ...audit,
+        }, `Edited ${check.path}: replaced ${replacements} exact occurrence${replacements === 1 ? "" : "s"}.`);
+      } catch (error) {
+        return localFsDeniedResult(`Could not edit local file: ${describeUnknownError(error)}`);
+      }
+    });
+  }
+
   if (canWrite(policy) && hasWriteOperation(policy, "create_directory")) {
     server.registerTool("local_create_directory", {
       title: "Create local directory",
@@ -1549,6 +1611,13 @@ function decodeBase64Content(value: string): Buffer {
   return Buffer.from(normalized, "base64");
 }
 
+function countExactOccurrences(value: string, search: string): number {
+  if (!search) {
+    return 0;
+  }
+  return value.split(search).length - 1;
+}
+
 type LocalFileInfo = {
   path: string;
   type: "file" | "directory" | "symlink" | "other";
@@ -1929,6 +1998,7 @@ function describeLocalFsAudit(entries: LocalFsAuditEntry[], truncated: boolean):
     const details = [
       entry.source_path && entry.destination_path ? `${entry.source_path} -> ${entry.destination_path}` : target,
       entry.bytes_written !== undefined ? `${entry.bytes_written} bytes` : null,
+      entry.replacements !== undefined ? `${entry.replacements} replacement${entry.replacements === 1 ? "" : "s"}` : null,
       entry.recursive ? "recursive" : null,
       entry.overwritten ? "overwritten" : null,
       entry.deleted ? "deleted" : null,

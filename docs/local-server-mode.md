@@ -115,7 +115,11 @@ Minimum private-alpha rules:
 - Record successful write-side operations in a local JSONL audit file and expose
   recent entries through `local_fs_audit`.
 - Write operations are separately allowlisted. The private-alpha operations are
-  `write_file`, `create_directory`, `copy_path`, `move_path`, and `delete_path`.
+  `write_file`, `edit_file`, `create_directory`, `copy_path`, `move_path`, and
+  `delete_path`.
+- `edit_file` replaces exact UTF-8 text only when the caller's
+  `expected_replacements` count matches the file, which gives local-capable
+  clients a targeted edit path that is safer than whole-file overwrite.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
 - Scoped roots are checked against real filesystem targets. A symlink inside an
   allowed root that points outside that root is denied for local reads, writes,
@@ -187,7 +191,7 @@ npm run local-server -- \
   --fs-access write \
   --fs-roots "/absolute/path/to/vault" \
   --fs-write-roots "/absolute/path/to/vault/20 Projects" \
-  --fs-write-operations "write_file,create_directory,copy_path,move_path,delete_path" \
+  --fs-write-operations "write_file,edit_file,create_directory,copy_path,move_path,delete_path" \
   --fs-max-read-bytes 524288 \
   --fs-max-search-results 100 \
   --fs-max-search-files 2000 \
@@ -213,9 +217,9 @@ local server profile with a fresh expiry window.
 When intent is required, local clients should first call `local_fs_policy`.
 Then any `local_list_files`, `local_read_file`, `local_read_file_bytes`,
 `local_file_info`, `local_find_files`, `local_search_text`,
-`local_write_file`, `local_write_file_bytes`, `local_create_directory`,
-`local_copy_path`, `local_move_path`, `local_delete_path`, or `local_fs_audit`
-call must include:
+`local_write_file`, `local_write_file_bytes`, `local_edit_file`,
+`local_create_directory`, `local_copy_path`, `local_move_path`,
+`local_delete_path`, or `local_fs_audit` call must include:
 
 ```json
 {
@@ -228,6 +232,8 @@ Use `local_read_file` and `local_write_file` for UTF-8 text. Use
 the file is binary; those tools exchange content as standard base64 and still
 respect the configured read roots, write roots, `write_file` allowlist,
 session expiry, and `user_intent` requirement.
+Use `local_edit_file` for surgical UTF-8 edits when the client can provide the
+exact `old_text`, `new_text`, and expected replacement count.
 
 Changing the phrase in the plugin changes the value clients must send. This is
 not a replacement for the bearer token, roots, write-operation allowlist,
