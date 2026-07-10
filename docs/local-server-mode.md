@@ -115,6 +115,9 @@ Minimum private-alpha rules:
 - Write operations are separately allowlisted. The private-alpha operations are
   `write_file`, `create_directory`, `copy_path`, `move_path`, and `delete_path`.
 - `delete_path` requires an explicit confirmation string in the tool arguments.
+- Scoped roots are checked against real filesystem targets. A symlink inside an
+  allowed root that points outside that root is denied for local reads, writes,
+  copies, moves, and deletes.
 - In `god` mode, the localhost server removes root limits. This should be a
   deliberate user choice for high-trust local sessions only.
 - Do not enumerate, read, or write local files unless the user asks for that

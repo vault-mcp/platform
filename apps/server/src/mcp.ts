@@ -575,7 +575,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, requestedPath ?? ".");
+    const check = await checkLocalFsRead(policy, requestedPath ?? ".");
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -629,7 +629,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, requestedPath);
+    const check = await checkLocalFsRead(policy, requestedPath);
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -675,7 +675,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, requestedPath);
+    const check = await checkLocalFsRead(policy, requestedPath);
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -724,7 +724,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, requestedPath);
+    const check = await checkLocalFsRead(policy, requestedPath);
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -766,7 +766,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, root ?? ".");
+    const check = await checkLocalFsRead(policy, root ?? ".");
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -820,7 +820,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
     if (!intent.ok) {
       return localFsDeniedResult(intent.message);
     }
-    const check = checkLocalFsRead(policy, root ?? ".");
+    const check = await checkLocalFsRead(policy, root ?? ".");
     if (!check.ok) {
       return localFsDeniedResult(check.message);
     }
@@ -869,7 +869,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (!intent.ok) {
         return localFsDeniedResult(intent.message);
       }
-      const check = checkLocalFsWrite(policy, requestedPath);
+      const check = await checkLocalFsWrite(policy, requestedPath);
       if (!check.ok) {
         return localFsDeniedResult(check.message);
       }
@@ -915,7 +915,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (!intent.ok) {
         return localFsDeniedResult(intent.message);
       }
-      const check = checkLocalFsWrite(policy, requestedPath);
+      const check = await checkLocalFsWrite(policy, requestedPath);
       if (!check.ok) {
         return localFsDeniedResult(check.message);
       }
@@ -961,7 +961,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (!intent.ok) {
         return localFsDeniedResult(intent.message);
       }
-      const check = checkLocalFsWrite(policy, requestedPath);
+      const check = await checkLocalFsWrite(policy, requestedPath);
       if (!check.ok) {
         return localFsDeniedResult(check.message);
       }
@@ -1002,11 +1002,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (!intent.ok) {
         return localFsDeniedResult(intent.message);
       }
-      const source = checkLocalFsRead(policy, source_path);
+      const source = await checkLocalFsRead(policy, source_path);
       if (!source.ok) {
         return localFsDeniedResult(source.message);
       }
-      const destination = checkLocalFsWrite(policy, destination_path);
+      const destination = await checkLocalFsWrite(policy, destination_path);
       if (!destination.ok) {
         return localFsDeniedResult(destination.message);
       }
@@ -1064,11 +1064,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (!intent.ok) {
         return localFsDeniedResult(intent.message);
       }
-      const source = checkLocalFsWrite(policy, source_path);
+      const source = await checkLocalFsWrite(policy, source_path);
       if (!source.ok) {
         return localFsDeniedResult(source.message);
       }
-      const destination = checkLocalFsWrite(policy, destination_path);
+      const destination = await checkLocalFsWrite(policy, destination_path);
       if (!destination.ok) {
         return localFsDeniedResult(destination.message);
       }
@@ -1117,7 +1117,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy): void {
       if (confirm !== expectedConfirm) {
         return localFsDeniedResult(`Deletion requires confirm="${expectedConfirm}".`);
       }
-      const check = checkLocalFsWrite(policy, requestedPath);
+      const check = await checkLocalFsWrite(policy, requestedPath);
       if (!check.ok) {
         return localFsDeniedResult(check.message);
       }
@@ -1220,7 +1220,7 @@ type LocalFsPathCheck = {
   message: string;
 };
 
-function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): LocalFsPathCheck {
+async function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): Promise<LocalFsPathCheck> {
   if (policy.mode === "off") {
     return { ok: false, message: "Local filesystem access is disabled." };
   }
@@ -1234,12 +1234,17 @@ function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): LocalFs
     return { ok: false, message: "No local filesystem read roots are configured." };
   }
   const resolved = resolveLocalPath(requestedPath, policy.read_roots);
-  return isWithinAnyRoot(resolved, policy.read_roots)
-    ? { ok: true, path: resolved }
-    : { ok: false, message: `Local path is outside the configured read roots: ${resolved}` };
+  if (!isWithinAnyRoot(resolved, policy.read_roots)) {
+    return { ok: false, message: `Local path is outside the configured read roots: ${resolved}` };
+  }
+  const realRootCheck = await isRealPathWithinConfiguredRoots(resolved, policy.read_roots);
+  if (!realRootCheck.ok) {
+    return { ok: false, message: realRootCheck.message ?? `Local path real target is outside the configured read roots: ${resolved}` };
+  }
+  return { ok: true, path: resolved };
 }
 
-function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): LocalFsPathCheck {
+async function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): Promise<LocalFsPathCheck> {
   if (localFsAccessExpired(policy)) {
     return { ok: false, message: localFsExpiredMessage(policy) };
   }
@@ -1254,9 +1259,14 @@ function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): LocalF
     return { ok: false, message: "No local filesystem write roots are configured." };
   }
   const resolved = resolveLocalPath(requestedPath, roots);
-  return isWithinAnyRoot(resolved, roots)
-    ? { ok: true, path: resolved }
-    : { ok: false, message: `Local path is outside the configured write roots: ${resolved}` };
+  if (!isWithinAnyRoot(resolved, roots)) {
+    return { ok: false, message: `Local path is outside the configured write roots: ${resolved}` };
+  }
+  const realRootCheck = await isRealWritePathWithinConfiguredRoots(resolved, roots);
+  if (!realRootCheck.ok) {
+    return { ok: false, message: realRootCheck.message ?? `Local path real target is outside the configured write roots: ${resolved}` };
+  }
+  return { ok: true, path: resolved };
 }
 
 function canWrite(policy: LocalFsPolicy): boolean {
@@ -1303,6 +1313,57 @@ function isWithinAnyRoot(resolvedPath: string, roots: string[]): boolean {
     const relative = path.relative(resolvedRoot, resolvedPath);
     return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
   });
+}
+
+async function isRealPathWithinConfiguredRoots(resolvedPath: string, roots: string[]): Promise<{ ok: boolean; message?: string }> {
+  const realPath = await fs.realpath(resolvedPath).catch(() => null);
+  if (!realPath) {
+    return { ok: false, message: `Local path does not exist or cannot be resolved: ${resolvedPath}` };
+  }
+  const realRoots = await realExistingRoots(roots);
+  if (realRoots.length === 0) {
+    return { ok: false, message: "No configured local filesystem roots exist on disk." };
+  }
+  return isWithinAnyRoot(realPath, realRoots)
+    ? { ok: true }
+    : { ok: false, message: `Local path real target is outside the configured roots: ${resolvedPath}` };
+}
+
+async function isRealWritePathWithinConfiguredRoots(resolvedPath: string, roots: string[]): Promise<{ ok: boolean; message?: string }> {
+  const realRoots = await realExistingRoots(roots);
+  if (realRoots.length === 0) {
+    return { ok: false, message: "No configured local filesystem write roots exist on disk." };
+  }
+  const existingPath = await nearestExistingPath(resolvedPath);
+  if (!existingPath) {
+    return { ok: false, message: `No existing parent directory can be resolved for local path: ${resolvedPath}` };
+  }
+  const realExistingPath = await fs.realpath(existingPath).catch(() => null);
+  if (!realExistingPath) {
+    return { ok: false, message: `Local path parent cannot be resolved: ${resolvedPath}` };
+  }
+  return isWithinAnyRoot(realExistingPath, realRoots)
+    ? { ok: true }
+    : { ok: false, message: `Local path real target or parent is outside the configured write roots: ${resolvedPath}` };
+}
+
+async function realExistingRoots(roots: string[]): Promise<string[]> {
+  const realRoots = await Promise.all(roots.map(async (root) => fs.realpath(root).catch(() => null)));
+  return realRoots.filter((root): root is string => Boolean(root));
+}
+
+async function nearestExistingPath(resolvedPath: string): Promise<string | null> {
+  let candidate = path.resolve(resolvedPath);
+  while (true) {
+    if (await pathExists(candidate)) {
+      return candidate;
+    }
+    const parent = path.dirname(candidate);
+    if (parent === candidate) {
+      return null;
+    }
+    candidate = parent;
+  }
 }
 
 async function pathExists(value: string): Promise<boolean> {

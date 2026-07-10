@@ -291,6 +291,9 @@ describe("server MCP contract", () => {
     await fs.writeFile(path.join(root, "nested", "project-note.md"), "alpha project note\nsecond line", "utf8");
     const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-${Date.now()}.md`);
     await fs.writeFile(outsidePath, "outside", "utf8");
+    const outsideSymlinkTarget = path.join(os.tmpdir(), `vault-mcp-outside-symlink-${Date.now()}.md`);
+    await fs.writeFile(outsideSymlinkTarget, "outside symlink secret", "utf8");
+    await fs.symlink(outsideSymlinkTarget, path.join(root, "outside-link.md"));
 
     const config = testConfig(indexFile, {
       localFs: {
@@ -396,6 +399,20 @@ describe("server MCP contract", () => {
     expect(denied.result.isError).toBe(true);
     expect(denied.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
 
+    const deniedSymlinkRead = await mcp(baseUrl, accessToken, 112, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: path.join(root, "outside-link.md"), user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkRead.result.isError).toBe(true);
+    expect(deniedSymlinkRead.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkBytesRead = await mcp(baseUrl, accessToken, 113, "tools/call", {
+      name: "local_read_file_bytes",
+      arguments: { path: path.join(root, "outside-link.md"), user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkBytesRead.result.isError).toBe(true);
+    expect(deniedSymlinkBytesRead.result.structuredContent.error.message).toContain("real target is outside");
+
     const found = await mcp(baseUrl, accessToken, 102, "tools/call", {
       name: "local_find_files",
       arguments: { root, query: "project", extensions: [".md"], limit: 5, user_intent: "use local filesystem" },
@@ -472,6 +489,11 @@ describe("server MCP contract", () => {
     const { store, indexFile } = await createStore();
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-write-"));
     const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-write-${Date.now()}.md`);
+    const outsideDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-outside-write-dir-"));
+    const outsideSymlinkFile = path.join(os.tmpdir(), `vault-mcp-outside-write-link-${Date.now()}.md`);
+    await fs.writeFile(outsideSymlinkFile, "outside before", "utf8");
+    await fs.symlink(outsideDirectory, path.join(root, "escape-dir"));
+    await fs.symlink(outsideSymlinkFile, path.join(root, "escape-file.md"));
     const config = testConfig(indexFile, {
       localFs: {
         mode: "write",
@@ -608,6 +630,54 @@ describe("server MCP contract", () => {
     });
     expect(deniedWrite.result.isError).toBe(true);
     expect(deniedWrite.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+
+    const deniedSymlinkWrite = await mcp(baseUrl, accessToken, 112, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: "escape-dir/owned.md",
+        content: "denied",
+        create_dirs: true,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkWrite.result.isError).toBe(true);
+    expect(deniedSymlinkWrite.result.structuredContent.error.message).toContain("outside the configured write roots");
+    await expect(fs.stat(path.join(outsideDirectory, "owned.md"))).rejects.toThrow();
+
+    const deniedSymlinkBytesWrite = await mcp(baseUrl, accessToken, 113, "tools/call", {
+      name: "local_write_file_bytes",
+      arguments: {
+        path: "escape-file.md",
+        content_base64: Buffer.from("denied").toString("base64"),
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkBytesWrite.result.isError).toBe(true);
+    expect(deniedSymlinkBytesWrite.result.structuredContent.error.message).toContain("outside the configured write roots");
+    expect(await fs.readFile(outsideSymlinkFile, "utf8")).toBe("outside before");
+
+    const deniedSymlinkCopy = await mcp(baseUrl, accessToken, 114, "tools/call", {
+      name: "local_copy_path",
+      arguments: {
+        source_path: "escape-file.md",
+        destination_path: "new-folder/escape-copy.md",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkCopy.result.isError).toBe(true);
+    expect(deniedSymlinkCopy.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkDelete = await mcp(baseUrl, accessToken, 115, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "escape-file.md",
+        confirm: "delete",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkDelete.result.isError).toBe(true);
+    expect(deniedSymlinkDelete.result.structuredContent.error.message).toContain("outside the configured write roots");
+    expect(await fs.readFile(outsideSymlinkFile, "utf8")).toBe("outside before");
   });
 
   it("treats admin sync as an idempotent full replacement", async () => {
