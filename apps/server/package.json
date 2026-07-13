@@ -1,9 +1,13 @@
 {
   "name": "@vault-mcp/server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./embedded": "./dist/embedded.js"
+  },
   "scripts": {
     "build": "tsc -b",
     "dev": "node --import tsx src/index.ts",
@@ -11,7 +15,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@vault-mcp/core": "0.1.0"
+    "@vault-mcp/core": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.21.0"

@@ -109,7 +109,7 @@ try {
     finished_at: new Date().toISOString(),
     duration_ms: Date.now() - startedAt.getTime(),
     skipped: [
-      "wiki generation is paused unless explicitly requested",
+      "the removed wiki is not part of the release gate",
       "production OAuth smoke is remote-only",
       "production multi-vault smoke is remote-only",
       "real BRAT install is a manual/external gate",

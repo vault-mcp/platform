@@ -1,5 +1,4 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { LocalFsAccessMode, LocalFsPolicy, LocalFsWriteOperation } from "@vault-mcp/core";
 
 export type ServerConfig = {
@@ -47,7 +46,7 @@ export function loadConfig(env = process.env): ServerConfig {
 
   const repoRoot = env.VAULT_MCP_RUNTIME_ROOT
     ? path.resolve(env.VAULT_MCP_RUNTIME_ROOT)
-    : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+    : path.resolve(process.cwd());
   const indexFile = env.INDEX_FILE
     ? path.resolve(repoRoot, env.INDEX_FILE)
     : path.join(repoRoot, "data/index.json");

@@ -194,7 +194,7 @@ const localAgentStatusSchema = z.object({
 export function createMcpServer(store: IndexStore, config: ServerConfig, auth: UserAuthContext | null = null): McpServer {
   const server = new McpServer({
     name: "vault-mcp-connector",
-    version: "0.1.0",
+    version: "0.2.0",
   }, {
     instructions: [
       SERVER_INSTRUCTIONS,

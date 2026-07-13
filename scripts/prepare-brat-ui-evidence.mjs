@@ -16,7 +16,7 @@ if (args.help) {
 
 const evidenceDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", "ui-evidence"));
 const reportPath = path.resolve(args.report ?? path.join(evidenceDir, "report.json"));
-const vaultRoot = path.resolve(args.vault ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
+const vaultRoot = path.resolve(args.vault ?? process.env.VAULT_ROOT ?? path.join(repoRoot, "fixtures", "vault"));
 const vaultKind = args["vault-kind"] ?? (vaultRoot.toLowerCase().includes("copy") ? "copied" : "disposable");
 const repo = args.repo ?? "vault-mcp/platform";
 const releaseTag = args.tag ?? await readPluginManifestVersion(repoRoot);
@@ -25,7 +25,7 @@ const skipChecks = Boolean(args["skip-checks"]);
 if (!["copied", "disposable"].includes(vaultKind)) {
   throw new Error("--vault-kind must be copied or disposable");
 }
-if (path.resolve(vaultRoot) === "/Users/tjt/Documents/Tristan's Personal vault") {
+if (process.env.VAULT_MCP_LIVE_VAULT_ROOT && path.resolve(vaultRoot) === path.resolve(process.env.VAULT_MCP_LIVE_VAULT_ROOT)) {
   throw new Error("Refusing to prepare BRAT UI evidence for the live vault");
 }
 

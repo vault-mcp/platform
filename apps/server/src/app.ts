@@ -1,7 +1,6 @@
 import express, { type Request, type Response } from "express";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { ServerConfig } from "./config.js";
 import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth, userAuthContext } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
@@ -25,9 +24,7 @@ import {
   type WriteProposalStatus,
 } from "@vault-mcp/core";
 
-const publicDir = import.meta.url
-  ? path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public")
-  : path.resolve(process.cwd(), "public");
+const publicDir = path.resolve(process.cwd(), "public");
 const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "create_note", "update_frontmatter", "rename_note"]);
 const WRITE_PROPOSAL_STATUSES = new Set<WriteProposalStatus>(["pending", "approved", "rejected", "applied", "conflict", "failed"]);
 const LOCAL_FS_ACCESS_MODES = new Set<LocalFsAccessMode>(["off", "read", "write", "god"]);
@@ -41,8 +38,6 @@ export function createApp(config: ServerConfig, store: IndexStore) {
   app.use(express.urlencoded({ extended: false, limit: "25mb" }));
   app.use("/assets", express.static(path.join(publicDir, "assets"), { index: false }));
   app.use("/setup", express.static(path.join(publicDir, "setup"), { index: false }));
-  app.use("/wiki", express.static(path.join(publicDir, "wiki"), { index: false }));
-  app.use("/wiki/files", express.static(path.join(publicDir, "wiki", "files"), { index: "index.html" }));
   app.use((req, _res, next) => {
     attachOAuthStore(req, store);
     next();
@@ -52,10 +47,6 @@ export function createApp(config: ServerConfig, store: IndexStore) {
 
   app.get("/", (_req: Request, res: Response) => {
     res.sendFile(path.join(publicDir, "index.html"));
-  });
-
-  app.get(["/wiki", "/wiki/"], (_req: Request, res: Response) => {
-    res.sendFile(path.join(publicDir, "wiki", "index.html"));
   });
 
   app.get(["/setup/vercel", "/setup/vercel/"], (_req: Request, res: Response) => {

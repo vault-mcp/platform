@@ -1,9 +1,53 @@
-# Vault MCP Connector
+# Vault MCP
 
-Private MCP connector for selected Obsidian vault context. Hosted deployments
-serve a derived index and can optionally queue proposal-only vault changes for
-Obsidian-side review; the localhost developer profile can additionally enable
-plugin-controlled local filesystem tools.
+Vault MCP connects Obsidian to ChatGPT, Claude, Codex, and other MCP clients.
+The Obsidian plugin controls what is indexed, starts an optional local MCP
+server, and provides one explicit access-level selector for local reads and
+direct writes. Hosted deployments serve only the derived index approved by the
+plugin and can queue reviewable vault-write proposals.
+
+## Install And Start
+
+Vault MCP is currently a public alpha release candidate. Until its Obsidian
+Community Plugins review is complete, install release `0.2.0` with BRAT or place
+the release assets `manifest.json`, `main.js`, and `styles.css` in
+`<vault>/.obsidian/plugins/vault-mcp/`.
+
+1. Enable Vault MCP under **Settings > Community plugins**.
+2. Open **Settings > Vault MCP** for setup and advanced configuration.
+3. For local-only use, leave the server URL alone, choose a local file access
+   level, and turn on **Run local MCP server**. No external Node installation is
+   required.
+4. Copy the local client connection JSON from settings into a local-capable MCP
+   client.
+5. For ChatGPT or another hosted client, follow the hosted deployment and OAuth
+   setup shown in the plugin.
+
+The right sidebar is the operational view after setup: access, server state,
+ChatGPT bridge state, index status, sync, proposals, and recent activity.
+
+## Security And Privacy Disclosures
+
+- **Network use:** Hosted mode connects to the configured Vault MCP server. The
+  default public server URL is `https://vault-mcp-connector.vercel.app`. Local
+  mode binds to `127.0.0.1` and does not require the hosted service.
+- **Data sent remotely:** Remote sync sends only Markdown content and metadata
+  approved by the plugin's indexing policy. Local filesystem tools operate on
+  the user's computer; hosted local access sends individual authenticated tool
+  requests through the opt-in desktop bridge rather than uploading a background
+  file inventory.
+- **External file access:** Local access is Off by default. Scoped modes enforce
+  configured folders. GOD mode grants direct read/write access across the local
+  filesystem and enables create, overwrite, exact edit, directory create, copy,
+  move/rename, and delete. Direct writes do not create a proposal or wait for an
+  additional Obsidian approval.
+- **Credentials:** MCP and sync tokens are stored in Obsidian's plugin data for
+  the vault. Treat copied connection bundles as secrets.
+- **Accounts:** Hosted setup can require accounts with the user's chosen hosting,
+  database, and MCP client providers. Local-only mode does not require those
+  accounts.
+- **Telemetry and ads:** Vault MCP includes no telemetry, analytics, advertising,
+  or paid feature tracking.
 
 ## MCP Tools
 
@@ -101,18 +145,6 @@ lists, diagnostics, and fetched notes as compact cards. Clients that do not
 support embedded components still get the same structured JSON and readable text
 payloads.
 
-## Wiki
-
-A plain-English project wiki is hosted from `public/wiki/index.html` and is intended
-for readers with no coding background. In production it is available at:
-
-```text
-https://vault-mcp-connector.vercel.app/wiki/
-```
-
-The wiki explains the mental model, request flow, repository map, source-policy
-boundary, MCP tools, and file-by-file walkthroughs for the hand-authored project code.
-
 V1 exposes an allowlisted derived index through:
 
 - `POST /mcp` - MCP Streamable HTTP JSON-RPC endpoint.
@@ -156,8 +188,8 @@ In another terminal:
 
 ```bash
 MCP_SYNC_TOKEN=dev-sync-token npm run index -- \
-  --vault "/Users/tjt/Documents/Tristan's Personal vault copy" \
-  --vault-name "Tristan's Personal vault copy" \
+  --vault "/path/to/disposable-test-vault" \
+  --vault-name "Disposable test vault" \
   --public-base-url "http://127.0.0.1:3333" \
   --server "http://127.0.0.1:3333"
 ```
@@ -194,10 +226,8 @@ npm run plugin:brat:verify-ui-evidence
 ```
 
 Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
-`dist/brat/vault-mcp/styles.css` to a GitHub prerelease whose tag and release
-name exactly match the plugin manifest version. The private-alpha `0.1.0`
-prerelease is published at
-`https://github.com/vault-mcp/platform/releases/tag/0.1.0`.
+`dist/brat/vault-mcp/styles.css` to the GitHub release whose tag exactly matches
+the plugin manifest version. The Community Plugins candidate is release `0.2.0`.
 Use [docs/brat-private-alpha-walkthrough.md](docs/brat-private-alpha-walkthrough.md)
 for the screenshot-backed BRAT UI evidence gate.
 
@@ -323,13 +353,13 @@ runtime and platform details.
 
 For the planned no-cloud desktop path, see
 [docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
-Obsidian plugin start a localhost MCP server while the vault is open. The ZIP
-package now includes an embedded local server under `sidecar/`; packaged installs
-run it in Obsidian's desktop Node context without an external Node/npm command.
-BRAT/dev installs without that folder can still configure the platform repo
+Obsidian plugin start a localhost MCP server while the vault is open. The standard
+three-file Obsidian package compiles the local server directly into `main.js`, so
+packaged installs run it in Obsidian's desktop Node context without an external
+Node/npm command. Developer installs can still configure the platform repo
 folder and Node/npm command as a fallback. The plugin waits for `/healthz` and requires the
 local service name, version, storage status, and MCP endpoint to match before it
-marks the sidecar ready. The configured local port is treated as preferred; the
+marks the embedded server ready. The configured local port is treated as preferred; the
 plugin can reuse a compatible existing local server or scan upward to the next
 available port before spawning. The plugin can also copy a local client
 connection bundle with the localhost endpoint, bearer auth header, and current

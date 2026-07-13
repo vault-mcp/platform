@@ -13,12 +13,12 @@ if (args.help) {
 }
 
 const evidenceDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", "ui-evidence"));
-const copiedVaultRoot = path.resolve(args.vault ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
+const copiedVaultRoot = path.resolve(args.vault ?? process.env.VAULT_ROOT ?? path.join(repoRoot, "fixtures", "vault"));
 const repo = args.repo ?? "vault-mcp/platform";
 const tag = args.tag ?? await readPluginManifestVersion(repoRoot);
-const liveVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault";
+const liveVaultRoot = process.env.VAULT_MCP_LIVE_VAULT_ROOT ? path.resolve(process.env.VAULT_MCP_LIVE_VAULT_ROOT) : null;
 
-if (copiedVaultRoot === liveVaultRoot) {
+if (liveVaultRoot && copiedVaultRoot === liveVaultRoot) {
   throw new Error("Refusing to run BRAT readiness against the live vault");
 }
 

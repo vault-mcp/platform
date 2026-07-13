@@ -39,7 +39,7 @@ assert(
 );
 assert(typeof report.vaultRoot === "string" && report.vaultRoot.length > 0, "report.vaultRoot is required");
 assert(
-  path.resolve(report.vaultRoot) !== "/Users/tjt/Documents/Tristan's Personal vault",
+  !process.env.VAULT_MCP_LIVE_VAULT_ROOT || path.resolve(report.vaultRoot) !== path.resolve(process.env.VAULT_MCP_LIVE_VAULT_ROOT),
   "evidence must not be captured against the live vault",
 );
 if (report.vaultKind === "copied") {

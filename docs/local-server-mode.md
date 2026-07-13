@@ -199,7 +199,7 @@ command. The plugin now shows a `Local desktop server`
 settings section, saves the planned local port, keep-alive preference, local
 data folder, and local-only MCP/admin tokens, renders the future localhost MCP
 endpoint, can generate or rotate those local credentials, and can copy a
-developer launch command. It can start and stop the packaged sidecar when the
+developer launch command. It can start and stop the runtime embedded in `main.js` when the
 installed plugin folder contains the embedded sidecar bundle, or fall back to
 the Node-required developer local server profile when the tester configures the
 platform repo folder and npm command. A signed, isolated platform-native helper

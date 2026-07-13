@@ -472,10 +472,10 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   const keepAlive = Boolean(settings.localServerKeepAlive);
   const mcpTokenReady = Boolean(settings.localServerMcpToken?.trim());
   const syncTokenReady = Boolean(settings.localServerSyncToken?.trim());
-  const bundledSidecarReady = Boolean(settings.localServerSidecarDir?.trim());
+  const embeddedRuntimeReady = Boolean(settings.localServerSidecarDir?.trim());
   const projectDirReady = Boolean(settings.localServerProjectDir?.trim());
   const commandReady = Boolean((settings.localServerCommand?.trim() || "npm"));
-  const canStart = Boolean(port && mcpTokenReady && syncTokenReady && (bundledSidecarReady || (projectDirReady && commandReady)));
+  const canStart = Boolean(port && mcpTokenReady && syncTokenReady && (embeddedRuntimeReady || (projectDirReady && commandReady)));
 
   if (!port) {
     return {
@@ -485,11 +485,11 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       endpoint,
       canStart: false,
       facts: [
-        "Sidecar status: not bundled in this private-alpha build",
+        "Embedded runtime: unavailable",
         "Bind address: 127.0.0.1 only",
         "Port range: 1024-65535",
         `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
-        `Bundled sidecar: ${bundledSidecarReady ? "available" : "not installed"}`,
+        `Plugin runtime: ${embeddedRuntimeReady ? "available in main.js" : "not available"}`,
         `Developer project folder: ${projectDirReady ? "configured" : "not configured"}`,
       ],
     };
@@ -498,27 +498,27 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
   return {
     status: "planned",
     title: canStart
-      ? bundledSidecarReady ? "Local desktop server bundled sidecar is ready" : "Local desktop server developer launcher is ready"
+      ? embeddedRuntimeReady ? "Local desktop server is ready" : "Local desktop server developer launcher is ready"
       : enabled ? "Local desktop server is selected but needs setup" : "Local desktop server is planned",
     message: enabled
       ? canStart
-        ? bundledSidecarReady
-          ? "This build can start the packaged local server inside Obsidian desktop with the configured port and local credentials."
+        ? embeddedRuntimeReady
+          ? "This build can start its embedded local server inside Obsidian desktop with the configured port and local credentials."
           : "This build can start the Node-required developer local server with the configured project folder, command, port, and local credentials."
-        : "This build cannot start the local server until local credentials plus either the packaged sidecar or a developer project folder are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
-      : "This private-alpha build can start and stop the packaged localhost server inside Obsidian desktop, or use the Node-required developer profile when the package bundle is absent.",
+        : "This build cannot start the local server until local credentials plus either the embedded runtime or a developer project folder are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
+      : "This build can start and stop its embedded localhost server inside Obsidian desktop, or use the Node-required developer profile as a fallback.",
     endpoint,
     canStart,
     facts: localServerStatusFacts([
-      bundledSidecarReady ? "Sidecar status: packaged sidecar installed" : canStart ? "Sidecar status: developer launcher configured" : "Sidecar status: not configured",
+      embeddedRuntimeReady ? "Embedded runtime: compiled into main.js" : canStart ? "Runtime: developer launcher configured" : "Runtime: not configured",
       "Bind address: 127.0.0.1 only",
       `Keep running after Obsidian exits: ${keepAlive ? "planned opt-in" : "off by default"}`,
       `Local credentials: ${mcpTokenReady && syncTokenReady ? "generated" : "not generated"}`,
       settings.localServerCredentialsCreatedAt ? `Credentials created: ${settings.localServerCredentialsCreatedAt}` : null,
       `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
-      `Bundled sidecar: ${settings.localServerSidecarDir?.trim() || "not installed"}`,
+      `Plugin runtime: ${embeddedRuntimeReady ? "self-contained" : "not available"}`,
       `Developer project folder: ${settings.localServerProjectDir?.trim() || "not configured"}`,
-      bundledSidecarReady
+      embeddedRuntimeReady
         ? "Runtime: embedded Obsidian desktop server (no external Node command required)"
         : `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
       `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,

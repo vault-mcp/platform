@@ -55,7 +55,7 @@ if (!dryRun) {
     githubRelease: {
       tag: manifest.version,
       name: manifest.version,
-      prerelease: true,
+      prerelease: false,
       requiredAssets: runtimeFiles,
     },
     brat: {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import os from "node:os";
@@ -8,12 +8,13 @@ import process from "node:process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const packageRoot = path.join(repoRoot, "dist", "obsidian-plugin");
+const sourceManifest = JSON.parse(await readFile(path.join(repoRoot, "apps", "obsidian-plugin", "manifest.json"), "utf8"));
 const args = parseArgs(process.argv.slice(2));
 const keep = Boolean(args.keep);
 let vaultRoot = args.vault ? path.resolve(args.vault) : null;
 let createdTempVault = false;
 
-const releaseManifestPath = path.resolve(args["release-manifest"] ?? await findReleaseManifest(packageRoot));
+const releaseManifestPath = path.resolve(args["release-manifest"] ?? path.join(packageRoot, `${sourceManifest.id}-${sourceManifest.version}-release.json`));
 const releaseManifest = JSON.parse(await readFile(releaseManifestPath, "utf8"));
 validateReleaseManifestShape(releaseManifest, releaseManifestPath);
 
@@ -34,7 +35,7 @@ assert(releaseManifest.package.sha256 === actualChecksum, "Release manifest SHA2
 
 const releaseNotes = await readFile(releaseNotesPath, "utf8");
 assert(releaseNotes.includes(pluginVersion), `Release notes must mention version ${pluginVersion}`);
-assert(releaseNotes.includes("Private-alpha"), "Release notes must state private-alpha status");
+assert(/^# Vault MCP Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Obsidian plugin");
 
 if (!vaultRoot) {
   vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vault-mcp-fresh-install-"));
@@ -63,7 +64,7 @@ try {
   await writeFile(path.join(obsidianDir, "community-plugins.json"), `${JSON.stringify([pluginId], null, 2)}\n`, "utf8");
 
   const runtimeFiles = expectedRuntimeFiles();
-  assert(JSON.stringify(releaseManifest.package.runtimeFiles) === JSON.stringify(runtimeFiles), "Release manifest runtime file set is not the private-alpha runtime set");
+  assert(JSON.stringify(releaseManifest.package.runtimeFiles) === JSON.stringify(runtimeFiles), "Release manifest runtime file set is not the standard Obsidian file set");
   for (const file of runtimeFiles) {
     await assertFile(path.join(installedPluginDir, file), file);
     await assertNonEmpty(path.join(installedPluginDir, file), file);
@@ -80,7 +81,7 @@ try {
 
   const report = {
     ok: true,
-    purpose: "fresh-user private-alpha zip install smoke",
+    purpose: "fresh-user standard Obsidian zip install smoke",
     plugin: {
       id: installedManifest.id,
       name: installedManifest.name,
@@ -104,12 +105,13 @@ try {
     verified: [
       "release manifest is self-consistent",
       "zip checksum matches .sha256 and release manifest",
-      "release notes mention version and private-alpha status",
+      "release notes identify the plugin and version",
       "zip extracts to one plugin folder",
       "runtime files install under .obsidian/plugins/vault-mcp",
-      "packaged local sidecar files install under .obsidian/plugins/vault-mcp/sidecar",
+      "local server runtime is embedded in main.js",
       "installed manifest matches release manifest",
-      "main.js, styles.css, and sidecar files are non-empty",
+      "manifest.json, main.js, and styles.css are non-empty",
+      "no sidecar directory is required",
       "double-nested plugin folder is absent",
       "community-plugins.json enables vault-mcp",
     ],
@@ -128,13 +130,6 @@ try {
   if (createdTempVault && !keep) {
     await rm(vaultRoot, { recursive: true, force: true });
   }
-}
-
-async function findReleaseManifest(root) {
-  const entries = await readdir(root).catch(() => []);
-  const matches = entries.filter((entry) => entry.endsWith("-release.json"));
-  assert(matches.length === 1, `Expected exactly one release manifest in ${root}; found ${matches.length}`);
-  return path.join(root, matches[0]);
 }
 
 async function readChecksum(file, zipName) {
@@ -168,15 +163,7 @@ async function copyRuntimeFile(source, destination) {
 }
 
 function expectedRuntimeFiles() {
-  return [
-    "manifest.json",
-    "main.js",
-    "styles.css",
-    "sidecar/start-local-server.mjs",
-    "sidecar/vault-mcp-local-server.mjs",
-    "sidecar/vault-mcp-local-server.cjs",
-    "sidecar/sidecar-manifest.json",
-  ];
+  return ["manifest.json", "main.js", "styles.css"];
 }
 
 async function assertMissing(value, label) {

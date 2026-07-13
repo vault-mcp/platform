@@ -80,9 +80,9 @@ not bypass account consent.
 Another planned path is local desktop server mode. In that mode the user would
 install the plugin, toggle `Run local MCP server`, and let Obsidian start a
 localhost MCP server while the vault is open. This is the likely simplest
-privacy-first setup for desktop MCP clients. In this release, the ZIP package
-includes an embedded server bundle under `sidecar/`; the plugin starts it in
-Obsidian's desktop Node context without an external Node/npm command, or falls
+privacy-first setup for desktop MCP clients. In this release, the standard
+three-file Obsidian package compiles the local server into `main.js`; the plugin
+starts it in Obsidian's desktop Node context without an external Node/npm command, or falls
 back to the Node-required developer local server profile after the tester
 configures the platform repo folder and npm command.
 After spawning the local profile, the plugin waits for `/healthz` and only marks
@@ -90,7 +90,7 @@ the local server ready when the response names `vault-mcp-connector`, matches
 the plugin version, reports healthy storage, and advertises the expected
 localhost MCP endpoint. If the preferred local port is already occupied, start
 will reuse a compatible Vault MCP server on that port or scan upward to the next
-available port before spawning a new sidecar.
+available port before spawning a new embedded server.
 Packaged users do not need to install or configure Node. A signed isolated
 helper process remains a possible later hardening step. Verify the profile with
 `npm run smoke:local-server`. See
@@ -156,7 +156,7 @@ npm run plugin:install-copy
 The default target is:
 
 ```text
-/Users/tjt/Documents/Tristan's Personal vault copy/.obsidian/plugins/vault-mcp
+/path/to/disposable-test-vault/.obsidian/plugins/vault-mcp
 ```
 
 To choose another vault:
@@ -589,7 +589,7 @@ set +a
 
 npm run plugin:prepare-ui-smoke -- \
   --base-url "https://vault-mcp-connector.vercel.app" \
-  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-root "/path/to/disposable-test-vault" \
   --vault-id "default"
 ```
 
@@ -614,7 +614,7 @@ The preparation script runs this initial verifier automatically:
 ```bash
 npm run plugin:verify-ui-smoke -- \
   --base-url "https://vault-mcp-connector.vercel.app" \
-  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-root "/path/to/disposable-test-vault" \
   --vault-id "default" \
   --run-id "<run-id>" \
   --mode initial
@@ -782,7 +782,7 @@ After applying all five proposals in Obsidian, verify the copied-vault files, pr
 ```bash
 npm run plugin:verify-ui-smoke -- \
   --base-url "https://vault-mcp-connector.vercel.app" \
-  --vault-root "/Users/tjt/Documents/Tristan's Personal vault copy" \
+  --vault-root "/path/to/disposable-test-vault" \
   --vault-id "default" \
   --run-id "<run-id>" \
   --mode applied

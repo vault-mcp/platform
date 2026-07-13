@@ -6,7 +6,7 @@ import process from "node:process";
 const args = parseArgs(process.argv.slice(2));
 const baseUrl = stringArg("base-url", "SMOKE_BASE_URL", "PUBLIC_BASE_URL")?.replace(/\/$/, "");
 const syncToken = stringArg("sync-token", "MCP_SYNC_TOKEN");
-const vaultRoot = stringArg("vault-root", "VAULT_ROOT") ?? "/Users/tjt/Documents/Tristan's Personal vault copy";
+const vaultRoot = stringArg("vault-root", "VAULT_ROOT") ?? "";
 const vaultId = stringArg("vault-id", "VAULT_ID") ?? "default";
 const runId = stringArg("run-id");
 const mode = stringArg("mode") ?? "initial";

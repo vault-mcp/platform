@@ -5,12 +5,10 @@ import process from "node:process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
-const sidecarRoot = path.join(repoRoot, "dist", "local-sidecar");
-const defaultVault = "/Users/tjt/Documents/Tristan's Personal vault copy";
 
 const args = process.argv.slice(2);
 const options = {
-  vault: process.env.VAULT_ROOT || defaultVault,
+  vault: process.env.VAULT_ROOT || "",
   pluginId: "vault-mcp",
   skipBuild: false,
   dryRun: false,
@@ -41,19 +39,10 @@ await assertDirectory(options.vault, "vault");
 
 if (!options.skipBuild && !options.dryRun) {
   await run("npm", ["run", "build:plugin"], repoRoot);
-  await run("npm", ["run", "build:sidecar"], repoRoot);
 }
 
 const targetDir = path.join(options.vault, ".obsidian", "plugins", options.pluginId);
-const files = [
-  "manifest.json",
-  "main.js",
-  "styles.css",
-  "sidecar/start-local-server.mjs",
-  "sidecar/vault-mcp-local-server.mjs",
-  "sidecar/vault-mcp-local-server.cjs",
-  "sidecar/sidecar-manifest.json",
-];
+const files = ["manifest.json", "main.js", "styles.css"];
 const copied = [];
 
 if (!options.dryRun) {
@@ -61,7 +50,7 @@ if (!options.dryRun) {
 }
 
 for (const file of files) {
-  const from = packageFileSource(file);
+  const from = path.join(pluginRoot, file);
   const to = path.join(targetDir, file);
   await assertFile(from, file);
   if (!options.dryRun) {
@@ -85,13 +74,6 @@ async function assertDirectory(value, label) {
   if (!result?.isDirectory()) {
     throw new Error(`Expected ${label} directory to exist: ${value}`);
   }
-}
-
-function packageFileSource(file) {
-  if (file.startsWith("sidecar/")) {
-    return path.join(sidecarRoot, file.slice("sidecar/".length));
-  }
-  return path.join(pluginRoot, file);
 }
 
 async function assertFile(value, label) {

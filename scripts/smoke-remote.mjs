@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import process from "node:process";
+import path from "node:path";
 
 const baseUrl = required("SMOKE_BASE_URL").replace(/\/$/, "");
 const accessToken = process.env.SMOKE_ACCESS_TOKEN ?? process.env.MCP_ACCESS_TOKEN;
 assert(accessToken, "SMOKE_ACCESS_TOKEN or MCP_ACCESS_TOKEN is required");
 const syncToken = process.env.MCP_SYNC_TOKEN;
-const vaultRoot = process.env.VAULT_ROOT ?? "/Users/tjt/Documents/Tristan's Personal vault copy";
-const vaultName = process.env.VAULT_NAME ?? "Tristan's Personal vault copy";
+const vaultRoot = process.env.VAULT_ROOT ?? path.resolve("fixtures", "vault");
+const vaultName = process.env.VAULT_NAME ?? "Vault MCP fixture vault";
 const expectedTools = [
   "search",
   "search_notes",

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { copyFile, cp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import path from "node:path";
@@ -7,31 +7,26 @@ import process from "node:process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
-const sidecarRoot = path.join(repoRoot, "dist", "local-sidecar");
 const packageRoot = path.join(repoRoot, "dist", "obsidian-plugin");
 const args = parseArgs(process.argv.slice(2));
 const skipBuild = Boolean(args["skip-build"]);
 const dryRun = Boolean(args["dry-run"]);
 
 const manifest = JSON.parse(await readFile(path.join(pluginRoot, "manifest.json"), "utf8"));
+const communityManifest = JSON.parse(await readFile(path.join(repoRoot, "manifest.json"), "utf8"));
 for (const key of ["id", "name", "version", "minAppVersion", "description"]) {
   assert(typeof manifest[key] === "string" && manifest[key].length > 0, `manifest.json is missing ${key}`);
 }
 assert(manifest.id === "vault-mcp", `Expected manifest id vault-mcp, got ${manifest.id}`);
+assert(JSON.stringify(communityManifest) === JSON.stringify(manifest), "Root manifest.json must exactly match apps/obsidian-plugin/manifest.json");
 
 if (!skipBuild && !dryRun) {
   await run("npm", ["run", "build:plugin"], repoRoot);
-  await run("npm", ["run", "build:sidecar"], repoRoot);
 }
 
-const pluginFiles = ["manifest.json", "main.js", "styles.css"];
-const sidecarFiles = ["sidecar/start-local-server.mjs", "sidecar/vault-mcp-local-server.mjs", "sidecar/vault-mcp-local-server.cjs", "sidecar/sidecar-manifest.json"];
-const packageFiles = [...pluginFiles, ...sidecarFiles];
-for (const file of pluginFiles) {
+const packageFiles = ["manifest.json", "main.js", "styles.css"];
+for (const file of packageFiles) {
   await assertFile(path.join(pluginRoot, file), file);
-}
-for (const file of sidecarFiles) {
-  await assertFile(path.join(packageFileSource(file)), file);
 }
 
 const stageDir = path.join(packageRoot, manifest.id);
@@ -68,13 +63,10 @@ if (!dryRun) {
       releaseNotes: path.basename(releaseNotesPath),
       sha256: checksum,
       runtimeFiles: packageFiles,
-      sidecar: {
+      embeddedServer: {
         bundled: true,
-        directory: "sidecar",
-        entrypoint: "sidecar/start-local-server.mjs",
-        serverBundle: "sidecar/vault-mcp-local-server.mjs",
-        embeddedServerBundle: "sidecar/vault-mcp-local-server.cjs",
-        manifest: "sidecar/sidecar-manifest.json",
+        asset: "main.js",
+        requiresExternalNode: false,
       },
     },
   }, null, 2)}\n`, "utf8");
@@ -102,23 +94,11 @@ console.log(JSON.stringify({
   outputs,
 }, null, 2));
 
-function packageFileSource(file) {
-  if (file.startsWith("sidecar/")) {
-    return path.join(sidecarRoot, file.slice("sidecar/".length));
-  }
-  return path.join(pluginRoot, file);
-}
-
 async function copyPackageFile(file, stageDir) {
-  const source = packageFileSource(file);
+  const source = path.join(pluginRoot, file);
   const destination = path.join(stageDir, file);
   await mkdir(path.dirname(destination), { recursive: true });
-  const result = await stat(source);
-  if (result.isDirectory()) {
-    await cp(source, destination, { recursive: true });
-  } else {
-    await copyFile(source, destination);
-  }
+  await copyFile(source, destination);
 }
 
 async function assertFile(value, label) {

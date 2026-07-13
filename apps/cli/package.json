@@ -1,6 +1,6 @@
 {
   "name": "@vault-mcp/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "bin": {
@@ -11,7 +11,7 @@
     "dev": "node --import tsx src/index.ts"
   },
   "dependencies": {
-    "@vault-mcp/core": "0.1.0"
+    "@vault-mcp/core": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.21.0"

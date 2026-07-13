@@ -12,7 +12,7 @@ const program = new Command();
 program
   .name("vault-mcp-indexer")
   .description("Build or sync a read-only Vault MCP index from an allowlisted Obsidian vault.")
-  .option("--vault <path>", "Vault root to scan", process.env.VAULT_ROOT ?? "/Users/tjt/Documents/Tristan's Personal vault copy")
+  .option("--vault <path>", "Vault root to scan", process.env.VAULT_ROOT ?? path.join(repoRoot, "fixtures", "vault"))
   .option("--vault-name <name>", "Obsidian vault name used for obsidian:// URIs", process.env.VAULT_NAME)
   .option("--tenant-id <id>", "Tenant id for V2 multi-tenant sync payloads", process.env.VAULT_MCP_TENANT_ID ?? DEFAULT_TENANT_ID)
   .option("--vault-id <id>", "Vault id for V2 multi-vault sync payloads", process.env.VAULT_MCP_VAULT_ID ?? DEFAULT_VAULT_ID)

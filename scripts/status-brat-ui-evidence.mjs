@@ -19,7 +19,7 @@ const reportPath = path.resolve(args.report ?? path.join(evidenceDir, "report.js
 const strict = Boolean(args.strict);
 const expectedTag = args.tag ?? await readPluginManifestVersion(repoRoot);
 const expectedRepo = args.repo ?? "vault-mcp/platform";
-const liveVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault";
+const liveVaultRoot = process.env.VAULT_MCP_LIVE_VAULT_ROOT ? path.resolve(process.env.VAULT_MCP_LIVE_VAULT_ROOT) : null;
 const requiredCommands = [
   "plugin:brat:verify-github",
   "plugin:brat:check-copy",

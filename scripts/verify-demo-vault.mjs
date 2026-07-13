@@ -91,7 +91,7 @@ function publicContentIssues(relativePath, text) {
   const issues = [];
   const forbidden = [
     [/\/Users\/tjt\//, "private local user path"],
-    [/Tristan's Personal vault/i, "live vault name"],
+    [/personal vault/i, "live vault name"],
     [/github_pat_[A-Za-z0-9_]+/, "GitHub fine-grained token"],
     [/ghp_[A-Za-z0-9_]+/, "GitHub token"],
     [/Bearer\s+(?!values?\b)[A-Za-z0-9._-]+/i, "bearer token value"],

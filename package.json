@@ -1,6 +1,6 @@
 {
   "name": "vault-mcp-connector",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -15,7 +15,7 @@
     "deploy:vercel:check": "node scripts/vercel-production-deploy.mjs --check",
     "dev:server": "npm run dev --workspace @vault-mcp/server",
     "db:migrate": "npm run build --workspace @vault-mcp/server && npm run migrate --workspace @vault-mcp/server",
-    "build:plugin": "npm run build --workspace @vault-mcp/obsidian-plugin",
+    "build:plugin": "npm run build --workspace @vault-mcp/core && npm run build --workspace @vault-mcp/server && npm run build --workspace @vault-mcp/obsidian-plugin",
     "build:sidecar": "node scripts/build-local-sidecar.mjs",
     "plugin:package": "node scripts/package-obsidian-plugin.mjs",
     "plugin:verify-package": "node scripts/verify-obsidian-plugin-package.mjs",
@@ -52,7 +52,6 @@
     "demo:verify": "node scripts/verify-demo-vault.mjs",
     "index": "npm run dev --workspace @vault-mcp/cli --",
     "release:check:local": "node scripts/release-check-local.mjs",
-    "wiki:generate": "node scripts/generate-wiki-reference.mjs",
     "smoke:remote": "node scripts/smoke-remote.mjs",
     "smoke:multi-vault-remote": "node scripts/smoke-multivault-remote.mjs",
     "smoke:oauth-flow": "node scripts/smoke-oauth-flow.mjs",

@@ -38,7 +38,7 @@ async function readReport(value) {
 }
 
 function textRunSheet(report, reviewer) {
-  const vaultName = path.basename(report.vaultRoot ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
+  const vaultName = path.basename(report.vaultRoot ?? "test-vault-copy");
   const lines = [
     "Vault MCP BRAT UI evidence run sheet",
     "",
@@ -76,7 +76,7 @@ function textRunSheet(report, reviewer) {
 }
 
 function markdownRunSheet(report, reviewer) {
-  const vaultName = path.basename(report.vaultRoot ?? "/Users/tjt/Documents/Tristan's Personal vault copy");
+  const vaultName = path.basename(report.vaultRoot ?? "test-vault-copy");
   const lines = [
     "# Vault MCP BRAT UI Evidence Run Sheet",
     "",

@@ -38,32 +38,6 @@ describe("server MCP contract", () => {
     expect(await response.text()).toContain("Vault context, wired for AI clients.");
   });
 
-  it("serves the public wiki without authentication", async () => {
-    const { store, indexFile } = await createStore();
-    const config = testConfig(indexFile);
-    const server = await listen(createApp(config, store));
-    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
-
-    const response = await fetch(`${baseUrl}/wiki/`);
-    expect(response.status).toBe(200);
-    expect(response.headers.get("content-type")).toContain("text/html");
-    expect(await response.text()).toContain("Vault MCP Connector Wiki");
-  });
-
-  it("serves the rebuild tutorial without authentication", async () => {
-    const { store, indexFile } = await createStore();
-    const config = testConfig(indexFile);
-    const server = await listen(createApp(config, store));
-    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
-
-    const response = await fetch(`${baseUrl}/wiki/tutorial.html`);
-    expect(response.status).toBe(200);
-    expect(response.headers.get("content-type")).toContain("text/html");
-    const html = await response.text();
-    expect(html).toContain("Rebuild the connector from scratch");
-    expect(html).toContain("Build The Indexer");
-  });
-
   it("serves the guided Vercel setup page without authentication", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
@@ -97,30 +71,12 @@ describe("server MCP contract", () => {
 
     expect(health.ok).toBe(true);
     expect(health.service.name).toBe("vault-mcp-connector");
-    expect(health.service.version).toBe("0.1.0");
+    expect(health.service.version).toBe("0.2.0");
     expect(health.service.mcp_resource_url).toBe("http://127.0.0.1:0/mcp");
     expect(health.storage).toEqual({ kind: "json", ok: true });
     expect(health.document_count).toBe(0);
     expect(health.vault_count).toBe(0);
     expect(health.last_sync_at).toBeNull();
-  });
-
-  it("serves generated wiki source-reference pages without authentication", async () => {
-    const { store, indexFile } = await createStore();
-    const config = testConfig(indexFile);
-    const server = await listen(createApp(config, store));
-    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
-
-    const indexResponse = await fetch(`${baseUrl}/wiki/files/`);
-    expect(indexResponse.status).toBe(200);
-    expect(indexResponse.headers.get("content-type")).toContain("text/html");
-    expect(await indexResponse.text()).toContain("Source Appendix");
-
-    const appPageResponse = await fetch(`${baseUrl}/wiki/files/apps-server-src-app-ts.html`);
-    expect(appPageResponse.status).toBe(200);
-    const appPage = await appPageResponse.text();
-    expect(appPage).toContain("apps/server/src/app.ts");
-    expect(appPage).toContain("Source with explanatory notes");
   });
 
   it("syncs documents and exposes read-only vault tools over authenticated MCP", async () => {

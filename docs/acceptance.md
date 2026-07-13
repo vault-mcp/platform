@@ -152,7 +152,7 @@ npm run plugin:brat:check-copy -- --enable-brat --add-repo --check-github-releas
 5. If the repo is private, add a fine-grained GitHub token in BRAT settings with
    read-only Contents access to `vault-mcp/platform`. Do not put that token in
    source code, screenshots, or docs.
-6. Install through BRAT into `/Users/tjt/Documents/Tristan's Personal vault copy`
+6. Install through BRAT into a copied or disposable test vault.
    or another disposable vault.
 7. Enable `Vault MCP`.
 8. Import the setup bundle or paste server settings.

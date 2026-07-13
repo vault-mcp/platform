@@ -10,6 +10,7 @@ const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
 const packageRoot = path.join(repoRoot, "dist", "obsidian-plugin");
 const sourceManifest = JSON.parse(await readFile(path.join(pluginRoot, "manifest.json"), "utf8"));
+const communityManifest = JSON.parse(await readFile(path.join(repoRoot, "manifest.json"), "utf8"));
 const args = parseArgs(process.argv.slice(2));
 const pluginId = sourceManifest.id;
 const zipPath = path.resolve(args.zip ?? path.join(packageRoot, `${pluginId}-${sourceManifest.version}.zip`));
@@ -21,6 +22,7 @@ let vaultRoot = args.vault ? path.resolve(args.vault) : null;
 let createdTempVault = false;
 
 assert(pluginId === "vault-mcp", `Expected source manifest id vault-mcp, got ${pluginId}`);
+assert(JSON.stringify(communityManifest) === JSON.stringify(sourceManifest), "Root manifest.json must exactly match the plugin source manifest");
 await assertFile(zipPath, "plugin zip");
 await assertFile(checksumPath, "plugin checksum");
 await assertFile(releaseNotesPath, "plugin release notes");
@@ -38,7 +40,7 @@ validateReleaseManifest(releaseManifest, sourceManifest, {
   checksum: actualChecksum,
 });
 assert(releaseNotes.includes(sourceManifest.version), `Release notes must mention version ${sourceManifest.version}`);
-assert(releaseNotes.includes("Private-alpha"), "Release notes must state private-alpha status");
+assert(/^# Vault MCP Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Obsidian plugin");
 
 if (!vaultRoot) {
   vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vault-mcp-plugin-install-"));
@@ -165,22 +167,14 @@ function validateReleaseManifest(value, sourceManifest, expected) {
   assert(value.package?.checksum === expected.checksumName, "Release manifest checksum filename does not match package");
   assert(value.package?.releaseNotes === expected.releaseNotesName, "Release manifest release notes filename does not match package");
   assert(value.package?.sha256 === expected.checksum, "Release manifest SHA256 does not match package checksum");
-  assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(expectedRuntimeFiles()), "Release manifest runtime files are not the expected Obsidian plus sidecar file set");
-  assert(value.package?.sidecar?.bundled === true, "Release manifest must mark the packaged local sidecar as bundled");
-  assert(value.package?.sidecar?.entrypoint === "sidecar/start-local-server.mjs", "Release manifest sidecar entrypoint is incorrect");
-  assert(value.package?.sidecar?.embeddedServerBundle === "sidecar/vault-mcp-local-server.cjs", "Release manifest embedded sidecar bundle is incorrect");
+  assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(expectedRuntimeFiles()), "Release manifest runtime files are not the standard Obsidian file set");
+  assert(value.package?.embeddedServer?.bundled === true, "Release manifest must mark the local server runtime as bundled");
+  assert(value.package?.embeddedServer?.asset === "main.js", "Release manifest embedded server asset is incorrect");
+  assert(value.package?.embeddedServer?.requiresExternalNode === false, "Release manifest must not require an external Node installation");
 }
 
 function expectedRuntimeFiles() {
-  return [
-    "manifest.json",
-    "main.js",
-    "styles.css",
-    "sidecar/start-local-server.mjs",
-    "sidecar/vault-mcp-local-server.mjs",
-    "sidecar/vault-mcp-local-server.cjs",
-    "sidecar/sidecar-manifest.json",
-  ];
+  return ["manifest.json", "main.js", "styles.css"];
 }
 
 function assert(condition, message) {

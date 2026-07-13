@@ -1,22 +1,21 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { SignJWT } from "jose";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const defaultVaultRoot = "/Users/tjt/Documents/Tristan's Personal vault copy";
-const usingFixtureVault = !process.env.VAULT_ROOT && !existsSync(defaultVaultRoot);
+const defaultVaultRoot = path.join(root, "fixtures", "vault");
+const usingFixtureVault = !process.env.VAULT_ROOT;
 const port = process.env.PORT ?? "3335";
 const baseUrl = `http://127.0.0.1:${port}`;
 const syncToken = process.env.MCP_SYNC_TOKEN ?? "dev-sync-token";
 const issuer = "https://auth.local.test";
 const audience = `${baseUrl}/mcp`;
 const jwtSecret = "local-oauth-smoke-secret";
-const vaultRoot = process.env.VAULT_ROOT ?? (usingFixtureVault ? path.join(root, "fixtures", "vault") : defaultVaultRoot);
-const vaultName = process.env.VAULT_NAME ?? (usingFixtureVault ? "Vault MCP fixture vault" : "Tristan's Personal vault copy");
+const vaultRoot = process.env.VAULT_ROOT ?? defaultVaultRoot;
+const vaultName = process.env.VAULT_NAME ?? (usingFixtureVault ? "Vault MCP fixture vault" : path.basename(vaultRoot));
 const expectedProjectPath = usingFixtureVault ? "20 Projects/Test Project/Project Home.md" : "20 Projects/Vault MCP Connector/Project Home.md";
 const expectedProjectScope = usingFixtureVault ? "20 Projects/Test Project/" : "20 Projects/Vault MCP Connector/";
 const expectedProjectTitle = usingFixtureVault ? "Test Project" : "Vault MCP Connector";

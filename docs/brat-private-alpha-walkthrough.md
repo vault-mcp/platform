@@ -150,7 +150,7 @@ section is abbreviated here; the generated report includes every screenshot key.
   "releaseTag": "0.1.0",
   "repo": "vault-mcp/platform",
   "vaultKind": "copied",
-  "vaultRoot": "/Users/tjt/Documents/Tristan's Personal vault copy",
+  "vaultRoot": "/path/to/disposable-test-vault",
   "commands": {
     "plugin:brat:verify-github": true,
     "plugin:brat:check-copy": true,

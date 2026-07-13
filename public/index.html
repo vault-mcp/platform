@@ -792,7 +792,7 @@
           <a href="#how">How it works</a>
           <a href="#security">Security</a>
           <a href="/setup/vercel">Setup</a>
-          <a href="/wiki/">Wiki</a>
+          <a href="https://github.com/vault-mcp/platform">GitHub</a>
           <a href="/healthz">Health</a>
         </div>
       </div>
@@ -805,11 +805,11 @@
           <div class="eyebrow">Private remote MCP for Obsidian</div>
           <h1>Vault context, wired for AI clients.</h1>
           <p class="hero-copy">
-            A read-only MCP server that turns selected Obsidian notes into safe discovery, search, and fetch tools for ChatGPT, Claude, Codex, and any compatible client.
+            An Obsidian plugin and MCP server that turn approved vault context into safe discovery tools, with explicit local read and write access when you enable it.
           </p>
           <div class="hero-actions">
             <a class="button primary" href="/setup/vercel">Start setup</a>
-            <a class="button" href="/wiki/">Read the wiki</a>
+            <a class="button" href="https://github.com/vault-mcp/platform#readme">Read the docs</a>
             <a class="button" href="#endpoint">View endpoint</a>
             <a class="button" href="/.well-known/oauth-protected-resource">OAuth metadata</a>
           </div>
@@ -823,11 +823,11 @@
           </div>
           <div class="signal-line">
             <span>Tools</span>
-            <strong>10 read-only tools</strong>
+            <strong>Context + local tools</strong>
           </div>
           <div class="signal-line">
             <span>Mode</span>
-            <strong>read-only</strong>
+            <strong>permission controlled</strong>
           </div>
           <div class="signal-line">
             <span>Auth</span>
@@ -837,7 +837,7 @@
           <div class="signal-actions">
             <a class="mini-button" href="/healthz">Health</a>
             <a class="mini-button" href="/setup/vercel">Setup</a>
-            <a class="mini-button" href="/wiki/">Docs</a>
+            <a class="mini-button" href="https://github.com/vault-mcp/platform#readme">Docs</a>
           </div>
         </aside>
       </div>
@@ -847,20 +847,20 @@
       <section class="section" id="how">
         <div class="metric-strip" aria-label="Connector facts">
           <div class="metric">
-            <strong>240</strong>
-            <span>approved chunks currently indexed from the vault snapshot.</span>
+            <strong>3</strong>
+            <span>indexing modes: rules plus approvals, manual only, or rules only.</span>
           </div>
           <div class="metric">
-            <strong>437</strong>
-            <span>Markdown notes denied by rule, status, or source policy.</span>
+            <strong>4</strong>
+            <span>local access levels: Off, scoped read, scoped read-write, and GOD.</span>
           </div>
           <div class="metric">
-            <strong>10</strong>
-            <span>read-only MCP tools for discovery, search, diagnostics, and fetch.</span>
+            <strong>6</strong>
+            <span>direct write operations available only at an access level you choose.</span>
           </div>
           <div class="metric">
             <strong>0</strong>
-            <span>write operations available through the connector.</span>
+            <span>silent permission changes: access is selected explicitly in Obsidian.</span>
           </div>
         </div>
 
@@ -911,8 +911,8 @@
           <div class="beam" aria-hidden="true"></div>
           <div class="pipeline-step">
             <span>MCP</span>
-            <h3>Clients call read-only tools.</h3>
-            <p>The server validates auth, handles MCP JSON-RPC, and returns only allowlisted notes, chunks, status, and diagnostics.</p>
+            <h3>Clients call permission-controlled tools.</h3>
+            <p>The server validates auth and handles MCP JSON-RPC. Local file tools appear only while the plugin is running with the access level you selected.</p>
           </div>
         </div>
       </section>
@@ -939,7 +939,7 @@
           <div>
             <h2>The endpoint is the product.</h2>
             <p>
-              The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive a read-only tool set for note discovery, section search, active project lookup, status diagnostics, and controlled fetches.
+              The landing page is public. The useful data path is private. MCP clients connect to the hosted endpoint, complete OAuth, and receive vault discovery tools plus any local filesystem capabilities explicitly enabled in Obsidian.
             </p>
             <div class="capability-list endpoint-list">
               <div class="capability">
@@ -952,7 +952,7 @@
               </div>
               <div class="capability">
                 <strong>Keep setup inspectable.</strong>
-                <p>The wiki and OAuth metadata are public so client configuration can be debugged without exposing vault content.</p>
+                <p>The project README and OAuth metadata are public so client configuration can be debugged without exposing vault content.</p>
               </div>
             </div>
           </div>
@@ -969,8 +969,8 @@
           </div>
           <div class="rules-grid">
             <div class="rule-card">
-              <strong>READ ONLY</strong>
-              <span>No note edits, task creation, filesystem writes, or mutation tools are exposed.</span>
+              <strong>EXPLICIT ACCESS</strong>
+              <span>Local tools stay off until you choose scoped read, scoped read-write, or unrestricted GOD access.</span>
             </div>
             <div class="rule-card">
               <strong>DENYLIST WINS</strong>
@@ -991,10 +991,10 @@
       <section class="cta-band" aria-label="Documentation call to action">
         <div class="cta-inner">
           <div>
-            <h2>Need the full wiring diagram?</h2>
-            <p>The hosted wiki explains the server, indexer, vault policy, generated files, deployment scripts, and every major source file in plain English.</p>
+            <h2>Ready to inspect or self-host it?</h2>
+            <p>The repository includes installation, configuration, deployment, security, acceptance, and release documentation.</p>
           </div>
-          <a class="button primary" href="/wiki/">Open the wiki</a>
+          <a class="button primary" href="https://github.com/vault-mcp/platform#readme">Open the documentation</a>
         </div>
       </section>
     </main>

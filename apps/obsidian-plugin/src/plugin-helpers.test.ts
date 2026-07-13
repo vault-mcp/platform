@@ -229,8 +229,8 @@ describe("plugin helpers", () => {
     expect(status.endpoint).toBe("http://127.0.0.1:38791/mcp");
     expect(status.canStart).toBe(false);
     expect(status.message).toContain("cannot start");
-    expect(status.facts.join("\n")).toContain("Sidecar status: not configured");
-    expect(status.facts.join("\n")).toContain("Bundled sidecar: not installed");
+    expect(status.facts.join("\n")).toContain("Runtime: not configured");
+    expect(status.facts.join("\n")).toContain("Plugin runtime: not available");
   });
 
   it("rejects invalid local desktop server ports", () => {
@@ -479,9 +479,9 @@ describe("plugin helpers", () => {
 
     const status = pluginLocalServerStatus(settings);
     expect(status.canStart).toBe(true);
-    expect(status.title).toBe("Local desktop server bundled sidecar is ready");
-    expect(status.facts.join("\n")).toContain("Sidecar status: packaged sidecar installed");
-    expect(status.facts.join("\n")).toContain("Bundled sidecar: /Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar");
+    expect(status.title).toBe("Local desktop server is ready");
+    expect(status.facts.join("\n")).toContain("Embedded runtime: compiled into main.js");
+    expect(status.facts.join("\n")).toContain("Plugin runtime: self-contained");
 
     const command = buildLocalServerLaunchCommand(settings);
     expect(command).toContain("cd '/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar' && /opt/homebrew/bin/node start-local-server.mjs");

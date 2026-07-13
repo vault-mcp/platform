@@ -29,6 +29,7 @@ import type {
   LocalApplyResult,
   ProposalSafetyAnalysis,
 } from "./write-helpers";
+import { startEmbeddedLocalServer } from "@vault-mcp/server/embedded";
 import {
   App,
   ItemView,
@@ -123,14 +124,6 @@ type ChildProcessModule = {
 
 type EmbeddedLocalServer = {
   close(): Promise<void>;
-};
-
-type EmbeddedLocalServerModule = {
-  startEmbeddedLocalServer(env: Record<string, string | undefined>): Promise<EmbeddedLocalServer>;
-};
-
-type FsModule = {
-  existsSync(path: string): boolean;
 };
 
 type NetSocket = {
@@ -1938,7 +1931,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Run local MCP server")
-    .setDesc("Starts or stops the packaged sidecar inside Obsidian desktop, or uses the external Node developer profile as a fallback.")
+    .setDesc("Starts or stops the server embedded in this plugin, or uses the external Node developer profile as a fallback.")
     .addToggle((toggle) => toggle
       .setValue(Boolean(plugin.localServerProcess) || plugin.settings.localServerModeEnabled)
       .onChange(async (value) => {
@@ -2160,7 +2153,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
     .setDesc("Copies an external Node launch command for troubleshooting or developer-repo fallback. Packaged installs use Obsidian's desktop runtime.")
     .addButton((button) => button
       .setButtonText("Copy command")
-      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(localServerSettings) ?? "")));
+      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(plugin.settings) ?? "")));
 
   new Setting(parent)
     .setName("Developer server session")
@@ -2697,14 +2690,12 @@ function spawnLocalServerProcess(config: LocalServerSpawnConfig): LocalServerChi
 }
 
 function spawnEmbeddedLocalServer(config: LocalServerSpawnConfig): LocalServerChildProcess {
-  const pathModule = requireNodeModule<PathModule>("path");
-  const embeddedModule = requireNodeModule<EmbeddedLocalServerModule>(pathModule.join(config.cwd, "vault-mcp-local-server.cjs"));
   const errorListeners: Array<(error: Error) => void> = [];
   const exitListeners: Array<(code: number | null, signal: string | null) => void> = [];
   let stopRequested = false;
   let exitEmitted = false;
 
-  const serverPromise = embeddedModule.startEmbeddedLocalServer(localServerEnvFromSpawnConfig(config));
+  const serverPromise: Promise<EmbeddedLocalServer> = startEmbeddedLocalServer(localServerEnvFromSpawnConfig(config));
   void serverPromise.then(async (server) => {
     if (stopRequested) {
       await server.close();
@@ -2804,13 +2795,7 @@ function resolveBundledLocalSidecarDir(app: App, manifest: { dir?: string }): st
   }
   try {
     const pathModule = requireNodeModule<PathModule>("path");
-    const fsModule = requireNodeModule<FsModule>("fs");
-    const pluginPath = pathModule.join(vaultBasePath, pluginDir);
-    const sidecarDir = pathModule.join(pluginPath, "sidecar");
-    const launcherPath = pathModule.join(sidecarDir, "start-local-server.mjs");
-    const serverPath = pathModule.join(sidecarDir, "vault-mcp-local-server.mjs");
-    const embeddedServerPath = pathModule.join(sidecarDir, "vault-mcp-local-server.cjs");
-    return fsModule.existsSync(launcherPath) && fsModule.existsSync(serverPath) && fsModule.existsSync(embeddedServerPath) ? sidecarDir : null;
+    return pathModule.join(vaultBasePath, pluginDir);
   } catch {
     return null;
   }

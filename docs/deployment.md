@@ -257,8 +257,8 @@ The local indexer performs full replacement syncs:
 
 ```bash
 MCP_SYNC_TOKEN="$MCP_SYNC_TOKEN" npm run index -- \
-  --vault "/Users/tjt/Documents/Tristan's Personal vault copy" \
-  --vault-name "Tristan's Personal vault copy" \
+  --vault "/path/to/disposable-test-vault" \
+  --vault-name "Disposable test vault" \
   --public-base-url "$PUBLIC_BASE_URL" \
   --server "$PUBLIC_BASE_URL"
 ```
@@ -282,7 +282,7 @@ POSTGRES_SMOKE_DATABASE_URL="postgres://user:password@host:5432/vault_mcp_smoke"
 npm run smoke:postgres
 ```
 
-The smoke test starts the server with `DATABASE_URL` set from `POSTGRES_SMOKE_DATABASE_URL`, runs the same migration runner, syncs `/Users/tjt/Documents/Tristan's Personal vault copy`, and verifies `tools/list`, `search`, `fetch`, and guessed-ID denial through Postgres full-text search.
+The smoke test starts the server with `DATABASE_URL` set from `POSTGRES_SMOKE_DATABASE_URL`, runs the same migration runner, syncs the configured disposable test vault, and verifies `tools/list`, `search`, `fetch`, and guessed-ID denial through Postgres full-text search.
 
 ## Remote Smoke Test
 

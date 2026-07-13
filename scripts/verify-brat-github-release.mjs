@@ -27,7 +27,6 @@ const release = JSON.parse(await runCapture("gh", [
 assert(release.tagName === tag, `Expected release tag ${tag}, got ${release.tagName}`);
 assert(release.name === tag, `Expected release name ${tag}, got ${release.name}`);
 assert(release.isDraft === false, "BRAT cannot install from a draft GitHub release");
-assert(release.isPrerelease === true, "Expected the private-alpha BRAT release to be marked prerelease");
 
 const assetsByName = new Map((release.assets ?? []).map((asset) => [asset.name, asset]));
 for (const file of runtimeFiles) {

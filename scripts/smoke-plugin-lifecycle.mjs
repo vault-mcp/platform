@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import os from "node:os";
@@ -8,12 +8,13 @@ import process from "node:process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const packageRoot = path.join(repoRoot, "dist", "obsidian-plugin");
+const sourceManifest = JSON.parse(await readFile(path.join(repoRoot, "apps", "obsidian-plugin", "manifest.json"), "utf8"));
 const args = parseArgs(process.argv.slice(2));
 const keep = Boolean(args.keep);
 let vaultRoot = args.vault ? path.resolve(args.vault) : null;
 let createdTempVault = false;
 
-const releaseManifestPath = path.resolve(args["release-manifest"] ?? await findReleaseManifest(packageRoot));
+const releaseManifestPath = path.resolve(args["release-manifest"] ?? path.join(packageRoot, `${sourceManifest.id}-${sourceManifest.version}-release.json`));
 const releaseManifest = JSON.parse(await readFile(releaseManifestPath, "utf8"));
 validateReleaseManifestShape(releaseManifest, releaseManifestPath);
 
@@ -68,16 +69,11 @@ try {
   }, null, 2)}\n`, "utf8");
   await writeFile(path.join(installedPluginDir, "main.js"), "module.exports = {};\n", "utf8");
   await writeFile(path.join(installedPluginDir, "styles.css"), ".vault-mcp-old {}\n", "utf8");
-  await mkdir(path.join(installedPluginDir, "sidecar"), { recursive: true });
-  await writeFile(path.join(installedPluginDir, "sidecar", "start-local-server.mjs"), "console.log('old sidecar');\n", "utf8");
-  await writeFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "console.log('old server');\n", "utf8");
-  await writeFile(path.join(installedPluginDir, "sidecar", "sidecar-manifest.json"), "{}\n", "utf8");
   await writeFile(dataPath, `${JSON.stringify(preservedSettings, null, 2)}\n`, "utf8");
 
   const dataBeforeUpgrade = await readFile(dataPath, "utf8");
   const oldMain = await readFile(path.join(installedPluginDir, "main.js"), "utf8");
   const oldStyles = await readFile(path.join(installedPluginDir, "styles.css"), "utf8");
-  const oldSidecar = await readFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "utf8");
 
   await run("unzip", ["-q", "-o", zipPath, "-d", extractionRoot], repoRoot);
   const extractedPluginDir = path.join(extractionRoot, pluginId);
@@ -96,9 +92,7 @@ try {
   assert(dataAfterUpgrade === dataBeforeUpgrade, "Upgrade did not preserve data.json exactly");
   assert(await readFile(path.join(installedPluginDir, "main.js"), "utf8") !== oldMain, "Upgrade did not replace main.js");
   assert(await readFile(path.join(installedPluginDir, "styles.css"), "utf8") !== oldStyles, "Upgrade did not replace styles.css");
-  assert(await readFile(path.join(installedPluginDir, "sidecar", "vault-mcp-local-server.mjs"), "utf8") !== oldSidecar, "Upgrade did not replace sidecar server bundle");
-  await assertFile(path.join(installedPluginDir, "sidecar", "start-local-server.mjs"), "sidecar launcher after upgrade");
-  await assertFile(path.join(installedPluginDir, "sidecar", "sidecar-manifest.json"), "sidecar manifest after upgrade");
+  await assertMissing(path.join(installedPluginDir, "sidecar"), "obsolete sidecar directory after upgrade");
   await assertMissing(path.join(installedPluginDir, pluginId, "manifest.json"), "double-nested manifest");
 
   await rm(installedPluginDir, { recursive: true, force: true });
@@ -114,7 +108,7 @@ try {
 
   const report = {
     ok: true,
-    purpose: "private-alpha plugin upgrade and uninstall smoke",
+    purpose: "plugin upgrade and uninstall smoke",
     plugin: {
       id: installedManifest.id,
       name: installedManifest.name,
@@ -137,7 +131,8 @@ try {
     },
     verified: [
       "release manifest, checksum, and zip are self-consistent",
-      "upgrade replaces manifest.json, main.js, styles.css, and sidecar files from the release zip",
+      "upgrade replaces manifest.json, main.js, and styles.css from the release zip",
+      "upgrade uses the local server runtime embedded in main.js",
       "upgrade preserves existing .obsidian/plugins/vault-mcp/data.json exactly",
       "upgrade avoids double-nested plugin folders",
       "uninstall removes the plugin folder",
@@ -160,13 +155,6 @@ try {
   if (createdTempVault && !keep) {
     await rm(vaultRoot, { recursive: true, force: true });
   }
-}
-
-async function findReleaseManifest(root) {
-  const entries = await readdir(root).catch(() => []);
-  const matches = entries.filter((entry) => entry.endsWith("-release.json"));
-  assert(matches.length === 1, `Expected exactly one release manifest in ${root}; found ${matches.length}`);
-  return path.join(root, matches[0]);
 }
 
 async function readChecksum(file, zipName) {
