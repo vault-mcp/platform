@@ -157,6 +157,10 @@ symlink escape, or missing delete confirmation all fail closed. The generic
 hosted tool can reach the same sixteen `local_*` tools as a local client,
 including god mode only when the plugin deliberately enables it.
 
+Hosted bridge enablement is session-only. The plugin never persists an armed
+bridge across an Obsidian reload, restart, or reopen. A new interactive session
+must be armed from the plugin again.
+
 Verify the two-server request path with:
 
 ```bash

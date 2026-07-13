@@ -13,6 +13,7 @@ import {
   localServerPortCandidates,
   normalizeServerBaseUrl,
   parsePluginSetupBundle,
+  pluginDataForPersistence,
   pluginConfigurationChecklist,
   pluginLocalServerStatus,
   pluginSafetyDisclosure,
@@ -338,15 +339,14 @@ export default class VaultMcpPlugin extends Plugin {
       },
     });
 
-    this.app.workspace.onLayoutReady(() => {
-      if (this.settings.hostedLocalBridgeEnabled) {
-        void this.startHostedLocalBridge(false);
-      }
-    });
   }
 
   onunload() {
     this.clearHostedLocalBridgeTimer();
+    this.settings.hostedLocalBridgeEnabled = false;
+    this.hostedLocalBridgeConnectedAt = null;
+    this.hostedLocalBridgeLastSeenAt = null;
+    this.hostedLocalBridgeLastError = null;
     if (this.localServerProcess && !this.settings.localServerKeepAlive) {
       void this.stopLocalServer("Plugin unloaded.");
     }
@@ -380,7 +380,7 @@ export default class VaultMcpPlugin extends Plugin {
       localFsAccessTtlMinutes: saved?.localFsAccessTtlMinutes ?? DEFAULT_SETTINGS.localFsAccessTtlMinutes,
       localFsRequireUserIntent: saved?.localFsRequireUserIntent ?? DEFAULT_SETTINGS.localFsRequireUserIntent,
       localFsUserIntentPhrase: saved?.localFsUserIntentPhrase ?? DEFAULT_SETTINGS.localFsUserIntentPhrase,
-      hostedLocalBridgeEnabled: saved?.hostedLocalBridgeEnabled ?? DEFAULT_SETTINGS.hostedLocalBridgeEnabled,
+      hostedLocalBridgeEnabled: false,
       hostedLocalBridgePollSeconds: saved?.hostedLocalBridgePollSeconds ?? DEFAULT_SETTINGS.hostedLocalBridgePollSeconds,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
@@ -388,7 +388,7 @@ export default class VaultMcpPlugin extends Plugin {
 
   async saveSettings() {
     await this.saveData({
-      ...this.settings,
+      ...pluginDataForPersistence(this.settings),
       syncHistory: this.syncHistory.slice(0, 20),
     });
   }
@@ -1987,12 +1987,12 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
   new Setting(parent).setName("Hosted ChatGPT desktop bridge").setHeading();
   parent.createEl("p", {
     cls: "vault-mcp-muted",
-    text: "Opt-in. While enabled and Obsidian is open, the plugin polls the hosted server for short-lived desktop requests and forwards each one to the localhost sidecar. It never uploads a filesystem inventory or reads files in the background.",
+    text: "Opt-in for the current Obsidian session only. While enabled, the plugin polls the hosted server for short-lived desktop requests and forwards each one to the localhost sidecar. It never uploads a filesystem inventory or reads files in the background, and it never resumes hosted access after Obsidian reloads or reopens.",
   });
 
   new Setting(parent)
     .setName("Allow hosted ChatGPT to use local tools")
-    .setDesc("The localhost sidecar still enforces access mode, roots, write-operation toggles, expiry, exact user intent, and audit. Off is the default.")
+    .setDesc("The localhost sidecar still enforces access mode, roots, write-operation toggles, expiry, exact user intent, and audit. Off is the default and every new Obsidian session starts off.")
     .addToggle((toggle) => toggle
       .setValue(plugin.settings.hostedLocalBridgeEnabled)
       .onChange(async (enabled) => {
@@ -2056,7 +2056,7 @@ function localServerSessionDescription(plugin: VaultMcpPlugin): string {
 
 function hostedLocalBridgeDescription(plugin: VaultMcpPlugin): string {
   if (!plugin.settings.hostedLocalBridgeEnabled) {
-    return "Disabled. Hosted MCP clients cannot request local filesystem operations.";
+    return "Disabled for this Obsidian session. Hosted MCP clients cannot request local filesystem operations.";
   }
   if (plugin.hostedLocalBridgeLastError) {
     return `Enabled but blocked: ${plugin.hostedLocalBridgeLastError}`;

@@ -263,7 +263,9 @@ Private-alpha hosted desktop acceptance is also opt-in:
    outside file may appear.
 8. Refresh into God mode only for a separate throwaway-root test, verify status,
    then disable the bridge and stop/expire the local session immediately.
-9. Confirm hosted tools disappear when the server flag/scope is removed and
+9. Re-enable the bridge once, close and reopen Obsidian, and confirm the hosted
+   bridge is Off until the user explicitly enables it again.
+10. Confirm hosted tools disappear when the server flag/scope is removed and
    calls fail when Obsidian is closed or its heartbeat becomes stale.
 
 Never run the write/god-mode acceptance against the live personal vault.

@@ -41,6 +41,13 @@ export type PluginConfigurationSettings = PluginSafetySettings & {
   localFsUserIntentPhrase?: string;
 };
 
+export function pluginDataForPersistence<T extends { hostedLocalBridgeEnabled?: boolean }>(settings: T): T {
+  return {
+    ...settings,
+    hostedLocalBridgeEnabled: false,
+  };
+}
+
 export type PluginSafetyDisclosure = {
   title: string;
   summary: string;

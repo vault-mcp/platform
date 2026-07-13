@@ -19,7 +19,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
-- Provides an opt-in `Hosted ChatGPT desktop bridge`. While Obsidian is open, the plugin sends a policy heartbeat, polls for one short-lived request scoped to its installation id, forwards it to the authenticated localhost MCP endpoint, and posts the result. It never uploads a background filesystem inventory.
+- Provides an opt-in, session-only `Hosted ChatGPT desktop bridge`. While explicitly enabled in the current Obsidian session, the plugin sends a policy heartbeat, polls for one short-lived request scoped to its installation id, forwards it to the authenticated localhost MCP endpoint, and posts the result. It never uploads a background filesystem inventory and never resumes hosted access after Obsidian reloads or reopens.
 
 ## Plugin-First Setup Direction
 

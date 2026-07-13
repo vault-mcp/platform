@@ -74,6 +74,10 @@ cannot bypass the local sidecar's roots, operation toggles, expiry, exact
 therefore available remotely only while the user has deliberately enabled it
 in the plugin and kept the short-lived local session active.
 
+Hosted bridge enablement is session-only. It always returns to Off when
+Obsidian reloads, restarts, or reopens, so each new interactive chat session
+must be armed explicitly from the plugin.
+
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear
 tool error until the client passes `vault_id`. Use `list_vaults` first to choose

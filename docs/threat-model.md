@@ -40,6 +40,7 @@
 - Proposal-only hosted writes are private-alpha and disabled by default. Real ChatGPT acceptance, reauthorization with `vault:write`, proposal-card UX review, and security-review evidence are still required before enabling them in production.
 - The plugin applies proposals only after local policy/hash checks and creates backup/audit notes, but `direct_apply` remains reserved.
 - The hosted desktop bridge is implemented but disabled by default and still needs real ChatGPT OAuth reauthorization, live Obsidian UI acceptance, and production security-review evidence before production enablement.
+- Hosted bridge enablement is deliberately session-only: persisted plugin data always records it as off, and every Obsidian reload or reopen requires a fresh local enable action.
 - The private-alpha plugin still authenticates sync and desktop-agent APIs with the deployment-wide `MCP_SYNC_TOKEN`. Managed multi-user hosting must replace this with revocable, per-installation credentials before public release.
 - The packaged sidecar still requires a compatible Node runtime. Platform-native signed sidecars remain a public-release requirement for a true no-terminal install.
 

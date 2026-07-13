@@ -9,6 +9,7 @@ import {
   describeHttpFailure,
   normalizeServerBaseUrl,
   parsePluginSetupBundle,
+  pluginDataForPersistence,
   pluginConfigurationChecklist,
   pluginLocalServerStatus,
   pluginSafetyDisclosure,
@@ -20,6 +21,20 @@ import {
 } from "./plugin-helpers";
 
 describe("plugin helpers", () => {
+  it("never persists an armed hosted desktop bridge across Obsidian sessions", () => {
+    const liveSettings = {
+      hostedLocalBridgeEnabled: true,
+      hostedLocalBridgePollSeconds: 1,
+      localFsAccessMode: "god",
+    };
+
+    expect(pluginDataForPersistence(liveSettings)).toEqual({
+      ...liveSettings,
+      hostedLocalBridgeEnabled: false,
+    });
+    expect(liveSettings.hostedLocalBridgeEnabled).toBe(true);
+  });
+
   it("normalizes base server URLs and rejects route URLs", () => {
     expect(normalizeServerBaseUrl(" https://vault-mcp-connector.vercel.app/ ")).toBe("https://vault-mcp-connector.vercel.app");
     expect(normalizeServerBaseUrl("http://127.0.0.1:3333")).toBe("http://127.0.0.1:3333");
