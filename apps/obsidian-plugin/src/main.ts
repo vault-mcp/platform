@@ -31,6 +31,7 @@ import type {
 } from "./write-helpers";
 import {
   App,
+  ItemView,
   Modal,
   Notice,
   Plugin,
@@ -38,8 +39,12 @@ import {
   requestUrl,
   Setting,
   TFile,
+  WorkspaceLeaf,
 } from "obsidian";
 import type { IndexMode, LocalAccessRequest, LocalAgentToolDefinition, LocalFsAccessMode, LocalFsPolicy, LocalFsWriteOperation, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
+
+const VAULT_MCP_SIDEBAR_VIEW = "vault-mcp-sidebar";
+const ALL_LOCAL_FS_WRITE_OPERATIONS: readonly LocalFsWriteOperation[] = ["write_file", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"];
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -267,15 +272,16 @@ export default class VaultMcpPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
     this.addSettingTab(new VaultMcpSettingTab(this.app, this));
+    this.registerView(VAULT_MCP_SIDEBAR_VIEW, (leaf) => new VaultMcpSidebarView(leaf, this));
 
     this.addRibbonIcon("network", "Vault MCP", () => {
-      new VaultMcpDashboardModal(this.app, this).open();
+      void this.openDashboard();
     });
 
     this.addCommand({
       id: "open-dashboard",
       name: "Open dashboard",
-      callback: () => new VaultMcpDashboardModal(this.app, this).open(),
+      callback: () => void this.openDashboard(),
     });
 
     this.addCommand({
@@ -350,6 +356,74 @@ export default class VaultMcpPlugin extends Plugin {
       },
     });
 
+  }
+
+  async openDashboard() {
+    let leaf: WorkspaceLeaf | null = this.app.workspace.getLeavesOfType(VAULT_MCP_SIDEBAR_VIEW)[0] ?? null;
+    if (!leaf) {
+      leaf = this.app.workspace.getRightLeaf(false);
+      if (!leaf) {
+        new Notice("Vault MCP could not open the sidebar.");
+        return;
+      }
+      await leaf.setViewState({ type: VAULT_MCP_SIDEBAR_VIEW, active: true });
+    }
+    await this.app.workspace.revealLeaf(leaf);
+  }
+
+  refreshDashboard() {
+    for (const leaf of this.app.workspace.getLeavesOfType(VAULT_MCP_SIDEBAR_VIEW)) {
+      if (leaf.view instanceof VaultMcpSidebarView) {
+        leaf.view.render();
+      }
+    }
+  }
+
+  async refreshLocalServerRuntimeState(): Promise<boolean> {
+    const startedAtMs = this.localServerStartedAt ? Date.parse(this.localServerStartedAt) : Number.NaN;
+    if (this.localServerProcess && this.localServerHealth === null && Number.isFinite(startedAtMs) && Date.now() - startedAtMs < 10_000) {
+      return true;
+    }
+    try {
+      const health = await fetchLocalServerHealth(this.settings);
+      const compatibility = validateLocalServerCompatibility(health, this.manifest.version, localServerEndpoint(this.settings));
+      if (!compatibility.ok) {
+        throw new Error(compatibility.message);
+      }
+      this.localServerHealth = health;
+      this.settings.localServerModeEnabled = true;
+      return true;
+    } catch {
+      const changed = this.localServerProcess !== null || this.localServerHealth !== null || this.settings.localServerModeEnabled;
+      this.localServerProcess?.kill("SIGTERM");
+      this.localServerProcess = null;
+      this.localServerStartedAt = null;
+      this.localServerHealth = null;
+      this.settings.localServerModeEnabled = false;
+      if (changed) {
+        await this.saveSettings();
+      }
+      return false;
+    }
+  }
+
+  async setLocalFsAccessMode(mode: LocalFsAccessMode) {
+    this.settings.localFsAccessMode = mode;
+    if (mode === "god") {
+      this.settings.localFsWriteOperations = [...ALL_LOCAL_FS_WRITE_OPERATIONS];
+    }
+    await this.saveSettings();
+
+    if (this.localServerProcess) {
+      await this.refreshLocalServerSession();
+    } else if (this.localServerHealth) {
+      new Notice("Vault MCP: restart the externally managed local server to apply the new access level.");
+    }
+
+    if (this.settings.hostedLocalBridgeEnabled) {
+      await this.runHostedLocalBridgeTick();
+    }
+    this.refreshDashboard();
   }
 
   onunload() {
@@ -437,6 +511,7 @@ export default class VaultMcpPlugin extends Plugin {
         this.localServerHealth = portSelection.health;
         this.settings.localServerModeEnabled = true;
         await this.saveSettings();
+        this.refreshDashboard();
         new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
         return;
       }
@@ -457,6 +532,7 @@ export default class VaultMcpPlugin extends Plugin {
       this.localServerHealth = null;
       this.settings.localServerModeEnabled = true;
       await this.saveSettings();
+      this.refreshDashboard();
       await this.addHistory({ type: "local-server", message: `Starting local server on ${localServerEndpoint(this.settings)}.` });
       child.on("error", (error) => {
         if (this.localServerProcess === child) {
@@ -465,6 +541,7 @@ export default class VaultMcpPlugin extends Plugin {
           this.localServerHealth = null;
           this.settings.localServerModeEnabled = false;
           void this.saveSettings();
+          this.refreshDashboard();
         }
         void this.addHistory({ type: "error", message: `Local server failed to start: ${error.message}` });
         new Notice(`Vault MCP local server failed to start: ${error.message}`);
@@ -476,6 +553,7 @@ export default class VaultMcpPlugin extends Plugin {
           this.localServerHealth = null;
           this.settings.localServerModeEnabled = false;
           void this.saveSettings();
+          this.refreshDashboard();
         }
         const reason = signal ? `signal ${signal}` : `exit code ${code ?? "unknown"}`;
         void this.addHistory({ type: "local-server", message: `Local server stopped (${reason}).` });
@@ -486,6 +564,7 @@ export default class VaultMcpPlugin extends Plugin {
         return;
       }
       this.localServerHealth = health;
+      this.refreshDashboard();
       await this.addHistory({ type: "local-server", message: `Local server ready on ${localServerEndpoint(this.settings)} (${health.storage?.kind ?? "unknown"} storage, version ${health.service?.version ?? "unknown"}).` });
       new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
     } catch (error) {
@@ -496,6 +575,7 @@ export default class VaultMcpPlugin extends Plugin {
       this.localServerHealth = null;
       this.settings.localServerModeEnabled = false;
       await this.saveSettings();
+      this.refreshDashboard();
       await this.addHistory({ type: "error", message: `Local server start failed: ${message}` });
       new Notice(`Vault MCP local server start failed: ${message}`);
     }
@@ -509,12 +589,14 @@ export default class VaultMcpPlugin extends Plugin {
         this.localServerHealth = null;
         this.settings.localServerModeEnabled = false;
         await this.saveSettings();
+        this.refreshDashboard();
         await this.addHistory({ type: "local-server", message: "Disconnected from the compatible local server. No Obsidian-owned process was running." });
         new Notice("Vault MCP local server disconnected. No Obsidian-owned process was running.");
         return;
       }
       this.settings.localServerModeEnabled = false;
       await this.saveSettings();
+      this.refreshDashboard();
       new Notice("Vault MCP local server is not running.");
       return;
     }
@@ -523,6 +605,7 @@ export default class VaultMcpPlugin extends Plugin {
     this.localServerHealth = null;
     this.settings.localServerModeEnabled = false;
     await this.saveSettings();
+    this.refreshDashboard();
     child.kill("SIGTERM");
     await this.addHistory({ type: "local-server", message: reason });
     new Notice("Vault MCP local server stop requested.");
@@ -1293,65 +1376,170 @@ export default class VaultMcpPlugin extends Plugin {
   }
 }
 
-class VaultMcpDashboardModal extends Modal {
-  constructor(app: App, private readonly plugin: VaultMcpPlugin) {
-    super(app);
+class VaultMcpSidebarView extends ItemView {
+  constructor(leaf: WorkspaceLeaf, private readonly plugin: VaultMcpPlugin) {
+    super(leaf);
   }
 
-  onOpen() {
-    const { contentEl } = this;
+  getViewType() {
+    return VAULT_MCP_SIDEBAR_VIEW;
+  }
+
+  getDisplayText() {
+    return "Vault MCP";
+  }
+
+  getIcon() {
+    return "network";
+  }
+
+  async onOpen() {
+    await this.plugin.refreshLocalServerRuntimeState();
+    this.render();
+    this.registerInterval(window.setInterval(() => {
+      const wasActive = Boolean(this.plugin.localServerProcess) || Boolean(this.plugin.localServerHealth);
+      void this.plugin.refreshLocalServerRuntimeState().then((isActive) => {
+        if (wasActive !== isActive) {
+          this.render();
+        }
+      });
+    }, 10_000));
+  }
+
+  render() {
+    const contentEl = this.containerEl.children[1] as HTMLElement;
     contentEl.empty();
-    contentEl.createEl("h2", { text: "Vault MCP" });
-    addSetupGuide(contentEl, this.plugin.settings);
-    addSafetyDisclosure(contentEl, this.plugin.settings);
-    addConfigurationChecklist(contentEl, this.plugin.settings);
-    addServerCheckSection(contentEl, this.plugin.serverCheck);
-    const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard" });
-    addStat(grid, "Server", this.plugin.settings.serverUrl);
-    addStat(grid, "Vault id", this.plugin.settings.vaultId);
-    addStat(grid, "Index mode", this.plugin.settings.indexMode);
-    addStat(grid, "Write mode", this.plugin.settings.writeMode);
-    addStat(grid, "Last local chunks", String(this.plugin.summary.indexed));
-    if (this.plugin.summary.serverIndexed !== null) {
-      addStat(grid, "Server indexed chunks", String(this.plugin.summary.serverIndexed));
-    }
-    addStat(grid, "Review queue", String(this.plugin.summary.reviewRequired));
-    if (this.plugin.indexPreview) {
-      addStat(grid, "Preview allowed notes", String(this.plugin.indexPreview.allowed));
-    }
-    addStat(grid, "Last generated", this.plugin.summary.generatedAt ?? "Never");
-    if (this.plugin.summary.serverGeneratedAt) {
-      addStat(grid, "Server generated", this.plugin.summary.serverGeneratedAt);
-    }
-    if (this.plugin.summary.lastSuccessMessage) {
-      addSyncSummarySection(contentEl, this.plugin.summary.lastSuccessMessage);
-    }
-    if (this.plugin.summary.lastError) {
-      addStat(grid, "Last error", this.plugin.summary.lastError);
-      addTroubleshootingHint(contentEl, this.plugin.summary.lastError);
-    }
+    contentEl.addClass("vault-mcp-sidebar");
+
+    const header = contentEl.createDiv({ cls: "vault-mcp-sidebar__header" });
+    const heading = header.createDiv();
+    heading.createEl("h2", { text: "Vault MCP" });
+    heading.createDiv({ cls: "vault-mcp-sidebar__vault", text: this.plugin.settings.vaultId });
+    header.createDiv({
+      cls: `vault-mcp-status-pill vault-mcp-status-pill--${this.plugin.settings.hostedLocalBridgeEnabled ? "online" : "off"}`,
+      text: this.plugin.settings.hostedLocalBridgeEnabled ? "Chat connected" : "Chat off",
+    });
+
+    const access = contentEl.createDiv({ cls: `vault-mcp-access-card vault-mcp-access-card--${this.plugin.settings.localFsAccessMode}` });
+    access.createDiv({ cls: "vault-mcp-access-card__eyebrow", text: "Local file access" });
+    access.createDiv({ cls: "vault-mcp-access-card__mode", text: localFsAccessModeLabel(this.plugin.settings.localFsAccessMode) });
+    access.createDiv({ cls: "vault-mcp-access-card__description", text: localFsAccessModeDescription(this.plugin.settings.localFsAccessMode) });
+
     new Setting(contentEl)
-      .addButton((button) => button
-        .setButtonText("Check connection")
-        .setCta()
-        .onClick(() => void this.plugin.checkServerConnection()));
+      .setName("Access level")
+      .setDesc("One policy controls local reads and direct writes.")
+      .addDropdown((dropdown) => dropdown
+        .addOption("off", "Off")
+        .addOption("read", "Read inside allowed folders")
+        .addOption("write", "Read/write inside allowed folders")
+        .addOption("god", "GOD: full filesystem read/write")
+        .setValue(this.plugin.settings.localFsAccessMode)
+        .onChange(async (value) => {
+          await this.plugin.setLocalFsAccessMode(value as LocalFsAccessMode);
+          this.render();
+        }));
+
     new Setting(contentEl)
+      .setName("Local server")
+      .setDesc(this.plugin.localServerProcess || this.plugin.localServerHealth ? "Running" : "Stopped")
+      .addToggle((toggle) => toggle
+        .setValue(Boolean(this.plugin.localServerProcess) || Boolean(this.plugin.localServerHealth))
+        .onChange(async (enabled) => {
+          if (enabled) {
+            await this.plugin.startLocalServer();
+          } else {
+            await this.plugin.stopLocalServer();
+          }
+          this.render();
+        }));
+
+    new Setting(contentEl)
+      .setName("ChatGPT local access")
+      .setDesc(hostedLocalBridgeDescription(this.plugin))
+      .addToggle((toggle) => toggle
+        .setValue(this.plugin.settings.hostedLocalBridgeEnabled)
+        .onChange(async (enabled) => {
+          if (enabled) {
+            await this.plugin.startHostedLocalBridge();
+          } else {
+            await this.plugin.stopHostedLocalBridge();
+          }
+          this.render();
+        }));
+
+    const grid = contentEl.createDiv({ cls: "vault-mcp-dashboard vault-mcp-dashboard--compact" });
+    addStat(grid, "Indexed", String(this.plugin.summary.serverIndexed ?? this.plugin.summary.indexed));
+    addStat(grid, "Index review", String(this.plugin.summary.reviewRequired));
+    addStat(grid, "Access", localFsAccessModeShortLabel(this.plugin.settings.localFsAccessMode));
+    addStat(grid, "Last sync", this.plugin.summary.generatedAt ? formatCompactDate(this.plugin.summary.generatedAt) : "Never");
+
+    const actions = contentEl.createDiv({ cls: "vault-mcp-sidebar__actions" });
+    new Setting(actions)
       .addButton((button) => button
-        .setButtonText("Preview index")
-        .setCta()
+        .setButtonText("Preview")
         .onClick(() => void this.plugin.openIndexPreview()))
       .addButton((button) => button
-        .setButtonText("Review queue")
-        .onClick(() => void this.plugin.openReviewQueue()));
-    new Setting(contentEl)
+        .setButtonText("Sync")
+        .setCta()
+        .onClick(async () => {
+          await this.plugin.syncNow();
+          this.render();
+        }));
+    new Setting(actions)
       .addButton((button) => button
-        .setButtonText("Sync now")
-        .onClick(() => void this.plugin.syncNow()))
+        .setButtonText("Write proposals")
+        .onClick(() => void this.plugin.checkWriteProposals()))
       .addButton((button) => button
-        .setButtonText("Review write proposals")
-        .onClick(() => void this.plugin.checkWriteProposals()));
-    addHistorySection(contentEl, this.plugin.syncHistory);
+        .setButtonText("Settings")
+        .onClick(() => openPluginSettings(this.app, this.plugin)));
+
+    if (this.plugin.summary.lastError) {
+      const error = contentEl.createDiv({ cls: "vault-mcp-sidebar__error" });
+      error.createDiv({ cls: "vault-mcp-sidebar__error-title", text: "Needs attention" });
+      error.createDiv({ text: this.plugin.summary.lastError });
+    }
+
+    const history = this.plugin.syncHistory.slice(0, 5);
+    if (history.length > 0) {
+      contentEl.createEl("h3", { text: "Recent activity" });
+      addHistorySection(contentEl, history);
+    }
   }
+}
+
+function localFsAccessModeLabel(mode: LocalFsAccessMode): string {
+  switch (mode) {
+    case "read":
+      return "Read only";
+    case "write":
+      return "Scoped read/write";
+    case "god":
+      return "GOD read/write";
+    default:
+      return "Off";
+  }
+}
+
+function localFsAccessModeShortLabel(mode: LocalFsAccessMode): string {
+  return mode === "god" ? "GOD" : mode === "write" ? "Write" : mode === "read" ? "Read" : "Off";
+}
+
+function localFsAccessModeDescription(mode: LocalFsAccessMode): string {
+  switch (mode) {
+    case "read":
+      return "Chat can read only from the folders allowed in settings.";
+    case "write":
+      return "Chat can read and write directly inside the folders and operations allowed in settings.";
+    case "god":
+      return "Chat can read and write directly anywhere on this computer. No proposal or Obsidian approval is created.";
+    default:
+      return "Local file tools are unavailable to chat clients.";
+  }
+}
+
+function formatCompactDate(value: string): string {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
 class VaultMcpServerStatusModal extends Modal {
@@ -1576,8 +1764,8 @@ class VaultMcpSettingTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName("Write mode")
-      .setDesc("Review required is the safe default. Direct apply remains reserved until explicitly reviewed.")
+      .setName("Remote proposal handling")
+      .setDesc("This applies only to the separate indexed-vault proposal workflow. It does not affect direct local writes controlled under Local file permissions.")
       .addDropdown((dropdown) => dropdown
         .addOption("review_required", "Review required")
         .addOption("direct_apply", "Direct apply")
@@ -1809,42 +1997,57 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         await plugin.saveSettings();
       }));
 
+  new Setting(parent).setName("Local file permissions").setHeading();
+  parent.createEl("p", {
+    cls: "vault-mcp-muted",
+    text: "This is the single access policy used by local clients and the hosted ChatGPT bridge. Scoped write mode saves directly inside allowed folders. GOD mode saves directly anywhere on the computer. Neither mode creates an Obsidian write proposal or waits for approval.",
+  });
+
   new Setting(parent)
-    .setName("Local filesystem access")
-    .setDesc("Default is off. Read and write modes stay inside configured roots. God mode removes root limits for this localhost server.")
+    .setName("Access level")
+    .setDesc(localFsAccessModeDescription(plugin.settings.localFsAccessMode))
     .addDropdown((dropdown) => dropdown
       .addOption("off", "Off")
-      .addOption("read", "Read inside roots")
-      .addOption("write", "Read/write inside roots")
-      .addOption("god", "God mode")
+      .addOption("read", "Read inside allowed folders")
+      .addOption("write", "Read/write inside allowed folders")
+      .addOption("god", "GOD: full filesystem read/write")
       .setValue(plugin.settings.localFsAccessMode)
       .onChange(async (value) => {
-        plugin.settings.localFsAccessMode = value as LocalFsAccessMode;
-        await plugin.saveSettings();
+        await plugin.setLocalFsAccessMode(value as LocalFsAccessMode);
+        openPluginSettings(plugin.app, plugin);
       }));
 
   const vaultBasePath = getVaultBasePath(plugin.app);
-  addListSetting(parent, "Local filesystem read roots", "Absolute folders the local MCP server may list and read. Leave empty when access is off or when using god mode.", plugin.settings.localFsReadRoots, async (values) => {
-    plugin.settings.localFsReadRoots = values;
-    await plugin.saveSettings();
-  });
-  addRootShortcut(parent, "Use vault folder for read root", vaultBasePath, async (root) => {
-    plugin.settings.localFsReadRoots = uniqueStrings([...plugin.settings.localFsReadRoots, root]);
-    await plugin.saveSettings();
-    openPluginSettings(plugin.app, plugin);
-  });
+  if (plugin.settings.localFsAccessMode === "read" || plugin.settings.localFsAccessMode === "write") {
+    addListSetting(parent, "Allowed read folders", "Absolute folders the local MCP server may list and read.", plugin.settings.localFsReadRoots, async (values) => {
+      plugin.settings.localFsReadRoots = values;
+      await plugin.saveSettings();
+    });
+    addRootShortcut(parent, "Allow reads from this vault", vaultBasePath, async (root) => {
+      plugin.settings.localFsReadRoots = uniqueStrings([...plugin.settings.localFsReadRoots, root]);
+      await plugin.saveSettings();
+      openPluginSettings(plugin.app, plugin);
+    });
+  }
 
-  addListSetting(parent, "Local filesystem write roots", "Absolute folders the local MCP server may write to when write mode is enabled. Keep this narrower than read roots unless you deliberately need broad write access.", plugin.settings.localFsWriteRoots, async (values) => {
-    plugin.settings.localFsWriteRoots = values;
-    await plugin.saveSettings();
-  });
-  addRootShortcut(parent, "Use vault folder for write root", vaultBasePath, async (root) => {
-    plugin.settings.localFsWriteRoots = uniqueStrings([...plugin.settings.localFsWriteRoots, root]);
-    await plugin.saveSettings();
-    openPluginSettings(plugin.app, plugin);
-  });
-
-  addLocalFsWriteOperationToggles(parent, plugin);
+  if (plugin.settings.localFsAccessMode === "write") {
+    addListSetting(parent, "Allowed write folders", "Absolute folders where chat clients may save changes immediately.", plugin.settings.localFsWriteRoots, async (values) => {
+      plugin.settings.localFsWriteRoots = values;
+      await plugin.saveSettings();
+    });
+    addRootShortcut(parent, "Allow direct writes to this vault", vaultBasePath, async (root) => {
+      plugin.settings.localFsWriteRoots = uniqueStrings([...plugin.settings.localFsWriteRoots, root]);
+      await plugin.saveSettings();
+      openPluginSettings(plugin.app, plugin);
+    });
+    addLocalFsWriteOperationToggles(parent, plugin);
+  } else if (plugin.settings.localFsAccessMode === "god") {
+    const godModeNotice = parent.createDiv({ cls: "vault-mcp-god-mode-notice" });
+    godModeNotice.createDiv({ cls: "vault-mcp-god-mode-notice__title", text: "GOD mode is unrestricted" });
+    godModeNotice.createDiv({
+      text: "All read paths and every write operation are enabled. Chat tool calls can create, overwrite, edit, copy, move, rename, and delete files directly without an Obsidian approval step.",
+    });
+  }
 
   new Setting(parent)
     .setName("Local max read bytes")
@@ -2080,8 +2283,8 @@ function hostedLocalBridgeDescription(plugin: VaultMcpPlugin): string {
 
 function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPlugin) {
   new Setting(parent)
-    .setName("Allowed local write operations")
-    .setDesc("These only apply when local filesystem access is Write or God mode. Keep destructive operations off until you deliberately need them.");
+    .setName("Allowed direct write operations")
+    .setDesc("These switches apply to scoped read/write mode. GOD mode enables every operation automatically.");
   const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
     { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files and base64 byte files." },
     { value: "edit_file", label: "Edit exact text", description: "Replace exact text in existing UTF-8 files only when the expected match count is confirmed." },
@@ -2105,6 +2308,10 @@ function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPl
           }
           plugin.settings.localFsWriteOperations = Array.from(current);
           await plugin.saveSettings();
+          if (plugin.localServerProcess) {
+            await plugin.refreshLocalServerSession();
+          }
+          plugin.refreshDashboard();
         }));
   }
 }
@@ -2758,7 +2965,9 @@ function localFsPolicyFromPluginSettings(settings: VaultMcpPluginSettings, start
     mode: settings.localFsAccessMode,
     read_roots: [...settings.localFsReadRoots],
     write_roots: [...settings.localFsWriteRoots],
-    write_operations: [...settings.localFsWriteOperations],
+    write_operations: settings.localFsAccessMode === "god"
+      ? [...ALL_LOCAL_FS_WRITE_OPERATIONS]
+      : [...settings.localFsWriteOperations],
     max_read_bytes: settings.localFsMaxReadBytes,
     max_search_results: settings.localFsMaxSearchResults,
     max_search_files: settings.localFsMaxSearchFiles,

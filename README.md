@@ -70,9 +70,12 @@ The plugin polls outward to the hosted server, then forwards each claimed call
 to the localhost MCP endpoint. The hosted service never opens an inbound port
 on the user's computer, never receives a background filesystem inventory, and
 cannot bypass the local sidecar's roots, operation toggles, expiry, exact
-`user_intent`, symlink checks, delete confirmation, or audit trail. God mode is
-therefore available remotely only while the user has deliberately enabled it
-in the plugin and kept the short-lived local session active.
+`user_intent`, symlink checks, delete confirmation, or audit trail. The plugin
+uses one access-level control for local clients and the hosted bridge: Off,
+scoped Read, scoped Read/write, or GOD read/write. Scoped writes save files
+immediately inside the configured roots and operation allowlist. GOD mode
+removes root limits and enables every direct write operation. Neither direct
+mode creates a hosted write proposal or waits for Obsidian approval.
 
 Hosted bridge enablement is session-only. It always returns to Off when
 Obsidian reloads, restarts, or reopens, so each new interactive chat session

@@ -1,6 +1,8 @@
 import type { SyncPayload } from "@vault-mcp/core";
 import type { LocalFsAccessMode, LocalFsWriteOperation } from "@vault-mcp/core";
 
+const ALL_LOCAL_FS_WRITE_OPERATIONS: readonly LocalFsWriteOperation[] = ["write_file", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"];
+
 export type SyncResultSummary = {
   message: string;
   serverDocumentCount: number | null;
@@ -11,6 +13,7 @@ export type PluginSafetySettings = {
   indexMode: string;
   writeMode: string;
   writeAuditFolder: string;
+  localFsAccessMode?: LocalFsAccessMode;
 };
 
 export type PluginConfigurationSettings = PluginSafetySettings & {
@@ -342,6 +345,11 @@ export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSa
   const writePoint = settings.writeMode === "direct_apply"
     ? `Direct apply is selected. Treat this as experimental: matching proposals can be applied only after local safety checks, backup creation, and audit logging in ${settings.writeAuditFolder}.`
     : `Write mode is review required. Remote clients can create proposals, but the plugin must approve and apply supported writes locally after safety checks.`;
+  const localWritePoint = settings.localFsAccessMode === "god"
+    ? "Local GOD access is enabled. Local tool calls can read and write directly anywhere on this computer without creating a proposal."
+    : settings.localFsAccessMode === "write"
+      ? "Scoped local read/write is enabled. Local tool calls save directly inside the configured folders and operation allowlist without creating a proposal."
+      : `Direct local filesystem access is ${settings.localFsAccessMode ?? "off"}.`;
 
   return {
     title: "Safety boundary",
@@ -352,6 +360,7 @@ export function pluginSafetyDisclosure(settings: PluginSafetySettings): PluginSa
       "The server stores searchable chunks and write proposals; it does not directly edit Obsidian files.",
       writePoint,
       `Local write applies create backup and audit notes under ${settings.writeAuditFolder}.`,
+      localWritePoint,
     ],
   };
 }
@@ -515,7 +524,7 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,
       `Local filesystem read roots: ${settings.localFsReadRoots?.length ? settings.localFsReadRoots.join(", ") : "none"}`,
       `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,
-      `Local filesystem write operations: ${settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
+      `Local filesystem write operations: ${settings.localFsAccessMode === "god" ? ALL_LOCAL_FS_WRITE_OPERATIONS.join(", ") : settings.localFsWriteOperations?.length ? settings.localFsWriteOperations.join(", ") : "write_file"}`,
       `Local filesystem search caps: ${settings.localFsMaxSearchResults ?? 100} results, ${settings.localFsMaxSearchFiles ?? 2000} files`,
       `Local filesystem session: ${(settings.localFsAccessTtlMinutes ?? 0) > 0 ? `${settings.localFsAccessTtlMinutes} minute window` : "no automatic expiry"}`,
       `Local filesystem user intent: ${settings.localFsRequireUserIntent ?? true ? `required (${settings.localFsUserIntentPhrase?.trim() || "use local filesystem"})` : "not required"}`,
@@ -708,7 +717,9 @@ function localFilesystemClientPolicy(settings: PluginConfigurationSettings): Loc
     access_mode: settings.localFsAccessMode ?? "off",
     read_roots: settings.localFsReadRoots?.filter(Boolean) ?? [],
     write_roots: settings.localFsWriteRoots?.filter(Boolean) ?? [],
-    write_operations: settings.localFsWriteOperations?.filter(Boolean) ?? ["write_file"],
+    write_operations: settings.localFsAccessMode === "god"
+      ? [...ALL_LOCAL_FS_WRITE_OPERATIONS]
+      : settings.localFsWriteOperations?.filter(Boolean) ?? ["write_file"],
     max_read_bytes: settings.localFsMaxReadBytes ?? 512 * 1024,
     max_search_results: settings.localFsMaxSearchResults ?? 100,
     max_search_files: settings.localFsMaxSearchFiles ?? 2000,
@@ -793,7 +804,9 @@ function localFsLaunchArgs(settings: PluginConfigurationSettings, quote: boolean
     const value = writeRoots.join(",");
     args.push("--fs-write-roots", quote ? shellQuote(value) : value);
   }
-  const writeOperations = settings.localFsWriteOperations?.filter(Boolean) ?? ["write_file"];
+  const writeOperations = mode === "god"
+    ? [...ALL_LOCAL_FS_WRITE_OPERATIONS]
+    : settings.localFsWriteOperations?.filter(Boolean) ?? ["write_file"];
   if (writeOperations.length > 0) {
     const value = writeOperations.join(",");
     args.push("--fs-write-operations", quote ? shellQuote(value) : value);

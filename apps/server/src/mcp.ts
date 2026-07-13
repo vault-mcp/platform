@@ -8,7 +8,7 @@ import * as z from "zod/v4";
 import type { UserAuthContext } from "./auth.js";
 import type { ServerConfig } from "./config.js";
 import type { IndexStore } from "./store.js";
-import { DEFAULT_TENANT_ID, LOCAL_FS_TOOL_NAMES } from "@vault-mcp/core";
+import { DEFAULT_TENANT_ID, LOCAL_FS_TOOL_NAMES, LOCAL_FS_WRITE_OPERATIONS } from "@vault-mcp/core";
 import type { LocalAccessRequest, LocalAgentStatus, LocalFsPolicy, LocalFsToolName, WriteOperation, WriteProposal } from "@vault-mcp/core";
 
 const CHATGPT_RESULTS_TEMPLATE_URI = "ui://vault-mcp/results-v2.html";
@@ -2197,6 +2197,9 @@ function localFsExpiredMessage(policy: LocalFsPolicy): string {
 function effectiveWriteOperations(policy: LocalFsPolicy): LocalFsPolicy["write_operations"] {
   if (!canWrite(policy)) {
     return [];
+  }
+  if (policy.mode === "god") {
+    return [...LOCAL_FS_WRITE_OPERATIONS];
   }
   return policy.write_operations.length > 0 ? policy.write_operations : ["write_file"];
 }

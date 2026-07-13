@@ -96,13 +96,15 @@ helper process remains a possible later hardening step. Verify the profile with
 `npm run smoke:local-server`. See
 [Local Desktop Server Mode](local-server-mode.md).
 
-Local filesystem access is controlled in the same `Local desktop server`
-section. It is off by default. Testers can choose `Read inside roots`,
-`Read/write inside roots`, or `God mode`, then configure absolute read and
-write roots plus allowed write operations. The operation toggles separately
-enable text/base64 file writes, directory creation, copy, move/rename, and
-deletion. Deletion still requires an explicit confirmation string in the MCP
-tool call. Read mode also exposes on-demand file discovery, metadata lookup,
+Local filesystem access is controlled by one `Access level` selector in the
+`Local file permissions` section. It is off by default. Testers can choose
+scoped Read, scoped Read/write, or GOD read/write. Scoped modes use configured
+absolute folders, and scoped Read/write also uses operation switches for
+text/base64 writes, exact edits, directory creation, copy, move/rename, and
+deletion. GOD mode removes folder limits and enables every direct write
+operation. Scoped and GOD writes save immediately; they do not create write
+proposals or wait for approval in Obsidian. Deletion still requires an explicit
+confirmation string in the MCP tool call. Read mode also exposes on-demand file discovery, metadata lookup,
 text reads, base64 byte reads, and text search through policy-capped local
 tools, so a user can ask a local-capable MCP client to inspect the vault without
 first syncing every note into the remote index. Testers can also set a
@@ -127,7 +129,7 @@ authorization header, a generic `mcpServers` JSON example, and the current
 local filesystem policy context. That bundle includes only the local MCP client
 token, not the plugin/admin sync token. The adjacent `Copy instructions` button
 copies a no-token prompt that tells local clients to call `local_fs_policy`,
-respect the configured local roots and write operations, and include
+respect the effective access level, roots, and write operations, and include
 `user_intent` when required. These settings always define the localhost sidecar
 policy. Hosted servers remain derived-index-only unless the deployment owner
 separately enables the desktop bridge and grants OAuth `local:access`. Even
@@ -136,6 +138,12 @@ open with `Allow hosted ChatGPT to use local tools` enabled, and the localhost
 sidecar still enforces every policy check. Use `desktop_local_fs_status` in
 ChatGPT before a local operation, then pass the exact configured `user_intent`
 to `desktop_run_local_tool`.
+
+The ribbon and `Open dashboard` command open a persistent right-sidebar control
+surface. It contains only operational controls: current access level, local
+server state, hosted ChatGPT access, index statistics, sync, and proposal
+actions. First-run setup, credentials, folder permissions, operation switches,
+limits, and developer controls remain in the plugin Settings page.
 
 ## Safe Test Install
 
@@ -552,8 +560,9 @@ Do not override these checks manually. Mark the proposal `conflict`, inspect the
 - The plugin displays configuration blockers and warnings before sync. A blocked checklist item should be fixed before running `Sync now`; warnings are allowed but should be reviewed deliberately.
 - The plugin syncs derived Markdown chunks and metadata to the configured server.
 - The plugin should not sync denied paths, excluded prefixes, or notes held for review unless the user approves them under the selected mode.
-- The server should never directly write to an Obsidian vault. Writes are proposal-first.
-- Local write application happens in the plugin after approval and local safety checks.
+- The hosted indexed-vault server never directly writes to an Obsidian vault. Its write path is proposal-first.
+- The separate local filesystem bridge can write immediately when scoped Read/write or GOD access is enabled; these calls do not create proposals or wait for approval.
+- Proposal application happens in the plugin after approval and local safety checks.
 - Supported local writes create backup and audit notes before applying changes.
 - Base-content hash mismatches block automatic apply and should become conflicts.
 - Sync tokens and OAuth secrets are credentials. Keep them in local ignored env/settings files and out of screenshots, commits, and public docs.

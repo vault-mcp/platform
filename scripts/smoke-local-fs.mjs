@@ -242,7 +242,6 @@ async function runGodModeSmoke() {
     dataDir,
     args: [
       "--fs-access", "god",
-      "--fs-write-operations", "write_file,edit_file,create_directory,copy_path,move_path,delete_path",
       "--fs-max-read-bytes", "512",
       "--fs-max-search-results", "10",
       "--fs-max-search-files", "50",
@@ -252,8 +251,18 @@ async function runGodModeSmoke() {
     const policy = await callTool(baseUrl, 101, "local_fs_policy", {});
     assert(policy.result.structuredContent.mode === "god", "expected god mode");
     assert(policy.result.structuredContent.god_mode === true, "expected god_mode true");
+    assert(
+      policy.result.structuredContent.write_operations.join(",") === "write_file,edit_file,create_directory,copy_path,move_path,delete_path",
+      "expected god mode to enable every direct write operation",
+    );
     assert(typeof policy.result.structuredContent.expires_at === "string", "expected god access expiry timestamp");
     assert(policy.result.structuredContent.expired === false, "expected god access to be active");
+
+    const tools = await mcp(baseUrl, 110, "tools/list", {});
+    const toolNames = tools.result.tools.map((tool) => tool.name);
+    for (const toolName of ["local_write_file", "local_write_file_bytes", "local_edit_file", "local_create_directory", "local_copy_path", "local_move_path", "local_delete_path"]) {
+      assert(toolNames.includes(toolName), `expected god mode tool ${toolName}`);
+    }
 
     await callTool(baseUrl, 102, "local_write_file", {
       path: filePath,

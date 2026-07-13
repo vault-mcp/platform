@@ -11,19 +11,21 @@ https://github.com/vault-mcp/platform/releases/tag/0.1.0
 ## What Is Included
 
 - Settings for server URL, sync token, vault id, index mode, write mode, include rules, exclude rules, manual allow rules, and write audit folder.
-- Dashboard with safety boundary and configuration readiness checks.
+- Persistent right-sidebar dashboard with operational access, server, ChatGPT bridge, sync, index, and proposal controls. Setup remains in Settings.
 - Connection preflight for server health, storage readiness, migration metadata, and configured-vault status before sync.
 - Dry-run index preview for allowed, denied, review-required, and redacted notes.
 - Review queue for sensitive notes held by policy.
 - Sync of approved Markdown chunks to the configured Vault MCP server.
 - Write proposal review for create, append, replace, frontmatter update, and rename operations.
 - Local write apply for supported approved proposals after safety checks, with backup and audit notes.
+- One local filesystem access selector for Off, scoped Read, scoped Read/write, or GOD read/write. Scoped and GOD writes save immediately without proposals; GOD enables every direct write operation and removes root limits.
 
 ## Safety Defaults
 
 - `review_required` is the default write mode.
 - Exclude rules win before include and manual allow rules.
-- The server stores a derived index and write proposals; it does not directly edit Obsidian files.
+- The hosted indexed-vault server stores a derived index and write proposals; it does not directly edit Obsidian files.
+- Direct local filesystem writes are separately controlled by the plugin access level and remain off by default.
 - Local write apply creates backup and audit notes under the configured audit folder.
 - `direct_apply` remains experimental and should not be used for normal private-alpha testing.
 

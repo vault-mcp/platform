@@ -22,6 +22,15 @@ export type LocalFsAccessMode = "off" | "read" | "write" | "god";
 
 export type LocalFsWriteOperation = "write_file" | "edit_file" | "create_directory" | "copy_path" | "move_path" | "delete_path";
 
+export const LOCAL_FS_WRITE_OPERATIONS: readonly LocalFsWriteOperation[] = [
+  "write_file",
+  "edit_file",
+  "create_directory",
+  "copy_path",
+  "move_path",
+  "delete_path",
+] as const;
+
 export const LOCAL_FS_TOOL_NAMES = [
   "local_fs_policy",
   "local_fs_audit",

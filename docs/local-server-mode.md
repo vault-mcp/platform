@@ -138,8 +138,10 @@ bridge solves that without opening an inbound desktop port:
 
 1. The deployment owner enables `MCP_REMOTE_LOCAL_FS_ENABLED` and adds the
    OAuth scope `local:access`.
-2. The user enables `Run local MCP server` and chooses Off, Read, Write, or God
-   mode plus roots, operations, intent phrase, and session expiry.
+2. The user enables `Run local MCP server` and chooses one access level: Off,
+   scoped Read, scoped Read/write, or GOD read/write. Scoped modes use the
+   configured roots and operation switches; GOD mode removes root limits and
+   enables every direct write operation.
 3. The user explicitly enables `Allow hosted ChatGPT to use local tools` in the
    plugin.
 4. The plugin sends a safe policy heartbeat plus the sidecar's live local-tool
@@ -150,6 +152,8 @@ bridge solves that without opening an inbound desktop port:
 6. The plugin claims that request, forwards it to the authenticated localhost
    MCP endpoint, and posts the MCP result back.
 
+Scoped and GOD write calls save immediately through the localhost sidecar. They
+do not create hosted write proposals and do not wait for approval in Obsidian.
 The hosted server does not scan the filesystem, hold permanent desktop access,
 or bypass local policy. A stale heartbeat, disabled bridge, Off mode, expired
 session, wrong intent phrase, out-of-root path, disabled write operation,

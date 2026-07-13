@@ -137,6 +137,19 @@ describe("plugin helpers", () => {
     expect(disclosure.points.join("\n")).toContain("Audit");
   });
 
+  it("distinguishes direct local god access from proposal writes", () => {
+    const disclosure = pluginSafetyDisclosure({
+      indexMode: "rules_plus_approvals",
+      writeMode: "review_required",
+      writeAuditFolder: "Audit",
+      localFsAccessMode: "god",
+    });
+
+    expect(disclosure.points.join("\n")).toContain("Local GOD access is enabled");
+    expect(disclosure.points.join("\n")).toContain("without creating a proposal");
+    expect(disclosure.points.join("\n")).toContain("Write mode is review required");
+  });
+
   it("marks a configured plugin as ready to sync", () => {
     const checklist = pluginConfigurationChecklist({
       serverUrl: "https://vault-mcp-connector.vercel.app",
@@ -354,6 +367,7 @@ describe("plugin helpers", () => {
     expect(instructions).toContain("Endpoint: http://127.0.0.1:38791/mcp");
     expect(instructions).toContain('user_intent: "approve local access"');
     expect(instructions).toContain("Filesystem mode: god");
+    expect(instructions).toContain("Allowed write operations: write_file, edit_file, create_directory, copy_path, move_path, delete_path");
     expect(instructions).toContain("15 minutes after local server start or refresh");
     expect(instructions).not.toContain("mcp-local-token");
     expect(instructions).not.toContain("sync-local-token");
