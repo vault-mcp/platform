@@ -11,5 +11,9 @@
     "rootDir": "src",
     "types": ["obsidian"]
   },
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../server" }
+  ],
   "include": ["src/**/*.ts"]
 }
