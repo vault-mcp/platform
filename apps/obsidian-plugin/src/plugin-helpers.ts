@@ -200,6 +200,10 @@ export type LocalServerSpawnConfig = {
   cwd: string;
 };
 
+export function localServerSpawnStrategy(config: LocalServerSpawnConfig): "embedded" | "process" {
+  return config.args[0] === "start-local-server.mjs" ? "embedded" : "process";
+}
+
 const DEFAULT_LOCAL_SERVER_PORT = 38791;
 const EXPECTED_LOCAL_SERVICE_NAME = "vault-mcp-connector";
 
@@ -490,10 +494,10 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
     message: enabled
       ? canStart
         ? bundledSidecarReady
-          ? "This build can start the packaged local sidecar with the configured command, port, and local credentials."
+          ? "This build can start the packaged local server inside Obsidian desktop with the configured port and local credentials."
           : "This build can start the Node-required developer local server with the configured project folder, command, port, and local credentials."
         : "This build cannot start the local server until local credentials plus either the packaged sidecar or a developer project folder are configured. Use guided Vercel self-hosting or managed hosting until local setup is ready."
-      : "Future builds will let the plugin start and stop a localhost MCP sidecar while Obsidian is open. This private-alpha build can launch the packaged sidecar when present or the Node-required developer profile.",
+      : "This private-alpha build can start and stop the packaged localhost server inside Obsidian desktop, or use the Node-required developer profile when the package bundle is absent.",
     endpoint,
     canStart,
     facts: localServerStatusFacts([
@@ -505,7 +509,9 @@ export function pluginLocalServerStatus(settings: PluginConfigurationSettings): 
       `Local data folder: ${settings.localServerDataDir?.trim() || "data/local-server"}`,
       `Bundled sidecar: ${settings.localServerSidecarDir?.trim() || "not installed"}`,
       `Developer project folder: ${settings.localServerProjectDir?.trim() || "not configured"}`,
-      `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
+      bundledSidecarReady
+        ? "Runtime: embedded Obsidian desktop server (no external Node command required)"
+        : `Developer command: ${settings.localServerCommand?.trim() || "npm"}`,
       `Local filesystem access: ${settings.localFsAccessMode ?? "off"}`,
       `Local filesystem read roots: ${settings.localFsReadRoots?.length ? settings.localFsReadRoots.join(", ") : "none"}`,
       `Local filesystem write roots: ${settings.localFsWriteRoots?.length ? settings.localFsWriteRoots.join(", ") : "none"}`,

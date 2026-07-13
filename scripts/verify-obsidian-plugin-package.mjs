@@ -168,6 +168,7 @@ function validateReleaseManifest(value, sourceManifest, expected) {
   assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(expectedRuntimeFiles()), "Release manifest runtime files are not the expected Obsidian plus sidecar file set");
   assert(value.package?.sidecar?.bundled === true, "Release manifest must mark the packaged local sidecar as bundled");
   assert(value.package?.sidecar?.entrypoint === "sidecar/start-local-server.mjs", "Release manifest sidecar entrypoint is incorrect");
+  assert(value.package?.sidecar?.embeddedServerBundle === "sidecar/vault-mcp-local-server.cjs", "Release manifest embedded sidecar bundle is incorrect");
 }
 
 function expectedRuntimeFiles() {
@@ -177,6 +178,7 @@ function expectedRuntimeFiles() {
     "styles.css",
     "sidecar/start-local-server.mjs",
     "sidecar/vault-mcp-local-server.mjs",
+    "sidecar/vault-mcp-local-server.cjs",
     "sidecar/sidecar-manifest.json",
   ];
 }

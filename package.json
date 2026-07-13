@@ -58,6 +58,7 @@
     "smoke:oauth-flow": "node scripts/smoke-oauth-flow.mjs",
     "local-server": "npm run build --workspace @vault-mcp/server && node scripts/start-local-server.mjs",
     "smoke:local-server": "npm run build --workspace @vault-mcp/server && npm run build --workspace @vault-mcp/cli && node scripts/smoke-local-server.mjs",
+    "smoke:embedded-sidecar": "npm run build:sidecar && node scripts/smoke-embedded-local-sidecar.mjs",
     "smoke:local-fs": "npm run build --workspace @vault-mcp/server && node scripts/smoke-local-fs.mjs",
     "smoke:hosted-local-bridge": "npm run build --workspace @vault-mcp/server && node scripts/smoke-hosted-local-bridge.mjs",
     "smoke:local-inspector": "npm run build --workspace @vault-mcp/server && node scripts/smoke-local-inspector.mjs",

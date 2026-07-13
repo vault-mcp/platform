@@ -45,7 +45,9 @@ export function loadConfig(env = process.env): ServerConfig {
     throw new Error("MCP_SYNC_TOKEN is required.");
   }
 
-  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+  const repoRoot = env.VAULT_MCP_RUNTIME_ROOT
+    ? path.resolve(env.VAULT_MCP_RUNTIME_ROOT)
+    : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
   const indexFile = env.INDEX_FILE
     ? path.resolve(repoRoot, env.INDEX_FILE)
     : path.join(repoRoot, "data/index.json");

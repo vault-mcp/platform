@@ -25,7 +25,9 @@ import {
   type WriteProposalStatus,
 } from "@vault-mcp/core";
 
-const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public");
+const publicDir = import.meta.url
+  ? path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public")
+  : path.resolve(process.cwd(), "public");
 const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "create_note", "update_frontmatter", "rename_note"]);
 const WRITE_PROPOSAL_STATUSES = new Set<WriteProposalStatus>(["pending", "approved", "rejected", "applied", "conflict", "failed"]);
 const LOCAL_FS_ACCESS_MODES = new Set<LocalFsAccessMode>(["off", "read", "write", "god"]);

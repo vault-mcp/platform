@@ -25,7 +25,7 @@ if (!skipBuild && !dryRun) {
 }
 
 const pluginFiles = ["manifest.json", "main.js", "styles.css"];
-const sidecarFiles = ["sidecar/start-local-server.mjs", "sidecar/vault-mcp-local-server.mjs", "sidecar/sidecar-manifest.json"];
+const sidecarFiles = ["sidecar/start-local-server.mjs", "sidecar/vault-mcp-local-server.mjs", "sidecar/vault-mcp-local-server.cjs", "sidecar/sidecar-manifest.json"];
 const packageFiles = [...pluginFiles, ...sidecarFiles];
 for (const file of pluginFiles) {
   await assertFile(path.join(pluginRoot, file), file);
@@ -73,6 +73,7 @@ if (!dryRun) {
         directory: "sidecar",
         entrypoint: "sidecar/start-local-server.mjs",
         serverBundle: "sidecar/vault-mcp-local-server.mjs",
+        embeddedServerBundle: "sidecar/vault-mcp-local-server.cjs",
         manifest: "sidecar/sidecar-manifest.json",
       },
     },

@@ -53,6 +53,10 @@ const steps = [
     args: ["run", "plugin:package"],
   },
   {
+    name: "smoke:embedded-sidecar",
+    args: ["run", "smoke:embedded-sidecar"],
+  },
+  {
     name: "plugin:verify-package",
     args: ["run", "plugin:verify-package"],
   },

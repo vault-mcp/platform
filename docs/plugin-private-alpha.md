@@ -81,18 +81,19 @@ Another planned path is local desktop server mode. In that mode the user would
 install the plugin, toggle `Run local MCP server`, and let Obsidian start a
 localhost MCP server while the vault is open. This is the likely simplest
 privacy-first setup for desktop MCP clients. In this release, the ZIP package
-includes a bundled Node sidecar under `sidecar/`; the plugin starts it when the
-folder is installed, or falls back to the Node-required developer local server
-profile after the tester configures the platform repo folder and npm command.
+includes an embedded server bundle under `sidecar/`; the plugin starts it in
+Obsidian's desktop Node context without an external Node/npm command, or falls
+back to the Node-required developer local server profile after the tester
+configures the platform repo folder and npm command.
 After spawning the local profile, the plugin waits for `/healthz` and only marks
 the local server ready when the response names `vault-mcp-connector`, matches
 the plugin version, reports healthy storage, and advertises the expected
 localhost MCP endpoint. If the preferred local port is already occupied, start
 will reuse a compatible Vault MCP server on that port or scan upward to the next
 available port before spawning a new sidecar.
-This is still not the final public binary sidecar: non-developer users should
-not need to think about Node once platform-native sidecars exist. Verify the
-profile with `npm run smoke:local-server`. See
+Packaged users do not need to install or configure Node. A signed isolated
+helper process remains a possible later hardening step. Verify the profile with
+`npm run smoke:local-server`. See
 [Local Desktop Server Mode](local-server-mode.md).
 
 Local filesystem access is controlled in the same `Local desktop server`

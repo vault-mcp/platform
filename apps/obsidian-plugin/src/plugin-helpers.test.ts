@@ -15,6 +15,7 @@ import {
   pluginSafetyDisclosure,
   pluginSetupGuide,
   localServerPortCandidates,
+  localServerSpawnStrategy,
   summarizeServerStatus,
   summarizeSyncResponse,
   validateLocalServerCompatibility,
@@ -502,6 +503,15 @@ describe("plugin helpers", () => {
         "use local filesystem",
       ],
     });
+    expect(localServerSpawnStrategy(buildLocalServerSpawnConfig(settings)!)).toBe("embedded");
+  });
+
+  it("keeps the developer repo launcher on the external process strategy", () => {
+    expect(localServerSpawnStrategy({
+      command: "node",
+      cwd: "/Users/example/platform",
+      args: ["scripts/start-local-server.mjs", "--port", "38791"],
+    })).toBe("process");
   });
 
   it("accepts only the expected local server service, version, and endpoint", () => {

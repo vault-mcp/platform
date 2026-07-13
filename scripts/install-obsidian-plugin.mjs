@@ -51,6 +51,7 @@ const files = [
   "styles.css",
   "sidecar/start-local-server.mjs",
   "sidecar/vault-mcp-local-server.mjs",
+  "sidecar/vault-mcp-local-server.cjs",
   "sidecar/sidecar-manifest.json",
 ];
 const copied = [];

@@ -8,6 +8,7 @@ import esbuild from "esbuild";
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const outputDir = path.join(repoRoot, "dist", "local-sidecar");
 const serverBundlePath = path.join(outputDir, "vault-mcp-local-server.mjs");
+const embeddedServerBundlePath = path.join(outputDir, "vault-mcp-local-server.cjs");
 const launcherPath = path.join(outputDir, "start-local-server.mjs");
 const manifestPath = path.join(outputDir, "sidecar-manifest.json");
 
@@ -28,11 +29,24 @@ await esbuild.build({
   logLevel: "silent",
 });
 
+await esbuild.build({
+  entryPoints: [path.join(repoRoot, "apps", "server", "src", "embedded.ts")],
+  bundle: true,
+  platform: "node",
+  format: "cjs",
+  target: "node20",
+  outfile: embeddedServerBundlePath,
+  packages: "bundle",
+  logLevel: "silent",
+});
+
 await writeFile(launcherPath, sidecarLauncherSource(), "utf8");
 
 const serverStat = await assertFile(serverBundlePath, "server bundle");
+const embeddedServerStat = await assertFile(embeddedServerBundlePath, "embedded server bundle");
 const launcherStat = await assertFile(launcherPath, "sidecar launcher");
 const serverSha256 = await sha256File(serverBundlePath);
+const embeddedServerSha256 = await sha256File(embeddedServerBundlePath);
 const launcherSha256 = await sha256File(launcherPath);
 
 await writeFile(manifestPath, `${JSON.stringify({
@@ -41,6 +55,7 @@ await writeFile(manifestPath, `${JSON.stringify({
   node: ">=20",
   entrypoint: "start-local-server.mjs",
   serverBundle: "vault-mcp-local-server.mjs",
+  embeddedServerBundle: "vault-mcp-local-server.cjs",
   files: {
     "start-local-server.mjs": {
       bytes: launcherStat.size,
@@ -49,6 +64,10 @@ await writeFile(manifestPath, `${JSON.stringify({
     "vault-mcp-local-server.mjs": {
       bytes: serverStat.size,
       sha256: serverSha256,
+    },
+    "vault-mcp-local-server.cjs": {
+      bytes: embeddedServerStat.size,
+      sha256: embeddedServerSha256,
     },
   },
 }, null, 2)}\n`, "utf8");
@@ -61,11 +80,13 @@ console.log(JSON.stringify({
   files: {
     launcher: launcherPath,
     serverBundle: serverBundlePath,
+    embeddedServerBundle: embeddedServerBundlePath,
     manifest: manifestPath,
   },
   sha256: {
     launcher: launcherSha256,
     serverBundle: serverSha256,
+    embeddedServerBundle: embeddedServerSha256,
   },
 }, null, 2));
 

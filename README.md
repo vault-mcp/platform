@@ -321,9 +321,10 @@ runtime and platform details.
 For the planned no-cloud desktop path, see
 [docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
 Obsidian plugin start a localhost MCP server while the vault is open. The ZIP
-package now includes a Node-required local sidecar under `sidecar/`; BRAT/dev
-installs without that folder can still configure the platform repo folder and
-npm command as a fallback. The plugin waits for `/healthz` and requires the
+package now includes an embedded local server under `sidecar/`; packaged installs
+run it in Obsidian's desktop Node context without an external Node/npm command.
+BRAT/dev installs without that folder can still configure the platform repo
+folder and Node/npm command as a fallback. The plugin waits for `/healthz` and requires the
 local service name, version, storage status, and MCP endpoint to match before it
 marks the sidecar ready. The configured local port is treated as preferred; the
 plugin can reuse a compatible existing local server or scan upward to the next

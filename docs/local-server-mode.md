@@ -67,13 +67,13 @@ When enabled, the plugin should:
 6. Register/sync the current vault using the same policy preview path as remote
    mode.
 7. Show the local MCP endpoint and copy buttons in the setup guide.
-8. Stop the sidecar when Obsidian unloads, unless the user opts into keeping it
-   alive.
+8. Always stop the embedded packaged server when the plugin unloads. The
+   keep-alive option applies only to the external developer-process fallback.
 
 If startup fails, the UI should show one of a few clear states:
 
-- Node runtime unavailable.
-- Sidecar binary missing or damaged.
+- External Node runtime unavailable for a developer fallback.
+- Embedded server bundle missing or damaged.
 - Port in use.
 - Health check failed.
 - Local token mismatch.
@@ -189,16 +189,17 @@ universal ChatGPT web replacement.
 ## Implementation Slices
 
 Current private-alpha status: Slice 1 is implemented, Slice 2 has a
-Node-required launcher, and the ZIP package includes a bundled Node sidecar
-artifact. The plugin now shows a `Local desktop server`
+Node-required developer launcher, and the ZIP package includes an embedded
+server bundle that runs inside Obsidian desktop without an external Node/npm
+command. The plugin now shows a `Local desktop server`
 settings section, saves the planned local port, keep-alive preference, local
 data folder, and local-only MCP/admin tokens, renders the future localhost MCP
 endpoint, can generate or rotate those local credentials, and can copy a
 developer launch command. It can start and stop the packaged sidecar when the
-installed plugin folder contains `sidecar/start-local-server.mjs`, or fall back
-to the Node-required developer local server profile when the tester configures
-the platform repo folder and npm command. A platform-native binary sidecar is
-still future work. After spawning the local profile, the plugin waits for
+installed plugin folder contains the embedded sidecar bundle, or fall back to
+the Node-required developer local server profile when the tester configures the
+platform repo folder and npm command. A signed, isolated platform-native helper
+remains optional future hardening. After starting the local profile, the plugin waits for
 `/healthz` before showing the server as ready; if health or storage readiness
 fails, it stops the child process and leaves local mode disabled. It also
 requires the health response to identify `vault-mcp-connector`, match the
@@ -332,9 +333,9 @@ can copy local client instructions without embedding any bearer or sync token;
 that prompt is meant for ChatGPT Desktop, Claude Desktop, Codex, MCP Inspector,
 or another local-capable client so it knows to call `local_fs_policy` before
 local file work and to include the exact `user_intent` phrase when required.
-The ZIP package removes the repo-folder requirement by including a bundled Node
-sidecar; BRAT/dev installs without that folder still use the developer repo
-fallback.
+The ZIP package removes the repo-folder and external-Node requirement by
+including an embedded server bundle; BRAT/dev installs without that bundle
+still use the developer repo fallback.
 
 ### Slice 1 - Design And Compatibility
 
@@ -347,16 +348,16 @@ fallback.
 
 - [x] Add a Node-required `scripts/start-local-server.mjs` local server profile
   that wraps the existing server app with localhost defaults.
-- [x] Build a bundled Node sidecar artifact for the ZIP/plugin package.
-- Build a platform-native binary sidecar for macOS, Windows, and Linux, or keep
-  documenting the Node-required private-alpha path.
+- [x] Build a bundled local server artifact for the ZIP/plugin package.
+- Consider a signed platform-native helper for stronger process isolation; it
+  is no longer required merely to remove terminal setup from packaged installs.
 - [x] Reuse existing `/healthz`, `/mcp`, `/admin/vaults/:vaultId/sync`,
   `/admin/vaults`, and write-proposal endpoints in local profile.
 - [x] Use local JSON storage by default, not Postgres.
 
 ### Slice 3 - Plugin Lifecycle
 
-- [x] Start/stop the Node-required developer sidecar from the plugin.
+- [x] Start/stop the packaged embedded server and Node-required developer fallback from the plugin.
 - [x] Auto-select a port.
 - [x] Generate local tokens for the developer launch path.
 - [x] Health-check the sidecar before marking local mode ready.
@@ -367,8 +368,8 @@ fallback.
   tools for policy, listing, reading, and scoped writing.
 - [x] Bundle a Node sidecar in the ZIP package so users do not need a repo
   checkout when the installed package includes the `sidecar` folder.
-- Bundle a platform-specific binary sidecar so non-developer users do not need
-  any Node/npm command.
+- [x] Run the packaged server in Obsidian's desktop Node context so
+  non-developer users do not need any external Node/npm command.
 
 ### Slice 4 - Verification
 
@@ -384,11 +385,7 @@ fallback.
 
 ## Open Questions
 
-- Should the sidecar be bundled as a platform-specific binary, or should private
-  alpha require the user to have Node installed?
 - Should local mode use static local tokens first, then OAuth later?
-- Should the sidecar stop on Obsidian unload by default, or keep running until
-  the user stops it?
 - Where should local server logs live, and how should the plugin expose them
   without leaking note content?
 - Can ChatGPT's target client reach localhost in the user's desired ChatGPT
