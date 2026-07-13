@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ServerConfig } from "./config.js";
-import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth } from "./auth.js";
+import { applyCors, protectedResourceMetadata, requireAllowedOrigin, requireBearerToken, requireUserAuth, userAuthContext } from "./auth.js";
 import { handleStatelessMcpRequest } from "./mcp.js";
 import { attachOAuthStore, registerOAuthRoutes } from "./oauth.js";
 import type { IndexStore } from "./store.js";
@@ -238,7 +238,7 @@ export function createApp(config: ServerConfig, store: IndexStore) {
 
   const handleMcp = async (req: Request, res: Response) => {
     try {
-      await handleStatelessMcpRequest(req, res, store, config);
+      await handleStatelessMcpRequest(req, res, store, config, userAuthContext(req));
     } catch (error) {
       console.error("Error handling MCP request:", error);
       if (!res.headersSent) {

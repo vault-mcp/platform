@@ -17,23 +17,25 @@
 
 - Denylist rules run before allowlist rules.
 - V1 selects only specific technical/reference subfolders under `40 Reference/`; prompt archives, business-development references, client/process archives, and other unselected reference folders are denied by default.
-- V1 is read-only.
+- Hosted reads remain allowlisted and read-only. Private-alpha proposal tools are a separate opt-in surface and never edit the vault directly.
 - `/mcp` and `/notes/:id` require either `MCP_ACCESS_TOKEN` for local development or a valid OAuth JWT in production.
 - `/admin/sync` requires separate `MCP_SYNC_TOKEN`.
 - OAuth protected-resource metadata is exposed for MCP clients.
 - Local server defaults to `127.0.0.1`.
 - Origin validation is enforced for `/mcp`.
 - Note text is explicitly described as untrusted data in server instructions.
-- The self-hosted OAuth flow issues scoped read-only access tokens and persists dynamic clients plus replay protection in production storage.
+- The self-hosted OAuth flow issues scoped access tokens and persists dynamic clients plus replay protection in production storage. Proposal tools require both `MCP_WRITE_PROPOSALS_ENABLED=true` and an authenticated `vault:write` scope; read-only tokens never receive those tools.
 - Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
-- ChatGPT-facing UI metadata and the `ui://vault-mcp/results-v2.html` component only render existing read-only tool results; they do not add a separate data path or vault access path. The component can display search results, note lists, fetched notes, vault lists, vault status, diagnostics, errors, and future proposal-shaped data from already-returned structured content.
+- Existing-note proposals require a fresh indexed content hash, are limited to indexed notes, and are rechecked against the live local file by the Obsidian plugin. Unsafe paths, stale hashes, unsupported frontmatter payloads, and rename collisions visible in the index are refused before storage.
+- ChatGPT-facing UI metadata and the `ui://vault-mcp/results-v2.html` component render tool results; they do not add a separate data path or vault access path. Proposal cards describe pending state and Obsidian-side review rather than presenting a server-side write as complete.
 - `npm run smoke:mcp-ui` verifies the component in a dependency-free fake DOM with delayed tool globals. This is a render-regression gate only; real ChatGPT/MCP client acceptance is still required before public release claims.
 - Dependency audit is a release gate. The current dependency tree removes `gray-matter`/`js-yaml`, pins safe `hono` and `esbuild` versions through npm overrides, and requires `npm audit --audit-level=low` to pass before production deploys.
 
 ## Current Gaps
 
-- Write access is intentionally not implemented yet. Future write tools need a separate threat model, stronger confirmation UX, audit history, and a rollback story before touching the live vault.
-- The current ChatGPT UI pass is read-only and result-display focused. It includes cautious future proposal-shaped cards, but future write-capable UI still needs separate design, confirmation, audit, backup, conflict-resolution, and rollback controls before any write proposal tools are exposed to end users.
+- Proposal-only hosted writes are private-alpha and disabled by default. Real ChatGPT acceptance, reauthorization with `vault:write`, proposal-card UX review, and security-review evidence are still required before enabling them in production.
+- The plugin applies proposals only after local policy/hash checks and creates backup/audit notes, but `direct_apply` remains reserved and automatic proposal polling is not yet implemented.
+- Full arbitrary filesystem access is still local-server-only. Browser-hosted ChatGPT cannot reach `127.0.0.1` without a future outbound desktop bridge or managed relay, so proposal tools cover vault writes but do not claim remote god-mode filesystem access.
 
 ## Release Security Review Evidence
 

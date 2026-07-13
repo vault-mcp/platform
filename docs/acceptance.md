@@ -217,6 +217,28 @@ npm run smoke:oauth-flow
 
 The multi-vault pass creates a temporary `smoke-multivault` vault, verifies unscoped read errors plus scoped search/fetch/status behavior, then deletes the temporary vault.
 
+Private-alpha hosted proposal acceptance is a separate opt-in gate:
+
+1. Set `MCP_WRITE_PROPOSALS_ENABLED=true` and include `vault:write` in
+   `OAUTH_SCOPES`.
+2. Reauthorize the MCP client and confirm its token scope includes
+   `vault:read vault:write`.
+3. Fetch an indexed test note and keep its `metadata.content_hash`.
+4. Call `propose_vault_write` with `append_to_note`, the exact path, that hash,
+   and harmless test content.
+5. Confirm ChatGPT renders a pending proposal card and explicitly says the vault
+   has not changed.
+6. Open the disposable vault in Obsidian, review the proposal diff, approve it,
+   and apply it locally.
+7. Call `list_write_proposals` and confirm the same proposal is `applied` with
+   an audit trail.
+8. Confirm the disposable vault contains the change plus backup/audit notes.
+9. Repeat with a stale hash and confirm the MCP tool refuses to queue it.
+
+Do not run this acceptance against the live personal vault. Return production
+to read-only scopes after the test if proposal writes are not meant to remain
+enabled.
+
 Passing output must include:
 
 - `ok: true`
@@ -260,7 +282,7 @@ npx @modelcontextprotocol/inspector https://vault-mcp.example.com/mcp
 ```
 
 3. Provide an `Authorization: Bearer ...` header.
-4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `list_vaults`, `get_vault_status`, and `debug_search`.
+4. Confirm `tools/list` returns the read-only tool set: `search`, `search_notes`, `search_sections`, `list_notes`, `recent_notes`, `active_projects`, `fetch`, `fetch_note_by_path`, `get_index_status`, `list_vaults`, `get_vault_status`, and `debug_search`. When proposal mode and `vault:write` are intentionally enabled, also expect `propose_vault_write` and `list_write_proposals`.
 5. Call `search` with `Vault MCP Connector`.
 6. Call `list_notes` with scope `20 Projects/Vault MCP Connector/`.
 7. Call `fetch` with the first returned id.

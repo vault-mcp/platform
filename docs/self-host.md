@@ -74,6 +74,7 @@ Required server variables:
 | `OAUTH_JWT_SECRET` | Long random HMAC secret for built-in OAuth access tokens. |
 | `OAUTH_AUTH_PASSWORD` | Human password entered during MCP client authorization. |
 | `OAUTH_SCOPES` | Usually `vault:read`. |
+| `MCP_WRITE_PROPOSALS_ENABLED` | Optional private-alpha gate. Set `true` only when clients should be able to queue Obsidian-reviewed changes. |
 
 Recommended origin list for common clients:
 
@@ -83,6 +84,11 @@ ALLOWED_ORIGINS="https://chatgpt.com,https://chat.openai.com,https://claude.ai,h
 
 `MCP_ACCESS_TOKEN` is only for temporary local or Inspector testing. Do not use
 it as the final production authentication model.
+
+To enable proposal-only writes, set
+`MCP_WRITE_PROPOSALS_ENABLED=true` and change `OAUTH_SCOPES` to
+`vault:read vault:write`. Existing clients must reauthorize. The hosted server
+still does not write the vault directly.
 
 ## Step 1 - Verify The Local Build
 

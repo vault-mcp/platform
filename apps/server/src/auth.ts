@@ -1,3 +1,4 @@
+import type { JWTPayload } from "jose";
 import type { NextFunction, Request, Response } from "express";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { ServerConfig } from "./config.js";
@@ -9,6 +10,16 @@ const CORS_HEADERS = [
   "MCP-Protocol-Version",
   "Mcp-Session-Id",
 ];
+
+export type UserAuthContext = {
+  method: "static" | "oauth";
+  subject: string;
+  scopes: string[];
+};
+
+type AuthenticatedRequest = Request & {
+  vaultMcpAuth?: UserAuthContext;
+};
 
 export function requireBearerToken(expectedToken: string) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -29,13 +40,23 @@ export function requireUserAuth(config: ServerConfig) {
     const token = bearerToken(req);
 
     if (token && config.accessToken && token === config.accessToken) {
+      setUserAuthContext(req, {
+        method: "static",
+        subject: "static-access-token",
+        scopes: ["vault:read", "vault:write"],
+      });
       next();
       return;
     }
 
     if (token && config.oauth) {
       try {
-        await verifyOAuthToken(token, config);
+        const payload = await verifyOAuthToken(token, config);
+        setUserAuthContext(req, {
+          method: "oauth",
+          subject: typeof payload.sub === "string" && payload.sub ? payload.sub : "oauth-user",
+          scopes: scopeValues(payload.scope),
+        });
         next();
         return;
       } catch {
@@ -46,6 +67,10 @@ export function requireUserAuth(config: ServerConfig) {
 
     unauthorized(res, config);
   };
+}
+
+export function userAuthContext(req: Request): UserAuthContext | null {
+  return (req as AuthenticatedRequest).vaultMcpAuth ?? null;
 }
 
 export function protectedResourceMetadata(config: ServerConfig) {
@@ -123,24 +148,35 @@ function appendVary(current: string | string[] | undefined, value: string): stri
     : `${existing}, ${value}`;
 }
 
-async function verifyOAuthToken(token: string, config: ServerConfig): Promise<void> {
+async function verifyOAuthToken(token: string, config: ServerConfig): Promise<JWTPayload> {
   const oauth = config.oauth;
   if (!oauth) {
     throw new Error("OAuth is not configured.");
   }
 
   if (oauth.jwtSecret) {
-    await jwtVerify(token, new TextEncoder().encode(oauth.jwtSecret), {
+    const verified = await jwtVerify(token, new TextEncoder().encode(oauth.jwtSecret), {
       issuer: oauth.issuer,
       audience: oauth.audience,
     });
-    return;
+    return verified.payload;
   }
 
-  await jwtVerify(token, createRemoteJWKSet(new URL(oauth.jwksUrl ?? "")), {
+  const verified = await jwtVerify(token, createRemoteJWKSet(new URL(oauth.jwksUrl ?? "")), {
     issuer: oauth.issuer,
     audience: oauth.audience,
   });
+  return verified.payload;
+}
+
+function setUserAuthContext(req: Request, context: UserAuthContext): void {
+  (req as AuthenticatedRequest).vaultMcpAuth = context;
+}
+
+function scopeValues(scope: unknown): string[] {
+  return typeof scope === "string"
+    ? [...new Set(scope.split(/\s+/).map((value) => value.trim()).filter(Boolean))]
+    : [];
 }
 
 function unauthorized(res: Response, config: ServerConfig, error?: string): void {

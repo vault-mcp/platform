@@ -183,11 +183,15 @@ function runErrorAndProposalCases() {
         toolResponseMetadata: {
           "vault-mcp/structuredContent": {
             write_proposals: [{
+              id: "proposal-1",
               operation: "append_to_note",
               target_path: "20 Projects/Vault MCP Connector/Project Home.md",
+              base_content_hash: "abc123def4567890",
+              proposed_content: "\n- Review this proposed project update.",
               requester: "chatgpt",
               status: "pending",
             }],
+            next_action: "Review and apply this proposal in Obsidian.",
           },
         },
       },
@@ -196,7 +200,10 @@ function runErrorAndProposalCases() {
   const proposalText = proposalEnv.text();
   assert(proposalText.includes("1 write proposal"), "expected proposal count");
   assert(proposalText.includes("requires Obsidian-side review"), "expected proposal safety chip");
-  verified.push("error and future write-proposal cards render from metadata fallbacks");
+  assert(proposalText.includes("proposal id: proposal-1"), "expected proposal id");
+  assert(proposalText.includes("Review this proposed project update"), "expected proposed content preview");
+  assert(proposalText.includes("Review and apply this proposal in Obsidian"), "expected proposal next action");
+  verified.push("error and write-proposal cards render from metadata fallbacks");
 }
 
 function executeComponent(env) {

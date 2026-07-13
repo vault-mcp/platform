@@ -33,8 +33,8 @@ const staticRuntimeEnv = [
   "MCP_ACCESS_TOKEN",
 ];
 const optionalRuntimeEnv = authMode === "oauth"
-  ? ["MCP_ACCESS_TOKEN", "OAUTH_JWKS_URL", "OAUTH_JWT_SECRET", "OAUTH_AUTH_PASSWORD"]
-  : [];
+  ? ["MCP_ACCESS_TOKEN", "MCP_WRITE_PROPOSALS_ENABLED", "OAUTH_JWKS_URL", "OAUTH_JWT_SECRET", "OAUTH_AUTH_PASSWORD"]
+  : ["MCP_WRITE_PROPOSALS_ENABLED"];
 const requiredRuntimeEnv = [
   ...sharedRuntimeEnv,
   ...(authMode === "oauth" ? oauthRuntimeEnv : staticRuntimeEnv),

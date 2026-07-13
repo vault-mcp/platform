@@ -263,6 +263,106 @@ describe("server MCP contract", () => {
     expect(healthAfterDelete.document_count).toBe(0);
   });
 
+  it("queues scope-gated MCP write proposals without editing the vault index", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, { writeProposalsEnabled: true });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+    const targetPath = "20 Projects/Vault MCP Connector/Project Home.md";
+
+    expect(await syncStatus(baseUrl, config.syncToken, [fixtureDocument()])).toBe(200);
+
+    const tools = await mcp(baseUrl, accessToken, 70, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "propose_vault_write",
+      "list_write_proposals",
+    ]);
+    const proposeTool = tools.result.tools?.find((tool) => tool.name === "propose_vault_write");
+    expect(proposeTool?.annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+    });
+
+    const missingHash = await mcp(baseUrl, accessToken, 71, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "append_to_note",
+        target_path: targetPath,
+        proposed_content: "\n- Missing hash should be refused.",
+      },
+    });
+    expect(missingHash.result.isError).toBe(true);
+    expect(missingHash.result.structuredContent.error.code).toBe("WRITE_PROPOSAL_DENIED");
+    expect(missingHash.result.structuredContent.error.message).toContain("requires base_content_hash");
+
+    const staleHash = await mcp(baseUrl, accessToken, 72, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "replace_note",
+        target_path: targetPath,
+        base_content_hash: "stale-hash",
+        proposed_content: "# Stale replacement",
+      },
+    });
+    expect(staleHash.result.isError).toBe(true);
+    expect(staleHash.result.structuredContent.error.message).toContain("stale or does not match");
+
+    const traversal = await mcp(baseUrl, accessToken, 73, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "create_note",
+        target_path: "../outside.md",
+        proposed_content: "# Outside",
+      },
+    });
+    expect(traversal.result.isError).toBe(true);
+    expect(traversal.result.structuredContent.error.message).toContain("vault-relative Markdown path");
+
+    const proposed = await mcp(baseUrl, accessToken, 74, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "append_to_note",
+        target_path: targetPath,
+        base_content_hash: "hash",
+        proposed_content: "\n- Proposed safely from MCP.",
+        rationale: "User asked to add the next project action.",
+      },
+    });
+    expect(proposed.result.isError).not.toBe(true);
+    expect(proposed.result.structuredContent.write_proposals).toHaveLength(1);
+    expect(proposed.result.structuredContent.write_proposals[0]).toMatchObject({
+      vault_id: "default",
+      operation: "append_to_note",
+      target_path: targetPath,
+      base_content_hash: "hash",
+      requester: "mcp:static-access-token",
+      status: "pending",
+    });
+    expect(proposed.result.content?.[0].text).toContain("The vault has not been changed");
+
+    const listed = await mcp(baseUrl, accessToken, 75, "tools/call", {
+      name: "list_write_proposals",
+      arguments: { status: "pending" },
+    });
+    expect(listed.result.structuredContent.write_proposals).toHaveLength(1);
+    expect(listed.result.content?.[0].text).toContain("Pending or approved proposals still require Obsidian-side");
+
+    const fetched = await mcp(baseUrl, accessToken, 76, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: targetPath },
+    });
+    expect(fetched.result.structuredContent.text).not.toContain("Proposed safely from MCP");
+
+    const adminProposals = await fetch(`${baseUrl}/admin/vaults/default/write-proposals`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(adminProposals.status).toBe(200);
+    expect((await adminProposals.json() as { proposals: unknown[] }).proposals).toHaveLength(1);
+  });
+
   it("supports authenticated GET /mcp as a Streamable HTTP SSE stream", async () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile);
@@ -1205,6 +1305,7 @@ describe("server MCP contract", () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile, {
       accessToken: null,
+      writeProposalsEnabled: true,
       oauth: {
         issuer: "https://auth.example.test",
         audience: "https://vault.example.test/mcp",
@@ -1212,7 +1313,7 @@ describe("server MCP contract", () => {
         jwksUrl: null,
         jwtSecret: "test-oauth-secret",
         authPassword: null,
-        scopes: ["vault:read"],
+        scopes: ["vault:read", "vault:write"],
       },
     });
     const server = await listen(createApp(config, store));
@@ -1225,7 +1326,7 @@ describe("server MCP contract", () => {
     };
     expect(metadata.resource).toBe(config.mcpResourceUrl);
     expect(metadata.authorization_servers).toEqual(["https://auth.example.test"]);
-    expect(metadata.scopes_supported).toEqual(["vault:read"]);
+    expect(metadata.scopes_supported).toEqual(["vault:read", "vault:write"]);
 
     const jwt = await new SignJWT({ sub: "user-1", scope: "vault:read" })
       .setProtectedHeader({ alg: "HS256" })
@@ -1236,6 +1337,19 @@ describe("server MCP contract", () => {
 
     const tools = await mcp(baseUrl, jwt, 1, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
+
+    const writeJwt = await new SignJWT({ sub: "user-1", scope: "vault:read vault:write" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuer("https://auth.example.test")
+      .setAudience("https://vault.example.test/mcp")
+      .setExpirationTime("5m")
+      .sign(new TextEncoder().encode("test-oauth-secret"));
+    const writeTools = await mcp(baseUrl, writeJwt, 2, "tools/list", {});
+    expect(writeTools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "propose_vault_write",
+      "list_write_proposals",
+    ]);
   });
 
   it("supports self-hosted OAuth dynamic registration, PKCE code exchange, and refresh", async () => {
@@ -1405,6 +1519,7 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
     syncToken: "test-sync",
     allowedOrigins: ["http://127.0.0.1", "http://localhost"],
     oauth: null,
+    writeProposalsEnabled: false,
     localFs: {
       mode: "off",
       read_roots: [],
@@ -1465,7 +1580,16 @@ async function syncVault(
 
 type JsonRpcTestResponse = {
   result: {
-    tools?: Array<{ name: string; _meta?: Record<string, unknown> }>;
+    tools?: Array<{
+      name: string;
+      _meta?: Record<string, unknown>;
+      annotations?: {
+        readOnlyHint?: boolean;
+        destructiveHint?: boolean;
+        idempotentHint?: boolean;
+        openWorldHint?: boolean;
+      };
+    }>;
     structuredContent?: any;
     _meta?: Record<string, unknown>;
     content?: Array<{ type: string; text?: string }>;

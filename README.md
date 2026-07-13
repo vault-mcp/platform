@@ -1,12 +1,13 @@
 # Vault MCP Connector
 
 Private MCP connector for selected Obsidian vault context. Hosted deployments
-serve a derived read-only index; the localhost developer profile can optionally
-enable plugin-controlled local filesystem tools.
+serve a derived index and can optionally queue proposal-only vault changes for
+Obsidian-side review; the localhost developer profile can additionally enable
+plugin-controlled local filesystem tools.
 
 ## MCP Tools
 
-The server currently exposes these read-only MCP tools:
+The server always exposes these read-only MCP tools:
 
 - `search` - compatibility search; defaults to section-level results.
 - `search_notes` - search and return one result per indexed note.
@@ -21,8 +22,20 @@ The server currently exposes these read-only MCP tools:
 - `get_vault_status` - return sync, policy, and document-count status for one vault.
 - `debug_search` - explain query normalization and why a search may return few or no results.
 
-Hosted tools are read-only. Denied or non-indexed paths remain unavailable even
-if a client guesses an id or exact path.
+Hosted proposal tools are disabled by default. When the server owner sets
+`MCP_WRITE_PROPOSALS_ENABLED=true` and the authenticated OAuth token includes
+`vault:write`, the server also exposes:
+
+- `propose_vault_write` - queue a create, append, replace, frontmatter, or rename proposal for Obsidian-side review.
+- `list_write_proposals` - inspect proposal status and audit history.
+
+`propose_vault_write` never edits a vault directly. Existing-note operations
+require the current `metadata.content_hash` from `fetch` or
+`fetch_note_by_path`; stale hashes, non-indexed existing notes, unsafe paths,
+and invalid operation payloads are refused before a proposal is stored. The
+Obsidian plugin still performs its own live-file hash check, diff review,
+backup, audit, approval, and local apply. Denied or non-indexed paths remain
+unavailable for hosted reads even if a client guesses an id or exact path.
 
 The local desktop/developer server can additionally expose `local_fs_policy`,
 `local_fs_audit`, `local_list_files`, `local_read_file`,
@@ -177,7 +190,7 @@ npm run smoke:oauth-local
 `smoke:mcp-ui` is dependency-free and does not contact ChatGPT. It executes the
 MCP Apps output template with a tiny fake DOM, then verifies delayed
 `openai:set_globals`, retry rendering, note Markdown, status cards, error cards,
-and future proposal-shaped cards.
+and proposal cards.
 
 For a deployed endpoint:
 
@@ -239,6 +252,18 @@ OAUTH_AUTHORIZATION_SERVER=https://auth.example.com
 OAUTH_JWKS_URL=https://auth.example.com/.well-known/jwks.json
 OAUTH_SCOPES=vault:read
 ```
+
+Private-alpha proposal writes require both gates:
+
+```bash
+MCP_WRITE_PROPOSALS_ENABLED=true
+OAUTH_SCOPES="vault:read vault:write"
+```
+
+Existing OAuth clients must reauthorize before their token can carry the new
+scope. Leaving either gate off keeps the hosted MCP surface read-only. Static
+owner tokens receive the proposal tools only when
+`MCP_WRITE_PROPOSALS_ENABLED=true`.
 
 Unauthenticated MCP requests return `401` with a `WWW-Authenticate` header pointing to protected-resource metadata.
 

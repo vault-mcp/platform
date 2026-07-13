@@ -681,6 +681,14 @@ Exclusions still win. If a note lives under an excluded prefix, approving it man
 
 Use `Review write proposals` from the dashboard to fetch proposals for the configured vault.
 
+Private-alpha hosted MCP clients can create these proposals when the server
+owner enables `MCP_WRITE_PROPOSALS_ENABLED=true` and authorizes the client with
+`vault:write`. In ChatGPT, `propose_vault_write` only queues the request; it
+does not claim that the note changed. For an existing note, fetch it first and
+pass its current `metadata.content_hash`. Then return to Obsidian to inspect the
+diff, approve, and apply. `list_write_proposals` can report whether the proposal
+is pending, approved, applied, rejected, conflicted, or failed.
+
 The proposal view shows:
 
 - operation type

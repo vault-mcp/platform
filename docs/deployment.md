@@ -26,6 +26,19 @@ OAUTH_SCOPES=vault:read
 
 `MCP_ACCESS_TOKEN` is for local development and one-off MCP Inspector testing. Production should prefer OAuth JWT validation through `OAUTH_*` variables.
 
+Hosted write proposals are private-alpha and off by default. To expose only the
+proposal queue tools, add:
+
+```bash
+MCP_WRITE_PROPOSALS_ENABLED=true
+OAUTH_SCOPES="vault:read vault:write"
+```
+
+Both gates are required for OAuth clients. Reauthorize existing ChatGPT/Claude
+connections after changing scopes. The server still cannot edit local files;
+the Obsidian plugin reviews and applies each proposal after live hash, backup,
+and audit checks.
+
 For a self-hosted OAuth flow on the connector itself, set the OAuth issuer and authorization server to the public service URL and use an HMAC signing secret plus a private authorization password:
 
 ```bash
@@ -64,6 +77,8 @@ vercel env add OAUTH_AUDIENCE production
 vercel env add OAUTH_AUTHORIZATION_SERVER production
 vercel env add OAUTH_JWKS_URL production
 vercel env add OAUTH_SCOPES production
+# Optional private-alpha proposal queue:
+vercel env add MCP_WRITE_PROPOSALS_ENABLED production
 vercel --prod
 ```
 

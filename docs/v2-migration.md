@@ -48,7 +48,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
   - `get_vault_status`
 - Extended existing read tools with optional `vault_id` where applicable.
 - Enforced multi-vault read disambiguation: when more than one vault has synced, search/list/fetch/status/debug tools require `vault_id` instead of reading across vaults by default.
-- Kept write behavior as proposals only; no MCP tool directly edits an Obsidian vault.
+- Added opt-in hosted MCP proposal tools: `propose_vault_write` queues a validated pending change and `list_write_proposals` reports proposal state. They are disabled unless `MCP_WRITE_PROPOSALS_ENABLED=true`; OAuth clients also need `vault:write` scope. No hosted MCP tool directly edits an Obsidian vault.
 - Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.
 
 ## Write Model
@@ -56,6 +56,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 Write support starts as a proposal queue:
 
 - The server stores `write_proposals` with operation type, target path, base content hash, proposed patch/content, requester, status, timestamps, and audit trail.
+- Existing-note MCP proposals require the current indexed content hash and an indexed target; the Obsidian plugin still compares that hash against the live file before approval/apply.
 - The Obsidian plugin can pull proposals, analyze local target state, and mark pending proposals approved, rejected, or conflict.
 - The Obsidian plugin can apply approved create/append/replace/frontmatter/rename proposals locally only after policy and hash checks allow it.
 - `update_frontmatter` proposals store a JSON object in `proposed_content`; null values delete keys.

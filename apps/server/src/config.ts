@@ -15,6 +15,7 @@ export type ServerConfig = {
   allowedOrigins: string[];
   oauth: OAuthResourceConfig | null;
   localFs: LocalFsPolicy;
+  writeProposalsEnabled: boolean;
 };
 
 export type OAuthResourceConfig = {
@@ -66,6 +67,7 @@ export function loadConfig(env = process.env): ServerConfig {
     ]),
     oauth,
     localFs: loadLocalFsPolicy(env),
+    writeProposalsEnabled: normalizeBoolean(env.MCP_WRITE_PROPOSALS_ENABLED, false, "MCP_WRITE_PROPOSALS_ENABLED"),
   };
 }
 
@@ -84,7 +86,7 @@ function loadLocalFsPolicy(env: NodeJS.ProcessEnv): LocalFsPolicy {
     max_search_results: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_RESULTS, 100),
     max_search_files: normalizePositiveInteger(env.LOCAL_FS_MAX_SEARCH_FILES, 2000),
     expires_at: normalizeOptionalIsoDate(env.LOCAL_FS_ACCESS_EXPIRES_AT, "LOCAL_FS_ACCESS_EXPIRES_AT"),
-    require_user_intent: normalizeBoolean(env.LOCAL_FS_REQUIRE_USER_INTENT, mode !== "off"),
+    require_user_intent: normalizeBoolean(env.LOCAL_FS_REQUIRE_USER_INTENT, mode !== "off", "LOCAL_FS_REQUIRE_USER_INTENT"),
     user_intent_phrase: normalizeIntentPhrase(env.LOCAL_FS_USER_INTENT_PHRASE),
   };
 }
@@ -160,7 +162,7 @@ function normalizeOptionalIsoDate(value: string | undefined, name: string): stri
   return new Date(time).toISOString();
 }
 
-function normalizeBoolean(value: string | undefined, fallback: boolean): boolean {
+function normalizeBoolean(value: string | undefined, fallback: boolean, name: string): boolean {
   if (value === undefined || value.trim() === "") {
     return fallback;
   }
@@ -171,7 +173,7 @@ function normalizeBoolean(value: string | undefined, fallback: boolean): boolean
   if (["0", "false", "no", "off"].includes(normalized)) {
     return false;
   }
-  throw new Error("LOCAL_FS_REQUIRE_USER_INTENT must be true or false.");
+  throw new Error(`${name} must be true or false.`);
 }
 
 function normalizeIntentPhrase(value: string | undefined): string {
