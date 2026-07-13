@@ -652,7 +652,7 @@ function registerWriteProposalTools(server: McpServer, store: IndexStore, auth: 
     _meta: chatGptToolMeta("Creating write proposal"),
   }, async ({ vault_id, operation, target_path, base_content_hash, proposed_content, rationale }) => {
     const vault = await resolveWriteProposalVault(store, vault_id);
-    if (!vault.ok) {
+    if (vault.ok === false) {
       return writeProposalDeniedResult(vault.message);
     }
 
@@ -663,7 +663,7 @@ function registerWriteProposalTools(server: McpServer, store: IndexStore, auth: 
       baseContentHash: base_content_hash ?? null,
       proposedContent: proposed_content,
     });
-    if (!validation.ok) {
+    if (validation.ok === false) {
       return writeProposalDeniedResult(validation.message);
     }
 
@@ -712,7 +712,7 @@ function registerWriteProposalTools(server: McpServer, store: IndexStore, auth: 
     _meta: chatGptToolMeta("Listing write proposals"),
   }, async ({ vault_id, status, limit }) => {
     const vault = await resolveWriteProposalVault(store, vault_id);
-    if (!vault.ok) {
+    if (vault.ok === false) {
       return writeProposalDeniedResult(vault.message);
     }
     const proposals = (await store.listWriteProposals(vault.vaultId))
@@ -739,7 +739,7 @@ function registerRemoteLocalFsTools(server: McpServer, store: IndexStore, config
     _meta: chatGptToolMeta("Checking desktop bridge"),
   }, async ({ vault_id }) => {
     const vault = await resolveWriteProposalVault(store, vault_id);
-    if (!vault.ok) {
+    if (vault.ok === false) {
       return remoteLocalFsDeniedResult(vault.message);
     }
     if (!vault.installationId) {
@@ -779,7 +779,7 @@ function registerRemoteLocalFsTools(server: McpServer, store: IndexStore, config
     _meta: chatGptToolMeta("Running desktop tool"),
   }, async ({ vault_id, tool_name, arguments: toolArguments, user_intent, wait_seconds }) => {
     const vault = await resolveWriteProposalVault(store, vault_id);
-    if (!vault.ok) {
+    if (vault.ok === false) {
       return remoteLocalFsDeniedResult(vault.message);
     }
     if (!vault.installationId) {
@@ -937,7 +937,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Reading local filesystem audit"),
   }, async ({ limit, operation, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const structuredContent = await readLocalFsAudit(auditFile, limit ?? 25, operation);
@@ -971,11 +971,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Listing local files"),
   }, async ({ path: requestedPath, limit, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, requestedPath ?? ".");
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     const requestedLimit = limit ?? 50;
@@ -1025,11 +1025,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Reading local file"),
   }, async ({ path: requestedPath, max_bytes, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, requestedPath);
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     try {
@@ -1075,7 +1075,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Reading local files"),
   }, async ({ paths, max_bytes_per_file, max_total_bytes, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     try {
@@ -1088,7 +1088,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
 
       for (const requestedPath of uniquePaths) {
         const check = await checkLocalFsRead(policy, requestedPath);
-        if (!check.ok) {
+        if (check.ok === false) {
           return localFsDeniedResult(check.message);
         }
         const stat = await fs.stat(check.path);
@@ -1139,11 +1139,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Reading local file bytes"),
   }, async ({ path: requestedPath, max_bytes, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, requestedPath);
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     try {
@@ -1188,11 +1188,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Inspecting local file metadata"),
   }, async ({ path: requestedPath, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, requestedPath);
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     try {
@@ -1230,11 +1230,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Finding local files"),
   }, async ({ root, query, extensions, include_directories, max_depth, limit, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, root ?? ".");
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     try {
@@ -1284,11 +1284,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
     _meta: chatGptToolMeta("Searching local text"),
   }, async ({ query, root, extensions, max_depth, limit, user_intent }) => {
     const intent = checkLocalFsUserIntent(policy, user_intent);
-    if (!intent.ok) {
+    if (intent.ok === false) {
       return localFsDeniedResult(intent.message);
     }
     const check = await checkLocalFsRead(policy, root ?? ".");
-    if (!check.ok) {
+    if (check.ok === false) {
       return localFsDeniedResult(check.message);
     }
     try {
@@ -1334,11 +1334,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Writing local file"),
     }, async ({ path: requestedPath, content, mode, create_dirs, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const check = await checkLocalFsWrite(policy, requestedPath);
-      if (!check.ok) {
+      if (check.ok === false) {
         return localFsDeniedResult(check.message);
       }
       try {
@@ -1388,11 +1388,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Writing local file bytes"),
     }, async ({ path: requestedPath, content_base64, mode, create_dirs, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const check = await checkLocalFsWrite(policy, requestedPath);
-      if (!check.ok) {
+      if (check.ok === false) {
         return localFsDeniedResult(check.message);
       }
       try {
@@ -1445,11 +1445,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Editing local file"),
     }, async ({ path: requestedPath, old_text, new_text, expected_replacements, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const check = await checkLocalFsWrite(policy, requestedPath);
-      if (!check.ok) {
+      if (check.ok === false) {
         return localFsDeniedResult(check.message);
       }
       try {
@@ -1503,11 +1503,11 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Creating local directory"),
     }, async ({ path: requestedPath, recursive, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const check = await checkLocalFsWrite(policy, requestedPath);
-      if (!check.ok) {
+      if (check.ok === false) {
         return localFsDeniedResult(check.message);
       }
       try {
@@ -1552,15 +1552,15 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Copying local path"),
     }, async ({ source_path, destination_path, recursive, overwrite, create_dirs, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const source = await checkLocalFsRead(policy, source_path);
-      if (!source.ok) {
+      if (source.ok === false) {
         return localFsDeniedResult(source.message);
       }
       const destination = await checkLocalFsWrite(policy, destination_path);
-      if (!destination.ok) {
+      if (destination.ok === false) {
         return localFsDeniedResult(destination.message);
       }
       try {
@@ -1624,15 +1624,15 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Moving local path"),
     }, async ({ source_path, destination_path, overwrite, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const source = await checkLocalFsWrite(policy, source_path);
-      if (!source.ok) {
+      if (source.ok === false) {
         return localFsDeniedResult(source.message);
       }
       const destination = await checkLocalFsWrite(policy, destination_path);
-      if (!destination.ok) {
+      if (destination.ok === false) {
         return localFsDeniedResult(destination.message);
       }
       try {
@@ -1682,7 +1682,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
       _meta: chatGptToolMeta("Deleting local path"),
     }, async ({ path: requestedPath, recursive, confirm, user_intent }) => {
       const intent = checkLocalFsUserIntent(policy, user_intent);
-      if (!intent.ok) {
+      if (intent.ok === false) {
         return localFsDeniedResult(intent.message);
       }
       const expectedConfirm = recursive ? "delete recursively" : "delete";
@@ -1690,7 +1690,7 @@ function registerLocalFsTools(server: McpServer, policy: LocalFsPolicy, auditFil
         return localFsDeniedResult(`Deletion requires confirm="${expectedConfirm}".`);
       }
       const check = await checkLocalFsWrite(policy, requestedPath);
-      if (!check.ok) {
+      if (check.ok === false) {
         return localFsDeniedResult(check.message);
       }
       try {
@@ -2147,7 +2147,7 @@ async function checkLocalFsRead(policy: LocalFsPolicy, requestedPath: string): P
     return { ok: false, message: `Local path is outside the configured read roots: ${resolved}` };
   }
   const realRootCheck = await isRealPathWithinConfiguredRoots(resolved, policy.read_roots);
-  if (!realRootCheck.ok) {
+  if (realRootCheck.ok === false) {
     return { ok: false, message: realRootCheck.message ?? `Local path real target is outside the configured read roots: ${resolved}` };
   }
   return { ok: true, path: resolved };
@@ -2172,7 +2172,7 @@ async function checkLocalFsWrite(policy: LocalFsPolicy, requestedPath: string): 
     return { ok: false, message: `Local path is outside the configured write roots: ${resolved}` };
   }
   const realRootCheck = await isRealWritePathWithinConfiguredRoots(resolved, roots);
-  if (!realRootCheck.ok) {
+  if (realRootCheck.ok === false) {
     return { ok: false, message: realRootCheck.message ?? `Local path real target is outside the configured write roots: ${resolved}` };
   }
   return { ok: true, path: resolved };
