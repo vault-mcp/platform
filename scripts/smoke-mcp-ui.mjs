@@ -206,6 +206,84 @@ function runErrorAndProposalCases() {
   verified.push("error and write-proposal cards render from metadata fallbacks");
 }
 
+function runDesktopBridgeCases() {
+  const statusEnv = createComponentEnvironment();
+  executeComponent(statusEnv);
+  statusEnv.window.dispatchEvent({
+    type: "openai:set_globals",
+    detail: {
+      globals: {
+        toolOutput: {
+          connected: true,
+          fresh: true,
+          message: "Desktop agent is online in god mode.",
+          agent: {
+            installation_id: "obsidian-test",
+            last_seen_at: "2026-07-13T12:00:00.000Z",
+            policy: {
+              mode: "god",
+              read_roots: [],
+              write_roots: ["/"],
+              expires_at: "2026-07-13T14:00:00.000Z",
+              require_user_intent: true,
+            },
+            tools: [{
+              name: "local_read_file",
+              description: "Read one explicitly allowed local file on demand.",
+              read_only: true,
+              destructive: false,
+            }, {
+              name: "local_write_file",
+              description: "Write one local file.",
+              read_only: false,
+              destructive: true,
+            }],
+          },
+        },
+      },
+    },
+  });
+  const statusText = statusEnv.text();
+  assert(statusText.includes("Desktop filesystem bridge"), "expected desktop bridge title");
+  assert(statusText.includes("mode: god"), "expected god-mode status chip");
+  assert(statusText.includes("full filesystem access"), "expected full-access warning chip");
+  assert(statusText.includes("Active tools2"), "expected active local tool count");
+  assert(statusText.includes("local_read_file"), "expected local tool catalog");
+
+  const resultEnv = createComponentEnvironment();
+  executeComponent(resultEnv);
+  resultEnv.window.dispatchEvent({
+    type: "openai:set_globals",
+    detail: {
+      globals: {
+        toolOutput: {
+          request: {
+            id: "desktop-request-1",
+            vault_id: "default",
+            tool_name: "local_read_file",
+            status: "completed",
+          },
+          local_result: {
+            result: {
+              structuredContent: {
+                path: "/tmp/explicit-note.md",
+                text: "# Explicit desktop result\n\nRendered cleanly.",
+              },
+            },
+          },
+          next_action: "Use this result only for the current chat request.",
+        },
+      },
+    },
+  });
+  const resultText = resultEnv.text();
+  assert(resultText.includes("local_read_file"), "expected desktop request tool name");
+  assert(resultText.includes("status: completed"), "expected desktop request status");
+  assert(resultText.includes("/tmp/explicit-note.md"), "expected desktop result path");
+  assert(resultText.includes("Explicit desktop result"), "expected readable desktop result content");
+  verified.push("desktop bridge status, god-mode warning, tool catalog, and local results render as cards");
+}
+
 function executeComponent(env) {
   vm.runInNewContext(script, env.context, {
     filename: "vault-mcp-results-v2.component.js",
@@ -409,6 +487,7 @@ runRetryCase();
 runFetchedNoteCase();
 runStatusCase();
 runErrorAndProposalCases();
+runDesktopBridgeCases();
 
 console.log(JSON.stringify({
   ok: true,

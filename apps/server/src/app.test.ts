@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { ServerConfig } from "./config.js";
 import { createApp } from "./app.js";
 import { JsonIndexStore } from "./store.js";
-import type { VaultDocument } from "@vault-mcp/core";
+import type { LocalAccessRequest, VaultDocument } from "@vault-mcp/core";
 
 const servers: http.Server[] = [];
 const expectedTools = [
@@ -361,6 +361,186 @@ describe("server MCP contract", () => {
     });
     expect(adminProposals.status).toBe(200);
     expect((await adminProposals.json() as { proposals: unknown[] }).proposals).toHaveLength(1);
+  });
+
+  it("delegates one short-lived desktop tool call to the matching Obsidian installation", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, {
+      remoteLocalFsEnabled: true,
+      remoteLocalFsRequestTtlSeconds: 10,
+      remoteLocalFsWaitSeconds: 5,
+      remoteLocalFsAgentFreshSeconds: 60,
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    expect(await syncStatus(baseUrl, config.syncToken, [fixtureDocument()])).toBe(200);
+    const policy = {
+      mode: "write",
+      read_roots: ["/tmp/read"],
+      write_roots: ["/tmp/write"],
+      write_operations: ["write_file", "edit_file"],
+      max_read_bytes: 1024,
+      max_search_results: 20,
+      max_search_files: 200,
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
+    };
+    const heartbeat = await fetch(`${baseUrl}/admin/vaults/default/local-agent/heartbeat`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        installation_id: "local",
+        agent_version: "test-agent",
+        policy,
+        tools: [{
+          name: "local_read_file",
+          description: "Read one local file.",
+          input_schema: { type: "object", properties: { path: { type: "string" } } },
+          read_only: true,
+          destructive: false,
+        }],
+      }),
+    });
+    expect(heartbeat.status).toBe(200);
+
+    const tools = await mcp(baseUrl, accessToken, 170, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "desktop_local_fs_status",
+      "desktop_run_local_tool",
+      "desktop_local_request_status",
+    ]);
+
+    const status = await mcp(baseUrl, accessToken, 171, "tools/call", {
+      name: "desktop_local_fs_status",
+      arguments: {},
+    });
+    expect(status.result.structuredContent).toMatchObject({
+      connected: true,
+      fresh: true,
+      agent: {
+        installation_id: "local",
+        policy: { mode: "write" },
+        tools: [{ name: "local_read_file", read_only: true }],
+      },
+    });
+
+    const deniedIntent = await mcp(baseUrl, accessToken, 172, "tools/call", {
+      name: "desktop_run_local_tool",
+      arguments: {
+        tool_name: "local_read_file",
+        arguments: { path: "/tmp/read/note.md" },
+        user_intent: "wrong phrase",
+      },
+    });
+    expect(deniedIntent.result.isError).toBe(true);
+    expect(deniedIntent.result.structuredContent.error.code).toBe("REMOTE_LOCAL_FS_DENIED");
+
+    const delegatedCall = mcp(baseUrl, accessToken, 173, "tools/call", {
+      name: "desktop_run_local_tool",
+      arguments: {
+        tool_name: "local_read_file",
+        arguments: { path: "/tmp/read/note.md", max_bytes: 128 },
+        user_intent: "use local filesystem",
+        wait_seconds: 5,
+      },
+    });
+
+    const wrongInstallation = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/next?installation_id=other`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(wrongInstallation.status).toBe(200);
+    expect((await wrongInstallation.json() as { request: unknown }).request).toBeNull();
+
+    const wrongTenant = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/next?tenant_id=other&installation_id=local`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(wrongTenant.status).toBe(200);
+    expect((await wrongTenant.json() as { request: unknown }).request).toBeNull();
+
+    const claimed = await pollClaimedLocalAccessRequest(baseUrl, config.syncToken, "default", "local");
+    expect(claimed).toMatchObject({
+      installation_id: "local",
+      requester: "mcp:static-access-token",
+      tool_name: "local_read_file",
+      arguments: {
+        path: "/tmp/read/note.md",
+        max_bytes: 128,
+        user_intent: "use local filesystem",
+      },
+      status: "running",
+    });
+
+    const localResult = {
+      jsonrpc: "2.0",
+      id: 1,
+      result: {
+        structuredContent: {
+          path: "/tmp/read/note.md",
+          text: "Desktop result",
+          bytes_read: 14,
+          truncated: false,
+        },
+      },
+    };
+    const completion = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/${claimed.id}/result`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        installation_id: "local",
+        status: "completed",
+        result: localResult,
+      }),
+    });
+    expect(completion.status).toBe(200);
+
+    const delegated = await delegatedCall;
+    expect(delegated.result.isError).not.toBe(true);
+    expect(delegated.result.structuredContent.request.status).toBe("completed");
+    expect(delegated.result.structuredContent.local_result).toEqual(localResult);
+
+    const requestStatus = await mcp(baseUrl, accessToken, 174, "tools/call", {
+      name: "desktop_local_request_status",
+      arguments: { request_id: claimed.id },
+    });
+    expect(requestStatus.result.structuredContent.local_result).toEqual(localResult);
+  });
+
+  it("purges expired completed desktop results from JSON storage", async () => {
+    const { store, indexFile } = await createStore();
+    const now = new Date().toISOString();
+    const request: LocalAccessRequest = {
+      id: "expired-completed-request",
+      tenant_id: "default",
+      vault_id: "default",
+      installation_id: "local",
+      requester: "mcp:test",
+      tool_name: "local_read_file",
+      arguments: { path: "/tmp/private.md", user_intent: "use local filesystem" },
+      status: "completed",
+      result: { result: { structuredContent: { text: "temporary private content" } } },
+      error: null,
+      created_at: now,
+      updated_at: now,
+      expires_at: "2000-01-01T00:00:00.000Z",
+      claimed_at: now,
+      completed_at: now,
+    };
+
+    await store.createLocalAccessRequest(request);
+    expect(await store.getLocalAccessRequest(request.id)).toBeNull();
+    const persisted = JSON.parse(await fs.readFile(indexFile, "utf8")) as { local_access_requests?: unknown[] };
+    expect(persisted.local_access_requests).toEqual([]);
+    expect(await fs.readFile(indexFile, "utf8")).not.toContain("temporary private content");
   });
 
   it("supports authenticated GET /mcp as a Streamable HTTP SSE stream", async () => {
@@ -1306,6 +1486,7 @@ describe("server MCP contract", () => {
     const config = testConfig(indexFile, {
       accessToken: null,
       writeProposalsEnabled: true,
+      remoteLocalFsEnabled: true,
       oauth: {
         issuer: "https://auth.example.test",
         audience: "https://vault.example.test/mcp",
@@ -1313,7 +1494,7 @@ describe("server MCP contract", () => {
         jwksUrl: null,
         jwtSecret: "test-oauth-secret",
         authPassword: null,
-        scopes: ["vault:read", "vault:write"],
+        scopes: ["vault:read", "vault:write", "local:access"],
       },
     });
     const server = await listen(createApp(config, store));
@@ -1326,7 +1507,7 @@ describe("server MCP contract", () => {
     };
     expect(metadata.resource).toBe(config.mcpResourceUrl);
     expect(metadata.authorization_servers).toEqual(["https://auth.example.test"]);
-    expect(metadata.scopes_supported).toEqual(["vault:read", "vault:write"]);
+    expect(metadata.scopes_supported).toEqual(["vault:read", "vault:write", "local:access"]);
 
     const jwt = await new SignJWT({ sub: "user-1", scope: "vault:read" })
       .setProtectedHeader({ alg: "HS256" })
@@ -1349,6 +1530,20 @@ describe("server MCP contract", () => {
       ...expectedTools,
       "propose_vault_write",
       "list_write_proposals",
+    ]);
+
+    const localJwt = await new SignJWT({ sub: "user-1", scope: "vault:read local:access" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuer("https://auth.example.test")
+      .setAudience("https://vault.example.test/mcp")
+      .setExpirationTime("5m")
+      .sign(new TextEncoder().encode("test-oauth-secret"));
+    const localTools = await mcp(baseUrl, localJwt, 3, "tools/list", {});
+    expect(localTools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "desktop_local_fs_status",
+      "desktop_run_local_tool",
+      "desktop_local_request_status",
     ]);
   });
 
@@ -1520,6 +1715,10 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
     allowedOrigins: ["http://127.0.0.1", "http://localhost"],
     oauth: null,
     writeProposalsEnabled: false,
+    remoteLocalFsEnabled: false,
+    remoteLocalFsRequestTtlSeconds: 45,
+    remoteLocalFsWaitSeconds: 25,
+    remoteLocalFsAgentFreshSeconds: 10,
     localFs: {
       mode: "off",
       read_roots: [],
@@ -1576,6 +1775,27 @@ async function syncVault(
     status: response.status,
     body: await response.json(),
   };
+}
+
+async function pollClaimedLocalAccessRequest(
+  baseUrl: string,
+  token: string,
+  vaultId: string,
+  installationId: string,
+): Promise<any> {
+  const deadline = Date.now() + 3_000;
+  while (Date.now() < deadline) {
+    const response = await fetch(`${baseUrl}/admin/vaults/${vaultId}/local-access-requests/next?installation_id=${encodeURIComponent(installationId)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json() as { request: any };
+    if (body.request) {
+      return body.request;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error("Timed out waiting for a desktop local access request.");
 }
 
 type JsonRpcTestResponse = {

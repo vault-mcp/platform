@@ -43,7 +43,7 @@ export function requireUserAuth(config: ServerConfig) {
       setUserAuthContext(req, {
         method: "static",
         subject: "static-access-token",
-        scopes: ["vault:read", "vault:write"],
+        scopes: ["vault:read", "vault:write", "local:access"],
       });
       next();
       return;

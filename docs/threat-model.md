@@ -25,6 +25,10 @@
 - Origin validation is enforced for `/mcp`.
 - Note text is explicitly described as untrusted data in server instructions.
 - The self-hosted OAuth flow issues scoped access tokens and persists dynamic clients plus replay protection in production storage. Proposal tools require both `MCP_WRITE_PROPOSALS_ENABLED=true` and an authenticated `vault:write` scope; read-only tokens never receive those tools.
+- Hosted desktop tools require a second server flag, an authenticated `local:access` scope, a fresh installation-scoped Obsidian heartbeat, an unexpired localhost policy, and the exact plugin-configured intent phrase before the server queues a request.
+- Desktop requests are short-lived and installation-scoped. The Obsidian plugin polls outward, claims only requests for its own vault installation, forwards one call to the authenticated localhost MCP sidecar, and returns the result. The hosted server has no direct inbound path to the desktop and receives no proactive filesystem inventory.
+- Completed or failed desktop request rows, including returned file content, are deleted after the request expiry timestamp; pending/running requests fail closed as expired. Operators should still treat the hosted database as temporarily sensitive during an active call.
+- The localhost sidecar remains the filesystem authority for hosted calls. Read/write roots, write-operation toggles, access expiry, symlink hardening, byte/search caps, exact-edit match counts, delete confirmation, god mode, and JSONL write audit are enforced locally after a request is claimed.
 - Expanded discovery tools list only already-indexed allowlisted notes; denied paths remain unavailable through exact path fetches and scoped searches.
 - Existing-note proposals require a fresh indexed content hash, are limited to indexed notes, and are rechecked against the live local file by the Obsidian plugin. Unsafe paths, stale hashes, unsupported frontmatter payloads, and rename collisions visible in the index are refused before storage.
 - ChatGPT-facing UI metadata and the `ui://vault-mcp/results-v2.html` component render tool results; they do not add a separate data path or vault access path. Proposal cards describe pending state and Obsidian-side review rather than presenting a server-side write as complete.
@@ -34,8 +38,10 @@
 ## Current Gaps
 
 - Proposal-only hosted writes are private-alpha and disabled by default. Real ChatGPT acceptance, reauthorization with `vault:write`, proposal-card UX review, and security-review evidence are still required before enabling them in production.
-- The plugin applies proposals only after local policy/hash checks and creates backup/audit notes, but `direct_apply` remains reserved and automatic proposal polling is not yet implemented.
-- Full arbitrary filesystem access is still local-server-only. Browser-hosted ChatGPT cannot reach `127.0.0.1` without a future outbound desktop bridge or managed relay, so proposal tools cover vault writes but do not claim remote god-mode filesystem access.
+- The plugin applies proposals only after local policy/hash checks and creates backup/audit notes, but `direct_apply` remains reserved.
+- The hosted desktop bridge is implemented but disabled by default and still needs real ChatGPT OAuth reauthorization, live Obsidian UI acceptance, and production security-review evidence before production enablement.
+- The private-alpha plugin still authenticates sync and desktop-agent APIs with the deployment-wide `MCP_SYNC_TOKEN`. Managed multi-user hosting must replace this with revocable, per-installation credentials before public release.
+- The packaged sidecar still requires a compatible Node runtime. Platform-native signed sidecars remain a public-release requirement for a true no-terminal install.
 
 ## Release Security Review Evidence
 

@@ -19,6 +19,7 @@ This guide covers the current V2 plugin slice. It is meant for local development
 - Shows a configuration readiness checklist in settings and the dashboard for server URL, sync token, vault id, index scope, exclusions, write mode, and write audit folder before a tester syncs.
 - Provides a `Check connection` preflight in settings, the dashboard, and the command palette. It checks public server health, storage readiness, migration metadata, and the configured vault status when a sync token is saved.
 - Reviews server-side write proposals, can mark pending proposals approved or rejected, and can apply approved create, append, replace, frontmatter, and rename proposals after local safety checks.
+- Provides an opt-in `Hosted ChatGPT desktop bridge`. While Obsidian is open, the plugin sends a policy heartbeat, polls for one short-lived request scoped to its installation id, forwards it to the authenticated localhost MCP endpoint, and posts the result. It never uploads a background filesystem inventory.
 
 ## Plugin-First Setup Direction
 
@@ -126,8 +127,14 @@ local filesystem policy context. That bundle includes only the local MCP client
 token, not the plugin/admin sync token. The adjacent `Copy instructions` button
 copies a no-token prompt that tells local clients to call `local_fs_policy`,
 respect the configured local roots and write operations, and include
-`user_intent` when required. These settings only affect the localhost developer
-server profile; the hosted server remains derived-index-only and read-only.
+`user_intent` when required. These settings always define the localhost sidecar
+policy. Hosted servers remain derived-index-only unless the deployment owner
+separately enables the desktop bridge and grants OAuth `local:access`. Even
+then, the hosted server only queues one short-lived call: the plugin must be
+open with `Allow hosted ChatGPT to use local tools` enabled, and the localhost
+sidecar still enforces every policy check. Use `desktop_local_fs_status` in
+ChatGPT before a local operation, then pass the exact configured `user_intent`
+to `desktop_run_local_tool`.
 
 ## Safe Test Install
 

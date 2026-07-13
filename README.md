@@ -57,6 +57,23 @@ phrase as `user_intent` (`use local filesystem` unless the plugin setting
 changes it), so clients have to make the current local-file interaction explicit
 in the tool arguments.
 
+Hosted desktop access is a separate opt-in bridge. When the deployment owner
+sets `MCP_REMOTE_LOCAL_FS_ENABLED=true`, the OAuth token includes
+`local:access`, and the matching Obsidian installation enables
+`Allow hosted ChatGPT to use local tools`, the hosted MCP also exposes:
+
+- `desktop_local_fs_status` - report the live plugin/sidecar policy, heartbeat, and exact active local-tool argument schemas.
+- `desktop_run_local_tool` - enqueue one short-lived local tool call and wait for the matching Obsidian installation to execute it.
+- `desktop_local_request_status` - check a request that outlived the synchronous wait window.
+
+The plugin polls outward to the hosted server, then forwards each claimed call
+to the localhost MCP endpoint. The hosted service never opens an inbound port
+on the user's computer, never receives a background filesystem inventory, and
+cannot bypass the local sidecar's roots, operation toggles, expiry, exact
+`user_intent`, symlink checks, delete confirmation, or audit trail. God mode is
+therefore available remotely only while the user has deliberately enabled it
+in the plugin and kept the short-lived local session active.
+
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear
 tool error until the client passes `vault_id`. Use `list_vaults` first to choose

@@ -16,6 +16,10 @@ export type ServerConfig = {
   oauth: OAuthResourceConfig | null;
   localFs: LocalFsPolicy;
   writeProposalsEnabled: boolean;
+  remoteLocalFsEnabled: boolean;
+  remoteLocalFsRequestTtlSeconds: number;
+  remoteLocalFsWaitSeconds: number;
+  remoteLocalFsAgentFreshSeconds: number;
 };
 
 export type OAuthResourceConfig = {
@@ -68,6 +72,10 @@ export function loadConfig(env = process.env): ServerConfig {
     oauth,
     localFs: loadLocalFsPolicy(env),
     writeProposalsEnabled: normalizeBoolean(env.MCP_WRITE_PROPOSALS_ENABLED, false, "MCP_WRITE_PROPOSALS_ENABLED"),
+    remoteLocalFsEnabled: normalizeBoolean(env.MCP_REMOTE_LOCAL_FS_ENABLED, false, "MCP_REMOTE_LOCAL_FS_ENABLED"),
+    remoteLocalFsRequestTtlSeconds: normalizePositiveInteger(env.MCP_REMOTE_LOCAL_FS_REQUEST_TTL_SECONDS, 45, "MCP_REMOTE_LOCAL_FS_REQUEST_TTL_SECONDS"),
+    remoteLocalFsWaitSeconds: normalizePositiveInteger(env.MCP_REMOTE_LOCAL_FS_WAIT_SECONDS, 25, "MCP_REMOTE_LOCAL_FS_WAIT_SECONDS"),
+    remoteLocalFsAgentFreshSeconds: normalizePositiveInteger(env.MCP_REMOTE_LOCAL_FS_AGENT_FRESH_SECONDS, 10, "MCP_REMOTE_LOCAL_FS_AGENT_FRESH_SECONDS"),
   };
 }
 
@@ -139,13 +147,13 @@ function parseLocalFsWriteOperations(value: string | undefined): LocalFsWriteOpe
   return [...new Set(operations)];
 }
 
-function normalizePositiveInteger(value: string | undefined, fallback: number): number {
+function normalizePositiveInteger(value: string | undefined, fallback: number, name = "LOCAL_FS numeric limit"): number {
   if (!value) {
     return fallback;
   }
   const parsed = Number.parseInt(value, 10);
   if (!Number.isInteger(parsed) || parsed < 1) {
-    throw new Error("LOCAL_FS_MAX_READ_BYTES must be a positive integer.");
+    throw new Error(`${name} must be a positive integer.`);
   }
   return parsed;
 }
@@ -208,7 +216,7 @@ function loadOAuthConfig(env: NodeJS.ProcessEnv): OAuthResourceConfig | null {
     jwtSecret,
     authPassword,
     scopes: (env.OAUTH_SCOPES ?? "vault:read")
-      .split(",")
+      .split(/[\s,]+/)
       .map((scope) => scope.trim())
       .filter(Boolean),
   };

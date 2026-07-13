@@ -89,6 +89,37 @@ export const POSTGRES_MIGRATIONS: PostgresMigration[] = [
       create index if not exists write_proposals_vault_idx on write_proposals (tenant_id, vault_id, status);
     `,
   },
+  {
+    id: "0002_local_access_bridge",
+    description: "Add short-lived desktop access requests and local agent heartbeats.",
+    sql: `
+      create table if not exists local_access_requests (
+        id text primary key,
+        tenant_id text not null,
+        vault_id text not null,
+        installation_id text not null,
+        request jsonb not null,
+        status text not null,
+        expires_at timestamptz not null,
+        updated_at timestamptz not null
+      );
+
+      create index if not exists local_access_requests_claim_idx
+        on local_access_requests (tenant_id, vault_id, installation_id, status, expires_at, updated_at);
+
+      create table if not exists local_agent_sessions (
+        tenant_id text not null,
+        vault_id text not null,
+        installation_id text not null,
+        agent jsonb not null,
+        last_seen_at timestamptz not null,
+        primary key (tenant_id, vault_id, installation_id)
+      );
+
+      create index if not exists local_agent_sessions_seen_idx
+        on local_agent_sessions (tenant_id, vault_id, last_seen_at desc);
+    `,
+  },
 ];
 
 export async function runPostgresMigrations(pool: pg.Pool): Promise<PostgresMigrationResult> {

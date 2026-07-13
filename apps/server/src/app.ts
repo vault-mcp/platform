@@ -12,8 +12,13 @@ import {
   DEFAULT_INSTALLATION_ID,
   DEFAULT_POLICY_VERSION,
   DEFAULT_TENANT_ID,
+  LOCAL_FS_TOOL_NAMES,
   defaultIndexPolicy,
   summarizeIndexPolicy,
+  type LocalAgentToolDefinition,
+  type LocalAgentStatus,
+  type LocalFsAccessMode,
+  type LocalFsPolicy,
   type SyncManifest,
   type SyncPayload,
   type WriteOperation,
@@ -23,6 +28,8 @@ import {
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../public");
 const WRITE_OPERATIONS = new Set<WriteOperation>(["append_to_note", "replace_note", "create_note", "update_frontmatter", "rename_note"]);
 const WRITE_PROPOSAL_STATUSES = new Set<WriteProposalStatus>(["pending", "approved", "rejected", "applied", "conflict", "failed"]);
+const LOCAL_FS_ACCESS_MODES = new Set<LocalFsAccessMode>(["off", "read", "write", "god"]);
+const LOCAL_FS_TOOL_NAME_SET = new Set<string>(LOCAL_FS_TOOL_NAMES);
 
 export function createApp(config: ServerConfig, store: IndexStore) {
   const app = express();
@@ -225,6 +232,100 @@ export function createApp(config: ServerConfig, store: IndexStore) {
     res.json({ proposal });
   });
 
+  app.post("/admin/vaults/:vaultId/local-agent/heartbeat", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
+    if (!config.remoteLocalFsEnabled) {
+      res.status(404).json({ error: "remote_local_fs_disabled" });
+      return;
+    }
+    const vaultId = paramValue(req.params.vaultId);
+    const body = req.body as {
+      tenant_id?: string;
+      installation_id?: string;
+      agent_version?: string;
+      policy?: unknown;
+      tools?: unknown;
+      connected_at?: string;
+    };
+    const installationId = normalizeId(body.installation_id, "");
+    if (!installationId || !isLocalFsPolicy(body.policy) || !isLocalAgentTools(body.tools)) {
+      res.status(400).json({ error: "installation_id, a valid local filesystem policy, and local tool catalog are required" });
+      return;
+    }
+    const now = new Date().toISOString();
+    const agent: LocalAgentStatus = {
+      tenant_id: normalizeId(body.tenant_id, DEFAULT_TENANT_ID),
+      vault_id: vaultId,
+      installation_id: installationId,
+      agent_version: normalizeId(body.agent_version, "unknown"),
+      policy: body.policy,
+      tools: body.tools,
+      connected_at: normalizeIsoDate(body.connected_at, now),
+      last_seen_at: now,
+    };
+    await store.upsertLocalAgentStatus(agent);
+    res.json({ ok: true, agent });
+  });
+
+  app.get("/admin/vaults/:vaultId/local-agent/status", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
+    if (!config.remoteLocalFsEnabled) {
+      res.status(404).json({ error: "remote_local_fs_disabled" });
+      return;
+    }
+    const vaultId = paramValue(req.params.vaultId);
+    const tenantId = typeof req.query.tenant_id === "string" ? req.query.tenant_id.trim() || DEFAULT_TENANT_ID : DEFAULT_TENANT_ID;
+    const installationId = typeof req.query.installation_id === "string" ? req.query.installation_id : undefined;
+    res.json({ agent: await store.getLocalAgentStatus(tenantId, vaultId, installationId) });
+  });
+
+  app.get("/admin/vaults/:vaultId/local-access-requests/next", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
+    if (!config.remoteLocalFsEnabled) {
+      res.status(404).json({ error: "remote_local_fs_disabled" });
+      return;
+    }
+    const vaultId = paramValue(req.params.vaultId);
+    const tenantId = typeof req.query.tenant_id === "string" ? req.query.tenant_id.trim() || DEFAULT_TENANT_ID : DEFAULT_TENANT_ID;
+    const installationId = typeof req.query.installation_id === "string" ? req.query.installation_id.trim() : "";
+    if (!installationId) {
+      res.status(400).json({ error: "installation_id is required" });
+      return;
+    }
+    res.json({ request: await store.claimLocalAccessRequest(tenantId, vaultId, installationId) });
+  });
+
+  app.post("/admin/vaults/:vaultId/local-access-requests/:requestId/result", requireBearerToken(config.syncToken), async (req: Request, res: Response) => {
+    if (!config.remoteLocalFsEnabled) {
+      res.status(404).json({ error: "remote_local_fs_disabled" });
+      return;
+    }
+    const vaultId = paramValue(req.params.vaultId);
+    const requestId = paramValue(req.params.requestId);
+    const body = req.body as {
+      installation_id?: string;
+      tenant_id?: string;
+      status?: "completed" | "failed";
+      result?: unknown;
+      error?: unknown;
+    };
+    const installationId = normalizeId(body.installation_id, "");
+    const tenantId = normalizeId(body.tenant_id, DEFAULT_TENANT_ID);
+    if (!installationId || (body.status !== "completed" && body.status !== "failed")) {
+      res.status(400).json({ error: "installation_id and completed or failed status are required" });
+      return;
+    }
+    const result = body.status === "completed" && isRecord(body.result) ? body.result : null;
+    const error = body.status === "failed" ? normalizeLocalAccessError(body.error) : null;
+    if (body.status === "completed" && !result) {
+      res.status(400).json({ error: "completed local access requests require an object result" });
+      return;
+    }
+    const request = await store.completeLocalAccessRequest(requestId, tenantId, vaultId, installationId, body.status, result, error);
+    if (!request) {
+      res.status(409).json({ error: "request_not_running_or_installation_mismatch" });
+      return;
+    }
+    res.json({ ok: true, request });
+  });
+
   app.get("/notes/:id", requireUserAuth(config), async (req: Request, res: Response) => {
     const id = typeof req.params.id === "string" ? req.params.id : "";
     const document = await store.fetch(id);
@@ -310,4 +411,63 @@ function normalizeId(value: unknown, fallback: string): string {
 
 function paramValue(value: string | string[] | undefined): string {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function isLocalFsPolicy(value: unknown): value is LocalFsPolicy {
+  if (!isRecord(value) || !LOCAL_FS_ACCESS_MODES.has(value.mode as LocalFsAccessMode)) {
+    return false;
+  }
+  return isStringArray(value.read_roots)
+    && isStringArray(value.write_roots)
+    && isStringArray(value.write_operations)
+    && isPositiveInteger(value.max_read_bytes)
+    && isPositiveInteger(value.max_search_results)
+    && isPositiveInteger(value.max_search_files)
+    && (value.expires_at === null || isIsoDate(value.expires_at))
+    && typeof value.require_user_intent === "boolean"
+    && typeof value.user_intent_phrase === "string"
+    && value.user_intent_phrase.length > 0;
+}
+
+function isLocalAgentTools(value: unknown): value is LocalAgentToolDefinition[] {
+  return Array.isArray(value)
+    && value.length <= LOCAL_FS_TOOL_NAMES.length
+    && value.every((entry) => isRecord(entry)
+      && typeof entry.name === "string"
+      && LOCAL_FS_TOOL_NAME_SET.has(entry.name)
+      && typeof entry.description === "string"
+      && entry.description.length <= 2_000
+      && isRecord(entry.input_schema)
+      && typeof entry.read_only === "boolean"
+      && typeof entry.destructive === "boolean");
+}
+
+function normalizeLocalAccessError(value: unknown): { code: string; message: string } {
+  if (!isRecord(value)) {
+    return { code: "LOCAL_ACCESS_FAILED", message: "The desktop agent reported a failure." };
+  }
+  return {
+    code: normalizeId(value.code, "LOCAL_ACCESS_FAILED").slice(0, 100),
+    message: normalizeId(value.message, "The desktop agent reported a failure.").slice(0, 2_000),
+  };
+}
+
+function normalizeIsoDate(value: unknown, fallback: string): string {
+  return isIsoDate(value) ? new Date(value).toISOString() : fallback;
+}
+
+function isIsoDate(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
 }

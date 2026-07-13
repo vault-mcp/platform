@@ -37,6 +37,10 @@ const steps = [
     args: ["run", "smoke:local-fs"],
   },
   {
+    name: "smoke:hosted-local-bridge",
+    args: ["run", "smoke:hosted-local-bridge"],
+  },
+  {
     name: "smoke:local-inspector",
     args: ["run", "smoke:local-inspector"],
   },

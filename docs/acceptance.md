@@ -20,6 +20,7 @@ That wiki-free local release gate runs:
 - `npm test`
 - `npm run smoke:mcp-ui`
 - `npm run smoke:local-fs`
+- `npm run smoke:hosted-local-bridge`
 - `npm run smoke:local-inspector`
 - `npm audit --audit-level=low`
 - `npm run plugin:package`
@@ -60,6 +61,7 @@ npm run check:api
 npm test
 npm run smoke:mcp-ui
 npm run smoke:local-fs
+npm run smoke:hosted-local-bridge
 npm run smoke:local-inspector
 npm run smoke:local
 npm run smoke:oauth-local
@@ -69,6 +71,9 @@ Run server-starting local smoke scripts sequentially unless they use distinct
 ports. `smoke:local` and `smoke:oauth-local` use the local server app profile;
 `smoke:local-fs` starts dedicated localhost servers on test ports for scoped
 write mode, god mode, and expired-session policy-only behavior.
+`smoke:hosted-local-bridge` starts separate hosted and localhost profiles,
+simulates the plugin heartbeat/poll/forward/result loop, verifies an allowed
+write and explicit read, and proves an outside-root write remains denied.
 `smoke:local-inspector` starts a localhost server and
 simulates MCP Inspector browser-origin traffic from `http://localhost:6274` and
 `http://127.0.0.1:6274`.
@@ -238,6 +243,30 @@ Private-alpha hosted proposal acceptance is a separate opt-in gate:
 Do not run this acceptance against the live personal vault. Return production
 to read-only scopes after the test if proposal writes are not meant to remain
 enabled.
+
+Private-alpha hosted desktop acceptance is also opt-in:
+
+1. Set `MCP_REMOTE_LOCAL_FS_ENABLED=true` and include `local:access` in
+   `OAUTH_SCOPES`; keep production off until this gate passes.
+2. Install the current plugin build in a disposable copied vault and configure
+   its hosted server URL, sync token, vault id, and installation id.
+3. In `Local desktop server`, choose a narrow Read or Write policy, add only the
+   disposable root, set a short expiry, and keep exact user intent enabled.
+4. Enable `Allow hosted ChatGPT to use local tools` and confirm the plugin shows
+   a successful poll rather than a stale/error state.
+5. Reauthorize ChatGPT, call `desktop_local_fs_status`, and verify its policy
+   exactly matches the plugin.
+6. Ask ChatGPT to write one harmless file inside the disposable root. Confirm
+   `desktop_run_local_tool` returns the localhost MCP result and the local JSONL
+   audit contains the write.
+7. Try a path outside the root and a wrong intent phrase; both must fail and no
+   outside file may appear.
+8. Refresh into God mode only for a separate throwaway-root test, verify status,
+   then disable the bridge and stop/expire the local session immediately.
+9. Confirm hosted tools disappear when the server flag/scope is removed and
+   calls fail when Obsidian is closed or its heartbeat becomes stale.
+
+Never run the write/god-mode acceptance against the live personal vault.
 
 Passing output must include:
 

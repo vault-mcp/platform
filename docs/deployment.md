@@ -39,6 +39,24 @@ connections after changing scopes. The server still cannot edit local files;
 the Obsidian plugin reviews and applies each proposal after live hash, backup,
 and audit checks.
 
+Hosted local filesystem delegation is a separate private-alpha gate. Enable it
+only after the Obsidian plugin and localhost sidecar are installed:
+
+```bash
+MCP_REMOTE_LOCAL_FS_ENABLED=true
+MCP_REMOTE_LOCAL_FS_REQUEST_TTL_SECONDS=45
+MCP_REMOTE_LOCAL_FS_WAIT_SECONDS=25
+MCP_REMOTE_LOCAL_FS_AGENT_FRESH_SECONDS=10
+OAUTH_SCOPES="vault:read local:access"
+```
+
+Add `vault:write` to the same scope list only when proposal tools are also
+enabled. Existing ChatGPT connections must be reauthorized after adding
+`local:access`. The hosted bridge does not grant permissions by itself: the
+matching Obsidian installation must explicitly enable the bridge and its
+localhost sidecar policy still decides whether the call is off, read, write,
+or god mode.
+
 For a self-hosted OAuth flow on the connector itself, set the OAuth issuer and authorization server to the public service URL and use an HMAC signing secret plus a private authorization password:
 
 ```bash
@@ -79,6 +97,11 @@ vercel env add OAUTH_JWKS_URL production
 vercel env add OAUTH_SCOPES production
 # Optional private-alpha proposal queue:
 vercel env add MCP_WRITE_PROPOSALS_ENABLED production
+# Optional private-alpha hosted desktop bridge:
+vercel env add MCP_REMOTE_LOCAL_FS_ENABLED production
+vercel env add MCP_REMOTE_LOCAL_FS_REQUEST_TTL_SECONDS production
+vercel env add MCP_REMOTE_LOCAL_FS_WAIT_SECONDS production
+vercel env add MCP_REMOTE_LOCAL_FS_AGENT_FRESH_SECONDS production
 vercel --prod
 ```
 

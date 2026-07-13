@@ -37,7 +37,7 @@ import {
   Setting,
   TFile,
 } from "obsidian";
-import type { IndexMode, LocalFsAccessMode, LocalFsWriteOperation, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
+import type { IndexMode, LocalAccessRequest, LocalAgentToolDefinition, LocalFsAccessMode, LocalFsPolicy, LocalFsWriteOperation, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -72,10 +72,12 @@ type VaultMcpPluginSettings = {
   localFsAccessTtlMinutes: number;
   localFsRequireUserIntent: boolean;
   localFsUserIntentPhrase: string;
+  hostedLocalBridgeEnabled: boolean;
+  hostedLocalBridgePollSeconds: number;
 };
 
 type SyncHistoryEntry = {
-  type: "preview" | "sync" | "approval" | "server-check" | "setup-import" | "proposal-check" | "proposal-update" | "local-server" | "error";
+  type: "preview" | "sync" | "approval" | "server-check" | "setup-import" | "proposal-check" | "proposal-update" | "local-server" | "hosted-bridge" | "error";
   message: string;
   createdAt: string;
   scanned?: number;
@@ -217,6 +219,8 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   localFsAccessTtlMinutes: 120,
   localFsRequireUserIntent: true,
   localFsUserIntentPhrase: "use local filesystem",
+  hostedLocalBridgeEnabled: false,
+  hostedLocalBridgePollSeconds: 1,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -242,6 +246,11 @@ export default class VaultMcpPlugin extends Plugin {
   localServerProcess: LocalServerChildProcess | null = null;
   localServerStartedAt: string | null = null;
   localServerHealth: PluginServerHealthSnapshot | null = null;
+  hostedLocalBridgeTimer: number | null = null;
+  hostedLocalBridgeBusy = false;
+  hostedLocalBridgeConnectedAt: string | null = null;
+  hostedLocalBridgeLastSeenAt: string | null = null;
+  hostedLocalBridgeLastError: string | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -312,9 +321,32 @@ export default class VaultMcpPlugin extends Plugin {
         void this.refreshLocalServerSession();
       },
     });
+
+    this.addCommand({
+      id: "start-hosted-local-bridge",
+      name: "Enable hosted ChatGPT desktop bridge",
+      callback: () => {
+        void this.startHostedLocalBridge();
+      },
+    });
+
+    this.addCommand({
+      id: "stop-hosted-local-bridge",
+      name: "Disable hosted ChatGPT desktop bridge",
+      callback: () => {
+        void this.stopHostedLocalBridge();
+      },
+    });
+
+    this.app.workspace.onLayoutReady(() => {
+      if (this.settings.hostedLocalBridgeEnabled) {
+        void this.startHostedLocalBridge(false);
+      }
+    });
   }
 
   onunload() {
+    this.clearHostedLocalBridgeTimer();
     if (this.localServerProcess && !this.settings.localServerKeepAlive) {
       void this.stopLocalServer("Plugin unloaded.");
     }
@@ -348,6 +380,8 @@ export default class VaultMcpPlugin extends Plugin {
       localFsAccessTtlMinutes: saved?.localFsAccessTtlMinutes ?? DEFAULT_SETTINGS.localFsAccessTtlMinutes,
       localFsRequireUserIntent: saved?.localFsRequireUserIntent ?? DEFAULT_SETTINGS.localFsRequireUserIntent,
       localFsUserIntentPhrase: saved?.localFsUserIntentPhrase ?? DEFAULT_SETTINGS.localFsUserIntentPhrase,
+      hostedLocalBridgeEnabled: saved?.hostedLocalBridgeEnabled ?? DEFAULT_SETTINGS.hostedLocalBridgeEnabled,
+      hostedLocalBridgePollSeconds: saved?.hostedLocalBridgePollSeconds ?? DEFAULT_SETTINGS.hostedLocalBridgePollSeconds,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -501,6 +535,174 @@ export default class VaultMcpPlugin extends Plugin {
     new Notice("Vault MCP local server session refresh requested.");
     await delay(750);
     await this.startLocalServer();
+  }
+
+  async startHostedLocalBridge(persist = true) {
+    if (!this.settings.syncToken.trim()) {
+      const message = "Add the hosted server sync token before enabling the ChatGPT desktop bridge.";
+      this.hostedLocalBridgeLastError = message;
+      new Notice(`Vault MCP: ${message}`);
+      return;
+    }
+    this.settings.hostedLocalBridgeEnabled = true;
+    if (persist) {
+      await this.saveSettings();
+    }
+    if (!this.localServerHealth) {
+      await this.startLocalServer();
+    }
+    if (!this.localServerHealth) {
+      try {
+        this.localServerHealth = await fetchLocalServerHealth(this.settings);
+      } catch (error) {
+        const message = describeCaughtError("hosted desktop bridge local server check", error);
+        this.hostedLocalBridgeLastError = message;
+        await this.addHistory({ type: "error", message: `Hosted desktop bridge could not start: ${message}` });
+        new Notice(`Vault MCP hosted desktop bridge could not start: ${message}`);
+        return;
+      }
+    }
+    this.hostedLocalBridgeConnectedAt ??= new Date().toISOString();
+    this.hostedLocalBridgeLastError = null;
+    this.scheduleHostedLocalBridge();
+    await this.runHostedLocalBridgeTick();
+    await this.addHistory({ type: "hosted-bridge", message: "Hosted ChatGPT desktop bridge enabled. Files remain local until an authenticated chat requests one operation." });
+    new Notice("Vault MCP hosted ChatGPT desktop bridge enabled.");
+  }
+
+  async stopHostedLocalBridge(persist = true) {
+    this.clearHostedLocalBridgeTimer();
+    this.settings.hostedLocalBridgeEnabled = false;
+    this.hostedLocalBridgeConnectedAt = null;
+    this.hostedLocalBridgeLastSeenAt = null;
+    this.hostedLocalBridgeLastError = null;
+    if (persist) {
+      await this.saveSettings();
+    }
+    await this.addHistory({ type: "hosted-bridge", message: "Hosted ChatGPT desktop bridge disabled." });
+    new Notice("Vault MCP hosted ChatGPT desktop bridge disabled.");
+  }
+
+  scheduleHostedLocalBridge() {
+    this.clearHostedLocalBridgeTimer();
+    const pollMs = Math.max(1, Math.trunc(this.settings.hostedLocalBridgePollSeconds)) * 1_000;
+    this.hostedLocalBridgeTimer = window.setInterval(() => {
+      void this.runHostedLocalBridgeTick();
+    }, pollMs);
+    this.registerInterval(this.hostedLocalBridgeTimer);
+  }
+
+  private clearHostedLocalBridgeTimer() {
+    if (this.hostedLocalBridgeTimer !== null) {
+      window.clearInterval(this.hostedLocalBridgeTimer);
+      this.hostedLocalBridgeTimer = null;
+    }
+  }
+
+  async runHostedLocalBridgeTick() {
+    if (!this.settings.hostedLocalBridgeEnabled || this.hostedLocalBridgeBusy) {
+      return;
+    }
+    this.hostedLocalBridgeBusy = true;
+    try {
+      const policy = this.settings.localFsAccessMode === "off"
+        ? localFsPolicyFromPluginSettings(this.settings, this.localServerStartedAt)
+        : localFsPolicyFromMcpResponse(await callLocalMcpTool(this.settings, "local_fs_policy", {}));
+      const tools = await listLocalMcpTools(this.settings);
+      await this.sendHostedLocalBridgeHeartbeat(policy, tools);
+      const request = await this.claimHostedLocalAccessRequest();
+      if (request) {
+        await this.executeHostedLocalAccessRequest(request);
+      }
+      this.hostedLocalBridgeLastSeenAt = new Date().toISOString();
+      this.hostedLocalBridgeLastError = null;
+    } catch (error) {
+      const message = describeCaughtError("hosted desktop bridge", error);
+      if (message !== this.hostedLocalBridgeLastError) {
+        await this.addHistory({ type: "error", message: `Hosted desktop bridge error: ${message}` });
+      }
+      this.hostedLocalBridgeLastError = message;
+    } finally {
+      this.hostedLocalBridgeBusy = false;
+    }
+  }
+
+  private async sendHostedLocalBridgeHeartbeat(policy: LocalFsPolicy, tools: LocalAgentToolDefinition[]) {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-agent/heartbeat`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenant_id: this.settings.tenantId,
+        installation_id: this.settings.installationId,
+        agent_version: this.manifest.version,
+        policy,
+        tools,
+        connected_at: this.hostedLocalBridgeConnectedAt ?? new Date().toISOString(),
+      }),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge heartbeat", response.status, response.text));
+    }
+  }
+
+  private async claimHostedLocalAccessRequest(): Promise<LocalAccessRequest | null> {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-access-requests/next?tenant_id=${encodeURIComponent(this.settings.tenantId)}&installation_id=${encodeURIComponent(this.settings.installationId)}`,
+      method: "GET",
+      headers: { Authorization: `Bearer ${this.settings.syncToken}` },
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge request poll", response.status, response.text));
+    }
+    return parseJsonResponse<{ request: LocalAccessRequest | null }>(response.text, "hosted desktop bridge request").request;
+  }
+
+  private async executeHostedLocalAccessRequest(request: LocalAccessRequest) {
+    if (request.vault_id !== this.settings.vaultId || request.installation_id !== this.settings.installationId) {
+      throw new Error("Hosted desktop request scope did not match this plugin installation.");
+    }
+    try {
+      const result = await callLocalMcpTool(this.settings, request.tool_name, request.arguments);
+      await this.postHostedLocalAccessResult(request, "completed", result, null);
+      await this.addHistory({ type: "hosted-bridge", message: `Completed hosted desktop request ${request.id}: ${request.tool_name}.` });
+    } catch (error) {
+      const message = describeCaughtError(`local tool ${request.tool_name}`, error);
+      await this.postHostedLocalAccessResult(request, "failed", null, {
+        code: "LOCAL_TOOL_FAILED",
+        message,
+      });
+      await this.addHistory({ type: "error", message: `Hosted desktop request ${request.id} failed: ${message}` });
+    }
+  }
+
+  private async postHostedLocalAccessResult(
+    request: LocalAccessRequest,
+    status: "completed" | "failed",
+    result: Record<string, unknown> | null,
+    error: { code: string; message: string } | null,
+  ) {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-access-requests/${encodeURIComponent(request.id)}/result`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenant_id: this.settings.tenantId,
+        installation_id: this.settings.installationId,
+        status,
+        result,
+        error,
+      }),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge result", response.status, response.text));
+    }
   }
 
   localServerSettingsWithSidecar(): VaultMcpPluginSettings & { localServerSidecarDir?: string } {
@@ -1781,6 +1983,65 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
         plugin.settings.localServerKeepAlive = value;
         await plugin.saveSettings();
       }));
+
+  new Setting(parent).setName("Hosted ChatGPT desktop bridge").setHeading();
+  parent.createEl("p", {
+    cls: "vault-mcp-muted",
+    text: "Opt-in. While enabled and Obsidian is open, the plugin polls the hosted server for short-lived desktop requests and forwards each one to the localhost sidecar. It never uploads a filesystem inventory or reads files in the background.",
+  });
+
+  new Setting(parent)
+    .setName("Allow hosted ChatGPT to use local tools")
+    .setDesc("The localhost sidecar still enforces access mode, roots, write-operation toggles, expiry, exact user intent, and audit. Off is the default.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.hostedLocalBridgeEnabled)
+      .onChange(async (enabled) => {
+        if (enabled) {
+          await plugin.startHostedLocalBridge();
+        } else {
+          await plugin.stopHostedLocalBridge();
+        }
+        openPluginSettings(plugin.app, plugin);
+      }));
+
+  new Setting(parent)
+    .setName("Hosted bridge poll seconds")
+    .setDesc("How often the plugin checks for one authenticated desktop request. One second is recommended for interactive chat.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.inputEl.max = "30";
+      text.setValue(String(plugin.settings.hostedLocalBridgePollSeconds))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.hostedLocalBridgePollSeconds = Number.isInteger(parsed) && parsed >= 1 && parsed <= 30
+            ? parsed
+            : DEFAULT_SETTINGS.hostedLocalBridgePollSeconds;
+          await plugin.saveSettings();
+          if (plugin.settings.hostedLocalBridgeEnabled) {
+            plugin.scheduleHostedLocalBridge();
+            await plugin.runHostedLocalBridgeTick();
+          }
+        });
+    });
+
+  new Setting(parent)
+    .setName("Hosted bridge session")
+    .setDesc(hostedLocalBridgeDescription(plugin))
+    .addButton((button) => button
+      .setButtonText("Check now")
+      .setDisabled(!plugin.settings.hostedLocalBridgeEnabled)
+      .onClick(async () => {
+        await plugin.runHostedLocalBridgeTick();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Disable")
+      .setDisabled(!plugin.settings.hostedLocalBridgeEnabled)
+      .onClick(async () => {
+        await plugin.stopHostedLocalBridge();
+        openPluginSettings(plugin.app, plugin);
+      }));
 }
 
 function localServerSessionDescription(plugin: VaultMcpPlugin): string {
@@ -1791,6 +2052,19 @@ function localServerSessionDescription(plugin: VaultMcpPlugin): string {
     return `Connected to an existing compatible local server on ${localServerEndpoint(plugin.settings)} (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"}). Stop disconnects this plugin; it cannot stop a process started outside this Obsidian session.`;
   }
   return "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.";
+}
+
+function hostedLocalBridgeDescription(plugin: VaultMcpPlugin): string {
+  if (!plugin.settings.hostedLocalBridgeEnabled) {
+    return "Disabled. Hosted MCP clients cannot request local filesystem operations.";
+  }
+  if (plugin.hostedLocalBridgeLastError) {
+    return `Enabled but blocked: ${plugin.hostedLocalBridgeLastError}`;
+  }
+  if (plugin.hostedLocalBridgeLastSeenAt) {
+    return `Connected. Last successful poll: ${plugin.hostedLocalBridgeLastSeenAt}. Access mode: ${plugin.settings.localFsAccessMode}.`;
+  }
+  return "Enabled and starting. Keep Obsidian open while using local tools from ChatGPT.";
 }
 
 function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPlugin) {
@@ -2290,6 +2564,118 @@ async function fetchLocalServerHealth(settings: VaultMcpPluginSettings): Promise
     throw new Error(describeHttpFailure("local server health check", response.status, response.text));
   }
   return parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
+}
+
+async function callLocalMcpTool(
+  settings: VaultMcpPluginSettings,
+  toolName: string,
+  toolArguments: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  return callLocalMcpRequest(settings, "tools/call", {
+    name: toolName,
+    arguments: toolArguments,
+  });
+}
+
+async function listLocalMcpTools(settings: VaultMcpPluginSettings): Promise<LocalAgentToolDefinition[]> {
+  const response = await callLocalMcpRequest(settings, "tools/list", {});
+  const result = isObjectRecord(response.result) ? response.result : null;
+  const tools = result && Array.isArray(result.tools) ? result.tools : [];
+  return tools.flatMap((entry): LocalAgentToolDefinition[] => {
+    if (!isObjectRecord(entry) || typeof entry.name !== "string" || !entry.name.startsWith("local_")) {
+      return [];
+    }
+    const annotations = isObjectRecord(entry.annotations) ? entry.annotations : {};
+    return [{
+      name: entry.name as LocalAgentToolDefinition["name"],
+      description: typeof entry.description === "string" ? entry.description.slice(0, 2_000) : "",
+      input_schema: isObjectRecord(entry.inputSchema) ? entry.inputSchema : {},
+      read_only: annotations.readOnlyHint === true,
+      destructive: annotations.destructiveHint === true,
+    }];
+  });
+}
+
+async function callLocalMcpRequest(
+  settings: VaultMcpPluginSettings,
+  method: string,
+  params: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const response = await requestUrl({
+    url: localServerEndpoint(settings),
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${settings.localServerMcpToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json,text/event-stream",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: Date.now(),
+      method,
+      params,
+    }),
+  });
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(describeHttpFailure(`local MCP ${method}`, response.status, response.text));
+  }
+  const parsed = parseJsonResponse<Record<string, unknown>>(response.text, `local MCP ${method}`);
+  if (isObjectRecord(parsed.error)) {
+    throw new Error(typeof parsed.error.message === "string" ? parsed.error.message : `Local MCP ${method} returned a JSON-RPC error.`);
+  }
+  return parsed;
+}
+
+function localFsPolicyFromMcpResponse(response: Record<string, unknown>): LocalFsPolicy {
+  const result = isObjectRecord(response.result) ? response.result : null;
+  const policy = result && isObjectRecord(result.structuredContent) ? result.structuredContent : null;
+  if (!policy || !isLocalFsPolicySnapshot(policy)) {
+    throw new Error("Local MCP policy response was missing or invalid.");
+  }
+  return policy;
+}
+
+function localFsPolicyFromPluginSettings(settings: VaultMcpPluginSettings, startedAt: string | null): LocalFsPolicy {
+  const expiresAt = settings.localFsAccessTtlMinutes > 0 && startedAt
+    ? new Date(Date.parse(startedAt) + settings.localFsAccessTtlMinutes * 60_000).toISOString()
+    : null;
+  return {
+    mode: settings.localFsAccessMode,
+    read_roots: [...settings.localFsReadRoots],
+    write_roots: [...settings.localFsWriteRoots],
+    write_operations: [...settings.localFsWriteOperations],
+    max_read_bytes: settings.localFsMaxReadBytes,
+    max_search_results: settings.localFsMaxSearchResults,
+    max_search_files: settings.localFsMaxSearchFiles,
+    expires_at: expiresAt,
+    require_user_intent: settings.localFsRequireUserIntent,
+    user_intent_phrase: settings.localFsUserIntentPhrase,
+  };
+}
+
+function isLocalFsPolicySnapshot(value: Record<string, unknown>): value is LocalFsPolicy {
+  return ["off", "read", "write", "god"].includes(String(value.mode))
+    && isStringList(value.read_roots)
+    && isStringList(value.write_roots)
+    && isStringList(value.write_operations)
+    && isPositiveInteger(value.max_read_bytes)
+    && isPositiveInteger(value.max_search_results)
+    && isPositiveInteger(value.max_search_files)
+    && (value.expires_at === null || typeof value.expires_at === "string")
+    && typeof value.require_user_intent === "boolean"
+    && typeof value.user_intent_phrase === "string";
+}
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isStringList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
 
 async function isLocalTcpPortOpen(port: number, timeoutMs = 250): Promise<boolean> {

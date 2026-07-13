@@ -49,6 +49,9 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 - Extended existing read tools with optional `vault_id` where applicable.
 - Enforced multi-vault read disambiguation: when more than one vault has synced, search/list/fetch/status/debug tools require `vault_id` instead of reading across vaults by default.
 - Added opt-in hosted MCP proposal tools: `propose_vault_write` queues a validated pending change and `list_write_proposals` reports proposal state. They are disabled unless `MCP_WRITE_PROPOSALS_ENABLED=true`; OAuth clients also need `vault:write` scope. No hosted MCP tool directly edits an Obsidian vault.
+- Added the opt-in hosted desktop bridge. Short-lived, installation-scoped requests persist in JSON/Postgres; the plugin heartbeats and polls outward, forwards one request to the authenticated localhost MCP sidecar, and returns the result. Hosted tools require `MCP_REMOTE_LOCAL_FS_ENABLED=true`, OAuth `local:access`, a fresh agent heartbeat, an unexpired local policy, and the exact plugin intent phrase.
+- Added `desktop_local_fs_status`, `desktop_run_local_tool`, and `desktop_local_request_status`. The generic execution tool reaches the existing sixteen local filesystem tools without duplicating or weakening their roots, operations, symlink, expiry, audit, and god-mode enforcement.
+- Added `npm run smoke:hosted-local-bridge` to verify the full hosted-request, plugin-style relay, localhost write/read, and outside-root denial path.
 - Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.
 
 ## Write Model

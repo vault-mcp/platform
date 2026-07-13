@@ -22,6 +22,27 @@ export type LocalFsAccessMode = "off" | "read" | "write" | "god";
 
 export type LocalFsWriteOperation = "write_file" | "edit_file" | "create_directory" | "copy_path" | "move_path" | "delete_path";
 
+export const LOCAL_FS_TOOL_NAMES = [
+  "local_fs_policy",
+  "local_fs_audit",
+  "local_list_files",
+  "local_read_file",
+  "local_read_files",
+  "local_read_file_bytes",
+  "local_file_info",
+  "local_find_files",
+  "local_search_text",
+  "local_write_file",
+  "local_write_file_bytes",
+  "local_edit_file",
+  "local_create_directory",
+  "local_copy_path",
+  "local_move_path",
+  "local_delete_path",
+] as const;
+
+export type LocalFsToolName = typeof LOCAL_FS_TOOL_NAMES[number];
+
 export type LocalFsPolicy = {
   mode: LocalFsAccessMode;
   read_roots: string[];
@@ -33,6 +54,50 @@ export type LocalFsPolicy = {
   expires_at: string | null;
   require_user_intent: boolean;
   user_intent_phrase: string;
+};
+
+export type LocalAccessRequestStatus = "pending" | "running" | "completed" | "failed" | "expired";
+
+export type LocalAccessRequestError = {
+  code: string;
+  message: string;
+};
+
+export type LocalAccessRequest = {
+  id: string;
+  tenant_id: string;
+  vault_id: string;
+  installation_id: string;
+  requester: string;
+  tool_name: LocalFsToolName;
+  arguments: Record<string, unknown>;
+  status: LocalAccessRequestStatus;
+  result: Record<string, unknown> | null;
+  error: LocalAccessRequestError | null;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  claimed_at: string | null;
+  completed_at: string | null;
+};
+
+export type LocalAgentStatus = {
+  tenant_id: string;
+  vault_id: string;
+  installation_id: string;
+  agent_version: string;
+  policy: LocalFsPolicy;
+  tools: LocalAgentToolDefinition[];
+  connected_at: string;
+  last_seen_at: string;
+};
+
+export type LocalAgentToolDefinition = {
+  name: LocalFsToolName;
+  description: string;
+  input_schema: Record<string, unknown>;
+  read_only: boolean;
+  destructive: boolean;
 };
 
 export type IndexRuleAction = "allow" | "deny" | "review";
@@ -238,6 +303,8 @@ export type VaultIndex = {
   manifest?: SyncManifest;
   manifests?: SyncManifest[];
   write_proposals?: WriteProposal[];
+  local_access_requests?: LocalAccessRequest[];
+  local_agents?: LocalAgentStatus[];
 };
 
 export type SyncPayload = {

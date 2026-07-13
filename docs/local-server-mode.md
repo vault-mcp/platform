@@ -131,6 +131,38 @@ Minimum private-alpha rules:
 - Do not enumerate, read, or write local files unless the user asks for that
   specific interaction in the chat.
 
+## Hosted ChatGPT Bridge
+
+Browser-hosted ChatGPT cannot connect directly to `127.0.0.1`. The private-alpha
+bridge solves that without opening an inbound desktop port:
+
+1. The deployment owner enables `MCP_REMOTE_LOCAL_FS_ENABLED` and adds the
+   OAuth scope `local:access`.
+2. The user enables `Run local MCP server` and chooses Off, Read, Write, or God
+   mode plus roots, operations, intent phrase, and session expiry.
+3. The user explicitly enables `Allow hosted ChatGPT to use local tools` in the
+   plugin.
+4. The plugin sends a safe policy heartbeat plus the sidecar's live local-tool
+   names/argument schemas, then polls outward over HTTPS for a request addressed
+   to its vault and installation id.
+5. ChatGPT calls `desktop_run_local_tool` for the current conversation. The
+   hosted server stores a short-lived request and waits.
+6. The plugin claims that request, forwards it to the authenticated localhost
+   MCP endpoint, and posts the MCP result back.
+
+The hosted server does not scan the filesystem, hold permanent desktop access,
+or bypass local policy. A stale heartbeat, disabled bridge, Off mode, expired
+session, wrong intent phrase, out-of-root path, disabled write operation,
+symlink escape, or missing delete confirmation all fail closed. The generic
+hosted tool can reach the same sixteen `local_*` tools as a local client,
+including god mode only when the plugin deliberately enables it.
+
+Verify the two-server request path with:
+
+```bash
+npm run smoke:hosted-local-bridge
+```
+
 ## Client Setup
 
 Local clients should receive:
