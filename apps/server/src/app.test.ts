@@ -319,6 +319,7 @@ describe("server MCP contract", () => {
       "local_fs_audit",
       "local_list_files",
       "local_read_file",
+      "local_read_files",
       "local_read_file_bytes",
       "local_file_info",
       "local_find_files",
@@ -369,6 +370,34 @@ describe("server MCP contract", () => {
       truncated: true,
     });
 
+    const multiRead = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_read_files",
+      arguments: {
+        paths: [filePath, path.join(root, "nested", "project-note.md")],
+        max_bytes_per_file: 32,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(multiRead.result.structuredContent).toMatchObject({
+      files: [
+        {
+          path: filePath,
+          text: "hello from local filesystem",
+          bytes_read: 27,
+          truncated: false,
+        },
+        {
+          path: path.join(root, "nested", "project-note.md"),
+          text: "alpha project note\nsecond line",
+          bytes_read: 30,
+          truncated: false,
+        },
+      ],
+      total_bytes_read: 57,
+      truncated: false,
+    });
+    expect(multiRead.result.content?.[0].text).toContain("Read local files");
+
     const bytesRead = await mcp(baseUrl, accessToken, 110, "tools/call", {
       name: "local_read_file_bytes",
       arguments: { path: filePath, max_bytes: 5, user_intent: "use local filesystem" },
@@ -406,6 +435,13 @@ describe("server MCP contract", () => {
     });
     expect(deniedSymlinkRead.result.isError).toBe(true);
     expect(deniedSymlinkRead.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkMultiRead = await mcp(baseUrl, accessToken, 117, "tools/call", {
+      name: "local_read_files",
+      arguments: { paths: [path.join(root, "outside-link.md")], user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkMultiRead.result.isError).toBe(true);
+    expect(deniedSymlinkMultiRead.result.structuredContent.error.message).toContain("real target is outside");
 
     const deniedSymlinkBytesRead = await mcp(baseUrl, accessToken, 113, "tools/call", {
       name: "local_read_file_bytes",

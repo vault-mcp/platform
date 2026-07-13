@@ -1635,7 +1635,7 @@ function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
 
   new Setting(parent)
     .setName("Local max read bytes")
-    .setDesc("Upper bound for one local_read_file or local_read_file_bytes result. The server also caps tool-provided max_bytes to this value.")
+    .setDesc("Upper bound for one local_read_file, local_read_files file entry, or local_read_file_bytes result. The server also caps tool-provided max_bytes to this value.")
     .addText((text) => {
       text.inputEl.type = "number";
       text.inputEl.min = "1";

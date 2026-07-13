@@ -67,7 +67,7 @@ try {
 
   const tools = await mcp(1, "tools/list", {}, inspectorOrigins[0]);
   const toolNames = tools.result.tools.map((tool) => tool.name);
-  for (const name of ["local_fs_policy", "local_fs_audit", "local_read_file", "local_read_file_bytes", "local_file_info", "local_search_text", "local_write_file", "local_write_file_bytes", "local_edit_file", "local_copy_path"]) {
+  for (const name of ["local_fs_policy", "local_fs_audit", "local_read_file", "local_read_files", "local_read_file_bytes", "local_file_info", "local_search_text", "local_write_file", "local_write_file_bytes", "local_edit_file", "local_copy_path"]) {
     assert(toolNames.includes(name), `expected ${name} for local Inspector acceptance`);
   }
 
@@ -95,6 +95,12 @@ try {
     max_bytes: 11,
   }, inspectorOrigins[0]);
   assert(Buffer.from(bytesRead.result.structuredContent.content_base64, "base64").toString("utf8") === "# Inspector", "expected Inspector-origin byte read");
+
+  const multiRead = await callTool(11, "local_read_files", {
+    paths: [path.join(readRoot, "inspector-note.md")],
+    max_bytes_per_file: 80,
+  }, inspectorOrigins[0]);
+  assert(multiRead.result.structuredContent.files[0].text.includes("Local inspector origin phrase"), "expected Inspector-origin multi-file read");
 
   const writtenPath = path.join(writeRoot, "inspector-output.md");
   await callTool(4, "local_write_file", {
@@ -142,7 +148,7 @@ try {
       "disallowed browser origin is rejected",
       "authenticated SSE probe works from Inspector origin",
       "authenticated tools/list and local filesystem tools work from Inspector origin",
-      "scoped local metadata, byte reads/writes, exact edits, text search, write, copy, and audit work through Inspector-origin MCP calls",
+      "scoped local metadata, multi-file reads, byte reads/writes, exact edits, text search, write, copy, and audit work through Inspector-origin MCP calls",
     ],
   }, null, 2));
 } finally {

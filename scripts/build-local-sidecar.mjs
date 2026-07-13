@@ -308,7 +308,7 @@ Options:
   --fs-roots <paths>            Comma-separated read roots for local filesystem tools.
   --fs-write-roots <paths>      Comma-separated write roots for local filesystem tools.
   --fs-write-operations <ops>   Comma-separated write_file,edit_file,create_directory,copy_path,move_path,delete_path. Defaults to write_file.
-  --fs-max-read-bytes <bytes>   Max bytes returned by local_read_file. Defaults to 524288.
+  --fs-max-read-bytes <bytes>   Max bytes returned by each local text/byte read. Defaults to 524288.
   --fs-max-search-results <n>   Max local find/search results. Defaults to 100.
   --fs-max-search-files <n>     Max files scanned by local_search_text. Defaults to 2000.
   --fs-require-user-intent <b>  Require user_intent on local filesystem tools. Defaults to true.

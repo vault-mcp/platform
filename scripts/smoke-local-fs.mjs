@@ -63,6 +63,7 @@ async function runScopedWriteModeSmoke() {
       "local_fs_audit",
       "local_list_files",
       "local_read_file",
+      "local_read_files",
       "local_read_file_bytes",
       "local_file_info",
       "local_find_files",
@@ -117,6 +118,16 @@ async function runScopedWriteModeSmoke() {
       path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
     });
     assert(read.result.structuredContent.text.includes("Alpha searchable phrase"), "expected local_read_file text");
+
+    const multiRead = await callTool(baseUrl, 22, "local_read_files", {
+      paths: [
+        path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
+        path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
+      ],
+      max_bytes_per_file: 64,
+    });
+    assert(multiRead.result.structuredContent.files.length === 1, "expected local_read_files to deduplicate paths");
+    assert(multiRead.result.structuredContent.files[0].text.includes("Alpha searchable phrase"), "expected local_read_files text");
 
     const bytesRead = await callTool(baseUrl, 17, "local_read_file_bytes", {
       path: path.join(readRoot, "20 Projects", "Demo", "Project Home.md"),
@@ -216,7 +227,7 @@ async function runScopedWriteModeSmoke() {
       mode: "write",
       read_root: readRoot,
       write_root: writeRoot,
-      tools_checked: 15,
+      tools_checked: 16,
     };
   });
 }

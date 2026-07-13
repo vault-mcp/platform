@@ -104,6 +104,8 @@ Minimum private-alpha rules:
 - Time-box enabled filesystem access with an optional session expiry. The
   plugin default is a 120-minute access window for each local-server start.
 - In `read` mode, only configured read roots may be listed, searched, or read.
+- `local_read_files` can read an explicit selected path list in one tool call,
+  with per-file and total byte caps; it is not a background vault indexing path.
 - In `write` mode, configured read roots still control listing/reading and
   configured write roots control writes.
 - Local discovery is on-demand through `local_find_files` and
@@ -208,15 +210,15 @@ results`, `Local max searched files`, `Local access session minutes`,
 When the session window expires, the server keeps `local_fs_policy` and
 `local_fs_audit` visible so clients can explain what happened and review recent
 successful write-side operations, but it stops advertising local list, read,
-byte-read, search, and write tools until the local server is restarted or
-refreshed.
+selected multi-file read, byte-read, search, and write tools until the local
+server is restarted or refreshed.
 The plugin settings UI exposes `Refresh session` and the command palette
 exposes `Refresh local filesystem access session`; both restart the developer
 local server profile with a fresh expiry window.
 
 When intent is required, local clients should first call `local_fs_policy`.
-Then any `local_list_files`, `local_read_file`, `local_read_file_bytes`,
-`local_file_info`, `local_find_files`, `local_search_text`,
+Then any `local_list_files`, `local_read_file`, `local_read_files`,
+`local_read_file_bytes`, `local_file_info`, `local_find_files`, `local_search_text`,
 `local_write_file`, `local_write_file_bytes`, `local_edit_file`,
 `local_create_directory`, `local_copy_path`, `local_move_path`,
 `local_delete_path`, or `local_fs_audit` call must include:
@@ -227,7 +229,8 @@ Then any `local_list_files`, `local_read_file`, `local_read_file_bytes`,
 }
 ```
 
-Use `local_read_file` and `local_write_file` for UTF-8 text. Use
+Use `local_read_file` for one UTF-8 file and `local_read_files` for an explicit
+set of selected UTF-8 files. Use `local_write_file` for UTF-8 text writes. Use
 `local_read_file_bytes` and `local_write_file_bytes` when exact bytes matter or
 the file is binary; those tools exchange content as standard base64 and still
 respect the configured read roots, write roots, `write_file` allowlist,

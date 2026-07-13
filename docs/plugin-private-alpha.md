@@ -112,7 +112,9 @@ the `Refresh local filesystem access session` command-palette action when you
 are intentionally working with a local MCP client again. Scoped roots are
 checked against real filesystem targets, so
 symlinks that point outside the configured roots are denied for local reads,
-writes, exact edits, copies, moves, and deletes. `local_edit_file` is separately
+selected multi-file reads, writes, exact edits, copies, moves, and deletes.
+`local_read_files` reads only explicit path lists with byte caps; it is not a
+background vault-loading path. `local_edit_file` is separately
 allowlisted and only replaces exact UTF-8 text when the requested replacement
 count matches the file. By default, every local filesystem tool call except
 `local_fs_policy` must include the exact configured `user_intent` phrase. The
