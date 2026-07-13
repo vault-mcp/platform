@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { ServerConfig } from "./config.js";
 import { createApp } from "./app.js";
 import { JsonIndexStore } from "./store.js";
-import type { VaultDocument } from "@vault-mcp/core";
+import type { LocalAccessRequest, VaultDocument } from "@vault-mcp/core";
 
 const servers: http.Server[] = [];
 const expectedTools = [
@@ -62,6 +62,20 @@ describe("server MCP contract", () => {
     const html = await response.text();
     expect(html).toContain("Rebuild the connector from scratch");
     expect(html).toContain("Build The Indexer");
+  });
+
+  it("serves the guided Vercel setup page without authentication", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile);
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+
+    const response = await fetch(`${baseUrl}/setup/vercel`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    const html = await response.text();
+    expect(html).toContain("No-terminal Vercel setup");
+    expect(html).toContain("Obsidian plugin setup bundle");
   });
 
   it("returns versioned health and storage status", async () => {
@@ -158,6 +172,12 @@ describe("server MCP contract", () => {
     expect(component.result.contents?.[0].mimeType).toBe("text/html;profile=mcp-app");
     expect(component.result.contents?.[0].text).toContain("Vault MCP Results");
     expect(component.result.contents?.[0].text).toContain("renderMarkdown");
+    expect(component.result.contents?.[0].text).toContain("parseFrontmatter");
+    expect(component.result.contents?.[0].text).toContain("renderVaultCards");
+    expect(component.result.contents?.[0].text).toContain("renderStatusCard");
+    expect(component.result.contents?.[0].text).toContain("renderProposalCards");
+    expect(component.result.contents?.[0].text).toContain("renderErrorState");
+    expect(component.result.contents?.[0].text).toContain("scheduleRenderRetries");
     expect(component.result.contents?.[0].text).toContain("vault-mcp/structuredContent");
     expect(component.result.contents?.[0].text).toContain("openai:set_globals");
     expect(component.result.contents?.[0].text).toContain("toolResponseMetadata");
@@ -213,6 +233,9 @@ describe("server MCP contract", () => {
       arguments: { path: "02 Daily/2026-06-10.md" },
     });
     expect(deniedByPath.result.isError).toBe(true);
+    expect(deniedByPath.result._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results-v2.html");
+    const deniedStructured = deniedByPath.result._meta?.["vault-mcp/structuredContent"] as { error?: { code?: string } } | undefined;
+    expect(deniedStructured?.error?.code).toBe("NOT_FOUND_OR_NOT_AVAILABLE");
     expect(deniedByPath.result.content?.[0].text).toContain("Try search, list_notes, or fetch_note_by_path");
 
     const status = await mcp(baseUrl, accessToken, 23, "tools/call", {
@@ -221,6 +244,7 @@ describe("server MCP contract", () => {
     });
     expect(status.result.structuredContent.indexed_note_count).toBe(1);
     expect(status.result.structuredContent.excluded_scopes).toContain("02 Daily/");
+    expect(status.result._meta?.["openai/outputTemplate"]).toBe("ui://vault-mcp/results-v2.html");
 
     const fetched = await mcp(baseUrl, accessToken, 3, "tools/call", {
       name: "fetch",
@@ -237,6 +261,286 @@ describe("server MCP contract", () => {
     expect(await syncStatus(baseUrl, config.syncToken, [])).toBe(200);
     const healthAfterDelete = await (await fetch(`${baseUrl}/healthz`)).json() as { document_count: number };
     expect(healthAfterDelete.document_count).toBe(0);
+  });
+
+  it("queues scope-gated MCP write proposals without editing the vault index", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, { writeProposalsEnabled: true });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+    const targetPath = "20 Projects/Vault MCP Connector/Project Home.md";
+
+    expect(await syncStatus(baseUrl, config.syncToken, [fixtureDocument()])).toBe(200);
+
+    const tools = await mcp(baseUrl, accessToken, 70, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "propose_vault_write",
+      "list_write_proposals",
+    ]);
+    const proposeTool = tools.result.tools?.find((tool) => tool.name === "propose_vault_write");
+    expect(proposeTool?.annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+    });
+
+    const missingHash = await mcp(baseUrl, accessToken, 71, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "append_to_note",
+        target_path: targetPath,
+        proposed_content: "\n- Missing hash should be refused.",
+      },
+    });
+    expect(missingHash.result.isError).toBe(true);
+    expect(missingHash.result.structuredContent.error.code).toBe("WRITE_PROPOSAL_DENIED");
+    expect(missingHash.result.structuredContent.error.message).toContain("requires base_content_hash");
+
+    const staleHash = await mcp(baseUrl, accessToken, 72, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "replace_note",
+        target_path: targetPath,
+        base_content_hash: "stale-hash",
+        proposed_content: "# Stale replacement",
+      },
+    });
+    expect(staleHash.result.isError).toBe(true);
+    expect(staleHash.result.structuredContent.error.message).toContain("stale or does not match");
+
+    const traversal = await mcp(baseUrl, accessToken, 73, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "create_note",
+        target_path: "../outside.md",
+        proposed_content: "# Outside",
+      },
+    });
+    expect(traversal.result.isError).toBe(true);
+    expect(traversal.result.structuredContent.error.message).toContain("vault-relative Markdown path");
+
+    const proposed = await mcp(baseUrl, accessToken, 74, "tools/call", {
+      name: "propose_vault_write",
+      arguments: {
+        operation: "append_to_note",
+        target_path: targetPath,
+        base_content_hash: "hash",
+        proposed_content: "\n- Proposed safely from MCP.",
+        rationale: "User asked to add the next project action.",
+      },
+    });
+    expect(proposed.result.isError).not.toBe(true);
+    expect(proposed.result.structuredContent.write_proposals).toHaveLength(1);
+    expect(proposed.result.structuredContent.write_proposals[0]).toMatchObject({
+      vault_id: "default",
+      operation: "append_to_note",
+      target_path: targetPath,
+      base_content_hash: "hash",
+      requester: "mcp:static-access-token",
+      status: "pending",
+    });
+    expect(proposed.result.content?.[0].text).toContain("The vault has not been changed");
+
+    const listed = await mcp(baseUrl, accessToken, 75, "tools/call", {
+      name: "list_write_proposals",
+      arguments: { status: "pending" },
+    });
+    expect(listed.result.structuredContent.write_proposals).toHaveLength(1);
+    expect(listed.result.content?.[0].text).toContain("Pending or approved proposals still require Obsidian-side");
+
+    const fetched = await mcp(baseUrl, accessToken, 76, "tools/call", {
+      name: "fetch_note_by_path",
+      arguments: { path: targetPath },
+    });
+    expect(fetched.result.structuredContent.text).not.toContain("Proposed safely from MCP");
+
+    const adminProposals = await fetch(`${baseUrl}/admin/vaults/default/write-proposals`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(adminProposals.status).toBe(200);
+    expect((await adminProposals.json() as { proposals: unknown[] }).proposals).toHaveLength(1);
+  });
+
+  it("delegates one short-lived desktop tool call to the matching Obsidian installation", async () => {
+    const { store, indexFile } = await createStore();
+    const config = testConfig(indexFile, {
+      remoteLocalFsEnabled: true,
+      remoteLocalFsRequestTtlSeconds: 10,
+      remoteLocalFsWaitSeconds: 5,
+      remoteLocalFsAgentFreshSeconds: 60,
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    expect(await syncStatus(baseUrl, config.syncToken, [fixtureDocument()])).toBe(200);
+    const policy = {
+      mode: "write",
+      read_roots: ["/tmp/read"],
+      write_roots: ["/tmp/write"],
+      write_operations: ["write_file", "edit_file"],
+      max_read_bytes: 1024,
+      max_search_results: 20,
+      max_search_files: 200,
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
+    };
+    const heartbeat = await fetch(`${baseUrl}/admin/vaults/default/local-agent/heartbeat`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        installation_id: "local",
+        agent_version: "test-agent",
+        policy,
+        tools: [{
+          name: "local_read_file",
+          description: "Read one local file.",
+          input_schema: { type: "object", properties: { path: { type: "string" } } },
+          read_only: true,
+          destructive: false,
+        }],
+      }),
+    });
+    expect(heartbeat.status).toBe(200);
+
+    const tools = await mcp(baseUrl, accessToken, 170, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "desktop_local_fs_status",
+      "desktop_run_local_tool",
+      "desktop_local_request_status",
+    ]);
+
+    const status = await mcp(baseUrl, accessToken, 171, "tools/call", {
+      name: "desktop_local_fs_status",
+      arguments: {},
+    });
+    expect(status.result.structuredContent).toMatchObject({
+      connected: true,
+      fresh: true,
+      agent: {
+        installation_id: "local",
+        policy: { mode: "write" },
+        tools: [{ name: "local_read_file", read_only: true }],
+      },
+    });
+
+    const deniedIntent = await mcp(baseUrl, accessToken, 172, "tools/call", {
+      name: "desktop_run_local_tool",
+      arguments: {
+        tool_name: "local_read_file",
+        arguments: { path: "/tmp/read/note.md" },
+        user_intent: "wrong phrase",
+      },
+    });
+    expect(deniedIntent.result.isError).toBe(true);
+    expect(deniedIntent.result.structuredContent.error.code).toBe("REMOTE_LOCAL_FS_DENIED");
+
+    const delegatedCall = mcp(baseUrl, accessToken, 173, "tools/call", {
+      name: "desktop_run_local_tool",
+      arguments: {
+        tool_name: "local_read_file",
+        arguments: { path: "/tmp/read/note.md", max_bytes: 128 },
+        user_intent: "use local filesystem",
+        wait_seconds: 5,
+      },
+    });
+
+    const wrongInstallation = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/next?installation_id=other`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(wrongInstallation.status).toBe(200);
+    expect((await wrongInstallation.json() as { request: unknown }).request).toBeNull();
+
+    const wrongTenant = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/next?tenant_id=other&installation_id=local`, {
+      headers: { Authorization: `Bearer ${config.syncToken}` },
+    });
+    expect(wrongTenant.status).toBe(200);
+    expect((await wrongTenant.json() as { request: unknown }).request).toBeNull();
+
+    const claimed = await pollClaimedLocalAccessRequest(baseUrl, config.syncToken, "default", "local");
+    expect(claimed).toMatchObject({
+      installation_id: "local",
+      requester: "mcp:static-access-token",
+      tool_name: "local_read_file",
+      arguments: {
+        path: "/tmp/read/note.md",
+        max_bytes: 128,
+        user_intent: "use local filesystem",
+      },
+      status: "running",
+    });
+
+    const localResult = {
+      jsonrpc: "2.0",
+      id: 1,
+      result: {
+        structuredContent: {
+          path: "/tmp/read/note.md",
+          text: "Desktop result",
+          bytes_read: 14,
+          truncated: false,
+        },
+      },
+    };
+    const completion = await fetch(`${baseUrl}/admin/vaults/default/local-access-requests/${claimed.id}/result`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        installation_id: "local",
+        status: "completed",
+        result: localResult,
+      }),
+    });
+    expect(completion.status).toBe(200);
+
+    const delegated = await delegatedCall;
+    expect(delegated.result.isError).not.toBe(true);
+    expect(delegated.result.structuredContent.request.status).toBe("completed");
+    expect(delegated.result.structuredContent.local_result).toEqual(localResult);
+
+    const requestStatus = await mcp(baseUrl, accessToken, 174, "tools/call", {
+      name: "desktop_local_request_status",
+      arguments: { request_id: claimed.id },
+    });
+    expect(requestStatus.result.structuredContent.local_result).toEqual(localResult);
+  });
+
+  it("purges expired completed desktop results from JSON storage", async () => {
+    const { store, indexFile } = await createStore();
+    const now = new Date().toISOString();
+    const request: LocalAccessRequest = {
+      id: "expired-completed-request",
+      tenant_id: "default",
+      vault_id: "default",
+      installation_id: "local",
+      requester: "mcp:test",
+      tool_name: "local_read_file",
+      arguments: { path: "/tmp/private.md", user_intent: "use local filesystem" },
+      status: "completed",
+      result: { result: { structuredContent: { text: "temporary private content" } } },
+      error: null,
+      created_at: now,
+      updated_at: now,
+      expires_at: "2000-01-01T00:00:00.000Z",
+      claimed_at: now,
+      completed_at: now,
+    };
+
+    await store.createLocalAccessRequest(request);
+    expect(await store.getLocalAccessRequest(request.id)).toBeNull();
+    const persisted = JSON.parse(await fs.readFile(indexFile, "utf8")) as { local_access_requests?: unknown[] };
+    expect(persisted.local_access_requests).toEqual([]);
+    expect(await fs.readFile(indexFile, "utf8")).not.toContain("temporary private content");
   });
 
   it("supports authenticated GET /mcp as a Streamable HTTP SSE stream", async () => {
@@ -256,6 +560,519 @@ describe("server MCP contract", () => {
     expect(missingSseAccept.status).toBe(406);
 
     await expectMcpSseProbe(baseUrl, accessToken);
+  });
+
+  it("exposes local filesystem read tools only when local read mode is enabled", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-read-"));
+    const filePath = path.join(root, "allowed.md");
+    await fs.writeFile(filePath, "hello from local filesystem", "utf8");
+    await fs.mkdir(path.join(root, "nested"));
+    await fs.writeFile(path.join(root, "nested", "project-note.md"), "alpha project note\nsecond line", "utf8");
+    const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-${Date.now()}.md`);
+    await fs.writeFile(outsidePath, "outside", "utf8");
+    const outsideSymlinkTarget = path.join(os.tmpdir(), `vault-mcp-outside-symlink-${Date.now()}.md`);
+    await fs.writeFile(outsideSymlinkTarget, "outside symlink secret", "utf8");
+    await fs.symlink(outsideSymlinkTarget, path.join(root, "outside-link.md"));
+
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "read",
+        read_roots: [root],
+        write_roots: [],
+        write_operations: ["write_file"],
+        max_read_bytes: 512,
+        max_search_results: 10,
+        max_search_files: 100,
+        expires_at: null,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 90, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toEqual([
+      "local_fs_policy",
+      "local_fs_audit",
+      "local_list_files",
+      "local_read_file",
+      "local_read_files",
+      "local_read_file_bytes",
+      "local_file_info",
+      "local_find_files",
+      "local_search_text",
+      ...expectedTools,
+    ]);
+
+    const policy = await mcp(baseUrl, accessToken, 91, "tools/call", {
+      name: "local_fs_policy",
+      arguments: {},
+    });
+    expect(policy.result.structuredContent).toMatchObject({
+      mode: "read",
+      read_roots: [root],
+      write_roots: [],
+      write_operations: [],
+      max_search_results: 10,
+      max_search_files: 100,
+      expires_at: null,
+      expired: false,
+      god_mode: false,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
+    });
+
+    const missingIntent = await mcp(baseUrl, accessToken, 107, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: filePath },
+    });
+    expect(missingIntent.result.isError).toBe(true);
+    expect(missingIntent.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+    expect(missingIntent.result.structuredContent.error.message).toContain("user_intent=\"use local filesystem\"");
+
+    const listed = await mcp(baseUrl, accessToken, 92, "tools/call", {
+      name: "local_list_files",
+      arguments: { path: root, user_intent: "use local filesystem" },
+    });
+    expect(listed.result.structuredContent.entries.map((entry: { name: string }) => entry.name)).toContain("allowed.md");
+
+    const read = await mcp(baseUrl, accessToken, 93, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: filePath, max_bytes: 12, user_intent: "use local filesystem" },
+    });
+    expect(read.result.structuredContent).toMatchObject({
+      path: filePath,
+      text: "hello from l",
+      bytes_read: 12,
+      truncated: true,
+    });
+
+    const multiRead = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_read_files",
+      arguments: {
+        paths: [filePath, path.join(root, "nested", "project-note.md")],
+        max_bytes_per_file: 32,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(multiRead.result.structuredContent).toMatchObject({
+      files: [
+        {
+          path: filePath,
+          text: "hello from local filesystem",
+          bytes_read: 27,
+          truncated: false,
+        },
+        {
+          path: path.join(root, "nested", "project-note.md"),
+          text: "alpha project note\nsecond line",
+          bytes_read: 30,
+          truncated: false,
+        },
+      ],
+      total_bytes_read: 57,
+      truncated: false,
+    });
+    expect(multiRead.result.content?.[0].text).toContain("Read local files");
+
+    const bytesRead = await mcp(baseUrl, accessToken, 110, "tools/call", {
+      name: "local_read_file_bytes",
+      arguments: { path: filePath, max_bytes: 5, user_intent: "use local filesystem" },
+    });
+    expect(bytesRead.result.structuredContent).toMatchObject({
+      path: filePath,
+      encoding: "base64",
+      content_base64: Buffer.from("hello").toString("base64"),
+      bytes_read: 5,
+      truncated: true,
+    });
+
+    const info = await mcp(baseUrl, accessToken, 108, "tools/call", {
+      name: "local_file_info",
+      arguments: { path: filePath, user_intent: "use local filesystem" },
+    });
+    expect(info.result.structuredContent).toMatchObject({
+      path: filePath,
+      type: "file",
+      size: 27,
+      permissions_octal: expect.stringMatching(/^0[0-7]{3}$/),
+      symlink_target: null,
+    });
+
+    const denied = await mcp(baseUrl, accessToken, 94, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: outsidePath, user_intent: "use local filesystem" },
+    });
+    expect(denied.result.isError).toBe(true);
+    expect(denied.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+
+    const deniedSymlinkRead = await mcp(baseUrl, accessToken, 112, "tools/call", {
+      name: "local_read_file",
+      arguments: { path: path.join(root, "outside-link.md"), user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkRead.result.isError).toBe(true);
+    expect(deniedSymlinkRead.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkMultiRead = await mcp(baseUrl, accessToken, 117, "tools/call", {
+      name: "local_read_files",
+      arguments: { paths: [path.join(root, "outside-link.md")], user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkMultiRead.result.isError).toBe(true);
+    expect(deniedSymlinkMultiRead.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkBytesRead = await mcp(baseUrl, accessToken, 113, "tools/call", {
+      name: "local_read_file_bytes",
+      arguments: { path: path.join(root, "outside-link.md"), user_intent: "use local filesystem" },
+    });
+    expect(deniedSymlinkBytesRead.result.isError).toBe(true);
+    expect(deniedSymlinkBytesRead.result.structuredContent.error.message).toContain("real target is outside");
+
+    const found = await mcp(baseUrl, accessToken, 102, "tools/call", {
+      name: "local_find_files",
+      arguments: { root, query: "project", extensions: [".md"], limit: 5, user_intent: "use local filesystem" },
+    });
+    expect(found.result.structuredContent.results).toEqual([
+      expect.objectContaining({
+        path: path.join(root, "nested", "project-note.md"),
+        type: "file",
+      }),
+    ]);
+
+    const searched = await mcp(baseUrl, accessToken, 103, "tools/call", {
+      name: "local_search_text",
+      arguments: { root, query: "alpha", extensions: ["md"], limit: 5, user_intent: "use local filesystem" },
+    });
+    expect(searched.result.structuredContent.matches).toEqual([
+      {
+        path: path.join(root, "nested", "project-note.md"),
+        line: 1,
+        preview: "alpha project note",
+      },
+    ]);
+
+    const deniedSearch = await mcp(baseUrl, accessToken, 104, "tools/call", {
+      name: "local_search_text",
+      arguments: { root: os.tmpdir(), query: "outside", user_intent: "use local filesystem" },
+    });
+    expect(deniedSearch.result.isError).toBe(true);
+  });
+
+  it("exposes only local filesystem policy and audit when local filesystem access is expired", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-expired-"));
+    const expiredAt = "2000-01-01T00:00:00.000Z";
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "read",
+        read_roots: [root],
+        write_roots: [],
+        write_operations: ["write_file"],
+        max_read_bytes: 512,
+        max_search_results: 10,
+        max_search_files: 100,
+        expires_at: expiredAt,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 105, "tools/list", {});
+    const toolNames = tools.result.tools?.map((tool) => tool.name);
+    expect(toolNames).toContain("local_fs_policy");
+    expect(toolNames).toContain("local_fs_audit");
+    expect(toolNames).not.toContain("local_read_file");
+    expect(toolNames).not.toContain("local_read_file_bytes");
+    expect(toolNames).not.toContain("local_search_text");
+
+    const policy = await mcp(baseUrl, accessToken, 106, "tools/call", {
+      name: "local_fs_policy",
+      arguments: {},
+    });
+    expect(policy.result.structuredContent).toMatchObject({
+      mode: "read",
+      expires_at: expiredAt,
+      expired: true,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
+    });
+
+    const audit = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem" },
+    });
+    expect(audit.result.structuredContent).toMatchObject({
+      audit_file: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
+      entries: [],
+      truncated: false,
+    });
+  });
+
+  it("exposes local filesystem write tools only inside configured write roots", async () => {
+    const { store, indexFile } = await createStore();
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-local-write-"));
+    const outsidePath = path.join(os.tmpdir(), `vault-mcp-outside-write-${Date.now()}.md`);
+    const outsideDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "vault-mcp-outside-write-dir-"));
+    const outsideSymlinkFile = path.join(os.tmpdir(), `vault-mcp-outside-write-link-${Date.now()}.md`);
+    await fs.writeFile(outsideSymlinkFile, "outside before", "utf8");
+    await fs.symlink(outsideDirectory, path.join(root, "escape-dir"));
+    await fs.symlink(outsideSymlinkFile, path.join(root, "escape-file.md"));
+    const config = testConfig(indexFile, {
+      localFs: {
+        mode: "write",
+        read_roots: [root],
+        write_roots: [root],
+        write_operations: ["write_file", "edit_file", "create_directory", "copy_path", "move_path", "delete_path"],
+        max_read_bytes: 512,
+        max_search_results: 100,
+        max_search_files: 2000,
+        expires_at: null,
+        require_user_intent: true,
+        user_intent_phrase: "use local filesystem",
+      },
+    });
+    const server = await listen(createApp(config, store));
+    const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const accessToken = config.accessToken ?? "";
+
+    const tools = await mcp(baseUrl, accessToken, 95, "tools/list", {});
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_fs_audit");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_write_file_bytes");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_edit_file");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_create_directory");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_copy_path");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_move_path");
+    expect(tools.result.tools?.map((tool) => tool.name)).toContain("local_delete_path");
+
+    const written = await mcp(baseUrl, accessToken, 96, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: "nested/new-note.md",
+        content: "created by local fs test",
+        create_dirs: true,
+        user_intent: "use local filesystem",
+      },
+    });
+    const writtenPath = path.join(root, "nested/new-note.md");
+    expect(written.result.structuredContent).toMatchObject({
+      path: writtenPath,
+      mode: "overwrite",
+      bytes_written: 24,
+      audit_recorded: true,
+      audit_error: null,
+      audit_file: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
+    });
+    expect(await fs.readFile(writtenPath, "utf8")).toBe("created by local fs test");
+
+    const bytesPath = path.join(root, "nested", "binary.bin");
+    const binaryContent = Buffer.from([0, 255, 65, 66, 10]);
+    const writtenBytes = await mcp(baseUrl, accessToken, 111, "tools/call", {
+      name: "local_write_file_bytes",
+      arguments: {
+        path: "nested/binary.bin",
+        content_base64: binaryContent.toString("base64"),
+        create_dirs: true,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(writtenBytes.result.structuredContent).toMatchObject({
+      path: bytesPath,
+      mode: "overwrite",
+      encoding: "base64",
+      bytes_written: binaryContent.byteLength,
+      audit_recorded: true,
+      audit_error: null,
+    });
+    expect(await fs.readFile(bytesPath)).toEqual(binaryContent);
+
+    const edited = await mcp(baseUrl, accessToken, 118, "tools/call", {
+      name: "local_edit_file",
+      arguments: {
+        path: "nested/new-note.md",
+        old_text: "local fs test",
+        new_text: "exact edit test",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(edited.result.structuredContent).toMatchObject({
+      path: writtenPath,
+      replacements: 1,
+      audit_recorded: true,
+      audit_error: null,
+    });
+    expect(await fs.readFile(writtenPath, "utf8")).toBe("created by exact edit test");
+
+    const deniedAmbiguousEdit = await mcp(baseUrl, accessToken, 119, "tools/call", {
+      name: "local_edit_file",
+      arguments: {
+        path: "nested/new-note.md",
+        old_text: "e",
+        new_text: "E",
+        expected_replacements: 1,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedAmbiguousEdit.result.isError).toBe(true);
+    expect(deniedAmbiguousEdit.result.structuredContent.error.message).toContain("Exact edit refused");
+
+    const createdDirectory = await mcp(baseUrl, accessToken, 98, "tools/call", {
+      name: "local_create_directory",
+      arguments: { path: "new-folder", user_intent: "use local filesystem" },
+    });
+    expect(createdDirectory.result.structuredContent.path).toBe(path.join(root, "new-folder"));
+    expect((await fs.stat(path.join(root, "new-folder"))).isDirectory()).toBe(true);
+
+    const copied = await mcp(baseUrl, accessToken, 109, "tools/call", {
+      name: "local_copy_path",
+      arguments: {
+        source_path: "nested/new-note.md",
+        destination_path: "new-folder/copied-note.md",
+        user_intent: "use local filesystem",
+      },
+    });
+    const copiedPath = path.join(root, "new-folder/copied-note.md");
+    expect(copied.result.structuredContent).toMatchObject({
+      source_path: writtenPath,
+      destination_path: copiedPath,
+      recursive: false,
+      overwritten: false,
+    });
+    expect(await fs.readFile(copiedPath, "utf8")).toBe("created by exact edit test");
+
+    const moved = await mcp(baseUrl, accessToken, 99, "tools/call", {
+      name: "local_move_path",
+      arguments: {
+        source_path: "nested/new-note.md",
+        destination_path: "new-folder/moved-note.md",
+        user_intent: "use local filesystem",
+      },
+    });
+    const movedPath = path.join(root, "new-folder/moved-note.md");
+    expect(moved.result.structuredContent).toMatchObject({
+      source_path: writtenPath,
+      destination_path: movedPath,
+      overwritten: false,
+    });
+    expect(await fs.readFile(movedPath, "utf8")).toBe("created by exact edit test");
+
+    const deniedDelete = await mcp(baseUrl, accessToken, 100, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "new-folder/moved-note.md",
+        confirm: "yes",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedDelete.result.isError).toBe(true);
+
+    const deleted = await mcp(baseUrl, accessToken, 101, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "new-folder/moved-note.md",
+        confirm: "delete",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deleted.result.structuredContent).toMatchObject({
+      path: movedPath,
+      deleted: true,
+      audit_recorded: true,
+      audit_error: null,
+    });
+    await expect(fs.stat(movedPath)).rejects.toThrow();
+
+    const audit = await mcp(baseUrl, accessToken, 116, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem", limit: 10 },
+    });
+    expect(audit.result.structuredContent.audit_file).toBe(path.join(path.dirname(indexFile), "local-fs-audit.jsonl"));
+    expect(audit.result.structuredContent.entries.map((entry: { operation: string }) => entry.operation)).toEqual([
+      "delete_path",
+      "move_path",
+      "copy_path",
+      "create_directory",
+      "edit_file",
+      "write_file_bytes",
+      "write_file",
+    ]);
+    expect(audit.result.content?.[0].text).toContain("Local filesystem audit");
+
+    const filteredAudit = await mcp(baseUrl, accessToken, 117, "tools/call", {
+      name: "local_fs_audit",
+      arguments: { user_intent: "use local filesystem", operation: "copy_path" },
+    });
+    expect(filteredAudit.result.structuredContent.entries).toEqual([
+      expect.objectContaining({
+        operation: "copy_path",
+        source_path: writtenPath,
+        destination_path: copiedPath,
+      }),
+    ]);
+
+    const deniedWrite = await mcp(baseUrl, accessToken, 97, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: outsidePath,
+        content: "denied",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedWrite.result.isError).toBe(true);
+    expect(deniedWrite.result.structuredContent.error.code).toBe("LOCAL_FS_DENIED");
+
+    const deniedSymlinkWrite = await mcp(baseUrl, accessToken, 112, "tools/call", {
+      name: "local_write_file",
+      arguments: {
+        path: "escape-dir/owned.md",
+        content: "denied",
+        create_dirs: true,
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkWrite.result.isError).toBe(true);
+    expect(deniedSymlinkWrite.result.structuredContent.error.message).toContain("outside the configured write roots");
+    await expect(fs.stat(path.join(outsideDirectory, "owned.md"))).rejects.toThrow();
+
+    const deniedSymlinkBytesWrite = await mcp(baseUrl, accessToken, 113, "tools/call", {
+      name: "local_write_file_bytes",
+      arguments: {
+        path: "escape-file.md",
+        content_base64: Buffer.from("denied").toString("base64"),
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkBytesWrite.result.isError).toBe(true);
+    expect(deniedSymlinkBytesWrite.result.structuredContent.error.message).toContain("outside the configured write roots");
+    expect(await fs.readFile(outsideSymlinkFile, "utf8")).toBe("outside before");
+
+    const deniedSymlinkCopy = await mcp(baseUrl, accessToken, 114, "tools/call", {
+      name: "local_copy_path",
+      arguments: {
+        source_path: "escape-file.md",
+        destination_path: "new-folder/escape-copy.md",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkCopy.result.isError).toBe(true);
+    expect(deniedSymlinkCopy.result.structuredContent.error.message).toContain("real target is outside");
+
+    const deniedSymlinkDelete = await mcp(baseUrl, accessToken, 115, "tools/call", {
+      name: "local_delete_path",
+      arguments: {
+        path: "escape-file.md",
+        confirm: "delete",
+        user_intent: "use local filesystem",
+      },
+    });
+    expect(deniedSymlinkDelete.result.isError).toBe(true);
+    expect(deniedSymlinkDelete.result.structuredContent.error.message).toContain("outside the configured write roots");
+    expect(await fs.readFile(outsideSymlinkFile, "utf8")).toBe("outside before");
   });
 
   it("treats admin sync as an idempotent full replacement", async () => {
@@ -351,11 +1168,23 @@ describe("server MCP contract", () => {
       contentHash: "hash-b",
     });
 
-    const syncA = await syncVault(baseUrl, config.syncToken, "vault-a", [vaultA]);
+    const syncA = await syncVault(baseUrl, config.syncToken, "vault-a", [vaultA], {
+      generated_at: "2026-06-08T00:00:00.000Z",
+    });
     expect(syncA.status).toBe(200);
     expect(syncA.body.vault.document_count).toBe(1);
 
-    const syncB = await syncVault(baseUrl, config.syncToken, "vault-b", [vaultB]);
+    const syncB = await syncVault(baseUrl, config.syncToken, "vault-b", [vaultB], {
+      generated_at: "2026-06-09T00:00:00.000Z",
+      stats: {
+        scanned_markdown: 99,
+        allowed_documents: 1,
+        denied_markdown: 98,
+        denied_by_rule: {
+          "test-global-stat": 98,
+        },
+      },
+    });
     expect(syncB.status).toBe(200);
     expect(syncB.body.vault.document_count).toBe(1);
 
@@ -447,6 +1276,7 @@ describe("server MCP contract", () => {
     });
     expect(statusA.result.structuredContent.vault_id).toBe("vault-a");
     expect(statusA.result.structuredContent.indexed_note_count).toBe(1);
+    expect(statusA.result.structuredContent.last_indexed_at).toBe("2026-06-08T00:00:00.000Z");
 
     const statusB = await mcp(baseUrl, accessToken, 43, "tools/call", {
       name: "get_vault_status",
@@ -454,6 +1284,15 @@ describe("server MCP contract", () => {
     });
     expect(statusB.result.structuredContent.vault_id).toBe("vault-b");
     expect(statusB.result.structuredContent.document_count).toBe(1);
+    expect(statusB.result.structuredContent.generated_at).toBe("2026-06-09T00:00:00.000Z");
+    expect(statusB.result.structuredContent.stats).toBeNull();
+
+    const statusAAfterSyncB = await mcp(baseUrl, accessToken, 62, "tools/call", {
+      name: "get_vault_status",
+      arguments: { vault_id: "vault-a" },
+    });
+    expect(statusAAfterSyncB.result.structuredContent.generated_at).toBe("2026-06-08T00:00:00.000Z");
+    expect(statusAAfterSyncB.result.structuredContent.stats).toBeNull();
 
     const debugA = await mcp(baseUrl, accessToken, 53, "tools/call", {
       name: "debug_search",
@@ -646,6 +1485,8 @@ describe("server MCP contract", () => {
     const { store, indexFile } = await createStore();
     const config = testConfig(indexFile, {
       accessToken: null,
+      writeProposalsEnabled: true,
+      remoteLocalFsEnabled: true,
       oauth: {
         issuer: "https://auth.example.test",
         audience: "https://vault.example.test/mcp",
@@ -653,7 +1494,7 @@ describe("server MCP contract", () => {
         jwksUrl: null,
         jwtSecret: "test-oauth-secret",
         authPassword: null,
-        scopes: ["vault:read"],
+        scopes: ["vault:read", "vault:write", "local:access"],
       },
     });
     const server = await listen(createApp(config, store));
@@ -666,7 +1507,7 @@ describe("server MCP contract", () => {
     };
     expect(metadata.resource).toBe(config.mcpResourceUrl);
     expect(metadata.authorization_servers).toEqual(["https://auth.example.test"]);
-    expect(metadata.scopes_supported).toEqual(["vault:read"]);
+    expect(metadata.scopes_supported).toEqual(["vault:read", "vault:write", "local:access"]);
 
     const jwt = await new SignJWT({ sub: "user-1", scope: "vault:read" })
       .setProtectedHeader({ alg: "HS256" })
@@ -677,6 +1518,33 @@ describe("server MCP contract", () => {
 
     const tools = await mcp(baseUrl, jwt, 1, "tools/list", {});
     expect(tools.result.tools?.map((tool) => tool.name)).toEqual(expectedTools);
+
+    const writeJwt = await new SignJWT({ sub: "user-1", scope: "vault:read vault:write" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuer("https://auth.example.test")
+      .setAudience("https://vault.example.test/mcp")
+      .setExpirationTime("5m")
+      .sign(new TextEncoder().encode("test-oauth-secret"));
+    const writeTools = await mcp(baseUrl, writeJwt, 2, "tools/list", {});
+    expect(writeTools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "propose_vault_write",
+      "list_write_proposals",
+    ]);
+
+    const localJwt = await new SignJWT({ sub: "user-1", scope: "vault:read local:access" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuer("https://auth.example.test")
+      .setAudience("https://vault.example.test/mcp")
+      .setExpirationTime("5m")
+      .sign(new TextEncoder().encode("test-oauth-secret"));
+    const localTools = await mcp(baseUrl, localJwt, 3, "tools/list", {});
+    expect(localTools.result.tools?.map((tool) => tool.name)).toEqual([
+      ...expectedTools,
+      "desktop_local_fs_status",
+      "desktop_run_local_tool",
+      "desktop_local_request_status",
+    ]);
   });
 
   it("supports self-hosted OAuth dynamic registration, PKCE code exchange, and refresh", async () => {
@@ -840,11 +1708,29 @@ function testConfig(indexFile: string, overrides: Partial<ServerConfig> = {}): S
     publicBaseUrl: "http://127.0.0.1:0",
     mcpResourceUrl: "http://127.0.0.1:0/mcp",
     indexFile,
+    localFsAuditFile: path.join(path.dirname(indexFile), "local-fs-audit.jsonl"),
     databaseUrl: null,
     accessToken: "test-access",
     syncToken: "test-sync",
     allowedOrigins: ["http://127.0.0.1", "http://localhost"],
     oauth: null,
+    writeProposalsEnabled: false,
+    remoteLocalFsEnabled: false,
+    remoteLocalFsRequestTtlSeconds: 45,
+    remoteLocalFsWaitSeconds: 25,
+    remoteLocalFsAgentFreshSeconds: 10,
+    localFs: {
+      mode: "off",
+      read_roots: [],
+      write_roots: [],
+      write_operations: ["write_file"],
+      max_read_bytes: 512 * 1024,
+      max_search_results: 100,
+      max_search_files: 2000,
+      expires_at: null,
+      require_user_intent: true,
+      user_intent_phrase: "use local filesystem",
+    },
     ...overrides,
   };
 }
@@ -870,14 +1756,20 @@ async function syncStatus(baseUrl: string, token: string, documents: VaultDocume
   return response.status;
 }
 
-async function syncVault(baseUrl: string, token: string, vaultId: string, documents: VaultDocument[]): Promise<{ status: number; body: any }> {
+async function syncVault(
+  baseUrl: string,
+  token: string,
+  vaultId: string,
+  documents: VaultDocument[],
+  extra: Record<string, unknown> = {},
+): Promise<{ status: number; body: any }> {
   const response = await fetch(`${baseUrl}/admin/vaults/${vaultId}/sync`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ documents }),
+    body: JSON.stringify({ documents, ...extra }),
   });
   return {
     status: response.status,
@@ -885,9 +1777,39 @@ async function syncVault(baseUrl: string, token: string, vaultId: string, docume
   };
 }
 
+async function pollClaimedLocalAccessRequest(
+  baseUrl: string,
+  token: string,
+  vaultId: string,
+  installationId: string,
+): Promise<any> {
+  const deadline = Date.now() + 3_000;
+  while (Date.now() < deadline) {
+    const response = await fetch(`${baseUrl}/admin/vaults/${vaultId}/local-access-requests/next?installation_id=${encodeURIComponent(installationId)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json() as { request: any };
+    if (body.request) {
+      return body.request;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error("Timed out waiting for a desktop local access request.");
+}
+
 type JsonRpcTestResponse = {
   result: {
-    tools?: Array<{ name: string; _meta?: Record<string, unknown> }>;
+    tools?: Array<{
+      name: string;
+      _meta?: Record<string, unknown>;
+      annotations?: {
+        readOnlyHint?: boolean;
+        destructiveHint?: boolean;
+        idempotentHint?: boolean;
+        openWorldHint?: boolean;
+      };
+    }>;
     structuredContent?: any;
     _meta?: Record<string, unknown>;
     content?: Array<{ type: string; text?: string }>;

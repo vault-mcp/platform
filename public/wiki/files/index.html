@@ -60,7 +60,7 @@
       <section class="hero">
         <p class="eyebrow">Vault MCP Connector Wiki</p>
         <h1>Source appendix.</h1>
-        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 71 authored text files and 15,679 lines with explanatory notes beside source lines.</p>
+        <p class="lead">This generated appendix is for exact file lookup after you have read the rebuild tutorial. It covers 74 authored text files and 17,659 lines with explanatory notes beside source lines.</p>
         <p><a href="/wiki/tutorial.html">Start with the rebuild tutorial</a> · <a href="/wiki/">Back to the wiki home</a></p>
       </section>
 
@@ -123,8 +123,13 @@
         </article>
         <article class="card">
           <h3>Plugin UX helpers</h3>
-          <p>Readable plugin-side server URL validation, sync summaries, and HTTP error guidance.</p>
+          <p>Readable plugin-side server URL validation, sync summaries, setup guide cards, client setup guidance, and HTTP error handling.</p>
           <a href="apps-obsidian-plugin-src-plugin-helpers-ts.html"><code>apps/obsidian-plugin/src/plugin-helpers.ts</code></a>
+        </article>
+        <article class="card">
+          <h3>Guided Vercel setup</h3>
+          <p>Browser-first self-host setup walkthrough that hands users back to the Obsidian plugin.</p>
+          <a href="public-setup-vercel-html.html"><code>public/setup/vercel.html</code></a>
         </article>
         <article class="card">
           <h3>Search</h3>
@@ -145,6 +150,16 @@
           <h3>Smoke gates</h3>
           <p>Local end-to-end gate for sync, auth, tools/list, search, fetch, and denied guesses.</p>
           <a href="scripts-smoke-local-mjs.html"><code>scripts/smoke-local.mjs</code></a>
+        </article>
+        <article class="card">
+          <h3>Fresh plugin install</h3>
+          <p>Private-alpha package gate that installs the release zip into a disposable Obsidian vault from release metadata.</p>
+          <a href="scripts-smoke-plugin-fresh-install-mjs.html"><code>scripts/smoke-plugin-fresh-install.mjs</code></a>
+        </article>
+        <article class="card">
+          <h3>Plugin lifecycle</h3>
+          <p>Private-alpha package gate that proves upgrade preserves settings and uninstall leaves vault notes intact.</p>
+          <a href="scripts-smoke-plugin-lifecycle-mjs.html"><code>scripts/smoke-plugin-lifecycle.mjs</code></a>
         </article>
         <article class="card">
           <h3>Remote gate</h3>
@@ -177,7 +192,7 @@
         </article>
         <article class="card">
           <h3><code>apps/obsidian-plugin/src/plugin-helpers.ts</code></h3>
-          <p>Plugin helper functions for readable sync summaries and error messages.</p>
+          <p>Plugin helper functions for readable sync summaries, setup guidance, client connection cards, and error messages.</p>
           <p>0 curated explanation ranges explain this file's major responsibilities before the generic fallback takes over.</p>
           <a href="apps-obsidian-plugin-src-plugin-helpers-ts.html">Open curated file reference</a>
         </article>
@@ -334,22 +349,22 @@
             </tr>
             <tr>
               <td><a href="apps-obsidian-plugin-src-main-ts.html"><code>apps/obsidian-plugin/src/main.ts</code></a></td>
-              <td>1558</td>
+              <td>1718</td>
               <td>Authored project file.</td>
             </tr>
             <tr>
               <td><a href="apps-obsidian-plugin-src-plugin-helpers-test-ts.html"><code>apps/obsidian-plugin/src/plugin-helpers.test.ts</code></a></td>
-              <td>240</td>
+              <td>337</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
               <td><a href="apps-obsidian-plugin-src-plugin-helpers-ts.html"><code>apps/obsidian-plugin/src/plugin-helpers.ts</code></a></td>
-              <td>358</td>
-              <td>Plugin helper functions for readable sync summaries and error messages.</td>
+              <td>626</td>
+              <td>Plugin helper functions for readable sync summaries, setup guidance, client connection cards, and error messages.</td>
             </tr>
             <tr>
               <td><a href="apps-obsidian-plugin-styles-css.html"><code>apps/obsidian-plugin/styles.css</code></a></td>
-              <td>368</td>
+              <td>538</td>
               <td>Authored project file.</td>
             </tr>
             <tr>
@@ -364,12 +379,12 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-app-test-ts.html"><code>apps/server/src/app.test.ts</code></a></td>
-              <td>962</td>
+              <td>986</td>
               <td>Automated tests that document and verify expected behavior.</td>
             </tr>
             <tr>
               <td><a href="apps-server-src-app-ts.html"><code>apps/server/src/app.ts</code></a></td>
-              <td>308</td>
+              <td>313</td>
               <td>Express application and HTTP routes for the deployed service.</td>
             </tr>
             <tr>
@@ -404,7 +419,7 @@
             </tr>
             <tr>
               <td><a href="apps-server-src-mcp-ts.html"><code>apps/server/src/mcp.ts</code></a></td>
-              <td>1047</td>
+              <td>1220</td>
               <td>MCP server, tool definitions, schemas, and Streamable HTTP transport.</td>
             </tr>
             <tr>
@@ -454,7 +469,7 @@
             </tr>
             <tr>
               <td><a href="docs-releases-obsidian-plugin-0-1-0-md.html"><code>docs/releases/obsidian-plugin-0.1.0.md</code></a></td>
-              <td>44</td>
+              <td>46</td>
               <td>Private-alpha release notes for the first Obsidian plugin package.</td>
             </tr>
             <tr>
@@ -469,7 +484,7 @@
             </tr>
             <tr>
               <td><a href="package-json.html"><code>package.json</code></a></td>
-              <td>59</td>
+              <td>61</td>
               <td>Package metadata, dependencies, and npm scripts.</td>
             </tr>
             <tr>
@@ -544,8 +559,13 @@
             </tr>
             <tr>
               <td><a href="public-index-html.html"><code>public/index.html</code></a></td>
-              <td>1005</td>
+              <td>1008</td>
               <td>Public landing page for the connector.</td>
+            </tr>
+            <tr>
+              <td><a href="public-setup-vercel-html.html"><code>public/setup/vercel.html</code></a></td>
+              <td>603</td>
+              <td>Browser-first Vercel setup walkthrough for no-terminal private-alpha users.</td>
             </tr>
             <tr>
               <td><a href="public-wiki-index-html.html"><code>public/wiki/index.html</code></a></td>
@@ -564,7 +584,7 @@
             </tr>
             <tr>
               <td><a href="scripts-generate-wiki-reference-mjs.html"><code>scripts/generate-wiki-reference.mjs</code></a></td>
-              <td>924</td>
+              <td>931</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>
@@ -580,6 +600,16 @@
             <tr>
               <td><a href="scripts-seed-write-proposals-mjs.html"><code>scripts/seed-write-proposals.mjs</code></a></td>
               <td>163</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-plugin-lifecycle-mjs.html"><code>scripts/smoke-plugin-lifecycle.mjs</code></a></td>
+              <td>243</td>
+              <td>Node script used for smoke testing, deployment, or wiki generation.</td>
+            </tr>
+            <tr>
+              <td><a href="scripts-smoke-plugin-fresh-install-mjs.html"><code>scripts/smoke-plugin-fresh-install.mjs</code></a></td>
+              <td>223</td>
               <td>Node script used for smoke testing, deployment, or wiki generation.</td>
             </tr>
             <tr>

@@ -52,7 +52,7 @@ try {
   await mkdir(pluginsDir, { recursive: true });
   await run("unzip", ["-q", "-o", zipPath, "-d", pluginsDir], repoRoot);
 
-  const runtimeFiles = ["manifest.json", "main.js", "styles.css"];
+  const runtimeFiles = expectedRuntimeFiles();
   for (const file of runtimeFiles) {
     await assertFile(path.join(installedPluginDir, file), file);
   }
@@ -62,8 +62,9 @@ try {
     assert(installedManifest[key] === sourceManifest[key], `Installed manifest ${key} does not match source manifest`);
   }
 
-  await assertNonEmpty(path.join(installedPluginDir, "main.js"), "main.js");
-  await assertNonEmpty(path.join(installedPluginDir, "styles.css"), "styles.css");
+  for (const file of runtimeFiles) {
+    await assertNonEmpty(path.join(installedPluginDir, file), file);
+  }
   await assertMissing(path.join(installedPluginDir, pluginId, "manifest.json"), "double-nested manifest");
 
   console.log(JSON.stringify({
@@ -164,7 +165,20 @@ function validateReleaseManifest(value, sourceManifest, expected) {
   assert(value.package?.checksum === expected.checksumName, "Release manifest checksum filename does not match package");
   assert(value.package?.releaseNotes === expected.releaseNotesName, "Release manifest release notes filename does not match package");
   assert(value.package?.sha256 === expected.checksum, "Release manifest SHA256 does not match package checksum");
-  assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(["manifest.json", "main.js", "styles.css"]), "Release manifest runtime files are not the Obsidian runtime file set");
+  assert(JSON.stringify(value.package?.runtimeFiles) === JSON.stringify(expectedRuntimeFiles()), "Release manifest runtime files are not the expected Obsidian plus sidecar file set");
+  assert(value.package?.sidecar?.bundled === true, "Release manifest must mark the packaged local sidecar as bundled");
+  assert(value.package?.sidecar?.entrypoint === "sidecar/start-local-server.mjs", "Release manifest sidecar entrypoint is incorrect");
+}
+
+function expectedRuntimeFiles() {
+  return [
+    "manifest.json",
+    "main.js",
+    "styles.css",
+    "sidecar/start-local-server.mjs",
+    "sidecar/vault-mcp-local-server.mjs",
+    "sidecar/sidecar-manifest.json",
+  ];
 }
 
 function assert(condition, message) {

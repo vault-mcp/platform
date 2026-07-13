@@ -5,6 +5,8 @@ import type {
   DebugSearchResponse,
   IndexStats,
   IndexStatusResponse,
+  LocalAccessRequest,
+  LocalAgentStatus,
   ListNotesOptions,
   ListNotesResponse,
   NoteSummary,
@@ -25,6 +27,7 @@ import {
   DEFAULT_INSTALLATION_ID,
   DEFAULT_TENANT_ID,
   DEFAULT_VAULT_ID,
+  defaultIndexPolicy,
   fetchDocument,
   fetchDocumentByPath,
   getIndexStatus,
@@ -34,6 +37,7 @@ import {
   searchNotes,
   searchSections,
   searchVault,
+  summarizeIndexPolicy,
 } from "@vault-mcp/core";
 import { getPostgresMigrationIds, runPostgresMigrations } from "./migrations.js";
 
@@ -82,6 +86,12 @@ export interface IndexStore {
   createWriteProposal(proposal: WriteProposal): WriteProposal | Promise<WriteProposal>;
   listWriteProposals(vaultId?: string): WriteProposal[] | Promise<WriteProposal[]>;
   updateWriteProposalStatus(id: string, status: WriteProposalStatus, actor: string, message: string): WriteProposal | null | Promise<WriteProposal | null>;
+  createLocalAccessRequest(request: LocalAccessRequest): LocalAccessRequest | Promise<LocalAccessRequest>;
+  getLocalAccessRequest(id: string): LocalAccessRequest | null | Promise<LocalAccessRequest | null>;
+  claimLocalAccessRequest(tenantId: string, vaultId: string, installationId: string): LocalAccessRequest | null | Promise<LocalAccessRequest | null>;
+  completeLocalAccessRequest(id: string, tenantId: string, vaultId: string, installationId: string, status: "completed" | "failed", result: Record<string, unknown> | null, error: LocalAccessRequest["error"]): LocalAccessRequest | null | Promise<LocalAccessRequest | null>;
+  upsertLocalAgentStatus(status: LocalAgentStatus): LocalAgentStatus | Promise<LocalAgentStatus>;
+  getLocalAgentStatus(tenantId: string, vaultId: string, installationId?: string): LocalAgentStatus | null | Promise<LocalAgentStatus | null>;
   saveOAuthClient(client: StoredOAuthClient): void | Promise<void>;
   getOAuthClient(clientId: string): StoredOAuthClient | null | Promise<StoredOAuthClient | null>;
   consumeOAuthJti(jti: string, kind: "authorization_code" | "refresh_token", expiresAt: Date): boolean | Promise<boolean>;
@@ -93,6 +103,8 @@ export class JsonIndexStore implements IndexStore {
   private stats: IndexStats | null = null;
   private manifests = new Map<string, SyncPayload["manifest"]>();
   private writeProposals = new Map<string, WriteProposal>();
+  private localAccessRequests = new Map<string, LocalAccessRequest>();
+  private localAgents = new Map<string, LocalAgentStatus>();
   private oauthClients = new Map<string, StoredOAuthClient>();
   private consumedOAuthJtis = new Map<string, number>();
 
@@ -113,6 +125,12 @@ export class JsonIndexStore implements IndexStore {
       }
       for (const proposal of parsed.write_proposals ?? []) {
         this.writeProposals.set(proposal.id, proposal);
+      }
+      for (const request of parsed.local_access_requests ?? []) {
+        this.localAccessRequests.set(request.id, request);
+      }
+      for (const agent of parsed.local_agents ?? []) {
+        this.localAgents.set(localAgentKey(agent.tenant_id, agent.vault_id, agent.installation_id), agent);
       }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -135,6 +153,16 @@ export class JsonIndexStore implements IndexStore {
         this.writeProposals.delete(id);
       }
     }
+    for (const [id, request] of this.localAccessRequests.entries()) {
+      if (request.vault_id === vaultId) {
+        this.localAccessRequests.delete(id);
+      }
+    }
+    for (const [key, agent] of this.localAgents.entries()) {
+      if (agent.vault_id === vaultId) {
+        this.localAgents.delete(key);
+      }
+    }
     await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
     await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
   }
@@ -153,8 +181,9 @@ export class JsonIndexStore implements IndexStore {
       : scopedDocuments;
     this.generatedAt = payload.generated_at ?? new Date().toISOString();
     this.stats = payload.stats ?? null;
-    if (payload.manifest) {
-      this.manifests.set(vaultId, payload.manifest);
+    const manifest = syncManifestFromPayload(payload, tenantId, vaultId, installationId, this.generatedAt);
+    if (manifest) {
+      this.manifests.set(vaultId, manifest);
     }
     await fs.mkdir(path.dirname(this.indexFile), { recursive: true });
     await fs.writeFile(this.indexFile, `${JSON.stringify(this.snapshot(), null, 2)}\n`, "utf8");
@@ -211,11 +240,15 @@ export class JsonIndexStore implements IndexStore {
   }
 
   indexStatus(vaultId?: string) {
-    return getIndexStatus(this.documents, this.stats, this.generatedAt, vaultId);
+    const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    return getIndexStatus(this.documents, vaultId ? null : this.stats, generatedAt, vaultId);
   }
 
   debugSearch(query: string, scope?: string, vaultId?: string) {
-    return debugSearch(this.documents, query, scope, this.generatedAt, vaultId);
+    const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    return debugSearch(this.documents, query, scope, generatedAt, vaultId);
   }
 
   listVaults() {
@@ -223,13 +256,14 @@ export class JsonIndexStore implements IndexStore {
   }
 
   vaultStatus(vaultId?: string): VaultStatus {
-    const status = this.indexStatus(vaultId);
     const scopedDocuments = vaultId ? this.documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : this.documents;
+    const generatedAt = scopedGeneratedAt(vaultId, this.manifests, scopedDocuments, this.generatedAt);
+    const status = getIndexStatus(this.documents, vaultId ? null : this.stats, generatedAt, vaultId);
     return {
       ...status,
       document_count: scopedDocuments.length,
-      generated_at: this.generatedAt,
-      stats: this.stats,
+      generated_at: generatedAt,
+      stats: vaultId ? null : this.stats,
     };
   }
 
@@ -268,6 +302,90 @@ export class JsonIndexStore implements IndexStore {
     this.writeProposals.set(id, updated);
     await this.persist();
     return updated;
+  }
+
+  async createLocalAccessRequest(request: LocalAccessRequest): Promise<LocalAccessRequest> {
+    this.expireLocalAccessRequests();
+    this.localAccessRequests.set(request.id, request);
+    await this.persist();
+    return request;
+  }
+
+  async getLocalAccessRequest(id: string): Promise<LocalAccessRequest | null> {
+    if (this.expireLocalAccessRequests()) {
+      await this.persist();
+    }
+    return this.localAccessRequests.get(id) ?? null;
+  }
+
+  async claimLocalAccessRequest(tenantId: string, vaultId: string, installationId: string): Promise<LocalAccessRequest | null> {
+    const expiredChanged = this.expireLocalAccessRequests();
+    const request = [...this.localAccessRequests.values()]
+      .filter((candidate) => candidate.tenant_id === tenantId
+        && candidate.vault_id === vaultId
+        && candidate.installation_id === installationId
+        && candidate.status === "pending")
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
+    if (!request) {
+      if (expiredChanged) {
+        await this.persist();
+      }
+      return null;
+    }
+    const now = new Date().toISOString();
+    const claimed: LocalAccessRequest = {
+      ...request,
+      status: "running",
+      claimed_at: now,
+      updated_at: now,
+    };
+    this.localAccessRequests.set(request.id, claimed);
+    await this.persist();
+    return claimed;
+  }
+
+  async completeLocalAccessRequest(
+    id: string,
+    tenantId: string,
+    vaultId: string,
+    installationId: string,
+    status: "completed" | "failed",
+    result: Record<string, unknown> | null,
+    error: LocalAccessRequest["error"],
+  ): Promise<LocalAccessRequest | null> {
+    const expiredChanged = this.expireLocalAccessRequests();
+    const request = this.localAccessRequests.get(id);
+    if (!request || request.tenant_id !== tenantId || request.vault_id !== vaultId || request.installation_id !== installationId || request.status !== "running") {
+      if (expiredChanged) {
+        await this.persist();
+      }
+      return null;
+    }
+    const now = new Date().toISOString();
+    const completed: LocalAccessRequest = {
+      ...request,
+      status,
+      result,
+      error,
+      completed_at: now,
+      updated_at: now,
+    };
+    this.localAccessRequests.set(id, completed);
+    await this.persist();
+    return completed;
+  }
+
+  async upsertLocalAgentStatus(status: LocalAgentStatus): Promise<LocalAgentStatus> {
+    this.localAgents.set(localAgentKey(status.tenant_id, status.vault_id, status.installation_id), status);
+    await this.persist();
+    return status;
+  }
+
+  getLocalAgentStatus(tenantId: string, vaultId: string, installationId?: string): LocalAgentStatus | null {
+    const agents = [...this.localAgents.values()]
+      .filter((agent) => agent.tenant_id === tenantId && agent.vault_id === vaultId && (!installationId || agent.installation_id === installationId))
+      .sort((a, b) => b.last_seen_at.localeCompare(a.last_seen_at));
+    return agents[0] ?? null;
   }
 
   saveOAuthClient(client: StoredOAuthClient): void {
@@ -309,7 +427,33 @@ export class JsonIndexStore implements IndexStore {
       manifest: [...this.manifests.values()][0],
       manifests: [...this.manifests.values()].filter((manifest): manifest is SyncManifest => Boolean(manifest)),
       write_proposals: [...this.writeProposals.values()],
+      local_access_requests: [...this.localAccessRequests.values()],
+      local_agents: [...this.localAgents.values()],
     };
+  }
+
+  private expireLocalAccessRequests(): boolean {
+    const now = Date.now();
+    let changed = false;
+    for (const [id, request] of this.localAccessRequests.entries()) {
+      if ((request.status === "completed" || request.status === "failed") && Date.parse(request.expires_at) <= now) {
+        this.localAccessRequests.delete(id);
+        changed = true;
+        continue;
+      }
+      if ((request.status === "pending" || request.status === "running") && Date.parse(request.expires_at) <= now) {
+        const updatedAt = new Date().toISOString();
+        this.localAccessRequests.set(id, {
+          ...request,
+          status: "expired",
+          updated_at: updatedAt,
+          completed_at: updatedAt,
+          error: { code: "LOCAL_ACCESS_EXPIRED", message: "The desktop request expired before completion." },
+        });
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   private async persist(): Promise<void> {
@@ -361,6 +505,8 @@ export class PostgresIndexStore implements IndexStore {
       await client.query("delete from vault_documents where vault_id = $1", [vaultId]);
       await client.query("delete from vault_sync_manifests where vault_id = $1", [vaultId]);
       await client.query("delete from write_proposals where vault_id = $1", [vaultId]);
+      await client.query("delete from local_access_requests where vault_id = $1", [vaultId]);
+      await client.query("delete from local_agent_sessions where vault_id = $1", [vaultId]);
       await client.query("commit");
     } catch (error) {
       await client.query("rollback");
@@ -399,12 +545,13 @@ export class PostgresIndexStore implements IndexStore {
         on conflict (key) do update set value = excluded.value`,
         [JSON.stringify(this.generatedAt), JSON.stringify(this.stats)],
       );
-      if (payload.manifest) {
+      const manifest = syncManifestFromPayload(payload, tenantId, vaultId, installationId, this.generatedAt);
+      if (manifest) {
         await client.query(
           `insert into vault_sync_manifests (tenant_id, vault_id, manifest, updated_at)
            values ($1, $2, $3::jsonb, now())
            on conflict (tenant_id, vault_id) do update set manifest = excluded.manifest, updated_at = now()`,
-          [tenantId, vaultId, JSON.stringify(payload.manifest)],
+          [tenantId, vaultId, JSON.stringify(manifest)],
         );
       }
       await client.query("commit");
@@ -511,11 +658,17 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async indexStatus(vaultId?: string): Promise<IndexStatusResponse> {
-    return getIndexStatus(await this.allDocuments(), this.stats, this.generatedAt, vaultId);
+    const documents = await this.allDocuments();
+    const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const generatedAt = scopedGeneratedAt(vaultId, await this.allManifests(), scopedDocuments, this.generatedAt);
+    return getIndexStatus(documents, vaultId ? null : this.stats, generatedAt, vaultId);
   }
 
   async debugSearch(query: string, scope?: string, vaultId?: string): Promise<DebugSearchResponse> {
-    return debugSearch(await this.allDocuments(), query, scope, this.generatedAt, vaultId);
+    const documents = await this.allDocuments();
+    const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const generatedAt = scopedGeneratedAt(vaultId, await this.allManifests(), scopedDocuments, this.generatedAt);
+    return debugSearch(documents, query, scope, generatedAt, vaultId);
   }
 
   async listVaults(): Promise<VaultSummary[]> {
@@ -523,14 +676,16 @@ export class PostgresIndexStore implements IndexStore {
   }
 
   async vaultStatus(vaultId?: string): Promise<VaultStatus> {
-    const status = await this.indexStatus(vaultId);
     const documents = await this.allDocuments();
     const scopedDocuments = vaultId ? documents.filter((document) => (document.vault_id ?? document.metadata.vault_id) === vaultId) : documents;
+    const manifests = await this.allManifests();
+    const generatedAt = scopedGeneratedAt(vaultId, manifests, scopedDocuments, this.generatedAt);
+    const status = getIndexStatus(documents, vaultId ? null : this.stats, generatedAt, vaultId);
     return {
       ...status,
       document_count: scopedDocuments.length,
-      generated_at: this.generatedAt,
-      stats: this.stats,
+      generated_at: generatedAt,
+      stats: vaultId ? null : this.stats,
     };
   }
 
@@ -573,6 +728,139 @@ export class PostgresIndexStore implements IndexStore {
     };
     await this.createWriteProposal(updated);
     return updated;
+  }
+
+  async createLocalAccessRequest(request: LocalAccessRequest): Promise<LocalAccessRequest> {
+    await this.expireLocalAccessRequests();
+    await this.pool.query(
+      `insert into local_access_requests (id, tenant_id, vault_id, installation_id, request, status, expires_at, updated_at)
+       values ($1, $2, $3, $4, $5::jsonb, $6, $7, $8)
+       on conflict (id) do update set request = excluded.request, status = excluded.status, expires_at = excluded.expires_at, updated_at = excluded.updated_at`,
+      [request.id, request.tenant_id, request.vault_id, request.installation_id, JSON.stringify(request), request.status, request.expires_at, request.updated_at],
+    );
+    return request;
+  }
+
+  async getLocalAccessRequest(id: string): Promise<LocalAccessRequest | null> {
+    await this.expireLocalAccessRequests();
+    const result = await this.pool.query<{ request: LocalAccessRequest }>(
+      "select request from local_access_requests where id = $1",
+      [id],
+    );
+    return result.rows[0]?.request ?? null;
+  }
+
+  async claimLocalAccessRequest(tenantId: string, vaultId: string, installationId: string): Promise<LocalAccessRequest | null> {
+    await this.expireLocalAccessRequests();
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const selected = await client.query<{ request: LocalAccessRequest }>(
+        `select request
+         from local_access_requests
+         where tenant_id = $1 and vault_id = $2 and installation_id = $3 and status = 'pending' and expires_at > now()
+         order by updated_at asc
+         for update skip locked
+         limit 1`,
+        [tenantId, vaultId, installationId],
+      );
+      const request = selected.rows[0]?.request;
+      if (!request) {
+        await client.query("commit");
+        return null;
+      }
+      const now = new Date().toISOString();
+      const claimed: LocalAccessRequest = {
+        ...request,
+        status: "running",
+        claimed_at: now,
+        updated_at: now,
+      };
+      await client.query(
+        `update local_access_requests
+         set request = $2::jsonb, status = 'running', updated_at = $3
+         where id = $1`,
+        [request.id, JSON.stringify(claimed), now],
+      );
+      await client.query("commit");
+      return claimed;
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async completeLocalAccessRequest(
+    id: string,
+    tenantId: string,
+    vaultId: string,
+    installationId: string,
+    status: "completed" | "failed",
+    result: Record<string, unknown> | null,
+    error: LocalAccessRequest["error"],
+  ): Promise<LocalAccessRequest | null> {
+    await this.expireLocalAccessRequests();
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const existing = await client.query<{ request: LocalAccessRequest }>(
+        `select request from local_access_requests
+         where id = $1 and tenant_id = $2 and vault_id = $3 and installation_id = $4 and status = 'running'
+         for update`,
+        [id, tenantId, vaultId, installationId],
+      );
+      const request = existing.rows[0]?.request;
+      if (!request) {
+        await client.query("commit");
+        return null;
+      }
+      const now = new Date().toISOString();
+      const completed: LocalAccessRequest = {
+        ...request,
+        status,
+        result,
+        error,
+        completed_at: now,
+        updated_at: now,
+      };
+      await client.query(
+        `update local_access_requests
+         set request = $2::jsonb, status = $3, updated_at = $4
+         where id = $1 and status = 'running'`,
+        [id, JSON.stringify(completed), status, now],
+      );
+      await client.query("commit");
+      return completed;
+    } catch (transactionError) {
+      await client.query("rollback");
+      throw transactionError;
+    } finally {
+      client.release();
+    }
+  }
+
+  async upsertLocalAgentStatus(status: LocalAgentStatus): Promise<LocalAgentStatus> {
+    await this.pool.query(
+      `insert into local_agent_sessions (tenant_id, vault_id, installation_id, agent, last_seen_at)
+       values ($1, $2, $3, $4::jsonb, $5)
+       on conflict (tenant_id, vault_id, installation_id) do update set agent = excluded.agent, last_seen_at = excluded.last_seen_at`,
+      [status.tenant_id, status.vault_id, status.installation_id, JSON.stringify(status), status.last_seen_at],
+    );
+    return status;
+  }
+
+  async getLocalAgentStatus(tenantId: string, vaultId: string, installationId?: string): Promise<LocalAgentStatus | null> {
+    const result = await this.pool.query<{ agent: LocalAgentStatus }>(
+      `select agent
+       from local_agent_sessions
+       where tenant_id = $1 and vault_id = $2 and ($3::text is null or installation_id = $3)
+       order by last_seen_at desc
+       limit 1`,
+      [tenantId, vaultId, installationId ?? null],
+    );
+    return result.rows[0]?.agent ?? null;
   }
 
   async saveOAuthClient(client: StoredOAuthClient): Promise<void> {
@@ -623,6 +911,33 @@ export class PostgresIndexStore implements IndexStore {
     return result.rowCount === 1;
   }
 
+  private async expireLocalAccessRequests(): Promise<void> {
+    await this.pool.query(
+      "delete from local_access_requests where status in ('completed', 'failed') and expires_at <= now()",
+    );
+    const rows = await this.pool.query<{ id: string; request: LocalAccessRequest }>(
+      `select id, request
+       from local_access_requests
+       where status in ('pending', 'running') and expires_at <= now()`,
+    );
+    for (const row of rows.rows) {
+      const now = new Date().toISOString();
+      const expired: LocalAccessRequest = {
+        ...row.request,
+        status: "expired",
+        updated_at: now,
+        completed_at: now,
+        error: { code: "LOCAL_ACCESS_EXPIRED", message: "The desktop request expired before completion." },
+      };
+      await this.pool.query(
+        `update local_access_requests
+         set request = $2::jsonb, status = 'expired', updated_at = $3
+         where id = $1 and status in ('pending', 'running')`,
+        [row.id, JSON.stringify(expired), now],
+      );
+    }
+  }
+
   private async allDocuments(): Promise<VaultDocument[]> {
     const rows = await this.pool.query<{
       id: string;
@@ -664,6 +979,47 @@ function withDocumentScope(document: VaultDocument, tenantId: string, vaultId: s
       installation_id: document.metadata.installation_id ?? installationId,
     },
   };
+}
+
+function syncManifestFromPayload(
+  payload: SyncPayload,
+  tenantId: string,
+  vaultId: string,
+  installationId: string,
+  generatedAt: string | null,
+): SyncManifest | null {
+  if (payload.manifest) {
+    return payload.manifest;
+  }
+  if (!payload.vault_id) {
+    return null;
+  }
+  const indexMode = payload.index_mode ?? "rules_plus_approvals";
+  const policy = defaultIndexPolicy(indexMode);
+  return {
+    tenant_id: tenantId,
+    vault_id: vaultId,
+    installation_id: installationId,
+    vault_name: typeof payload.vault_name === "string" && payload.vault_name.trim() ? payload.vault_name.trim() : vaultId,
+    generated_at: payload.generated_at ?? generatedAt ?? new Date().toISOString(),
+    policy_version: payload.policy_version ?? policy.version,
+    index_mode: indexMode,
+    policy_summary: summarizeIndexPolicy(policy),
+  };
+}
+
+function scopedGeneratedAt(
+  vaultId: string | undefined,
+  manifests: Map<string, SyncManifest | undefined>,
+  documents: VaultDocument[],
+  fallback: string | null,
+): string | null {
+  if (!vaultId) {
+    return fallback;
+  }
+  return manifests.get(vaultId)?.generated_at
+    ?? mostRecentSyncAt(documents.map((document) => document.metadata.updated_at), null)
+    ?? null;
 }
 
 function summarizeVaults(documents: VaultDocument[], manifests: Map<string, SyncPayload["manifest"]>, generatedAt: string | null): VaultSummary[] {
@@ -717,4 +1073,8 @@ function mostRecentSyncAt(values: Array<string | null | undefined>, fallback: st
     .filter((value): value is string => typeof value === "string" && !Number.isNaN(new Date(value).getTime()))
     .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   return valid[0] ?? fallback;
+}
+
+function localAgentKey(tenantId: string, vaultId: string, installationId: string): string {
+  return `${tenantId}:${vaultId}:${installationId}`;
 }

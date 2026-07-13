@@ -1,0 +1,3098 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>public/setup/vercel.html - Line Reference - Vault MCP Connector Wiki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #607078;
+      --line: #d8e1e5;
+      --surface: #f4f7f8;
+      --paper: #ffffff;
+      --blue: #2367a6;
+      --green: #1f765f;
+      --code: #102027;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--surface); line-height: 1.58; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    main { width: min(1500px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 72px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    .hero { padding-top: 20px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.08; letter-spacing: 0; overflow-wrap: anywhere; }
+    h2 { margin: 0 0 12px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { color: var(--muted); margin: 0 0 12px; }
+    .lead { max-width: 900px; font-size: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eaf0f2; color: var(--ink); }
+    tr:last-child td { border-bottom: 0; }
+    .line-table { table-layout: fixed; }
+    .line-table th:nth-child(1), .line-table td:nth-child(1) { width: 72px; }
+    .line-table th:nth-child(2), .line-table td:nth-child(2) { width: 46%; }
+    .line-number { color: var(--blue); font-weight: 800; text-align: right; }
+    .source pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #edf6f7; background: var(--code); border-radius: 6px; padding: 8px; font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      main { width: calc(100% - 24px); }
+      h1 { font-size: 30px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .line-table, .line-table thead, .line-table tbody, .line-table tr, .line-table th, .line-table td { display: block; width: 100% !important; }
+      .line-table thead { display: none; }
+      .line-number { text-align: left; background: #eaf0f2; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <section class="hero">
+        <p class="eyebrow">Line-by-line file reference</p>
+        <h1><code>public/setup/vercel.html</code></h1>
+        <p class="lead">Browser-first Vercel setup walkthrough for no-terminal private-alpha users.</p>
+          <p><a href="index.html">Back to source appendix</a> · <a href="/wiki/tutorial.html">Rebuild tutorial</a> · <a href="/wiki/">Back to wiki home</a></p>
+      </section>
+
+      <section>
+        <h2>How to read this file</h2>
+        <div class="card">
+          <p>Read this file from top to bottom. Imports and constants usually set up dependencies first; functions or configuration blocks then define the actual behavior.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Source with explanatory notes</h2>
+        <table class="line-table">
+          <thead><tr><th>Line</th><th>Source</th><th>Plain-English explanation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="line-number" id="L1"><a href="#L1">1</a></td>
+              <td class="source"><pre>&lt;!doctype html&gt;</pre></td>
+              <td>Declares the document as modern HTML.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L2"><a href="#L2">2</a></td>
+              <td class="source"><pre>&lt;html lang=&quot;en&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L3"><a href="#L3">3</a></td>
+              <td class="source"><pre>&lt;head&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L4"><a href="#L4">4</a></td>
+              <td class="source"><pre>  &lt;meta charset=&quot;utf-8&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L5"><a href="#L5">5</a></td>
+              <td class="source"><pre>  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L6"><a href="#L6">6</a></td>
+              <td class="source"><pre>  &lt;title&gt;No-terminal Vercel setup - Vault MCP&lt;/title&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L7"><a href="#L7">7</a></td>
+              <td class="source"><pre>  &lt;meta name=&quot;description&quot; content=&quot;A browser-first setup walkthrough for hosting Vault MCP on Vercel and connecting it back to the Obsidian plugin.&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L8"><a href="#L8">8</a></td>
+              <td class="source"><pre>  &lt;style&gt;</pre></td>
+              <td>Starts or ends the CSS block that styles this page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L9"><a href="#L9">9</a></td>
+              <td class="source"><pre>    :root {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L10"><a href="#L10">10</a></td>
+              <td class="source"><pre>      color-scheme: dark;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L11"><a href="#L11">11</a></td>
+              <td class="source"><pre>      --bg: #07111b;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L12"><a href="#L12">12</a></td>
+              <td class="source"><pre>      --panel: #0d1c29;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L13"><a href="#L13">13</a></td>
+              <td class="source"><pre>      --panel-2: #102637;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L14"><a href="#L14">14</a></td>
+              <td class="source"><pre>      --line: #24465d;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L15"><a href="#L15">15</a></td>
+              <td class="source"><pre>      --text: #f3f8fb;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L16"><a href="#L16">16</a></td>
+              <td class="source"><pre>      --muted: #aac0cf;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L17"><a href="#L17">17</a></td>
+              <td class="source"><pre>      --cyan: #74eaff;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L18"><a href="#L18">18</a></td>
+              <td class="source"><pre>      --green: #84f7ad;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L19"><a href="#L19">19</a></td>
+              <td class="source"><pre>      --amber: #ffd27a;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L20"><a href="#L20">20</a></td>
+              <td class="source"><pre>      --red: #ff8f8f;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L21"><a href="#L21">21</a></td>
+              <td class="source"><pre>      --max: 1080px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L22"><a href="#L22">22</a></td>
+              <td class="source"><pre>      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L23"><a href="#L23">23</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L24"><a href="#L24">24</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L25"><a href="#L25">25</a></td>
+              <td class="source"><pre>    * {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L26"><a href="#L26">26</a></td>
+              <td class="source"><pre>      box-sizing: border-box;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L27"><a href="#L27">27</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L28"><a href="#L28">28</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L29"><a href="#L29">29</a></td>
+              <td class="source"><pre>    body {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L30"><a href="#L30">30</a></td>
+              <td class="source"><pre>      background:</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L31"><a href="#L31">31</a></td>
+              <td class="source"><pre>        radial-gradient(circle at 12% 16%, rgba(116, 234, 255, 0.14), transparent 24rem),</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L32"><a href="#L32">32</a></td>
+              <td class="source"><pre>        radial-gradient(circle at 82% 10%, rgba(132, 247, 173, 0.12), transparent 24rem),</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L33"><a href="#L33">33</a></td>
+              <td class="source"><pre>        linear-gradient(180deg, #07111b, #040a11 80%);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L34"><a href="#L34">34</a></td>
+              <td class="source"><pre>      color: var(--text);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L35"><a href="#L35">35</a></td>
+              <td class="source"><pre>      margin: 0;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L36"><a href="#L36">36</a></td>
+              <td class="source"><pre>      min-height: 100vh;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L37"><a href="#L37">37</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L38"><a href="#L38">38</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L39"><a href="#L39">39</a></td>
+              <td class="source"><pre>    a {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L40"><a href="#L40">40</a></td>
+              <td class="source"><pre>      color: var(--cyan);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L41"><a href="#L41">41</a></td>
+              <td class="source"><pre>      text-decoration: none;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L42"><a href="#L42">42</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L43"><a href="#L43">43</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L44"><a href="#L44">44</a></td>
+              <td class="source"><pre>    a:hover {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L45"><a href="#L45">45</a></td>
+              <td class="source"><pre>      text-decoration: underline;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L46"><a href="#L46">46</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L47"><a href="#L47">47</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L48"><a href="#L48">48</a></td>
+              <td class="source"><pre>    .shell {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L49"><a href="#L49">49</a></td>
+              <td class="source"><pre>      margin: 0 auto;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L50"><a href="#L50">50</a></td>
+              <td class="source"><pre>      width: min(var(--max), calc(100% - 36px));</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L51"><a href="#L51">51</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L52"><a href="#L52">52</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L53"><a href="#L53">53</a></td>
+              <td class="source"><pre>    header {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L54"><a href="#L54">54</a></td>
+              <td class="source"><pre>      border-bottom: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L55"><a href="#L55">55</a></td>
+              <td class="source"><pre>      padding: 26px 0;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L56"><a href="#L56">56</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L57"><a href="#L57">57</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L58"><a href="#L58">58</a></td>
+              <td class="source"><pre>    .topline {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L59"><a href="#L59">59</a></td>
+              <td class="source"><pre>      align-items: center;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L60"><a href="#L60">60</a></td>
+              <td class="source"><pre>      display: flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L61"><a href="#L61">61</a></td>
+              <td class="source"><pre>      gap: 12px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L62"><a href="#L62">62</a></td>
+              <td class="source"><pre>      justify-content: space-between;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L63"><a href="#L63">63</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L64"><a href="#L64">64</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L65"><a href="#L65">65</a></td>
+              <td class="source"><pre>    .brand {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L66"><a href="#L66">66</a></td>
+              <td class="source"><pre>      color: var(--green);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L67"><a href="#L67">67</a></td>
+              <td class="source"><pre>      font-size: 0.82rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L68"><a href="#L68">68</a></td>
+              <td class="source"><pre>      font-weight: 800;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L69"><a href="#L69">69</a></td>
+              <td class="source"><pre>      letter-spacing: 0.12em;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L70"><a href="#L70">70</a></td>
+              <td class="source"><pre>      text-transform: uppercase;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L71"><a href="#L71">71</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L72"><a href="#L72">72</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L73"><a href="#L73">73</a></td>
+              <td class="source"><pre>    .nav {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L74"><a href="#L74">74</a></td>
+              <td class="source"><pre>      display: flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L75"><a href="#L75">75</a></td>
+              <td class="source"><pre>      flex-wrap: wrap;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L76"><a href="#L76">76</a></td>
+              <td class="source"><pre>      gap: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L77"><a href="#L77">77</a></td>
+              <td class="source"><pre>      justify-content: flex-end;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L78"><a href="#L78">78</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L79"><a href="#L79">79</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L80"><a href="#L80">80</a></td>
+              <td class="source"><pre>    .nav a {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L81"><a href="#L81">81</a></td>
+              <td class="source"><pre>      border: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L82"><a href="#L82">82</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L83"><a href="#L83">83</a></td>
+              <td class="source"><pre>      color: var(--text);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L84"><a href="#L84">84</a></td>
+              <td class="source"><pre>      font-size: 0.9rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L85"><a href="#L85">85</a></td>
+              <td class="source"><pre>      padding: 8px 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L86"><a href="#L86">86</a></td>
+              <td class="source"><pre>      text-decoration: none;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L87"><a href="#L87">87</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L88"><a href="#L88">88</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L89"><a href="#L89">89</a></td>
+              <td class="source"><pre>    .hero {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L90"><a href="#L90">90</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L91"><a href="#L91">91</a></td>
+              <td class="source"><pre>      gap: 28px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L92"><a href="#L92">92</a></td>
+              <td class="source"><pre>      grid-template-columns: minmax(0, 1fr) 330px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L93"><a href="#L93">93</a></td>
+              <td class="source"><pre>      padding: 58px 0 30px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L94"><a href="#L94">94</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L95"><a href="#L95">95</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L96"><a href="#L96">96</a></td>
+              <td class="source"><pre>    h1 {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L97"><a href="#L97">97</a></td>
+              <td class="source"><pre>      font-size: clamp(2.4rem, 6vw, 5.4rem);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L98"><a href="#L98">98</a></td>
+              <td class="source"><pre>      line-height: 0.96;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L99"><a href="#L99">99</a></td>
+              <td class="source"><pre>      margin: 0 0 18px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L100"><a href="#L100">100</a></td>
+              <td class="source"><pre>      text-transform: uppercase;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L101"><a href="#L101">101</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L102"><a href="#L102">102</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L103"><a href="#L103">103</a></td>
+              <td class="source"><pre>    .lead {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L104"><a href="#L104">104</a></td>
+              <td class="source"><pre>      color: var(--muted);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L105"><a href="#L105">105</a></td>
+              <td class="source"><pre>      font-size: 1.15rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L106"><a href="#L106">106</a></td>
+              <td class="source"><pre>      line-height: 1.65;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L107"><a href="#L107">107</a></td>
+              <td class="source"><pre>      margin: 0;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L108"><a href="#L108">108</a></td>
+              <td class="source"><pre>      max-width: 760px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L109"><a href="#L109">109</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L110"><a href="#L110">110</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L111"><a href="#L111">111</a></td>
+              <td class="source"><pre>    .status-card,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L112"><a href="#L112">112</a></td>
+              <td class="source"><pre>    .card,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L113"><a href="#L113">113</a></td>
+              <td class="source"><pre>    .step {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L114"><a href="#L114">114</a></td>
+              <td class="source"><pre>      background: rgba(13, 28, 41, 0.88);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L115"><a href="#L115">115</a></td>
+              <td class="source"><pre>      border: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L116"><a href="#L116">116</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L117"><a href="#L117">117</a></td>
+              <td class="source"><pre>      padding: 18px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L118"><a href="#L118">118</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L119"><a href="#L119">119</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L120"><a href="#L120">120</a></td>
+              <td class="source"><pre>    .status-card {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L121"><a href="#L121">121</a></td>
+              <td class="source"><pre>      align-self: start;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L122"><a href="#L122">122</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L123"><a href="#L123">123</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L124"><a href="#L124">124</a></td>
+              <td class="source"><pre>    .status-card h2,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L125"><a href="#L125">125</a></td>
+              <td class="source"><pre>    .card h2,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L126"><a href="#L126">126</a></td>
+              <td class="source"><pre>    .step h2 {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L127"><a href="#L127">127</a></td>
+              <td class="source"><pre>      font-size: 1.08rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L128"><a href="#L128">128</a></td>
+              <td class="source"><pre>      margin: 0 0 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L129"><a href="#L129">129</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L130"><a href="#L130">130</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L131"><a href="#L131">131</a></td>
+              <td class="source"><pre>    .badge {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L132"><a href="#L132">132</a></td>
+              <td class="source"><pre>      border: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L133"><a href="#L133">133</a></td>
+              <td class="source"><pre>      border-radius: 999px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L134"><a href="#L134">134</a></td>
+              <td class="source"><pre>      color: var(--amber);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L135"><a href="#L135">135</a></td>
+              <td class="source"><pre>      display: inline-flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L136"><a href="#L136">136</a></td>
+              <td class="source"><pre>      font-size: 0.75rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L137"><a href="#L137">137</a></td>
+              <td class="source"><pre>      font-weight: 800;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L138"><a href="#L138">138</a></td>
+              <td class="source"><pre>      letter-spacing: 0.08em;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L139"><a href="#L139">139</a></td>
+              <td class="source"><pre>      padding: 4px 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L140"><a href="#L140">140</a></td>
+              <td class="source"><pre>      text-transform: uppercase;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L141"><a href="#L141">141</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L142"><a href="#L142">142</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L143"><a href="#L143">143</a></td>
+              <td class="source"><pre>    .status-card p,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L144"><a href="#L144">144</a></td>
+              <td class="source"><pre>    .card p,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L145"><a href="#L145">145</a></td>
+              <td class="source"><pre>    .step p,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L146"><a href="#L146">146</a></td>
+              <td class="source"><pre>    li {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L147"><a href="#L147">147</a></td>
+              <td class="source"><pre>      color: var(--muted);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L148"><a href="#L148">148</a></td>
+              <td class="source"><pre>      line-height: 1.58;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L149"><a href="#L149">149</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L150"><a href="#L150">150</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L151"><a href="#L151">151</a></td>
+              <td class="source"><pre>    .grid {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L152"><a href="#L152">152</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L153"><a href="#L153">153</a></td>
+              <td class="source"><pre>      gap: 14px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L154"><a href="#L154">154</a></td>
+              <td class="source"><pre>      grid-template-columns: repeat(3, minmax(0, 1fr));</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L155"><a href="#L155">155</a></td>
+              <td class="source"><pre>      margin: 22px 0;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L156"><a href="#L156">156</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L157"><a href="#L157">157</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L158"><a href="#L158">158</a></td>
+              <td class="source"><pre>    .card strong {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L159"><a href="#L159">159</a></td>
+              <td class="source"><pre>      color: var(--text);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L160"><a href="#L160">160</a></td>
+              <td class="source"><pre>      display: block;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L161"><a href="#L161">161</a></td>
+              <td class="source"><pre>      margin-bottom: 6px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L162"><a href="#L162">162</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L163"><a href="#L163">163</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L164"><a href="#L164">164</a></td>
+              <td class="source"><pre>    .steps {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L165"><a href="#L165">165</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L166"><a href="#L166">166</a></td>
+              <td class="source"><pre>      gap: 14px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L167"><a href="#L167">167</a></td>
+              <td class="source"><pre>      margin: 26px 0 60px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L168"><a href="#L168">168</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L169"><a href="#L169">169</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L170"><a href="#L170">170</a></td>
+              <td class="source"><pre>    .step {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L171"><a href="#L171">171</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L172"><a href="#L172">172</a></td>
+              <td class="source"><pre>      gap: 14px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L173"><a href="#L173">173</a></td>
+              <td class="source"><pre>      grid-template-columns: 54px minmax(0, 1fr);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L174"><a href="#L174">174</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L175"><a href="#L175">175</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L176"><a href="#L176">176</a></td>
+              <td class="source"><pre>    .num {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L177"><a href="#L177">177</a></td>
+              <td class="source"><pre>      align-items: center;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L178"><a href="#L178">178</a></td>
+              <td class="source"><pre>      background: linear-gradient(135deg, rgba(116, 234, 255, 0.18), rgba(132, 247, 173, 0.14));</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L179"><a href="#L179">179</a></td>
+              <td class="source"><pre>      border: 1px solid rgba(116, 234, 255, 0.36);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L180"><a href="#L180">180</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L181"><a href="#L181">181</a></td>
+              <td class="source"><pre>      color: var(--green);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L182"><a href="#L182">182</a></td>
+              <td class="source"><pre>      display: flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L183"><a href="#L183">183</a></td>
+              <td class="source"><pre>      font-weight: 900;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L184"><a href="#L184">184</a></td>
+              <td class="source"><pre>      height: 44px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L185"><a href="#L185">185</a></td>
+              <td class="source"><pre>      justify-content: center;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L186"><a href="#L186">186</a></td>
+              <td class="source"><pre>      width: 44px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L187"><a href="#L187">187</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L188"><a href="#L188">188</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L189"><a href="#L189">189</a></td>
+              <td class="source"><pre>    .copy-row {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L190"><a href="#L190">190</a></td>
+              <td class="source"><pre>      align-items: center;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L191"><a href="#L191">191</a></td>
+              <td class="source"><pre>      background: #07131e;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L192"><a href="#L192">192</a></td>
+              <td class="source"><pre>      border: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L193"><a href="#L193">193</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L194"><a href="#L194">194</a></td>
+              <td class="source"><pre>      display: flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L195"><a href="#L195">195</a></td>
+              <td class="source"><pre>      gap: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L196"><a href="#L196">196</a></td>
+              <td class="source"><pre>      justify-content: space-between;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L197"><a href="#L197">197</a></td>
+              <td class="source"><pre>      margin-top: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L198"><a href="#L198">198</a></td>
+              <td class="source"><pre>      padding: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L199"><a href="#L199">199</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L200"><a href="#L200">200</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L201"><a href="#L201">201</a></td>
+              <td class="source"><pre>    .form-grid {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L202"><a href="#L202">202</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L203"><a href="#L203">203</a></td>
+              <td class="source"><pre>      gap: 12px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L204"><a href="#L204">204</a></td>
+              <td class="source"><pre>      grid-template-columns: repeat(2, minmax(0, 1fr));</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L205"><a href="#L205">205</a></td>
+              <td class="source"><pre>      margin-top: 12px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L206"><a href="#L206">206</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L207"><a href="#L207">207</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L208"><a href="#L208">208</a></td>
+              <td class="source"><pre>    label {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L209"><a href="#L209">209</a></td>
+              <td class="source"><pre>      color: var(--muted);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L210"><a href="#L210">210</a></td>
+              <td class="source"><pre>      display: grid;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L211"><a href="#L211">211</a></td>
+              <td class="source"><pre>      font-size: 0.9rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L212"><a href="#L212">212</a></td>
+              <td class="source"><pre>      gap: 6px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L213"><a href="#L213">213</a></td>
+              <td class="source"><pre>      line-height: 1.45;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L214"><a href="#L214">214</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L215"><a href="#L215">215</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L216"><a href="#L216">216</a></td>
+              <td class="source"><pre>    input,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L217"><a href="#L217">217</a></td>
+              <td class="source"><pre>    textarea {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L218"><a href="#L218">218</a></td>
+              <td class="source"><pre>      background: #07131e;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L219"><a href="#L219">219</a></td>
+              <td class="source"><pre>      border: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L220"><a href="#L220">220</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L221"><a href="#L221">221</a></td>
+              <td class="source"><pre>      color: var(--text);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L222"><a href="#L222">222</a></td>
+              <td class="source"><pre>      font: inherit;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L223"><a href="#L223">223</a></td>
+              <td class="source"><pre>      min-width: 0;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L224"><a href="#L224">224</a></td>
+              <td class="source"><pre>      padding: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L225"><a href="#L225">225</a></td>
+              <td class="source"><pre>      width: 100%;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L226"><a href="#L226">226</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L227"><a href="#L227">227</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L228"><a href="#L228">228</a></td>
+              <td class="source"><pre>    textarea {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L229"><a href="#L229">229</a></td>
+              <td class="source"><pre>      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, monospace;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L230"><a href="#L230">230</a></td>
+              <td class="source"><pre>      min-height: 140px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L231"><a href="#L231">231</a></td>
+              <td class="source"><pre>      resize: vertical;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L232"><a href="#L232">232</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L233"><a href="#L233">233</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L234"><a href="#L234">234</a></td>
+              <td class="source"><pre>    code,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L235"><a href="#L235">235</a></td>
+              <td class="source"><pre>    .copy-value {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L236"><a href="#L236">236</a></td>
+              <td class="source"><pre>      color: #d8fbff;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L237"><a href="#L237">237</a></td>
+              <td class="source"><pre>      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, monospace;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L238"><a href="#L238">238</a></td>
+              <td class="source"><pre>      font-size: 0.9rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L239"><a href="#L239">239</a></td>
+              <td class="source"><pre>      overflow-wrap: anywhere;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L240"><a href="#L240">240</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L241"><a href="#L241">241</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L242"><a href="#L242">242</a></td>
+              <td class="source"><pre>    button,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L243"><a href="#L243">243</a></td>
+              <td class="source"><pre>    .button {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L244"><a href="#L244">244</a></td>
+              <td class="source"><pre>      background: transparent;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L245"><a href="#L245">245</a></td>
+              <td class="source"><pre>      border: 1px solid rgba(116, 234, 255, 0.48);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L246"><a href="#L246">246</a></td>
+              <td class="source"><pre>      border-radius: 8px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L247"><a href="#L247">247</a></td>
+              <td class="source"><pre>      color: var(--text);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L248"><a href="#L248">248</a></td>
+              <td class="source"><pre>      cursor: pointer;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L249"><a href="#L249">249</a></td>
+              <td class="source"><pre>      display: inline-flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L250"><a href="#L250">250</a></td>
+              <td class="source"><pre>      font: inherit;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L251"><a href="#L251">251</a></td>
+              <td class="source"><pre>      font-size: 0.92rem;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L252"><a href="#L252">252</a></td>
+              <td class="source"><pre>      font-weight: 800;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L253"><a href="#L253">253</a></td>
+              <td class="source"><pre>      justify-content: center;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L254"><a href="#L254">254</a></td>
+              <td class="source"><pre>      padding: 9px 12px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L255"><a href="#L255">255</a></td>
+              <td class="source"><pre>      text-decoration: none;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L256"><a href="#L256">256</a></td>
+              <td class="source"><pre>      white-space: nowrap;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L257"><a href="#L257">257</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L258"><a href="#L258">258</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L259"><a href="#L259">259</a></td>
+              <td class="source"><pre>    button:hover,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L260"><a href="#L260">260</a></td>
+              <td class="source"><pre>    .button:hover {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L261"><a href="#L261">261</a></td>
+              <td class="source"><pre>      background: rgba(116, 234, 255, 0.08);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L262"><a href="#L262">262</a></td>
+              <td class="source"><pre>      text-decoration: none;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L263"><a href="#L263">263</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L264"><a href="#L264">264</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L265"><a href="#L265">265</a></td>
+              <td class="source"><pre>    .button.primary {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L266"><a href="#L266">266</a></td>
+              <td class="source"><pre>      background: linear-gradient(90deg, rgba(116, 234, 255, 0.22), rgba(132, 247, 173, 0.18));</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L267"><a href="#L267">267</a></td>
+              <td class="source"><pre>      border-color: rgba(132, 247, 173, 0.62);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L268"><a href="#L268">268</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L269"><a href="#L269">269</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L270"><a href="#L270">270</a></td>
+              <td class="source"><pre>    .warn {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L271"><a href="#L271">271</a></td>
+              <td class="source"><pre>      border-color: rgba(255, 210, 122, 0.42);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L272"><a href="#L272">272</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L273"><a href="#L273">273</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L274"><a href="#L274">274</a></td>
+              <td class="source"><pre>    .danger {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L275"><a href="#L275">275</a></td>
+              <td class="source"><pre>      border-color: rgba(255, 143, 143, 0.44);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L276"><a href="#L276">276</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L277"><a href="#L277">277</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L278"><a href="#L278">278</a></td>
+              <td class="source"><pre>    .actions {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L279"><a href="#L279">279</a></td>
+              <td class="source"><pre>      display: flex;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L280"><a href="#L280">280</a></td>
+              <td class="source"><pre>      flex-wrap: wrap;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L281"><a href="#L281">281</a></td>
+              <td class="source"><pre>      gap: 10px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L282"><a href="#L282">282</a></td>
+              <td class="source"><pre>      margin-top: 12px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L283"><a href="#L283">283</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L284"><a href="#L284">284</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L285"><a href="#L285">285</a></td>
+              <td class="source"><pre>    footer {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L286"><a href="#L286">286</a></td>
+              <td class="source"><pre>      border-top: 1px solid var(--line);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L287"><a href="#L287">287</a></td>
+              <td class="source"><pre>      color: var(--muted);</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L288"><a href="#L288">288</a></td>
+              <td class="source"><pre>      padding: 24px 0 36px;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L289"><a href="#L289">289</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L290"><a href="#L290">290</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L291"><a href="#L291">291</a></td>
+              <td class="source"><pre>    @media (max-width: 820px) {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L292"><a href="#L292">292</a></td>
+              <td class="source"><pre>      .hero,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L293"><a href="#L293">293</a></td>
+              <td class="source"><pre>      .grid,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L294"><a href="#L294">294</a></td>
+              <td class="source"><pre>      .step,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L295"><a href="#L295">295</a></td>
+              <td class="source"><pre>      .form-grid {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L296"><a href="#L296">296</a></td>
+              <td class="source"><pre>        grid-template-columns: 1fr;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L297"><a href="#L297">297</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L298"><a href="#L298">298</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L299"><a href="#L299">299</a></td>
+              <td class="source"><pre>      .copy-row {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L300"><a href="#L300">300</a></td>
+              <td class="source"><pre>        align-items: stretch;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L301"><a href="#L301">301</a></td>
+              <td class="source"><pre>        flex-direction: column;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L302"><a href="#L302">302</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L303"><a href="#L303">303</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L304"><a href="#L304">304</a></td>
+              <td class="source"><pre>      button,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L305"><a href="#L305">305</a></td>
+              <td class="source"><pre>      .button {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L306"><a href="#L306">306</a></td>
+              <td class="source"><pre>        width: 100%;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L307"><a href="#L307">307</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L308"><a href="#L308">308</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L309"><a href="#L309">309</a></td>
+              <td class="source"><pre>  &lt;/style&gt;</pre></td>
+              <td>Starts or ends the CSS block that styles this page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L310"><a href="#L310">310</a></td>
+              <td class="source"><pre>&lt;/head&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L311"><a href="#L311">311</a></td>
+              <td class="source"><pre>&lt;body&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L312"><a href="#L312">312</a></td>
+              <td class="source"><pre>  &lt;header&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L313"><a href="#L313">313</a></td>
+              <td class="source"><pre>    &lt;div class=&quot;shell topline&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L314"><a href="#L314">314</a></td>
+              <td class="source"><pre>      &lt;div class=&quot;brand&quot;&gt;Vault MCP&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L315"><a href="#L315">315</a></td>
+              <td class="source"><pre>      &lt;nav class=&quot;nav&quot; aria-label=&quot;Setup navigation&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L316"><a href="#L316">316</a></td>
+              <td class="source"><pre>        &lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L317"><a href="#L317">317</a></td>
+              <td class="source"><pre>        &lt;a href=&quot;/wiki/&quot;&gt;Wiki&lt;/a&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L318"><a href="#L318">318</a></td>
+              <td class="source"><pre>        &lt;a href=&quot;/healthz&quot;&gt;Health&lt;/a&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L319"><a href="#L319">319</a></td>
+              <td class="source"><pre>      &lt;/nav&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L320"><a href="#L320">320</a></td>
+              <td class="source"><pre>    &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L321"><a href="#L321">321</a></td>
+              <td class="source"><pre>  &lt;/header&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L322"><a href="#L322">322</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L323"><a href="#L323">323</a></td>
+              <td class="source"><pre>  &lt;main class=&quot;shell&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L324"><a href="#L324">324</a></td>
+              <td class="source"><pre>    &lt;section class=&quot;hero&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L325"><a href="#L325">325</a></td>
+              <td class="source"><pre>      &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L326"><a href="#L326">326</a></td>
+              <td class="source"><pre>        &lt;span class=&quot;badge&quot;&gt;Private alpha&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L327"><a href="#L327">327</a></td>
+              <td class="source"><pre>        &lt;h1&gt;No-terminal Vercel setup&lt;/h1&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L328"><a href="#L328">328</a></td>
+              <td class="source"><pre>        &lt;p class=&quot;lead&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L329"><a href="#L329">329</a></td>
+              <td class="source"><pre>          This page is the browser-first self-host path for Vault MCP. It walks a non-terminal user through creating a Vercel-hosted MCP server, checking that it is alive, and copying the values back into the Obsidian plugin.</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L330"><a href="#L330">330</a></td>
+              <td class="source"><pre>        &lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L331"><a href="#L331">331</a></td>
+              <td class="source"><pre>      &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L332"><a href="#L332">332</a></td>
+              <td class="source"><pre>      &lt;aside class=&quot;status-card warn&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L333"><a href="#L333">333</a></td>
+              <td class="source"><pre>        &lt;h2&gt;Current state&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L334"><a href="#L334">334</a></td>
+              <td class="source"><pre>        &lt;p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L335"><a href="#L335">335</a></td>
+              <td class="source"><pre>          This is a guided private-alpha checklist. The final one-click template still needs a public/template repository and automated token handoff. Until then, account approvals in Vercel, Neon, GitHub, ChatGPT, or Claude may still appear in the browser.</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L336"><a href="#L336">336</a></td>
+              <td class="source"><pre>        &lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L337"><a href="#L337">337</a></td>
+              <td class="source"><pre>      &lt;/aside&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L338"><a href="#L338">338</a></td>
+              <td class="source"><pre>    &lt;/section&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L339"><a href="#L339">339</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L340"><a href="#L340">340</a></td>
+              <td class="source"><pre>    &lt;section class=&quot;grid&quot; aria-label=&quot;Setup requirements&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L341"><a href="#L341">341</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;card&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L342"><a href="#L342">342</a></td>
+              <td class="source"><pre>        &lt;strong&gt;What you are creating&lt;/strong&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L343"><a href="#L343">343</a></td>
+              <td class="source"><pre>        &lt;p&gt;A public HTTPS server that stores only the approved derived index from your vault and exposes MCP tools to AI clients.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L344"><a href="#L344">344</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L345"><a href="#L345">345</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;card&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L346"><a href="#L346">346</a></td>
+              <td class="source"><pre>        &lt;strong&gt;What stays local&lt;/strong&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L347"><a href="#L347">347</a></td>
+              <td class="source"><pre>        &lt;p&gt;Your Obsidian vault stays on your computer. The plugin decides what can sync and applies approved write proposals locally.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L348"><a href="#L348">348</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L349"><a href="#L349">349</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;card&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L350"><a href="#L350">350</a></td>
+              <td class="source"><pre>        &lt;strong&gt;What clients use&lt;/strong&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L351"><a href="#L351">351</a></td>
+              <td class="source"><pre>        &lt;p&gt;ChatGPT, Claude, Codex, and MCP Inspector connect to the MCP endpoint through OAuth or a minted access token, not the plugin sync token.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L352"><a href="#L352">352</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L353"><a href="#L353">353</a></td>
+              <td class="source"><pre>    &lt;/section&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L354"><a href="#L354">354</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L355"><a href="#L355">355</a></td>
+              <td class="source"><pre>    &lt;section class=&quot;steps&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L356"><a href="#L356">356</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L357"><a href="#L357">357</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;1&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L358"><a href="#L358">358</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L359"><a href="#L359">359</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Open the Obsidian plugin first&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L360"><a href="#L360">360</a></td>
+              <td class="source"><pre>          &lt;p&gt;In Obsidian, open Vault MCP and keep the `Start here` guide visible. That plugin page is the control center for this setup.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L361"><a href="#L361">361</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L362"><a href="#L362">362</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;Settings -&gt; Community plugins -&gt; Vault MCP -&gt; Start here&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L363"><a href="#L363">363</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;Settings -&gt; Community plugins -&gt; Vault MCP -&gt; Start here&quot;&gt;Copy&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L364"><a href="#L364">364</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L365"><a href="#L365">365</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L366"><a href="#L366">366</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L367"><a href="#L367">367</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L368"><a href="#L368">368</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L369"><a href="#L369">369</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;2&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L370"><a href="#L370">370</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L371"><a href="#L371">371</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Create or choose a Vercel project&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L372"><a href="#L372">372</a></td>
+              <td class="source"><pre>          &lt;p&gt;For private alpha, import the Vault MCP platform repository into Vercel. The future public version should replace this with a one-click deploy button that clones a template repository.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L373"><a href="#L373">373</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;actions&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L374"><a href="#L374">374</a></td>
+              <td class="source"><pre>            &lt;a class=&quot;button primary&quot; href=&quot;https://vercel.com/new&quot; rel=&quot;noreferrer&quot; target=&quot;_blank&quot;&gt;Open Vercel new project&lt;/a&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L375"><a href="#L375">375</a></td>
+              <td class="source"><pre>            &lt;a class=&quot;button&quot; href=&quot;/wiki/files/docs-self-host-md.html&quot;&gt;Read self-host docs&lt;/a&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L376"><a href="#L376">376</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L377"><a href="#L377">377</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L378"><a href="#L378">378</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L379"><a href="#L379">379</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L380"><a href="#L380">380</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L381"><a href="#L381">381</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;3&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L382"><a href="#L382">382</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L383"><a href="#L383">383</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Add required environment values&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L384"><a href="#L384">384</a></td>
+              <td class="source"><pre>          &lt;p&gt;Vercel needs a database, public URL, sync token, and OAuth values. Use strong generated values for secrets and keep them out of screenshots.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L385"><a href="#L385">385</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L386"><a href="#L386">386</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;PUBLIC_BASE_URL, DATABASE_URL, MCP_SYNC_TOKEN, OAUTH_JWT_SECRET, OAUTH_AUTH_PASSWORD, OAUTH_SCOPES, ALLOWED_ORIGINS&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L387"><a href="#L387">387</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;PUBLIC_BASE_URL, DATABASE_URL, MCP_SYNC_TOKEN, OAUTH_JWT_SECRET, OAUTH_AUTH_PASSWORD, OAUTH_SCOPES, ALLOWED_ORIGINS&quot;&gt;Copy env list&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L388"><a href="#L388">388</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L389"><a href="#L389">389</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L390"><a href="#L390">390</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L391"><a href="#L391">391</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L392"><a href="#L392">392</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L393"><a href="#L393">393</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;4&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L394"><a href="#L394">394</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L395"><a href="#L395">395</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Check the deployed server&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L396"><a href="#L396">396</a></td>
+              <td class="source"><pre>          &lt;p&gt;After deployment, open the health URL in your browser. You want &lt;code&gt;ok: true&lt;/code&gt;, storage ready, and a service MCP resource URL ending in &lt;code&gt;/mcp&lt;/code&gt;.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L397"><a href="#L397">397</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L398"><a href="#L398">398</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;https://your-vercel-domain.vercel.app/healthz&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L399"><a href="#L399">399</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;https://your-vercel-domain.vercel.app/healthz&quot;&gt;Copy health URL&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L400"><a href="#L400">400</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L401"><a href="#L401">401</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L402"><a href="#L402">402</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L403"><a href="#L403">403</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L404"><a href="#L404">404</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L405"><a href="#L405">405</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;5&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L406"><a href="#L406">406</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L407"><a href="#L407">407</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Generate env values and plugin setup bundle&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L408"><a href="#L408">408</a></td>
+              <td class="source"><pre>          &lt;p&gt;Enter your deployed Vercel base URL. This page generates browser-only secret values and a plugin setup bundle. Nothing is sent to Vault MCP by this form.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L409"><a href="#L409">409</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;form-grid&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L410"><a href="#L410">410</a></td>
+              <td class="source"><pre>            &lt;label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L411"><a href="#L411">411</a></td>
+              <td class="source"><pre>              Vercel base URL</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L412"><a href="#L412">412</a></td>
+              <td class="source"><pre>              &lt;input id=&quot;server-url&quot; value=&quot;https://your-vercel-domain.vercel.app&quot; autocomplete=&quot;off&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L413"><a href="#L413">413</a></td>
+              <td class="source"><pre>            &lt;/label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L414"><a href="#L414">414</a></td>
+              <td class="source"><pre>            &lt;label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L415"><a href="#L415">415</a></td>
+              <td class="source"><pre>              Vault id</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L416"><a href="#L416">416</a></td>
+              <td class="source"><pre>              &lt;input id=&quot;vault-id&quot; value=&quot;default&quot; autocomplete=&quot;off&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L417"><a href="#L417">417</a></td>
+              <td class="source"><pre>            &lt;/label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L418"><a href="#L418">418</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L419"><a href="#L419">419</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;actions&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L420"><a href="#L420">420</a></td>
+              <td class="source"><pre>            &lt;button id=&quot;generate-values&quot; type=&quot;button&quot;&gt;Generate private values&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L421"><a href="#L421">421</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L422"><a href="#L422">422</a></td>
+              <td class="source"><pre>          &lt;label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L423"><a href="#L423">423</a></td>
+              <td class="source"><pre>            Vercel environment values</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L424"><a href="#L424">424</a></td>
+              <td class="source"><pre>            &lt;textarea id=&quot;env-output&quot; spellcheck=&quot;false&quot; readonly&gt;&lt;/textarea&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L425"><a href="#L425">425</a></td>
+              <td class="source"><pre>          &lt;/label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L426"><a href="#L426">426</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;actions&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L427"><a href="#L427">427</a></td>
+              <td class="source"><pre>            &lt;button data-copy-target=&quot;env-output&quot; type=&quot;button&quot;&gt;Copy env values&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L428"><a href="#L428">428</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L429"><a href="#L429">429</a></td>
+              <td class="source"><pre>          &lt;label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L430"><a href="#L430">430</a></td>
+              <td class="source"><pre>            Obsidian plugin setup bundle</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L431"><a href="#L431">431</a></td>
+              <td class="source"><pre>            &lt;textarea id=&quot;bundle-output&quot; spellcheck=&quot;false&quot; readonly&gt;&lt;/textarea&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L432"><a href="#L432">432</a></td>
+              <td class="source"><pre>          &lt;/label&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L433"><a href="#L433">433</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;actions&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L434"><a href="#L434">434</a></td>
+              <td class="source"><pre>            &lt;button data-copy-target=&quot;bundle-output&quot; type=&quot;button&quot;&gt;Copy setup bundle&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L435"><a href="#L435">435</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L436"><a href="#L436">436</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L437"><a href="#L437">437</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L438"><a href="#L438">438</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L439"><a href="#L439">439</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L440"><a href="#L440">440</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;6&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L441"><a href="#L441">441</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L442"><a href="#L442">442</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Import the setup bundle in Obsidian&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L443"><a href="#L443">443</a></td>
+              <td class="source"><pre>          &lt;p&gt;Back in the Vault MCP plugin settings, paste the setup bundle into &lt;code&gt;Import setup bundle&lt;/code&gt;, then click &lt;code&gt;Import bundle&lt;/code&gt;. Run &lt;code&gt;Check connection&lt;/code&gt; after importing.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L444"><a href="#L444">444</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L445"><a href="#L445">445</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;Paste bundle -&gt; Import bundle -&gt; Check connection -&gt; Preview index -&gt; Sync now&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L446"><a href="#L446">446</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;Paste bundle -&gt; Import bundle -&gt; Check connection -&gt; Preview index -&gt; Sync now&quot;&gt;Copy import sequence&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L447"><a href="#L447">447</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L448"><a href="#L448">448</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L449"><a href="#L449">449</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L450"><a href="#L450">450</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L451"><a href="#L451">451</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L452"><a href="#L452">452</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;7&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L453"><a href="#L453">453</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L454"><a href="#L454">454</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Run plugin preflight, preview, and sync&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L455"><a href="#L455">455</a></td>
+              <td class="source"><pre>          &lt;p&gt;Back in Obsidian, click `Check connection`, then `Preview index`. Review what is allowed, denied, or held for review before syncing.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L456"><a href="#L456">456</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L457"><a href="#L457">457</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;Check connection -&gt; Preview index -&gt; Review queue -&gt; Sync now&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L458"><a href="#L458">458</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;Check connection -&gt; Preview index -&gt; Review queue -&gt; Sync now&quot;&gt;Copy plugin sequence&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L459"><a href="#L459">459</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L460"><a href="#L460">460</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L461"><a href="#L461">461</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L462"><a href="#L462">462</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L463"><a href="#L463">463</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L464"><a href="#L464">464</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;8&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L465"><a href="#L465">465</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L466"><a href="#L466">466</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Connect ChatGPT or another MCP client&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L467"><a href="#L467">467</a></td>
+              <td class="source"><pre>          &lt;p&gt;Clients use the MCP endpoint and OAuth. The endpoint includes &lt;code&gt;/mcp&lt;/code&gt;. The sync token is only for the Obsidian plugin.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L468"><a href="#L468">468</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L469"><a href="#L469">469</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;https://your-vercel-domain.vercel.app/mcp&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L470"><a href="#L470">470</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;https://your-vercel-domain.vercel.app/mcp&quot;&gt;Copy MCP endpoint example&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L471"><a href="#L471">471</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L472"><a href="#L472">472</a></td>
+              <td class="source"><pre>          &lt;div class=&quot;copy-row&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L473"><a href="#L473">473</a></td>
+              <td class="source"><pre>            &lt;span class=&quot;copy-value&quot;&gt;Search my vault for active project notes and show one result card.&lt;/span&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L474"><a href="#L474">474</a></td>
+              <td class="source"><pre>            &lt;button data-copy=&quot;Search my vault for active project notes and show one result card.&quot;&gt;Copy test prompt&lt;/button&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L475"><a href="#L475">475</a></td>
+              <td class="source"><pre>          &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L476"><a href="#L476">476</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L477"><a href="#L477">477</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L478"><a href="#L478">478</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L479"><a href="#L479">479</a></td>
+              <td class="source"><pre>      &lt;article class=&quot;step danger&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L480"><a href="#L480">480</a></td>
+              <td class="source"><pre>        &lt;div class=&quot;num&quot;&gt;!&lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L481"><a href="#L481">481</a></td>
+              <td class="source"><pre>        &lt;div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L482"><a href="#L482">482</a></td>
+              <td class="source"><pre>          &lt;h2&gt;Recovery checklist&lt;/h2&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L483"><a href="#L483">483</a></td>
+              <td class="source"><pre>          &lt;p&gt;If something feels wrong, stop syncing first. Then rotate exposed tokens, revoke OAuth clients, delete the derived server index, or restore local notes from the plugin write-audit backup folder.&lt;/p&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L484"><a href="#L484">484</a></td>
+              <td class="source"><pre>          &lt;ul&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L485"><a href="#L485">485</a></td>
+              <td class="source"><pre>            &lt;li&gt;Disable the plugin in Obsidian Community plugins.&lt;/li&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L486"><a href="#L486">486</a></td>
+              <td class="source"><pre>            &lt;li&gt;Rotate &lt;code&gt;MCP_SYNC_TOKEN&lt;/code&gt; if it was exposed.&lt;/li&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L487"><a href="#L487">487</a></td>
+              <td class="source"><pre>            &lt;li&gt;Rotate OAuth secrets or revoke clients if client access should reset.&lt;/li&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L488"><a href="#L488">488</a></td>
+              <td class="source"><pre>            &lt;li&gt;Delete the server-side vault index if you no longer want remote search.&lt;/li&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L489"><a href="#L489">489</a></td>
+              <td class="source"><pre>            &lt;li&gt;Restore from &lt;code&gt;00 System/Vault MCP Write Audit&lt;/code&gt; after approved local writes.&lt;/li&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L490"><a href="#L490">490</a></td>
+              <td class="source"><pre>          &lt;/ul&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L491"><a href="#L491">491</a></td>
+              <td class="source"><pre>        &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L492"><a href="#L492">492</a></td>
+              <td class="source"><pre>      &lt;/article&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L493"><a href="#L493">493</a></td>
+              <td class="source"><pre>    &lt;/section&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L494"><a href="#L494">494</a></td>
+              <td class="source"><pre>  &lt;/main&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L495"><a href="#L495">495</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L496"><a href="#L496">496</a></td>
+              <td class="source"><pre>  &lt;footer&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L497"><a href="#L497">497</a></td>
+              <td class="source"><pre>    &lt;div class=&quot;shell&quot;&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L498"><a href="#L498">498</a></td>
+              <td class="source"><pre>      Vault MCP private-alpha setup page. Public release still needs a template repository, one-click deploy handoff, and screenshot-backed external-user walkthrough.</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L499"><a href="#L499">499</a></td>
+              <td class="source"><pre>    &lt;/div&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L500"><a href="#L500">500</a></td>
+              <td class="source"><pre>  &lt;/footer&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L501"><a href="#L501">501</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L502"><a href="#L502">502</a></td>
+              <td class="source"><pre>  &lt;script&gt;</pre></td>
+              <td>Starts or ends browser JavaScript for this page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L503"><a href="#L503">503</a></td>
+              <td class="source"><pre>    function randomSecret(bytes = 32) {</pre></td>
+              <td>Defines randomSecret, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L504"><a href="#L504">504</a></td>
+              <td class="source"><pre>      const values = new Uint8Array(bytes);</pre></td>
+              <td>Declares values, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L505"><a href="#L505">505</a></td>
+              <td class="source"><pre>      crypto.getRandomValues(values);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L506"><a href="#L506">506</a></td>
+              <td class="source"><pre>      let binary = &quot;&quot;;</pre></td>
+              <td>Declares binary, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L507"><a href="#L507">507</a></td>
+              <td class="source"><pre>      for (const value of values) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L508"><a href="#L508">508</a></td>
+              <td class="source"><pre>        binary += String.fromCharCode(value);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L509"><a href="#L509">509</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L510"><a href="#L510">510</a></td>
+              <td class="source"><pre>      return btoa(binary).replace(/\+/g, &quot;-&quot;).replace(/\//g, &quot;_&quot;).replace(/=+$/, &quot;&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L511"><a href="#L511">511</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L512"><a href="#L512">512</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L513"><a href="#L513">513</a></td>
+              <td class="source"><pre>    function normalizeBaseUrl(value) {</pre></td>
+              <td>Defines normalizeBaseUrl, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L514"><a href="#L514">514</a></td>
+              <td class="source"><pre>      const url = new URL(value.trim());</pre></td>
+              <td>Declares url, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L515"><a href="#L515">515</a></td>
+              <td class="source"><pre>      if (url.protocol !== &quot;https:&quot;) {</pre></td>
+              <td>Starts a conditional branch; the following block only runs when this test is true.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L516"><a href="#L516">516</a></td>
+              <td class="source"><pre>        throw new Error(&quot;Vercel deployments should use https.&quot;);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L517"><a href="#L517">517</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L518"><a href="#L518">518</a></td>
+              <td class="source"><pre>      url.pathname = &quot;/&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L519"><a href="#L519">519</a></td>
+              <td class="source"><pre>      url.search = &quot;&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L520"><a href="#L520">520</a></td>
+              <td class="source"><pre>      url.hash = &quot;&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L521"><a href="#L521">521</a></td>
+              <td class="source"><pre>      return url.toString().replace(/\/$/, &quot;&quot;);</pre></td>
+              <td>Returns this value to the caller and ends the current function path.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L522"><a href="#L522">522</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L523"><a href="#L523">523</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L524"><a href="#L524">524</a></td>
+              <td class="source"><pre>    function buildOutputs() {</pre></td>
+              <td>Defines buildOutputs, a reusable block of behavior called by other code.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L525"><a href="#L525">525</a></td>
+              <td class="source"><pre>      const serverInput = document.getElementById(&quot;server-url&quot;);</pre></td>
+              <td>Declares serverInput, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L526"><a href="#L526">526</a></td>
+              <td class="source"><pre>      const vaultInput = document.getElementById(&quot;vault-id&quot;);</pre></td>
+              <td>Declares vaultInput, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L527"><a href="#L527">527</a></td>
+              <td class="source"><pre>      const envOutput = document.getElementById(&quot;env-output&quot;);</pre></td>
+              <td>Declares envOutput, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L528"><a href="#L528">528</a></td>
+              <td class="source"><pre>      const bundleOutput = document.getElementById(&quot;bundle-output&quot;);</pre></td>
+              <td>Declares bundleOutput, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L529"><a href="#L529">529</a></td>
+              <td class="source"><pre>      try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L530"><a href="#L530">530</a></td>
+              <td class="source"><pre>        const baseUrl = normalizeBaseUrl(serverInput.value);</pre></td>
+              <td>Declares baseUrl, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L531"><a href="#L531">531</a></td>
+              <td class="source"><pre>        const vaultId = (vaultInput.value || &quot;default&quot;).trim() || &quot;default&quot;;</pre></td>
+              <td>Declares vaultId, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L532"><a href="#L532">532</a></td>
+              <td class="source"><pre>        const syncToken = randomSecret(32);</pre></td>
+              <td>Declares syncToken, a token-related value used for authentication or authorization.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L533"><a href="#L533">533</a></td>
+              <td class="source"><pre>        const oauthSecret = randomSecret(48);</pre></td>
+              <td>Declares oauthSecret, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L534"><a href="#L534">534</a></td>
+              <td class="source"><pre>        const authPassword = randomSecret(18);</pre></td>
+              <td>Declares authPassword, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L535"><a href="#L535">535</a></td>
+              <td class="source"><pre>        const env = [</pre></td>
+              <td>Declares env, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L536"><a href="#L536">536</a></td>
+              <td class="source"><pre>          `PUBLIC_BASE_URL=${baseUrl}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L537"><a href="#L537">537</a></td>
+              <td class="source"><pre>          &quot;DATABASE_URL=&lt;paste your Neon Postgres connection string&gt;&quot;,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L538"><a href="#L538">538</a></td>
+              <td class="source"><pre>          `MCP_SYNC_TOKEN=${syncToken}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L539"><a href="#L539">539</a></td>
+              <td class="source"><pre>          `OAUTH_ISSUER=${baseUrl}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L540"><a href="#L540">540</a></td>
+              <td class="source"><pre>          `OAUTH_AUDIENCE=${baseUrl}/mcp`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L541"><a href="#L541">541</a></td>
+              <td class="source"><pre>          `OAUTH_AUTHORIZATION_SERVER=${baseUrl}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L542"><a href="#L542">542</a></td>
+              <td class="source"><pre>          `OAUTH_JWT_SECRET=${oauthSecret}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L543"><a href="#L543">543</a></td>
+              <td class="source"><pre>          `OAUTH_AUTH_PASSWORD=${authPassword}`,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L544"><a href="#L544">544</a></td>
+              <td class="source"><pre>          &quot;OAUTH_SCOPES=vault.read&quot;,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L545"><a href="#L545">545</a></td>
+              <td class="source"><pre>          &quot;ALLOWED_ORIGINS=https://chatgpt.com,https://chat.openai.com,https://claude.ai,http://localhost:6274,http://127.0.0.1:6274&quot;,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L546"><a href="#L546">546</a></td>
+              <td class="source"><pre>        ].join(&quot;\n&quot;);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L547"><a href="#L547">547</a></td>
+              <td class="source"><pre>        const bundle = {</pre></td>
+              <td>Declares bundle, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L548"><a href="#L548">548</a></td>
+              <td class="source"><pre>          type: &quot;vault-mcp-plugin-setup&quot;,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L549"><a href="#L549">549</a></td>
+              <td class="source"><pre>          version: 1,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L550"><a href="#L550">550</a></td>
+              <td class="source"><pre>          serverUrl: baseUrl,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L551"><a href="#L551">551</a></td>
+              <td class="source"><pre>          syncToken,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L552"><a href="#L552">552</a></td>
+              <td class="source"><pre>          tenantId: &quot;default&quot;,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L553"><a href="#L553">553</a></td>
+              <td class="source"><pre>          vaultId,</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L554"><a href="#L554">554</a></td>
+              <td class="source"><pre>          indexMode: &quot;rules_plus_approvals&quot;,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L555"><a href="#L555">555</a></td>
+              <td class="source"><pre>          writeMode: &quot;review_required&quot;,</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L556"><a href="#L556">556</a></td>
+              <td class="source"><pre>        };</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L557"><a href="#L557">557</a></td>
+              <td class="source"><pre>        envOutput.value = env;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L558"><a href="#L558">558</a></td>
+              <td class="source"><pre>        bundleOutput.value = JSON.stringify(bundle, null, 2);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L559"><a href="#L559">559</a></td>
+              <td class="source"><pre>      } catch {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L560"><a href="#L560">560</a></td>
+              <td class="source"><pre>        envOutput.value = &quot;Enter a valid https:// Vercel deployment URL first.&quot;;</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L561"><a href="#L561">561</a></td>
+              <td class="source"><pre>        bundleOutput.value = &quot;&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L562"><a href="#L562">562</a></td>
+              <td class="source"><pre>      }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L563"><a href="#L563">563</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L564"><a href="#L564">564</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L565"><a href="#L565">565</a></td>
+              <td class="source"><pre>    document.getElementById(&quot;generate-values&quot;).addEventListener(&quot;click&quot;, buildOutputs);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L566"><a href="#L566">566</a></td>
+              <td class="source"><pre>    document.getElementById(&quot;server-url&quot;).addEventListener(&quot;change&quot;, buildOutputs);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L567"><a href="#L567">567</a></td>
+              <td class="source"><pre>    document.getElementById(&quot;vault-id&quot;).addEventListener(&quot;change&quot;, buildOutputs);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L568"><a href="#L568">568</a></td>
+              <td class="source"><pre> </pre></td>
+              <td>Blank line used to visually separate related blocks so the file is easier to scan.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L569"><a href="#L569">569</a></td>
+              <td class="source"><pre>    for (const button of document.querySelectorAll(&quot;[data-copy]&quot;)) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L570"><a href="#L570">570</a></td>
+              <td class="source"><pre>      button.addEventListener(&quot;click&quot;, async () =&gt; {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L571"><a href="#L571">571</a></td>
+              <td class="source"><pre>        const value = button.getAttribute(&quot;data-copy&quot;) || &quot;&quot;;</pre></td>
+              <td>Declares value, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L572"><a href="#L572">572</a></td>
+              <td class="source"><pre>        try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L573"><a href="#L573">573</a></td>
+              <td class="source"><pre>          await navigator.clipboard.writeText(value);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L574"><a href="#L574">574</a></td>
+              <td class="source"><pre>          const previous = button.textContent;</pre></td>
+              <td>Declares previous, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L575"><a href="#L575">575</a></td>
+              <td class="source"><pre>          button.textContent = &quot;Copied&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L576"><a href="#L576">576</a></td>
+              <td class="source"><pre>          setTimeout(() =&gt; {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L577"><a href="#L577">577</a></td>
+              <td class="source"><pre>            button.textContent = previous;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L578"><a href="#L578">578</a></td>
+              <td class="source"><pre>          }, 1200);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L579"><a href="#L579">579</a></td>
+              <td class="source"><pre>        } catch {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L580"><a href="#L580">580</a></td>
+              <td class="source"><pre>          button.textContent = &quot;Select text&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L581"><a href="#L581">581</a></td>
+              <td class="source"><pre>        }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L582"><a href="#L582">582</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L583"><a href="#L583">583</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L584"><a href="#L584">584</a></td>
+              <td class="source"><pre>    for (const button of document.querySelectorAll(&quot;[data-copy-target]&quot;)) {</pre></td>
+              <td>Starts a loop that repeats the following block for each item or while the loop condition holds.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L585"><a href="#L585">585</a></td>
+              <td class="source"><pre>      button.addEventListener(&quot;click&quot;, async () =&gt; {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L586"><a href="#L586">586</a></td>
+              <td class="source"><pre>        const target = document.getElementById(button.getAttribute(&quot;data-copy-target&quot;) || &quot;&quot;);</pre></td>
+              <td>Declares target, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L587"><a href="#L587">587</a></td>
+              <td class="source"><pre>        const value = target &amp;&amp; &quot;value&quot; in target ? target.value : &quot;&quot;;</pre></td>
+              <td>Declares value, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L588"><a href="#L588">588</a></td>
+              <td class="source"><pre>        try {</pre></td>
+              <td>Starts a protected block where failures can be caught and handled instead of crashing immediately.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L589"><a href="#L589">589</a></td>
+              <td class="source"><pre>          await navigator.clipboard.writeText(value);</pre></td>
+              <td>Waits for an asynchronous operation to finish before continuing.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L590"><a href="#L590">590</a></td>
+              <td class="source"><pre>          const previous = button.textContent;</pre></td>
+              <td>Declares previous, a local value used later in this file.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L591"><a href="#L591">591</a></td>
+              <td class="source"><pre>          button.textContent = &quot;Copied&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L592"><a href="#L592">592</a></td>
+              <td class="source"><pre>          setTimeout(() =&gt; {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L593"><a href="#L593">593</a></td>
+              <td class="source"><pre>            button.textContent = previous;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L594"><a href="#L594">594</a></td>
+              <td class="source"><pre>          }, 1200);</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L595"><a href="#L595">595</a></td>
+              <td class="source"><pre>        } catch {</pre></td>
+              <td>CSS rule or property that controls the page layout, color, spacing, or typography.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L596"><a href="#L596">596</a></td>
+              <td class="source"><pre>          button.textContent = &quot;Select text&quot;;</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L597"><a href="#L597">597</a></td>
+              <td class="source"><pre>        }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L598"><a href="#L598">598</a></td>
+              <td class="source"><pre>      });</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L599"><a href="#L599">599</a></td>
+              <td class="source"><pre>    }</pre></td>
+              <td>Closes the current block, object, array, callback, or statement.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L600"><a href="#L600">600</a></td>
+              <td class="source"><pre>    buildOutputs();</pre></td>
+              <td>Text content or formatting inside the HTML page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L601"><a href="#L601">601</a></td>
+              <td class="source"><pre>  &lt;/script&gt;</pre></td>
+              <td>Starts or ends browser JavaScript for this page.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L602"><a href="#L602">602</a></td>
+              <td class="source"><pre>&lt;/body&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr>
+            <tr>
+              <td class="line-number" id="L603"><a href="#L603">603</a></td>
+              <td class="source"><pre>&lt;/html&gt;</pre></td>
+              <td>HTML markup that creates page structure or content.</td>
+            </tr></tbody>
+        </table>
+      </section>
+  </main>
+</body>
+</html>

@@ -4,15 +4,25 @@ import {
   buildDiffPreview,
 } from "./write-helpers";
 import {
+  buildLocalClientConnectionBundle,
+  buildLocalClientInstructions,
+  buildLocalServerLaunchCommand,
+  buildLocalServerSpawnConfig,
   describeCaughtError,
   describeHttpFailure,
+  localServerPortCandidates,
   normalizeServerBaseUrl,
+  parsePluginSetupBundle,
   pluginConfigurationChecklist,
+  pluginLocalServerStatus,
   pluginSafetyDisclosure,
+  pluginSetupGuide,
   summarizeSyncResponse,
   summarizeServerStatus,
+  validateLocalServerCompatibility,
 } from "./plugin-helpers";
 import type { PluginServerHealthSnapshot, PluginServerStatusSummary, PluginVaultStatusSnapshot } from "./plugin-helpers";
+import type { LocalServerSpawnConfig } from "./plugin-helpers";
 import type {
   LocalApplyResult,
   ProposalSafetyAnalysis,
@@ -27,7 +37,7 @@ import {
   Setting,
   TFile,
 } from "obsidian";
-import type { IndexMode, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
+import type { IndexMode, LocalAccessRequest, LocalAgentToolDefinition, LocalFsAccessMode, LocalFsPolicy, LocalFsWriteOperation, SyncPayload, VaultDocument, WriteMode, WriteProposal, WriteProposalStatus } from "@vault-mcp/core";
 
 type VaultMcpPluginSettings = {
   serverUrl: string;
@@ -43,10 +53,31 @@ type VaultMcpPluginSettings = {
   manualAllowPrefixes: string[];
   syncIntervalMinutes: number;
   writeAuditFolder: string;
+  localServerModeEnabled: boolean;
+  localServerPort: number;
+  localServerKeepAlive: boolean;
+  localServerDataDir: string;
+  localServerMcpToken: string;
+  localServerSyncToken: string;
+  localServerCredentialsCreatedAt: string | null;
+  localServerProjectDir: string;
+  localServerCommand: string;
+  localFsAccessMode: LocalFsAccessMode;
+  localFsReadRoots: string[];
+  localFsWriteRoots: string[];
+  localFsWriteOperations: LocalFsWriteOperation[];
+  localFsMaxReadBytes: number;
+  localFsMaxSearchResults: number;
+  localFsMaxSearchFiles: number;
+  localFsAccessTtlMinutes: number;
+  localFsRequireUserIntent: boolean;
+  localFsUserIntentPhrase: string;
+  hostedLocalBridgeEnabled: boolean;
+  hostedLocalBridgePollSeconds: number;
 };
 
 type SyncHistoryEntry = {
-  type: "preview" | "sync" | "approval" | "server-check" | "proposal-check" | "proposal-update" | "error";
+  type: "preview" | "sync" | "approval" | "server-check" | "setup-import" | "proposal-check" | "proposal-update" | "local-server" | "hosted-bridge" | "error";
   message: string;
   createdAt: string;
   scanned?: number;
@@ -58,6 +89,53 @@ type SyncHistoryEntry = {
 
 type VaultMcpPluginData = Partial<VaultMcpPluginSettings> & {
   syncHistory?: SyncHistoryEntry[];
+};
+
+type LocalServerChildProcess = {
+  pid?: number;
+  kill(signal?: string): boolean;
+  on(event: "error", listener: (error: Error) => void): LocalServerChildProcess;
+  on(event: "exit", listener: (code: number | null, signal: string | null) => void): LocalServerChildProcess;
+  unref?(): void;
+};
+
+type ChildProcessModule = {
+  spawn(
+    command: string,
+    args: string[],
+    options: {
+      cwd: string;
+      detached: boolean;
+      shell: boolean;
+      stdio: "ignore";
+      env?: Record<string, string | undefined>;
+    },
+  ): LocalServerChildProcess;
+};
+
+type FsModule = {
+  existsSync(path: string): boolean;
+};
+
+type NetSocket = {
+  once(event: "connect" | "error", listener: () => void): NetSocket;
+  setTimeout(timeout: number, listener: () => void): NetSocket;
+  destroy(): void;
+};
+
+type NetModule = {
+  createConnection(options: { host: string; port: number }): NetSocket;
+};
+
+type PathModule = {
+  join(...segments: string[]): string;
+};
+
+type LocalPortSelection = {
+  port: number;
+  reused: boolean;
+  health: PluginServerHealthSnapshot | null;
+  message: string;
 };
 
 type SyncSummary = {
@@ -122,6 +200,27 @@ const DEFAULT_SETTINGS: VaultMcpPluginSettings = {
   manualAllowPrefixes: [],
   syncIntervalMinutes: 0,
   writeAuditFolder: "00 System/Vault MCP Write Audit",
+  localServerModeEnabled: false,
+  localServerPort: 38791,
+  localServerKeepAlive: false,
+  localServerDataDir: "data/local-server",
+  localServerMcpToken: "",
+  localServerSyncToken: "",
+  localServerCredentialsCreatedAt: null,
+  localServerProjectDir: "",
+  localServerCommand: "npm",
+  localFsAccessMode: "off",
+  localFsReadRoots: [],
+  localFsWriteRoots: [],
+  localFsWriteOperations: ["write_file"],
+  localFsMaxReadBytes: 512 * 1024,
+  localFsMaxSearchResults: 100,
+  localFsMaxSearchFiles: 2000,
+  localFsAccessTtlMinutes: 120,
+  localFsRequireUserIntent: true,
+  localFsUserIntentPhrase: "use local filesystem",
+  hostedLocalBridgeEnabled: false,
+  hostedLocalBridgePollSeconds: 1,
 };
 
 const DEFAULT_SUMMARY: SyncSummary = {
@@ -144,6 +243,14 @@ export default class VaultMcpPlugin extends Plugin {
   indexPreview: IndexPreview | null = null;
   writeProposals: WriteProposal[] = [];
   syncHistory: SyncHistoryEntry[] = [];
+  localServerProcess: LocalServerChildProcess | null = null;
+  localServerStartedAt: string | null = null;
+  localServerHealth: PluginServerHealthSnapshot | null = null;
+  hostedLocalBridgeTimer: number | null = null;
+  hostedLocalBridgeBusy = false;
+  hostedLocalBridgeConnectedAt: string | null = null;
+  hostedLocalBridgeLastSeenAt: string | null = null;
+  hostedLocalBridgeLastError: string | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -190,6 +297,59 @@ export default class VaultMcpPlugin extends Plugin {
         void this.checkWriteProposals();
       },
     });
+
+    this.addCommand({
+      id: "start-local-server",
+      name: "Start local desktop server",
+      callback: () => {
+        void this.startLocalServer();
+      },
+    });
+
+    this.addCommand({
+      id: "stop-local-server",
+      name: "Stop local desktop server",
+      callback: () => {
+        void this.stopLocalServer();
+      },
+    });
+
+    this.addCommand({
+      id: "refresh-local-filesystem-session",
+      name: "Refresh local filesystem access session",
+      callback: () => {
+        void this.refreshLocalServerSession();
+      },
+    });
+
+    this.addCommand({
+      id: "start-hosted-local-bridge",
+      name: "Enable hosted ChatGPT desktop bridge",
+      callback: () => {
+        void this.startHostedLocalBridge();
+      },
+    });
+
+    this.addCommand({
+      id: "stop-hosted-local-bridge",
+      name: "Disable hosted ChatGPT desktop bridge",
+      callback: () => {
+        void this.stopHostedLocalBridge();
+      },
+    });
+
+    this.app.workspace.onLayoutReady(() => {
+      if (this.settings.hostedLocalBridgeEnabled) {
+        void this.startHostedLocalBridge(false);
+      }
+    });
+  }
+
+  onunload() {
+    this.clearHostedLocalBridgeTimer();
+    if (this.localServerProcess && !this.settings.localServerKeepAlive) {
+      void this.stopLocalServer("Plugin unloaded.");
+    }
   }
 
   async loadSettings() {
@@ -201,6 +361,27 @@ export default class VaultMcpPlugin extends Plugin {
       excludePrefixes: saved?.excludePrefixes ?? DEFAULT_SETTINGS.excludePrefixes,
       manualAllowPaths: saved?.manualAllowPaths ?? DEFAULT_SETTINGS.manualAllowPaths,
       manualAllowPrefixes: saved?.manualAllowPrefixes ?? DEFAULT_SETTINGS.manualAllowPrefixes,
+      localServerModeEnabled: saved?.localServerModeEnabled ?? DEFAULT_SETTINGS.localServerModeEnabled,
+      localServerPort: saved?.localServerPort ?? DEFAULT_SETTINGS.localServerPort,
+      localServerKeepAlive: saved?.localServerKeepAlive ?? DEFAULT_SETTINGS.localServerKeepAlive,
+      localServerDataDir: saved?.localServerDataDir ?? DEFAULT_SETTINGS.localServerDataDir,
+      localServerMcpToken: saved?.localServerMcpToken ?? DEFAULT_SETTINGS.localServerMcpToken,
+      localServerSyncToken: saved?.localServerSyncToken ?? DEFAULT_SETTINGS.localServerSyncToken,
+      localServerCredentialsCreatedAt: saved?.localServerCredentialsCreatedAt ?? DEFAULT_SETTINGS.localServerCredentialsCreatedAt,
+      localServerProjectDir: saved?.localServerProjectDir ?? DEFAULT_SETTINGS.localServerProjectDir,
+      localServerCommand: saved?.localServerCommand ?? DEFAULT_SETTINGS.localServerCommand,
+      localFsAccessMode: saved?.localFsAccessMode ?? DEFAULT_SETTINGS.localFsAccessMode,
+      localFsReadRoots: saved?.localFsReadRoots ?? DEFAULT_SETTINGS.localFsReadRoots,
+      localFsWriteRoots: saved?.localFsWriteRoots ?? DEFAULT_SETTINGS.localFsWriteRoots,
+      localFsWriteOperations: saved?.localFsWriteOperations ?? DEFAULT_SETTINGS.localFsWriteOperations,
+      localFsMaxReadBytes: saved?.localFsMaxReadBytes ?? DEFAULT_SETTINGS.localFsMaxReadBytes,
+      localFsMaxSearchResults: saved?.localFsMaxSearchResults ?? DEFAULT_SETTINGS.localFsMaxSearchResults,
+      localFsMaxSearchFiles: saved?.localFsMaxSearchFiles ?? DEFAULT_SETTINGS.localFsMaxSearchFiles,
+      localFsAccessTtlMinutes: saved?.localFsAccessTtlMinutes ?? DEFAULT_SETTINGS.localFsAccessTtlMinutes,
+      localFsRequireUserIntent: saved?.localFsRequireUserIntent ?? DEFAULT_SETTINGS.localFsRequireUserIntent,
+      localFsUserIntentPhrase: saved?.localFsUserIntentPhrase ?? DEFAULT_SETTINGS.localFsUserIntentPhrase,
+      hostedLocalBridgeEnabled: saved?.hostedLocalBridgeEnabled ?? DEFAULT_SETTINGS.hostedLocalBridgeEnabled,
+      hostedLocalBridgePollSeconds: saved?.hostedLocalBridgePollSeconds ?? DEFAULT_SETTINGS.hostedLocalBridgePollSeconds,
     };
     this.syncHistory = saved?.syncHistory?.slice(0, 20) ?? [];
   }
@@ -210,6 +391,351 @@ export default class VaultMcpPlugin extends Plugin {
       ...this.settings,
       syncHistory: this.syncHistory.slice(0, 20),
     });
+  }
+
+  async generateLocalServerCredentials() {
+    this.settings = {
+      ...this.settings,
+      localServerMcpToken: generateLocalToken(),
+      localServerSyncToken: generateLocalToken(),
+      localServerCredentialsCreatedAt: new Date().toISOString(),
+    };
+    await this.saveSettings();
+    new Notice("Vault MCP: generated local server credentials.");
+  }
+
+  async startLocalServer() {
+    if (this.localServerProcess) {
+      new Notice(`Vault MCP local server is already running${this.localServerProcess.pid ? ` (pid ${this.localServerProcess.pid})` : ""}.`);
+      return;
+    }
+
+    if (!this.settings.localServerMcpToken.trim() || !this.settings.localServerSyncToken.trim()) {
+      await this.generateLocalServerCredentials();
+    }
+
+    try {
+      const portSelection = await selectLocalServerPort(this.settings, this.manifest.version);
+      if (portSelection.port !== this.settings.localServerPort) {
+        this.settings.localServerPort = portSelection.port;
+        await this.saveSettings();
+      }
+      await this.addHistory({ type: "local-server", message: portSelection.message });
+      if (portSelection.reused && portSelection.health) {
+        this.localServerStartedAt = new Date().toISOString();
+        this.localServerHealth = portSelection.health;
+        this.settings.localServerModeEnabled = true;
+        await this.saveSettings();
+        new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
+        return;
+      }
+
+      const config = buildLocalServerSpawnConfig(this.localServerSettingsWithSidecar());
+      if (!config) {
+        const message = "Set the local server project folder, command, valid port, and local credentials before starting the developer local server.";
+        await this.addHistory({ type: "error", message });
+        new Notice(`Vault MCP: ${message}`);
+        this.settings.localServerModeEnabled = false;
+        await this.saveSettings();
+        return;
+      }
+
+      const child = spawnLocalServerProcess(config);
+      this.localServerProcess = child;
+      this.localServerStartedAt = new Date().toISOString();
+      this.localServerHealth = null;
+      this.settings.localServerModeEnabled = true;
+      await this.saveSettings();
+      await this.addHistory({ type: "local-server", message: `Starting local server on ${localServerEndpoint(this.settings)}.` });
+      child.on("error", (error) => {
+        if (this.localServerProcess === child) {
+          this.localServerProcess = null;
+          this.localServerStartedAt = null;
+          this.localServerHealth = null;
+          this.settings.localServerModeEnabled = false;
+          void this.saveSettings();
+        }
+        void this.addHistory({ type: "error", message: `Local server failed to start: ${error.message}` });
+        new Notice(`Vault MCP local server failed to start: ${error.message}`);
+      });
+      child.on("exit", (code, signal) => {
+        if (this.localServerProcess === child) {
+          this.localServerProcess = null;
+          this.localServerStartedAt = null;
+          this.localServerHealth = null;
+          this.settings.localServerModeEnabled = false;
+          void this.saveSettings();
+        }
+        const reason = signal ? `signal ${signal}` : `exit code ${code ?? "unknown"}`;
+        void this.addHistory({ type: "local-server", message: `Developer local server stopped (${reason}).` });
+      });
+      new Notice(`Vault MCP local server starting on ${localServerEndpoint(this.settings)}.`);
+      const health = await waitForLocalServerHealth(this.settings, this.manifest.version);
+      if (this.localServerProcess !== child) {
+        return;
+      }
+      this.localServerHealth = health;
+      await this.addHistory({ type: "local-server", message: `Local server ready on ${localServerEndpoint(this.settings)} (${health.storage?.kind ?? "unknown"} storage, version ${health.service?.version ?? "unknown"}).` });
+      new Notice(`Vault MCP local server ready on ${localServerEndpoint(this.settings)}.`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.localServerProcess?.kill("SIGTERM");
+      this.localServerProcess = null;
+      this.localServerStartedAt = null;
+      this.localServerHealth = null;
+      this.settings.localServerModeEnabled = false;
+      await this.saveSettings();
+      await this.addHistory({ type: "error", message: `Local server start failed: ${message}` });
+      new Notice(`Vault MCP local server start failed: ${message}`);
+    }
+  }
+
+  async stopLocalServer(reason = "Stopped by user.") {
+    const child = this.localServerProcess;
+    if (!child) {
+      if (this.settings.localServerModeEnabled || this.localServerHealth) {
+        this.localServerStartedAt = null;
+        this.localServerHealth = null;
+        this.settings.localServerModeEnabled = false;
+        await this.saveSettings();
+        await this.addHistory({ type: "local-server", message: "Disconnected from the compatible local server. No Obsidian-owned process was running." });
+        new Notice("Vault MCP local server disconnected. No Obsidian-owned process was running.");
+        return;
+      }
+      this.settings.localServerModeEnabled = false;
+      await this.saveSettings();
+      new Notice("Vault MCP local server is not running.");
+      return;
+    }
+    this.localServerProcess = null;
+    this.localServerStartedAt = null;
+    this.localServerHealth = null;
+    this.settings.localServerModeEnabled = false;
+    await this.saveSettings();
+    child.kill("SIGTERM");
+    await this.addHistory({ type: "local-server", message: reason });
+    new Notice("Vault MCP local server stop requested.");
+  }
+
+  async refreshLocalServerSession() {
+    if (!this.localServerProcess) {
+      await this.addHistory({ type: "local-server", message: "Starting developer local server to create a fresh local filesystem access session." });
+      await this.startLocalServer();
+      return;
+    }
+
+    const child = this.localServerProcess;
+    this.localServerProcess = null;
+    this.localServerStartedAt = null;
+    this.localServerHealth = null;
+    this.settings.localServerModeEnabled = false;
+    await this.saveSettings();
+    child.kill("SIGTERM");
+    await this.addHistory({ type: "local-server", message: `Refreshing local filesystem access session on ${localServerEndpoint(this.settings)}.` });
+    new Notice("Vault MCP local server session refresh requested.");
+    await delay(750);
+    await this.startLocalServer();
+  }
+
+  async startHostedLocalBridge(persist = true) {
+    if (!this.settings.syncToken.trim()) {
+      const message = "Add the hosted server sync token before enabling the ChatGPT desktop bridge.";
+      this.hostedLocalBridgeLastError = message;
+      new Notice(`Vault MCP: ${message}`);
+      return;
+    }
+    this.settings.hostedLocalBridgeEnabled = true;
+    if (persist) {
+      await this.saveSettings();
+    }
+    if (!this.localServerHealth) {
+      await this.startLocalServer();
+    }
+    if (!this.localServerHealth) {
+      try {
+        this.localServerHealth = await fetchLocalServerHealth(this.settings);
+      } catch (error) {
+        const message = describeCaughtError("hosted desktop bridge local server check", error);
+        this.hostedLocalBridgeLastError = message;
+        await this.addHistory({ type: "error", message: `Hosted desktop bridge could not start: ${message}` });
+        new Notice(`Vault MCP hosted desktop bridge could not start: ${message}`);
+        return;
+      }
+    }
+    this.hostedLocalBridgeConnectedAt ??= new Date().toISOString();
+    this.hostedLocalBridgeLastError = null;
+    this.scheduleHostedLocalBridge();
+    await this.runHostedLocalBridgeTick();
+    await this.addHistory({ type: "hosted-bridge", message: "Hosted ChatGPT desktop bridge enabled. Files remain local until an authenticated chat requests one operation." });
+    new Notice("Vault MCP hosted ChatGPT desktop bridge enabled.");
+  }
+
+  async stopHostedLocalBridge(persist = true) {
+    this.clearHostedLocalBridgeTimer();
+    this.settings.hostedLocalBridgeEnabled = false;
+    this.hostedLocalBridgeConnectedAt = null;
+    this.hostedLocalBridgeLastSeenAt = null;
+    this.hostedLocalBridgeLastError = null;
+    if (persist) {
+      await this.saveSettings();
+    }
+    await this.addHistory({ type: "hosted-bridge", message: "Hosted ChatGPT desktop bridge disabled." });
+    new Notice("Vault MCP hosted ChatGPT desktop bridge disabled.");
+  }
+
+  scheduleHostedLocalBridge() {
+    this.clearHostedLocalBridgeTimer();
+    const pollMs = Math.max(1, Math.trunc(this.settings.hostedLocalBridgePollSeconds)) * 1_000;
+    this.hostedLocalBridgeTimer = window.setInterval(() => {
+      void this.runHostedLocalBridgeTick();
+    }, pollMs);
+    this.registerInterval(this.hostedLocalBridgeTimer);
+  }
+
+  private clearHostedLocalBridgeTimer() {
+    if (this.hostedLocalBridgeTimer !== null) {
+      window.clearInterval(this.hostedLocalBridgeTimer);
+      this.hostedLocalBridgeTimer = null;
+    }
+  }
+
+  async runHostedLocalBridgeTick() {
+    if (!this.settings.hostedLocalBridgeEnabled || this.hostedLocalBridgeBusy) {
+      return;
+    }
+    this.hostedLocalBridgeBusy = true;
+    try {
+      const policy = this.settings.localFsAccessMode === "off"
+        ? localFsPolicyFromPluginSettings(this.settings, this.localServerStartedAt)
+        : localFsPolicyFromMcpResponse(await callLocalMcpTool(this.settings, "local_fs_policy", {}));
+      const tools = await listLocalMcpTools(this.settings);
+      await this.sendHostedLocalBridgeHeartbeat(policy, tools);
+      const request = await this.claimHostedLocalAccessRequest();
+      if (request) {
+        await this.executeHostedLocalAccessRequest(request);
+      }
+      this.hostedLocalBridgeLastSeenAt = new Date().toISOString();
+      this.hostedLocalBridgeLastError = null;
+    } catch (error) {
+      const message = describeCaughtError("hosted desktop bridge", error);
+      if (message !== this.hostedLocalBridgeLastError) {
+        await this.addHistory({ type: "error", message: `Hosted desktop bridge error: ${message}` });
+      }
+      this.hostedLocalBridgeLastError = message;
+    } finally {
+      this.hostedLocalBridgeBusy = false;
+    }
+  }
+
+  private async sendHostedLocalBridgeHeartbeat(policy: LocalFsPolicy, tools: LocalAgentToolDefinition[]) {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-agent/heartbeat`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenant_id: this.settings.tenantId,
+        installation_id: this.settings.installationId,
+        agent_version: this.manifest.version,
+        policy,
+        tools,
+        connected_at: this.hostedLocalBridgeConnectedAt ?? new Date().toISOString(),
+      }),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge heartbeat", response.status, response.text));
+    }
+  }
+
+  private async claimHostedLocalAccessRequest(): Promise<LocalAccessRequest | null> {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-access-requests/next?tenant_id=${encodeURIComponent(this.settings.tenantId)}&installation_id=${encodeURIComponent(this.settings.installationId)}`,
+      method: "GET",
+      headers: { Authorization: `Bearer ${this.settings.syncToken}` },
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge request poll", response.status, response.text));
+    }
+    return parseJsonResponse<{ request: LocalAccessRequest | null }>(response.text, "hosted desktop bridge request").request;
+  }
+
+  private async executeHostedLocalAccessRequest(request: LocalAccessRequest) {
+    if (request.vault_id !== this.settings.vaultId || request.installation_id !== this.settings.installationId) {
+      throw new Error("Hosted desktop request scope did not match this plugin installation.");
+    }
+    try {
+      const result = await callLocalMcpTool(this.settings, request.tool_name, request.arguments);
+      await this.postHostedLocalAccessResult(request, "completed", result, null);
+      await this.addHistory({ type: "hosted-bridge", message: `Completed hosted desktop request ${request.id}: ${request.tool_name}.` });
+    } catch (error) {
+      const message = describeCaughtError(`local tool ${request.tool_name}`, error);
+      await this.postHostedLocalAccessResult(request, "failed", null, {
+        code: "LOCAL_TOOL_FAILED",
+        message,
+      });
+      await this.addHistory({ type: "error", message: `Hosted desktop request ${request.id} failed: ${message}` });
+    }
+  }
+
+  private async postHostedLocalAccessResult(
+    request: LocalAccessRequest,
+    status: "completed" | "failed",
+    result: Record<string, unknown> | null,
+    error: { code: string; message: string } | null,
+  ) {
+    const response = await requestUrl({
+      url: `${this.serverBaseUrl()}/admin/vaults/${encodeURIComponent(this.settings.vaultId)}/local-access-requests/${encodeURIComponent(request.id)}/result`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.settings.syncToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenant_id: this.settings.tenantId,
+        installation_id: this.settings.installationId,
+        status,
+        result,
+        error,
+      }),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(describeHttpFailure("hosted desktop bridge result", response.status, response.text));
+    }
+  }
+
+  localServerSettingsWithSidecar(): VaultMcpPluginSettings & { localServerSidecarDir?: string } {
+    const localServerSidecarDir = resolveBundledLocalSidecarDir(this.app, this.manifest);
+    return localServerSidecarDir ? { ...this.settings, localServerSidecarDir } : this.settings;
+  }
+
+  async importSetupBundle(value: string) {
+    try {
+      const bundle = parsePluginSetupBundle(value);
+      this.settings = {
+        ...this.settings,
+        serverUrl: bundle.serverUrl,
+        syncToken: bundle.syncToken,
+        tenantId: bundle.tenantId,
+        vaultId: bundle.vaultId,
+        indexMode: bundle.indexMode,
+        writeMode: bundle.writeMode,
+      };
+      this.serverCheck = null;
+      await this.saveSettings();
+      await this.addHistory({
+        type: "setup-import",
+        message: `Imported setup bundle for ${bundle.serverUrl} as vault ${bundle.vaultId}.`,
+      });
+      new Notice("Vault MCP: setup bundle imported. Run Check connection next.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.summary = { ...this.summary, lastError: message };
+      await this.addHistory({ type: "error", message });
+      new Notice(`Vault MCP: ${message}`);
+      throw error;
+    }
   }
 
   async syncNow() {
@@ -765,6 +1291,7 @@ class VaultMcpDashboardModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
     contentEl.createEl("h2", { text: "Vault MCP" });
+    addSetupGuide(contentEl, this.plugin.settings);
     addSafetyDisclosure(contentEl, this.plugin.settings);
     addConfigurationChecklist(contentEl, this.plugin.settings);
     addServerCheckSection(contentEl, this.plugin.serverCheck);
@@ -959,9 +1486,29 @@ class VaultMcpSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
+    addSetupGuide(containerEl, this.plugin.settings);
     addSafetyDisclosure(containerEl, this.plugin.settings);
     addConfigurationChecklist(containerEl, this.plugin.settings);
     addServerCheckSection(containerEl, this.plugin.serverCheck);
+
+    let setupBundleText = "";
+    new Setting(containerEl)
+      .setName("Import setup bundle")
+      .setDesc("Paste the JSON bundle generated by /setup/vercel to fill server URL, sync token, vault id, index mode, and write mode.")
+      .addTextArea((text) => {
+        text.inputEl.rows = 5;
+        text.inputEl.placeholder = "{\"type\":\"vault-mcp-plugin-setup\",...}";
+        text.onChange((value) => {
+          setupBundleText = value;
+        });
+      })
+      .addButton((button) => button
+        .setButtonText("Import bundle")
+        .setCta()
+        .onClick(async () => {
+          await this.plugin.importSetupBundle(setupBundleText);
+          this.display();
+        }));
 
     new Setting(containerEl)
       .setName("Connection preflight")
@@ -980,6 +1527,8 @@ class VaultMcpSettingTab extends PluginSettingTab {
           this.plugin.settings.serverUrl = value.trim();
           await this.plugin.saveSettings();
         }));
+
+    addLocalServerSection(containerEl, this.plugin);
 
     new Setting(containerEl)
       .setName("Sync token")
@@ -1070,6 +1619,94 @@ function addSyncSummarySection(parent: HTMLElement, message: string) {
   box.createDiv({ cls: "vault-mcp-safety__message", text: message });
 }
 
+function addSetupGuide(parent: HTMLElement, settings: VaultMcpPluginSettings) {
+  const guide = pluginSetupGuide(settings);
+  const box = parent.createDiv({ cls: "vault-mcp-setup" });
+  box.createDiv({ cls: "vault-mcp-setup__eyebrow", text: "First-run setup" });
+  box.createDiv({ cls: "vault-mcp-setup__title", text: guide.title });
+  box.createDiv({ cls: "vault-mcp-setup__summary", text: guide.summary });
+
+  const endpoint = box.createDiv({ cls: "vault-mcp-copy-value" });
+  const endpointBody = endpoint.createDiv({ cls: "vault-mcp-copy-value__body" });
+  endpointBody.createDiv({ cls: "vault-mcp-dashboard__label", text: "MCP endpoint for clients" });
+  endpointBody.createDiv({ cls: "vault-mcp-copy-value__text", text: guide.endpoint });
+  new Setting(endpoint.createDiv({ cls: "vault-mcp-copy-value__action" }))
+    .addButton((button) => button
+      .setButtonText("Copy")
+      .onClick(() => void copyToClipboard("MCP endpoint", guide.endpoint)));
+
+  const steps = box.createDiv({ cls: "vault-mcp-setup-steps" });
+  for (const step of guide.steps) {
+    const row = steps.createDiv({ cls: `vault-mcp-setup-step vault-mcp-setup-step--${step.status}` });
+    row.createDiv({ cls: "vault-mcp-setup-step__status", text: step.status });
+    const body = row.createDiv({ cls: "vault-mcp-setup-step__body" });
+    body.createDiv({ cls: "vault-mcp-setup-step__label", text: step.label });
+    body.createDiv({ cls: "vault-mcp-setup-step__message", text: step.message });
+  }
+
+  const hostingDetails = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  hostingDetails.open = true;
+  hostingDetails.createEl("summary", { text: "Choose hosting" });
+  const hostingList = hostingDetails.createDiv({ cls: "vault-mcp-setup-card-grid" });
+  for (const option of guide.hostingOptions) {
+    const card = hostingList.createDiv({ cls: `vault-mcp-setup-card vault-mcp-setup-card--${option.status}` });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: option.label });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--review", text: option.status });
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: option.summary });
+    const list = card.createEl("ol", { cls: "vault-mcp-setup-card__list" });
+    for (const item of option.steps) {
+      list.createEl("li", { text: item });
+    }
+    if (option.actionUrl) {
+      const actions = card.createDiv({ cls: "vault-mcp-setup-card__actions" });
+      new Setting(actions)
+        .addButton((button) => button
+          .setButtonText(option.actionLabel ?? "Open guide")
+          .setCta()
+          .onClick(() => openExternalUrl(option.actionUrl ?? "")))
+        .addButton((button) => button
+          .setButtonText("Copy link")
+          .onClick(() => void copyToClipboard(option.actionLabel ?? "setup guide", option.actionUrl ?? "")));
+    }
+  }
+
+  const clientsDetails = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  clientsDetails.open = true;
+  clientsDetails.createEl("summary", { text: "Connect an MCP client" });
+  const clientList = clientsDetails.createDiv({ cls: "vault-mcp-setup-card-grid" });
+  for (const client of guide.clientCards) {
+    const card = clientList.createDiv({ cls: "vault-mcp-setup-card" });
+    const header = card.createDiv({ cls: "vault-mcp-preview-card__header" });
+    header.createDiv({ cls: "vault-mcp-preview-card__title", text: client.label });
+    header.createDiv({ cls: "vault-mcp-chip vault-mcp-chip--review", text: client.status });
+    card.createDiv({ cls: "vault-mcp-preview-card__reason", text: client.auth });
+    const value = card.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+    value.createDiv({ cls: "vault-mcp-copy-value__text", text: client.endpoint });
+    new Setting(value.createDiv({ cls: "vault-mcp-copy-value__action" }))
+      .addButton((button) => button
+        .setButtonText("Copy endpoint")
+        .onClick(() => void copyToClipboard(`${client.label} endpoint`, client.endpoint)));
+    const list = card.createEl("ol", { cls: "vault-mcp-setup-card__list" });
+    for (const item of client.steps) {
+      list.createEl("li", { text: item });
+    }
+    const prompt = card.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+    prompt.createDiv({ cls: "vault-mcp-copy-value__text", text: client.testPrompt });
+    new Setting(prompt.createDiv({ cls: "vault-mcp-copy-value__action" }))
+      .addButton((button) => button
+        .setButtonText("Copy test")
+        .onClick(() => void copyToClipboard(`${client.label} test prompt`, client.testPrompt)));
+  }
+
+  const recovery = box.createEl("details", { cls: "vault-mcp-setup-section" });
+  recovery.createEl("summary", { text: "Recovery actions" });
+  const list = recovery.createEl("ul", { cls: "vault-mcp-disclosure__list" });
+  for (const item of guide.recoveryActions) {
+    list.createEl("li", { text: item });
+  }
+}
+
 function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettings) {
   const disclosure = pluginSafetyDisclosure(settings);
   const box = parent.createDiv({ cls: "vault-mcp-disclosure" });
@@ -1079,6 +1716,408 @@ function addSafetyDisclosure(parent: HTMLElement, settings: VaultMcpPluginSettin
   for (const point of disclosure.points) {
     list.createEl("li", { text: point });
   }
+}
+
+function addLocalServerSection(parent: HTMLElement, plugin: VaultMcpPlugin) {
+  const localServerSettings = plugin.localServerSettingsWithSidecar();
+  const status = pluginLocalServerStatus(localServerSettings);
+  new Setting(parent).setName("Local desktop server").setHeading();
+
+  const box = parent.createDiv({ cls: `vault-mcp-server-check vault-mcp-server-check--${status.status}` });
+  box.createDiv({ cls: "vault-mcp-server-check__title", text: status.title });
+  box.createDiv({ cls: "vault-mcp-server-check__message", text: status.message });
+  const endpoint = box.createDiv({ cls: "vault-mcp-copy-value vault-mcp-copy-value--compact" });
+  endpoint.createDiv({ cls: "vault-mcp-copy-value__text", text: status.endpoint });
+  new Setting(endpoint.createDiv({ cls: "vault-mcp-copy-value__action" }))
+    .addButton((button) => button
+      .setButtonText("Copy endpoint")
+      .onClick(() => void copyToClipboard("local MCP endpoint", status.endpoint)));
+  const facts = box.createEl("ul", { cls: "vault-mcp-server-check__facts" });
+  for (const fact of status.facts) {
+    facts.createEl("li", { text: fact });
+  }
+
+  new Setting(parent)
+    .setName("Run local MCP server")
+    .setDesc("Starts or stops the packaged local sidecar when available, or the Node-required developer local server profile as a fallback.")
+    .addToggle((toggle) => toggle
+      .setValue(Boolean(plugin.localServerProcess) || plugin.settings.localServerModeEnabled)
+      .onChange(async (value) => {
+        if (value) {
+          await plugin.startLocalServer();
+        } else {
+          await plugin.stopLocalServer();
+        }
+        openPluginSettings(plugin.app, plugin);
+      }));
+
+  new Setting(parent)
+    .setName("Local server port")
+    .setDesc("Preferred localhost port. If it is occupied, start scans upward for the next available compatible port.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1024";
+      text.inputEl.max = "65535";
+      text.setValue(String(plugin.settings.localServerPort))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localServerPort = Number.isInteger(parsed) ? parsed : DEFAULT_SETTINGS.localServerPort;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local server data folder")
+    .setDesc("Local JSON storage folder for the sidecar. Relative paths resolve from the sidecar folder or repo profile.")
+    .addText((text) => text
+      .setValue(plugin.settings.localServerDataDir)
+      .onChange(async (value) => {
+        plugin.settings.localServerDataDir = value.trim() || DEFAULT_SETTINGS.localServerDataDir;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Developer project folder")
+    .setDesc("Private-alpha path to the Vault MCP platform repo. Required until a packaged sidecar is bundled with the plugin.")
+    .addText((text) => text
+      .setPlaceholder("/absolute/path/to/vault-mcp/platform")
+      .setValue(plugin.settings.localServerProjectDir)
+      .onChange(async (value) => {
+        plugin.settings.localServerProjectDir = value.trim();
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Developer command")
+    .setDesc("Executable used to run npm scripts. Use an absolute npm path if Obsidian cannot find npm from the macOS app environment.")
+    .addText((text) => text
+      .setPlaceholder("npm")
+      .setValue(plugin.settings.localServerCommand)
+      .onChange(async (value) => {
+        plugin.settings.localServerCommand = value.trim() || DEFAULT_SETTINGS.localServerCommand;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Local filesystem access")
+    .setDesc("Default is off. Read and write modes stay inside configured roots. God mode removes root limits for this localhost server.")
+    .addDropdown((dropdown) => dropdown
+      .addOption("off", "Off")
+      .addOption("read", "Read inside roots")
+      .addOption("write", "Read/write inside roots")
+      .addOption("god", "God mode")
+      .setValue(plugin.settings.localFsAccessMode)
+      .onChange(async (value) => {
+        plugin.settings.localFsAccessMode = value as LocalFsAccessMode;
+        await plugin.saveSettings();
+      }));
+
+  const vaultBasePath = getVaultBasePath(plugin.app);
+  addListSetting(parent, "Local filesystem read roots", "Absolute folders the local MCP server may list and read. Leave empty when access is off or when using god mode.", plugin.settings.localFsReadRoots, async (values) => {
+    plugin.settings.localFsReadRoots = values;
+    await plugin.saveSettings();
+  });
+  addRootShortcut(parent, "Use vault folder for read root", vaultBasePath, async (root) => {
+    plugin.settings.localFsReadRoots = uniqueStrings([...plugin.settings.localFsReadRoots, root]);
+    await plugin.saveSettings();
+    openPluginSettings(plugin.app, plugin);
+  });
+
+  addListSetting(parent, "Local filesystem write roots", "Absolute folders the local MCP server may write to when write mode is enabled. Keep this narrower than read roots unless you deliberately need broad write access.", plugin.settings.localFsWriteRoots, async (values) => {
+    plugin.settings.localFsWriteRoots = values;
+    await plugin.saveSettings();
+  });
+  addRootShortcut(parent, "Use vault folder for write root", vaultBasePath, async (root) => {
+    plugin.settings.localFsWriteRoots = uniqueStrings([...plugin.settings.localFsWriteRoots, root]);
+    await plugin.saveSettings();
+    openPluginSettings(plugin.app, plugin);
+  });
+
+  addLocalFsWriteOperationToggles(parent, plugin);
+
+  new Setting(parent)
+    .setName("Local max read bytes")
+    .setDesc("Upper bound for one local_read_file, local_read_files file entry, or local_read_file_bytes result. The server also caps tool-provided max_bytes to this value.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxReadBytes))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxReadBytes = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxReadBytes;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local max search results")
+    .setDesc("Upper bound for one local_find_files or local_search_text result set.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxSearchResults))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxSearchResults = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxSearchResults;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local max searched files")
+    .setDesc("Upper bound for files scanned by one local_search_text call.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.setValue(String(plugin.settings.localFsMaxSearchFiles))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsMaxSearchFiles = Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_SETTINGS.localFsMaxSearchFiles;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Local access session minutes")
+    .setDesc("Expiry window for the next local server start. Use 0 only when you deliberately want filesystem access to stay available until the server stops.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "0";
+      text.setValue(String(plugin.settings.localFsAccessTtlMinutes))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.localFsAccessTtlMinutes = Number.isInteger(parsed) && parsed >= 0 ? parsed : DEFAULT_SETTINGS.localFsAccessTtlMinutes;
+          await plugin.saveSettings();
+        });
+    });
+
+  new Setting(parent)
+    .setName("Require local user intent")
+    .setDesc("Requires MCP clients to include the exact user intent phrase on every local filesystem tool call. Keep this on unless you are testing.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.localFsRequireUserIntent)
+      .onChange(async (value) => {
+        plugin.settings.localFsRequireUserIntent = value;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Local user intent phrase")
+    .setDesc("Exact phrase MCP clients must send as user_intent before local filesystem tools run.")
+    .addText((text) => text
+      .setValue(plugin.settings.localFsUserIntentPhrase)
+      .onChange(async (value) => {
+        plugin.settings.localFsUserIntentPhrase = value.trim() || DEFAULT_SETTINGS.localFsUserIntentPhrase;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent)
+    .setName("Local credentials")
+    .setDesc("Generates separate local-only tokens for MCP clients and plugin/admin sync. These are for the future sidecar and developer launcher.")
+    .addButton((button) => button
+      .setButtonText(plugin.settings.localServerMcpToken && plugin.settings.localServerSyncToken ? "Rotate" : "Generate")
+      .onClick(async () => {
+        await plugin.generateLocalServerCredentials();
+        button.setButtonText("Rotate");
+      }))
+    .addButton((button) => button
+      .setButtonText("Copy MCP token")
+      .onClick(() => void copyToClipboard("local MCP token", plugin.settings.localServerMcpToken)))
+    .addButton((button) => button
+      .setButtonText("Copy sync token")
+      .onClick(() => void copyToClipboard("local sync token", plugin.settings.localServerSyncToken)));
+
+  const localClientBundle = buildLocalClientConnectionBundle(plugin.settings);
+  new Setting(parent)
+    .setName("Local client connection")
+    .setDesc("Copy values for local-capable MCP clients. This includes the local MCP client token, never the plugin/admin sync token.")
+    .addButton((button) => button
+      .setButtonText("Copy auth header")
+      .onClick(() => void copyToClipboard("local MCP authorization header", localClientBundle?.authorization_header ?? "")))
+    .addButton((button) => button
+      .setButtonText("Copy JSON")
+      .onClick(() => void copyToClipboard("local MCP client JSON", localClientBundle ? JSON.stringify(localClientBundle, null, 2) : "")))
+    .addButton((button) => button
+      .setButtonText("Copy instructions")
+      .onClick(() => void copyToClipboard("local MCP client instructions", buildLocalClientInstructions(plugin.settings) ?? "")));
+
+  new Setting(parent)
+    .setName("Developer launch command")
+    .setDesc("Starts the current Node-required local profile with this plugin's port, data folder, and local tokens.")
+    .addButton((button) => button
+      .setButtonText("Copy command")
+      .onClick(() => void copyToClipboard("local server launch command", buildLocalServerLaunchCommand(localServerSettings) ?? "")));
+
+  new Setting(parent)
+    .setName("Developer server session")
+    .setDesc(localServerSessionDescription(plugin))
+    .addButton((button) => button
+      .setButtonText("Start")
+      .setCta()
+      .setDisabled(Boolean(plugin.localServerProcess))
+      .onClick(async () => {
+        await plugin.startLocalServer();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Refresh session")
+      .setDisabled(!plugin.localServerProcess)
+      .onClick(async () => {
+        await plugin.refreshLocalServerSession();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Stop")
+      .setDisabled(!plugin.localServerProcess && !plugin.settings.localServerModeEnabled)
+      .onClick(async () => {
+        await plugin.stopLocalServer();
+        openPluginSettings(plugin.app, plugin);
+      }));
+
+  new Setting(parent)
+    .setName("Keep local server running")
+    .setDesc("Opt-in. The safe default stops the developer sidecar when Obsidian unloads.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.localServerKeepAlive)
+      .onChange(async (value) => {
+        plugin.settings.localServerKeepAlive = value;
+        await plugin.saveSettings();
+      }));
+
+  new Setting(parent).setName("Hosted ChatGPT desktop bridge").setHeading();
+  parent.createEl("p", {
+    cls: "vault-mcp-muted",
+    text: "Opt-in. While enabled and Obsidian is open, the plugin polls the hosted server for short-lived desktop requests and forwards each one to the localhost sidecar. It never uploads a filesystem inventory or reads files in the background.",
+  });
+
+  new Setting(parent)
+    .setName("Allow hosted ChatGPT to use local tools")
+    .setDesc("The localhost sidecar still enforces access mode, roots, write-operation toggles, expiry, exact user intent, and audit. Off is the default.")
+    .addToggle((toggle) => toggle
+      .setValue(plugin.settings.hostedLocalBridgeEnabled)
+      .onChange(async (enabled) => {
+        if (enabled) {
+          await plugin.startHostedLocalBridge();
+        } else {
+          await plugin.stopHostedLocalBridge();
+        }
+        openPluginSettings(plugin.app, plugin);
+      }));
+
+  new Setting(parent)
+    .setName("Hosted bridge poll seconds")
+    .setDesc("How often the plugin checks for one authenticated desktop request. One second is recommended for interactive chat.")
+    .addText((text) => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "1";
+      text.inputEl.max = "30";
+      text.setValue(String(plugin.settings.hostedLocalBridgePollSeconds))
+        .onChange(async (value) => {
+          const parsed = Number.parseInt(value, 10);
+          plugin.settings.hostedLocalBridgePollSeconds = Number.isInteger(parsed) && parsed >= 1 && parsed <= 30
+            ? parsed
+            : DEFAULT_SETTINGS.hostedLocalBridgePollSeconds;
+          await plugin.saveSettings();
+          if (plugin.settings.hostedLocalBridgeEnabled) {
+            plugin.scheduleHostedLocalBridge();
+            await plugin.runHostedLocalBridgeTick();
+          }
+        });
+    });
+
+  new Setting(parent)
+    .setName("Hosted bridge session")
+    .setDesc(hostedLocalBridgeDescription(plugin))
+    .addButton((button) => button
+      .setButtonText("Check now")
+      .setDisabled(!plugin.settings.hostedLocalBridgeEnabled)
+      .onClick(async () => {
+        await plugin.runHostedLocalBridgeTick();
+        openPluginSettings(plugin.app, plugin);
+      }))
+    .addButton((button) => button
+      .setButtonText("Disable")
+      .setDisabled(!plugin.settings.hostedLocalBridgeEnabled)
+      .onClick(async () => {
+        await plugin.stopHostedLocalBridge();
+        openPluginSettings(plugin.app, plugin);
+      }));
+}
+
+function localServerSessionDescription(plugin: VaultMcpPlugin): string {
+  if (plugin.localServerProcess) {
+    return `Running${plugin.localServerProcess.pid ? ` as pid ${plugin.localServerProcess.pid}` : ""}${plugin.localServerStartedAt ? ` since ${plugin.localServerStartedAt}` : ""}${plugin.localServerHealth ? `; health ok (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"})` : "; waiting for health and version check"}. Refresh restarts the local server with a new filesystem access window.`;
+  }
+  if (plugin.settings.localServerModeEnabled && plugin.localServerHealth) {
+    return `Connected to an existing compatible local server on ${localServerEndpoint(plugin.settings)} (${plugin.localServerHealth.storage?.kind ?? "unknown"} storage, version ${plugin.localServerHealth.service?.version ?? "unknown"}). Stop disconnects this plugin; it cannot stop a process started outside this Obsidian session.`;
+  }
+  return "Stopped. Start uses the configured project folder, command, port, data folder, and local credentials.";
+}
+
+function hostedLocalBridgeDescription(plugin: VaultMcpPlugin): string {
+  if (!plugin.settings.hostedLocalBridgeEnabled) {
+    return "Disabled. Hosted MCP clients cannot request local filesystem operations.";
+  }
+  if (plugin.hostedLocalBridgeLastError) {
+    return `Enabled but blocked: ${plugin.hostedLocalBridgeLastError}`;
+  }
+  if (plugin.hostedLocalBridgeLastSeenAt) {
+    return `Connected. Last successful poll: ${plugin.hostedLocalBridgeLastSeenAt}. Access mode: ${plugin.settings.localFsAccessMode}.`;
+  }
+  return "Enabled and starting. Keep Obsidian open while using local tools from ChatGPT.";
+}
+
+function addLocalFsWriteOperationToggles(parent: HTMLElement, plugin: VaultMcpPlugin) {
+  new Setting(parent)
+    .setName("Allowed local write operations")
+    .setDesc("These only apply when local filesystem access is Write or God mode. Keep destructive operations off until you deliberately need them.");
+  const options: Array<{ value: LocalFsWriteOperation; label: string; description: string }> = [
+    { value: "write_file", label: "Write files", description: "Create, overwrite, or append text files and base64 byte files." },
+    { value: "edit_file", label: "Edit exact text", description: "Replace exact text in existing UTF-8 files only when the expected match count is confirmed." },
+    { value: "create_directory", label: "Create directories", description: "Create folders inside allowed write roots." },
+    { value: "copy_path", label: "Copy files or folders", description: "Copy readable files or folders into allowed write roots." },
+    { value: "move_path", label: "Move or rename", description: "Rename or move files and folders inside allowed write roots." },
+    { value: "delete_path", label: "Delete paths", description: "Delete files or folders; tool calls require an explicit confirmation string." },
+  ];
+  for (const option of options) {
+    new Setting(parent)
+      .setName(option.label)
+      .setDesc(option.description)
+      .addToggle((toggle) => toggle
+        .setValue(plugin.settings.localFsWriteOperations.includes(option.value))
+        .onChange(async (enabled) => {
+          const current = new Set(plugin.settings.localFsWriteOperations);
+          if (enabled) {
+            current.add(option.value);
+          } else {
+            current.delete(option.value);
+          }
+          plugin.settings.localFsWriteOperations = Array.from(current);
+          await plugin.saveSettings();
+        }));
+  }
+}
+
+function addRootShortcut(parent: HTMLElement, name: string, root: string | null, onUse: (root: string) => Promise<void>) {
+  if (!root) {
+    return;
+  }
+  new Setting(parent)
+    .setName(name)
+    .setDesc(root)
+    .addButton((button) => button
+      .setButtonText("Add")
+      .onClick(() => void onUse(root)));
+}
+
+function getVaultBasePath(app: App): string | null {
+  const adapter = app.vault.adapter as { getBasePath?: () => string };
+  const basePath = adapter.getBasePath?.();
+  return basePath?.trim() || null;
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function addConfigurationChecklist(parent: HTMLElement, settings: VaultMcpPluginSettings) {
@@ -1397,6 +2436,321 @@ function addListSetting(containerEl: HTMLElement, name: string, desc: string, va
           await onSave(next.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
         });
     });
+}
+
+async function copyToClipboard(label: string, value: string) {
+  if (!value || value === "Set a valid server URL first.") {
+    new Notice(`Vault MCP: ${label} is not ready to copy.`);
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(value);
+    new Notice(`Vault MCP: copied ${label}.`);
+  } catch {
+    new Notice(`Vault MCP: could not copy ${label}. Select and copy it manually.`);
+  }
+}
+
+function generateLocalToken(byteLength = 24): string {
+  const bytes = new Uint8Array(byteLength);
+  globalThis.crypto.getRandomValues(bytes);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return globalThis.btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function spawnLocalServerProcess(config: LocalServerSpawnConfig): LocalServerChildProcess {
+  const { spawn } = requireNodeModule<ChildProcessModule>("child_process");
+  return spawn(config.command, config.args, {
+    cwd: config.cwd,
+    detached: false,
+    shell: false,
+    stdio: "ignore",
+    env: localServerSpawnEnv(config),
+  });
+}
+
+function resolveBundledLocalSidecarDir(app: App, manifest: { dir?: string }): string | null {
+  const vaultBasePath = getVaultBasePath(app);
+  const pluginDir = manifest.dir?.trim();
+  if (!vaultBasePath || !pluginDir) {
+    return null;
+  }
+  try {
+    const pathModule = requireNodeModule<PathModule>("path");
+    const fsModule = requireNodeModule<FsModule>("fs");
+    const pluginPath = pathModule.join(vaultBasePath, pluginDir);
+    const sidecarDir = pathModule.join(pluginPath, "sidecar");
+    const launcherPath = pathModule.join(sidecarDir, "start-local-server.mjs");
+    const serverPath = pathModule.join(sidecarDir, "vault-mcp-local-server.mjs");
+    return fsModule.existsSync(launcherPath) && fsModule.existsSync(serverPath) ? sidecarDir : null;
+  } catch {
+    return null;
+  }
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function selectLocalServerPort(settings: VaultMcpPluginSettings, expectedVersion: string): Promise<LocalPortSelection> {
+  const candidates = localServerPortCandidates(settings.localServerPort);
+  let lastOccupiedReason: string | null = null;
+  for (const port of candidates) {
+    const candidateSettings = { ...settings, localServerPort: port };
+    const portOpen = await isLocalTcpPortOpen(port);
+    if (!portOpen) {
+      const preferredPort = candidates[0];
+      return {
+        port,
+        reused: false,
+        health: null,
+        message: port === preferredPort
+          ? `Local server port ${port} is available.`
+          : `Local server port ${preferredPort} is occupied; selected available port ${port}.`,
+      };
+    }
+
+    try {
+      const health = await fetchLocalServerHealth(candidateSettings);
+      const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(candidateSettings));
+      if (compatibility.ok) {
+        return {
+          port,
+          reused: true,
+          health,
+          message: `Reusing compatible local server on ${localServerEndpoint(candidateSettings)}.`,
+        };
+      }
+      lastOccupiedReason = `port ${port}: ${compatibility.message}`;
+    } catch (error) {
+      lastOccupiedReason = `port ${port}: ${describeCaughtError("local server port check", error)}`;
+    }
+  }
+
+  throw new Error(`No local server port was available from ${candidates[0]} to ${candidates[candidates.length - 1]}. ${lastOccupiedReason ?? ""}`.trim());
+}
+
+async function waitForLocalServerHealth(settings: VaultMcpPluginSettings, expectedVersion: string, timeoutMs = 6000): Promise<PluginServerHealthSnapshot> {
+  const deadline = Date.now() + timeoutMs;
+  let lastError = "Local server did not answer /healthz yet.";
+  while (Date.now() < deadline) {
+    try {
+      const health = await fetchLocalServerHealth(settings);
+      const compatibility = validateLocalServerCompatibility(health, expectedVersion, localServerEndpoint(settings));
+      if (!compatibility.ok) {
+        throw new Error(compatibility.message);
+      }
+      return health;
+    } catch (error) {
+      lastError = describeCaughtError("local server health check", error);
+    }
+    await delay(250);
+  }
+  throw new Error(`Local server did not become healthy and compatible at ${localServerHealthUrl(settings)} within ${timeoutMs}ms. ${lastError}`);
+}
+
+async function fetchLocalServerHealth(settings: VaultMcpPluginSettings): Promise<PluginServerHealthSnapshot> {
+  const response = await requestUrl({
+    url: localServerHealthUrl(settings),
+    method: "GET",
+  });
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(describeHttpFailure("local server health check", response.status, response.text));
+  }
+  return parseJsonResponse<PluginServerHealthSnapshot>(response.text, "local server health");
+}
+
+async function callLocalMcpTool(
+  settings: VaultMcpPluginSettings,
+  toolName: string,
+  toolArguments: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  return callLocalMcpRequest(settings, "tools/call", {
+    name: toolName,
+    arguments: toolArguments,
+  });
+}
+
+async function listLocalMcpTools(settings: VaultMcpPluginSettings): Promise<LocalAgentToolDefinition[]> {
+  const response = await callLocalMcpRequest(settings, "tools/list", {});
+  const result = isObjectRecord(response.result) ? response.result : null;
+  const tools = result && Array.isArray(result.tools) ? result.tools : [];
+  return tools.flatMap((entry): LocalAgentToolDefinition[] => {
+    if (!isObjectRecord(entry) || typeof entry.name !== "string" || !entry.name.startsWith("local_")) {
+      return [];
+    }
+    const annotations = isObjectRecord(entry.annotations) ? entry.annotations : {};
+    return [{
+      name: entry.name as LocalAgentToolDefinition["name"],
+      description: typeof entry.description === "string" ? entry.description.slice(0, 2_000) : "",
+      input_schema: isObjectRecord(entry.inputSchema) ? entry.inputSchema : {},
+      read_only: annotations.readOnlyHint === true,
+      destructive: annotations.destructiveHint === true,
+    }];
+  });
+}
+
+async function callLocalMcpRequest(
+  settings: VaultMcpPluginSettings,
+  method: string,
+  params: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const response = await requestUrl({
+    url: localServerEndpoint(settings),
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${settings.localServerMcpToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json,text/event-stream",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: Date.now(),
+      method,
+      params,
+    }),
+  });
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(describeHttpFailure(`local MCP ${method}`, response.status, response.text));
+  }
+  const parsed = parseJsonResponse<Record<string, unknown>>(response.text, `local MCP ${method}`);
+  if (isObjectRecord(parsed.error)) {
+    throw new Error(typeof parsed.error.message === "string" ? parsed.error.message : `Local MCP ${method} returned a JSON-RPC error.`);
+  }
+  return parsed;
+}
+
+function localFsPolicyFromMcpResponse(response: Record<string, unknown>): LocalFsPolicy {
+  const result = isObjectRecord(response.result) ? response.result : null;
+  const policy = result && isObjectRecord(result.structuredContent) ? result.structuredContent : null;
+  if (!policy || !isLocalFsPolicySnapshot(policy)) {
+    throw new Error("Local MCP policy response was missing or invalid.");
+  }
+  return policy;
+}
+
+function localFsPolicyFromPluginSettings(settings: VaultMcpPluginSettings, startedAt: string | null): LocalFsPolicy {
+  const expiresAt = settings.localFsAccessTtlMinutes > 0 && startedAt
+    ? new Date(Date.parse(startedAt) + settings.localFsAccessTtlMinutes * 60_000).toISOString()
+    : null;
+  return {
+    mode: settings.localFsAccessMode,
+    read_roots: [...settings.localFsReadRoots],
+    write_roots: [...settings.localFsWriteRoots],
+    write_operations: [...settings.localFsWriteOperations],
+    max_read_bytes: settings.localFsMaxReadBytes,
+    max_search_results: settings.localFsMaxSearchResults,
+    max_search_files: settings.localFsMaxSearchFiles,
+    expires_at: expiresAt,
+    require_user_intent: settings.localFsRequireUserIntent,
+    user_intent_phrase: settings.localFsUserIntentPhrase,
+  };
+}
+
+function isLocalFsPolicySnapshot(value: Record<string, unknown>): value is LocalFsPolicy {
+  return ["off", "read", "write", "god"].includes(String(value.mode))
+    && isStringList(value.read_roots)
+    && isStringList(value.write_roots)
+    && isStringList(value.write_operations)
+    && isPositiveInteger(value.max_read_bytes)
+    && isPositiveInteger(value.max_search_results)
+    && isPositiveInteger(value.max_search_files)
+    && (value.expires_at === null || typeof value.expires_at === "string")
+    && typeof value.require_user_intent === "boolean"
+    && typeof value.user_intent_phrase === "string";
+}
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isStringList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+async function isLocalTcpPortOpen(port: number, timeoutMs = 250): Promise<boolean> {
+  try {
+    const net = requireNodeModule<NetModule>("net");
+    return await new Promise<boolean>((resolve) => {
+      let settled = false;
+      const socket = net.createConnection({ host: "127.0.0.1", port });
+      const finish = (open: boolean) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        socket.destroy();
+        resolve(open);
+      };
+      socket.once("connect", () => finish(true));
+      socket.once("error", () => finish(false));
+      socket.setTimeout(timeoutMs, () => finish(false));
+    });
+  } catch {
+    return false;
+  }
+}
+
+function localServerSpawnEnv(config: LocalServerSpawnConfig): Record<string, string | undefined> {
+  const baseEnv = { ...getNodeProcessEnv() };
+  const commandDir = executableDirectory(config.command);
+  if (!commandDir) {
+    return baseEnv;
+  }
+  const pathKey = baseEnv.Path !== undefined ? "Path" : "PATH";
+  const currentPath = baseEnv[pathKey] ?? "";
+  baseEnv[pathKey] = currentPath ? `${commandDir}:${currentPath}` : commandDir;
+  return baseEnv;
+}
+
+function executableDirectory(command: string): string | null {
+  const trimmed = command.trim();
+  const slashIndex = Math.max(trimmed.lastIndexOf("/"), trimmed.lastIndexOf("\\"));
+  if (slashIndex <= 0) {
+    return null;
+  }
+  return trimmed.slice(0, slashIndex);
+}
+
+function getNodeProcessEnv(): Record<string, string | undefined> {
+  const maybeProcess = (globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } }).process;
+  return maybeProcess?.env ?? {};
+}
+
+function requireNodeModule<T>(name: string): T {
+  const maybeWindow = window as Window & { require?: (moduleName: string) => unknown };
+  const maybeGlobal = globalThis as typeof globalThis & { require?: (moduleName: string) => unknown };
+  const requireFn = maybeWindow.require ?? maybeGlobal.require;
+  if (!requireFn) {
+    throw new Error("Obsidian desktop Node runtime is unavailable. Local server launch only works in the desktop app.");
+  }
+  return requireFn(name) as T;
+}
+
+function localServerEndpoint(settings: VaultMcpPluginSettings): string {
+  return `http://127.0.0.1:${settings.localServerPort}/mcp`;
+}
+
+function localServerHealthUrl(settings: VaultMcpPluginSettings): string {
+  return `http://127.0.0.1:${settings.localServerPort}/healthz`;
+}
+
+function openExternalUrl(value: string) {
+  if (!value) {
+    new Notice("Vault MCP: setup guide URL is not ready.");
+    return;
+  }
+  window.open(value, "_blank", "noopener,noreferrer");
 }
 
 function openPluginSettings(app: App, plugin: VaultMcpPlugin) {

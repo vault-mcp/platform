@@ -4,6 +4,14 @@
 
 Build a private, portable, read-only MCP connector that lets approved AI clients discover, search, diagnose, and fetch selected Obsidian vault context.
 
+## V2 Direction
+
+V2 keeps the same privacy boundary but makes the product plugin-first and
+publishable. The Obsidian plugin controls indexing, approvals, sync, and future
+write review. Users should be able to choose either a remote hosted/self-hosted
+server for cloud and multi-device clients, or a planned local desktop server
+mode where the plugin starts a localhost MCP sidecar while Obsidian is running.
+
 ## V1 Scope
 
 - Local indexer scans a vault snapshot or live vault path.

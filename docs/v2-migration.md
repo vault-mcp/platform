@@ -5,7 +5,8 @@
 Move Vault MCP from a single-vault, read-only private connector into a publishable private-alpha platform with two clear halves:
 
 - An Obsidian plugin controls indexing, local sync, user approvals, and future vault writes.
-- A hosted MCP server remains the OAuth/client boundary for ChatGPT, Claude, Codex, and other MCP clients.
+- A hosted MCP server remains the OAuth/client boundary for browser, cloud, mobile, and multi-device clients such as ChatGPT web, Claude web, Codex, and other remote MCP clients.
+- A local desktop server mode becomes the no-cloud path for desktop MCP clients that can reach `127.0.0.1` while Obsidian is running.
 
 The production alias should stay stable at `https://vault-mcp-connector.vercel.app` while the source repository moves into the `vault-mcp` GitHub organization.
 
@@ -19,6 +20,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 
 - `apps/server`: hosted MCP server, OAuth, storage, multi-vault APIs, and admin sync/proposal endpoints.
 - `apps/obsidian-plugin`: plugin settings, dashboard, indexing controls, sync, and future write approvals.
+- `apps/local-server` or `apps/server --local`: planned localhost MCP/OAuth/admin API sidecar managed by the Obsidian plugin for desktop-only no-cloud use.
 - `apps/cli`: self-host/developer indexing, smoke-test, and admin helper workflows.
 - `packages/core`: shared schemas, Markdown parsing, source policy, redaction, stable ids, sync types, and write proposal types.
 - `packages/mcp-ui`: future home for reusable MCP Apps/ChatGPT UI once inline component HTML becomes too large.
@@ -46,7 +48,10 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
   - `get_vault_status`
 - Extended existing read tools with optional `vault_id` where applicable.
 - Enforced multi-vault read disambiguation: when more than one vault has synced, search/list/fetch/status/debug tools require `vault_id` instead of reading across vaults by default.
-- Kept write behavior as proposals only; no MCP tool directly edits an Obsidian vault.
+- Added opt-in hosted MCP proposal tools: `propose_vault_write` queues a validated pending change and `list_write_proposals` reports proposal state. They are disabled unless `MCP_WRITE_PROPOSALS_ENABLED=true`; OAuth clients also need `vault:write` scope. No hosted MCP tool directly edits an Obsidian vault.
+- Added the opt-in hosted desktop bridge. Short-lived, installation-scoped requests persist in JSON/Postgres; the plugin heartbeats and polls outward, forwards one request to the authenticated localhost MCP sidecar, and returns the result. Hosted tools require `MCP_REMOTE_LOCAL_FS_ENABLED=true`, OAuth `local:access`, a fresh agent heartbeat, an unexpired local policy, and the exact plugin intent phrase.
+- Added `desktop_local_fs_status`, `desktop_run_local_tool`, and `desktop_local_request_status`. The generic execution tool reaches the existing sixteen local filesystem tools without duplicating or weakening their roots, operations, symlink, expiry, audit, and god-mode enforcement.
+- Added `npm run smoke:hosted-local-bridge` to verify the full hosted-request, plugin-style relay, localhost write/read, and outside-root denial path.
 - Fixed note grouping to use tenant + vault + path so two vaults can safely contain the same note path.
 
 ## Write Model
@@ -54,6 +59,7 @@ The production alias should stay stable at `https://vault-mcp-connector.vercel.a
 Write support starts as a proposal queue:
 
 - The server stores `write_proposals` with operation type, target path, base content hash, proposed patch/content, requester, status, timestamps, and audit trail.
+- Existing-note MCP proposals require the current indexed content hash and an indexed target; the Obsidian plugin still compares that hash against the live file before approval/apply.
 - The Obsidian plugin can pull proposals, analyze local target state, and mark pending proposals approved, rejected, or conflict.
 - The Obsidian plugin can apply approved create/append/replace/frontmatter/rename proposals locally only after policy and hash checks allow it.
 - `update_frontmatter` proposals store a JSON object in `proposed_content`; null values delete keys.

@@ -29,6 +29,11 @@ Use this path first:
 Docker/container hosting is also supported, but Vercel + Neon is the path with
 the most verification today.
 
+If the user only needs desktop-local MCP access while Obsidian is open, the
+planned local desktop server mode may eventually be simpler than Vercel or
+container hosting. See [Local Desktop Server Mode](local-server-mode.md). It is
+not implemented in this private-alpha release.
+
 ## Prerequisites
 
 Install:
@@ -69,6 +74,7 @@ Required server variables:
 | `OAUTH_JWT_SECRET` | Long random HMAC secret for built-in OAuth access tokens. |
 | `OAUTH_AUTH_PASSWORD` | Human password entered during MCP client authorization. |
 | `OAUTH_SCOPES` | Usually `vault:read`. |
+| `MCP_WRITE_PROPOSALS_ENABLED` | Optional private-alpha gate. Set `true` only when clients should be able to queue Obsidian-reviewed changes. |
 
 Recommended origin list for common clients:
 
@@ -78,6 +84,11 @@ ALLOWED_ORIGINS="https://chatgpt.com,https://chat.openai.com,https://claude.ai,h
 
 `MCP_ACCESS_TOKEN` is only for temporary local or Inspector testing. Do not use
 it as the final production authentication model.
+
+To enable proposal-only writes, set
+`MCP_WRITE_PROPOSALS_ENABLED=true` and change `OAUTH_SCOPES` to
+`vault:read vault:write`. Existing clients must reauthorize. The hosted server
+still does not write the vault directly.
 
 ## Step 1 - Verify The Local Build
 
@@ -240,6 +251,44 @@ Passing output should include:
 - `"refresh": true`
 - `"replay_protection": true`
 - `"multi_vault": true` when `SMOKE_MULTI_VAULT=true`
+
+## Step 5.5 - Record Self-Host Evidence
+
+The smoke tests prove behavior, but a publishable fresh self-host gate needs a
+single non-secret evidence report. Before starting a fresh Vercel + Neon pass,
+prepare the report:
+
+```bash
+npm run selfhost:prepare -- --base-url "https://vault-mcp.example.com"
+```
+
+This writes:
+
+```text
+dist/selfhost/selfhost-report.json
+```
+
+Fill it with non-secret evidence references for local build/test output,
+database migration and fresh Postgres smoke output, Vercel deployment/check
+URLs, `/healthz` and OAuth metadata checks, copied/disposable-vault sync,
+remote OAuth smoke, multi-vault smoke, and client handoff values. Do not paste
+`DATABASE_URL`, `MCP_SYNC_TOKEN`, OAuth passwords, bearer values, GitHub tokens,
+or private note bodies into the report.
+
+Check progress:
+
+```bash
+npm run selfhost:status
+```
+
+Final strict gate:
+
+```bash
+npm run selfhost:verify
+```
+
+The verifier requires a true fresh self-host pass. It intentionally fails if the
+report marks the run as an existing-project rerun only.
 
 ## Step 6 - Connect MCP Clients
 

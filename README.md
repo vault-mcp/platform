@@ -1,10 +1,13 @@
 # Vault MCP Connector
 
-Private, read-only MCP connector for selected Obsidian vault context.
+Private MCP connector for selected Obsidian vault context. Hosted deployments
+serve a derived index and can optionally queue proposal-only vault changes for
+Obsidian-side review; the localhost developer profile can additionally enable
+plugin-controlled local filesystem tools.
 
 ## MCP Tools
 
-The server currently exposes these read-only MCP tools:
+The server always exposes these read-only MCP tools:
 
 - `search` - compatibility search; defaults to section-level results.
 - `search_notes` - search and return one result per indexed note.
@@ -19,7 +22,57 @@ The server currently exposes these read-only MCP tools:
 - `get_vault_status` - return sync, policy, and document-count status for one vault.
 - `debug_search` - explain query normalization and why a search may return few or no results.
 
-All tools are read-only. Denied or non-indexed paths remain unavailable even if a client guesses an id or exact path.
+Hosted proposal tools are disabled by default. When the server owner sets
+`MCP_WRITE_PROPOSALS_ENABLED=true` and the authenticated OAuth token includes
+`vault:write`, the server also exposes:
+
+- `propose_vault_write` - queue a create, append, replace, frontmatter, or rename proposal for Obsidian-side review.
+- `list_write_proposals` - inspect proposal status and audit history.
+
+`propose_vault_write` never edits a vault directly. Existing-note operations
+require the current `metadata.content_hash` from `fetch` or
+`fetch_note_by_path`; stale hashes, non-indexed existing notes, unsafe paths,
+and invalid operation payloads are refused before a proposal is stored. The
+Obsidian plugin still performs its own live-file hash check, diff review,
+backup, audit, approval, and local apply. Denied or non-indexed paths remain
+unavailable for hosted reads even if a client guesses an id or exact path.
+
+The local desktop/developer server can additionally expose `local_fs_policy`,
+`local_fs_audit`, `local_list_files`, `local_read_file`,
+`local_read_files`, `local_read_file_bytes`, `local_file_info`, and selected write tools such as `local_write_file`,
+`local_write_file_bytes`, `local_edit_file`, `local_create_directory`,
+`local_copy_path`, `local_move_path`, and `local_delete_path`. Read modes can also expose
+`local_find_files` and `local_search_text` for on-demand local discovery
+without building an index.
+These tools are off by default and are intended for explicit user-directed
+local interactions, not automatic vault enumeration. The plugin launcher can
+time-box enabled filesystem access with a session expiry window; once expired,
+the local MCP surface falls back to `local_fs_policy` and `local_fs_audit` until
+the server is restarted or refreshed. The audit tool reads the local JSONL audit
+trail for successful write-side operations, newest first. The Obsidian plugin
+includes a `Refresh session` action for intentionally renewing that local
+access window while working with a local MCP client. By default, every local
+filesystem tool call except `local_fs_policy` must also include the exact policy
+phrase as `user_intent` (`use local filesystem` unless the plugin setting
+changes it), so clients have to make the current local-file interaction explicit
+in the tool arguments.
+
+Hosted desktop access is a separate opt-in bridge. When the deployment owner
+sets `MCP_REMOTE_LOCAL_FS_ENABLED=true`, the OAuth token includes
+`local:access`, and the matching Obsidian installation enables
+`Allow hosted ChatGPT to use local tools`, the hosted MCP also exposes:
+
+- `desktop_local_fs_status` - report the live plugin/sidecar policy, heartbeat, and exact active local-tool argument schemas.
+- `desktop_run_local_tool` - enqueue one short-lived local tool call and wait for the matching Obsidian installation to execute it.
+- `desktop_local_request_status` - check a request that outlived the synchronous wait window.
+
+The plugin polls outward to the hosted server, then forwards each claimed call
+to the localhost MCP endpoint. The hosted service never opens an inbound port
+on the user's computer, never receives a background filesystem inventory, and
+cannot bypass the local sidecar's roots, operation toggles, expiry, exact
+`user_intent`, symlink checks, delete confirmation, or audit trail. God mode is
+therefore available remotely only while the user has deliberately enabled it
+in the plugin and kept the short-lived local session active.
 
 When exactly one vault is connected, read tools can omit `vault_id`. When more
 than one vault is connected, search/list/fetch/status/debug tools return a clear
@@ -77,6 +130,21 @@ MCP_SYNC_TOKEN=dev-sync-token \
 npm run dev:server
 ```
 
+## Demo Vault
+
+Public docs and screenshots should use the synthetic demo vault under
+`fixtures/vault/`, not a copied personal vault. It includes allowlisted project
+and reference notes, denied credential/daily-note examples, and one intentional
+fixture secret used to prove redaction behavior.
+
+Verify it before using it in public-facing material:
+
+```bash
+npm run demo:verify
+```
+
+See [docs/demo-vault.md](docs/demo-vault.md).
+
 In another terminal:
 
 ```bash
@@ -93,12 +161,53 @@ Then check:
 curl http://127.0.0.1:3333/healthz
 ```
 
-Or run the compiled local smoke test:
+Or run the wiki-free local release gate:
 
 ```bash
+npm run release:check:local
+```
+
+That command runs build, API check, tests, MCP UI smoke, local filesystem MCP
+smoke including session-expiry behavior, local MCP Inspector-origin smoke, audit, plugin
+package/verify/BRAT/fresh-install/lifecycle checks, clean-env local smoke, and
+OAuth local smoke. It does not regenerate the wiki, run production smokes, or
+replace real MCP client acceptance.
+
+To prepare the Obsidian plugin for BRAT private-alpha testing:
+
+```bash
+npm run plugin:brat:prepare
+npm run plugin:brat:verify
+npm run plugin:brat:verify-github
+npm run plugin:brat:check-copy -- --check-github-release
+npm run plugin:brat:verify-copy-install
+npm run plugin:brat:prepare-ui-evidence
+npm run plugin:brat:evidence-status
+npm run plugin:brat:verify-ui-evidence
+```
+
+Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
+`dist/brat/vault-mcp/styles.css` to a GitHub prerelease whose tag and release
+name exactly match the plugin manifest version. The private-alpha `0.1.0`
+prerelease is published at
+`https://github.com/vault-mcp/platform/releases/tag/0.1.0`.
+Use [docs/brat-private-alpha-walkthrough.md](docs/brat-private-alpha-walkthrough.md)
+for the screenshot-backed BRAT UI evidence gate.
+
+For a smaller manual subset:
+
+```bash
+npm run smoke:mcp-ui
+npm run smoke:local-fs
+npm run smoke:local-inspector
 npm run smoke:local
 npm run smoke:oauth-local
 ```
+
+`smoke:mcp-ui` is dependency-free and does not contact ChatGPT. It executes the
+MCP Apps output template with a tiny fake DOM, then verifies delayed
+`openai:set_globals`, retry rendering, note Markdown, status cards, error cards,
+and proposal cards.
 
 For a deployed endpoint:
 
@@ -161,6 +270,18 @@ OAUTH_JWKS_URL=https://auth.example.com/.well-known/jwks.json
 OAUTH_SCOPES=vault:read
 ```
 
+Private-alpha proposal writes require both gates:
+
+```bash
+MCP_WRITE_PROPOSALS_ENABLED=true
+OAUTH_SCOPES="vault:read vault:write"
+```
+
+Existing OAuth clients must reauthorize before their token can carry the new
+scope. Leaving either gate off keeps the hosted MCP surface read-only. Static
+owner tokens receive the proposal tools only when
+`MCP_WRITE_PROPOSALS_ENABLED=true`.
+
 Unauthenticated MCP requests return `401` with a `WWW-Authenticate` header pointing to protected-resource metadata.
 
 `ALLOWED_ORIGINS` controls CORS/preflight and origin protection for deployed clients.
@@ -192,3 +313,29 @@ The MCP server never reads the vault directly. It only serves the synced, allowl
 Start with [docs/self-host.md](docs/self-host.md) for the private-alpha
 self-host path. Use [docs/deployment.md](docs/deployment.md) for lower-level
 runtime and platform details.
+
+For the planned no-cloud desktop path, see
+[docs/local-server-mode.md](docs/local-server-mode.md). That mode will let the
+Obsidian plugin start a localhost MCP server while the vault is open. The ZIP
+package now includes a Node-required local sidecar under `sidecar/`; BRAT/dev
+installs without that folder can still configure the platform repo folder and
+npm command as a fallback. The plugin waits for `/healthz` and requires the
+local service name, version, storage status, and MCP endpoint to match before it
+marks the sidecar ready. The configured local port is treated as preferred; the
+plugin can reuse a compatible existing local server or scan upward to the next
+available port before spawning. The plugin can also copy a local client
+connection bundle with the localhost endpoint, bearer auth header, and current
+local filesystem policy context; it does not include the plugin/admin sync
+token. The adjacent `Copy instructions` action copies a no-token prompt that
+tells local-capable chat clients to call `local_fs_policy`, respect the
+configured roots/operations/session window, and include `user_intent` when
+required. Verify the same profile with
+`npm run smoke:local-server`. The explicit local
+filesystem MCP policy gate is `npm run smoke:local-fs`; it checks scoped
+read/write roots, denied outside paths, destructive confirmation, session
+expiry, required `user_intent`, and god-mode absolute-path access in temporary
+directories.
+`npm run smoke:local-inspector`
+checks the MCP Inspector localhost origins, preflight behavior, authenticated
+SSE, forbidden-origin rejection, and local filesystem tool calls through an
+Inspector-origin request.
