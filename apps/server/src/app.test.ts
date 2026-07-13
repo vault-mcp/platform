@@ -71,7 +71,7 @@ describe("server MCP contract", () => {
 
     expect(health.ok).toBe(true);
     expect(health.service.name).toBe("vault-mcp-connector");
-    expect(health.service.version).toBe("0.2.0");
+    expect(health.service.version).toBe("0.2.1");
     expect(health.service.mcp_resource_url).toBe("http://127.0.0.1:0/mcp");
     expect(health.storage).toEqual({ kind: "json", ok: true });
     expect(health.document_count).toBe(0);

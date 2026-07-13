@@ -1,6 +1,6 @@
 {
   "name": "@vault-mcp/server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@vault-mcp/core": "0.2.0"
+    "@vault-mcp/core": "0.2.1"
   },
   "devDependencies": {
     "tsx": "^4.21.0"

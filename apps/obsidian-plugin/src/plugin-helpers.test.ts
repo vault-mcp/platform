@@ -470,7 +470,7 @@ describe("plugin helpers", () => {
       localServerDataDir: "Plugin Data/Local Server",
       localServerMcpToken: "mcp token",
       localServerSyncToken: "sync token",
-      localServerSidecarDir: "/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar",
+      localServerSidecarDir: "/Users/example/Vault/.obsidian/plugins/vault-mcp-connector/sidecar",
       localServerCommand: "/opt/homebrew/bin/npm",
       localFsAccessMode: "read" as const,
       localFsReadRoots: ["/Users/example/Vault"],
@@ -484,7 +484,7 @@ describe("plugin helpers", () => {
     expect(status.facts.join("\n")).toContain("Plugin runtime: self-contained");
 
     const command = buildLocalServerLaunchCommand(settings);
-    expect(command).toContain("cd '/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar' && /opt/homebrew/bin/node start-local-server.mjs");
+    expect(command).toContain("cd '/Users/example/Vault/.obsidian/plugins/vault-mcp-connector/sidecar' && /opt/homebrew/bin/node start-local-server.mjs");
     expect(command).toContain("--fs-access 'read'");
     expect(command).toContain("--fs-access-ttl-minutes '30'");
     expect(command).toContain("--fs-require-user-intent 'true'");
@@ -492,7 +492,7 @@ describe("plugin helpers", () => {
 
     expect(buildLocalServerSpawnConfig(settings)).toEqual({
       command: "/opt/homebrew/bin/node",
-      cwd: "/Users/example/Vault/.obsidian/plugins/vault-mcp/sidecar",
+      cwd: "/Users/example/Vault/.obsidian/plugins/vault-mcp-connector/sidecar",
       args: [
         "start-local-server.mjs",
         "--port",

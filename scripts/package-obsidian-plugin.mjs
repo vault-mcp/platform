@@ -17,7 +17,7 @@ const communityManifest = JSON.parse(await readFile(path.join(repoRoot, "manifes
 for (const key of ["id", "name", "version", "minAppVersion", "description"]) {
   assert(typeof manifest[key] === "string" && manifest[key].length > 0, `manifest.json is missing ${key}`);
 }
-assert(manifest.id === "vault-mcp", `Expected manifest id vault-mcp, got ${manifest.id}`);
+assert(manifest.id === "vault-mcp-connector", `Expected manifest id vault-mcp-connector, got ${manifest.id}`);
 assert(JSON.stringify(communityManifest) === JSON.stringify(manifest), "Root manifest.json must exactly match apps/obsidian-plugin/manifest.json");
 
 if (!skipBuild && !dryRun) {

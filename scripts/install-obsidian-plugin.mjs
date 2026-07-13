@@ -1,15 +1,16 @@
-import { copyFile, mkdir, stat } from "node:fs/promises";
+import { copyFile, mkdir, readFile, stat } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
+const sourceManifest = JSON.parse(await readFile(path.join(pluginRoot, "manifest.json"), "utf8"));
 
 const args = process.argv.slice(2);
 const options = {
   vault: process.env.VAULT_ROOT || "",
-  pluginId: "vault-mcp",
+  pluginId: sourceManifest.id,
   skipBuild: false,
   dryRun: false,
 };

@@ -7,7 +7,6 @@ import process from "node:process";
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
 const bratRoot = path.join(repoRoot, "dist", "brat");
-const bratAssetDir = path.join(bratRoot, "vault-mcp");
 const args = parseArgs(process.argv.slice(2));
 const skipBuild = Boolean(args["skip-build"]);
 const dryRun = Boolean(args["dry-run"]);
@@ -16,12 +15,13 @@ const releaseName = args["release-name"] ?? releaseTag;
 
 const manifestPath = path.join(pluginRoot, "manifest.json");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+const bratAssetDir = path.join(bratRoot, manifest.id);
 const runtimeFiles = ["manifest.json", "main.js", "styles.css"];
 
 for (const key of ["id", "name", "version", "minAppVersion", "description"]) {
   assert(typeof manifest[key] === "string" && manifest[key].length > 0, `manifest.json is missing ${key}`);
 }
-assert(manifest.id === "vault-mcp", `Expected manifest id vault-mcp, got ${manifest.id}`);
+assert(manifest.id === "vault-mcp-connector", `Expected manifest id vault-mcp-connector, got ${manifest.id}`);
 assert(isObsidianCompatibleVersion(manifest.version), `manifest version is not Obsidian-compatible: ${manifest.version}`);
 if (releaseTag) {
   assert(releaseTag === manifest.version, `BRAT release tag must match manifest.version exactly: ${releaseTag} !== ${manifest.version}`);

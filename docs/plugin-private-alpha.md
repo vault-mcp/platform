@@ -156,7 +156,7 @@ npm run plugin:install-copy
 The default target is:
 
 ```text
-/path/to/disposable-test-vault/.obsidian/plugins/vault-mcp
+/path/to/disposable-test-vault/.obsidian/plugins/vault-mcp-connector
 ```
 
 To choose another vault:
@@ -196,11 +196,11 @@ deliberately skips generated wiki updates unless explicitly requested.
 This validates the plugin manifest, builds the plugin, stages the three Obsidian runtime files, and writes:
 
 ```text
-dist/obsidian-plugin/vault-mcp/
-dist/obsidian-plugin/vault-mcp-0.1.0.zip
-dist/obsidian-plugin/vault-mcp-0.1.0.zip.sha256
-dist/obsidian-plugin/vault-mcp-0.1.0-release-notes.md
-dist/obsidian-plugin/vault-mcp-0.1.0-release.json
+dist/obsidian-plugin/vault-mcp-connector/
+dist/obsidian-plugin/vault-mcp-connector-0.2.1.zip
+dist/obsidian-plugin/vault-mcp-connector-0.2.1.zip.sha256
+dist/obsidian-plugin/vault-mcp-connector-0.2.1-release-notes.md
+dist/obsidian-plugin/vault-mcp-connector-0.2.1-release.json
 ```
 
 The package contains only:
@@ -216,10 +216,10 @@ npm run plugin:verify-package
 ```
 
 This checks the zip checksum, extracts the package into a temporary vault under
-`.obsidian/plugins/vault-mcp`, verifies the manifest matches the source
+`.obsidian/plugins/vault-mcp-connector`, verifies the manifest matches the source
 manifest, verifies `main.js` and `styles.css` are non-empty, validates release
 notes and release metadata, and catches the common double-nested zip mistake
-where files land under `.obsidian/plugins/vault-mcp/vault-mcp`.
+where files land under `.obsidian/plugins/vault-mcp-connector/vault-mcp-connector`.
 
 To keep the generated disposable vault for inspection:
 
@@ -235,7 +235,7 @@ npm run plugin:smoke-fresh-install
 
 This uses the release manifest, zip, checksum, and release notes as the source
 of truth. It creates a disposable vault, installs the package under
-`.obsidian/plugins/vault-mcp`, writes `.obsidian/community-plugins.json` to
+`.obsidian/plugins/vault-mcp-connector`, writes `.obsidian/community-plugins.json` to
 enable the plugin id, verifies the runtime files and manifest, and catches
 double-nested plugin installs. It removes the disposable vault by default.
 
@@ -252,7 +252,7 @@ Smoke-test private-alpha upgrade and uninstall behavior:
 npm run plugin:smoke-lifecycle
 ```
 
-This creates a disposable vault with an existing `vault-mcp` plugin install,
+This creates a disposable vault with an existing `vault-mcp-connector` plugin install,
 an existing plugin `data.json`, a normal note, and a write-audit note. It
 upgrades runtime files from the release zip, verifies `data.json` is preserved
 exactly, then uninstalls the plugin and confirms normal vault notes plus write
@@ -296,10 +296,10 @@ npm run plugin:brat:verify
 That creates and verifies:
 
 ```text
-dist/brat/vault-mcp/manifest.json
-dist/brat/vault-mcp/main.js
-dist/brat/vault-mcp/styles.css
-dist/brat/vault-mcp-0.1.0-brat-release.json
+dist/brat/vault-mcp-connector/manifest.json
+dist/brat/vault-mcp-connector/main.js
+dist/brat/vault-mcp-connector/styles.css
+dist/brat/vault-mcp-connector-0.2.1-brat-release.json
 ```
 
 To test through BRAT:
@@ -308,12 +308,12 @@ To test through BRAT:
 2. Use the existing private-alpha GitHub prerelease:
 
 ```text
-https://github.com/vault-mcp/platform/releases/tag/0.1.0
+https://github.com/vault-mcp/platform/releases/tag/0.2.1
 ```
 
 3. To recreate or replace that release, create a GitHub prerelease on
-   `vault-mcp/platform` named `0.1.0` with tag `0.1.0`, then upload these assets
-   from `dist/brat/vault-mcp/`:
+   `vault-mcp/platform` named `0.2.1` with tag `0.2.1`, then upload these assets
+   from `dist/brat/vault-mcp-connector/`:
 
 ```text
 manifest.json
@@ -388,31 +388,31 @@ For a private-alpha user who does not want to build from source:
 1. Confirm the private-alpha release bundle includes:
 
 ```text
-vault-mcp-0.1.0.zip
-vault-mcp-0.1.0.zip.sha256
-vault-mcp-0.1.0-release-notes.md
-vault-mcp-0.1.0-release.json
+vault-mcp-connector-0.2.1.zip
+vault-mcp-connector-0.2.1.zip.sha256
+vault-mcp-connector-0.2.1-release-notes.md
+vault-mcp-connector-0.2.1-release.json
 ```
 
 2. Verify the checksum before installing:
 
 ```bash
 cd /path/to/release/files
-shasum -a 256 -c vault-mcp-0.1.0.zip.sha256
+shasum -a 256 -c vault-mcp-connector-0.2.1.zip.sha256
 ```
 
-3. Extract `vault-mcp-0.1.0.zip` into the test vault's plugin folder:
+3. Extract `vault-mcp-connector-0.2.1.zip` into the test vault's plugin folder:
 
 ```text
 .obsidian/plugins/
 ```
 
-The zip contains a single `vault-mcp` folder, so the final layout should be:
+The zip contains a single `vault-mcp-connector` folder, so the final layout should be:
 
 ```text
-.obsidian/plugins/vault-mcp/manifest.json
-.obsidian/plugins/vault-mcp/main.js
-.obsidian/plugins/vault-mcp/styles.css
+.obsidian/plugins/vault-mcp-connector/manifest.json
+.obsidian/plugins/vault-mcp-connector/main.js
+.obsidian/plugins/vault-mcp-connector/styles.css
 ```
 
 4. Restart Obsidian or reload community plugins.
@@ -429,7 +429,7 @@ Manual upgrade for a private-alpha zip:
 2. Back up the current plugin folder if you want a rollback point:
 
 ```text
-.obsidian/plugins/vault-mcp
+.obsidian/plugins/vault-mcp-connector
 ```
 
 3. Replace only these files from the new zip:
@@ -440,7 +440,7 @@ main.js
 styles.css
 ```
 
-4. Leave `.obsidian/plugins/vault-mcp/data.json` in place if it exists. Obsidian uses that file for local plugin settings.
+4. Leave `.obsidian/plugins/vault-mcp-connector/data.json` in place if it exists. Obsidian uses that file for local plugin settings.
 5. Reopen Obsidian or re-enable the plugin.
 6. Open the Vault MCP dashboard and run `Preview index` before syncing.
 
@@ -464,7 +464,7 @@ Manual uninstall:
 4. Delete:
 
 ```text
-.obsidian/plugins/vault-mcp
+.obsidian/plugins/vault-mcp-connector
 ```
 
 This removes the plugin and local plugin settings. It does not delete notes that the plugin created during write-proposal apply testing. If write-proposal testing was enabled, review the audit folder before deleting anything:
@@ -479,7 +479,7 @@ The lifecycle smoke also verifies uninstall behavior in a disposable vault:
 npm run plugin:smoke-lifecycle
 ```
 
-It confirms the plugin folder is removed, `vault-mcp` is removed from
+It confirms the plugin folder is removed, `vault-mcp-connector` is removed from
 `.obsidian/community-plugins.json`, and normal vault notes plus audit notes
 remain in place.
 
@@ -490,12 +490,12 @@ remain in place.
 Check that the files are nested exactly once:
 
 ```text
-.obsidian/plugins/vault-mcp/manifest.json
-.obsidian/plugins/vault-mcp/main.js
-.obsidian/plugins/vault-mcp/styles.css
+.obsidian/plugins/vault-mcp-connector/manifest.json
+.obsidian/plugins/vault-mcp-connector/main.js
+.obsidian/plugins/vault-mcp-connector/styles.css
 ```
 
-If the zip was extracted as `.obsidian/plugins/vault-mcp/vault-mcp/manifest.json`, move the inner files up one folder.
+If the zip was extracted as `.obsidian/plugins/vault-mcp-connector/vault-mcp-connector/manifest.json`, move the inner files up one folder.
 
 ### Plugin Appears But Will Not Enable
 

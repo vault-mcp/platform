@@ -51,7 +51,7 @@ const launcherSha256 = await sha256File(launcherPath);
 
 await writeFile(manifestPath, `${JSON.stringify({
   name: "vault-mcp-local-sidecar",
-  version: "0.2.0",
+  version: "0.2.1",
   node: ">=20",
   entrypoint: "start-local-server.mjs",
   serverBundle: "vault-mcp-local-server.mjs",

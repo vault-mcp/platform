@@ -6,18 +6,18 @@ import process from "node:process";
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const pluginRoot = path.join(repoRoot, "apps", "obsidian-plugin");
 const args = parseArgs(process.argv.slice(2));
-const bratAssetDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", "vault-mcp"));
 const releaseTag = args["release-tag"];
 const releaseName = args["release-name"] ?? releaseTag;
 const runtimeFiles = ["manifest.json", "main.js", "styles.css"];
 
 const sourceManifest = JSON.parse(await readFile(path.join(pluginRoot, "manifest.json"), "utf8"));
+const bratAssetDir = path.resolve(args.dir ?? path.join(repoRoot, "dist", "brat", sourceManifest.id));
 const bratManifest = JSON.parse(await readFile(path.join(bratAssetDir, "manifest.json"), "utf8"));
 
 for (const key of ["id", "name", "version", "minAppVersion", "description"]) {
   assert(bratManifest[key] === sourceManifest[key], `BRAT manifest ${key} does not match source manifest`);
 }
-assert(sourceManifest.id === "vault-mcp", `Expected source manifest id vault-mcp, got ${sourceManifest.id}`);
+assert(sourceManifest.id === "vault-mcp-connector", `Expected source manifest id vault-mcp-connector, got ${sourceManifest.id}`);
 assert(isObsidianCompatibleVersion(bratManifest.version), `BRAT manifest version is not Obsidian-compatible: ${bratManifest.version}`);
 if (releaseTag) {
   assert(releaseTag === bratManifest.version, `BRAT release tag must match manifest.version exactly: ${releaseTag} !== ${bratManifest.version}`);

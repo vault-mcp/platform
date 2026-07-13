@@ -21,7 +21,7 @@ const keep = Boolean(args.keep);
 let vaultRoot = args.vault ? path.resolve(args.vault) : null;
 let createdTempVault = false;
 
-assert(pluginId === "vault-mcp", `Expected source manifest id vault-mcp, got ${pluginId}`);
+assert(pluginId === "vault-mcp-connector", `Expected source manifest id vault-mcp-connector, got ${pluginId}`);
 assert(JSON.stringify(communityManifest) === JSON.stringify(sourceManifest), "Root manifest.json must exactly match the plugin source manifest");
 await assertFile(zipPath, "plugin zip");
 await assertFile(checksumPath, "plugin checksum");
@@ -40,7 +40,7 @@ validateReleaseManifest(releaseManifest, sourceManifest, {
   checksum: actualChecksum,
 });
 assert(releaseNotes.includes(sourceManifest.version), `Release notes must mention version ${sourceManifest.version}`);
-assert(/^# Vault MCP Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Obsidian plugin");
+assert(/^# Vault MCP Connector Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Connector Obsidian plugin");
 
 if (!vaultRoot) {
   vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vault-mcp-plugin-install-"));

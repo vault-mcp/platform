@@ -1,6 +1,6 @@
-# Vault MCP
+# Vault MCP Connector
 
-Vault MCP connects Obsidian to ChatGPT, Claude, Codex, and other MCP clients.
+Vault MCP Connector connects Obsidian to ChatGPT, Claude, Codex, and other MCP clients.
 The Obsidian plugin controls what is indexed, starts an optional local MCP
 server, and provides one explicit access-level selector for local reads and
 direct writes. Hosted deployments serve only the derived index approved by the
@@ -8,13 +8,13 @@ plugin and can queue reviewable vault-write proposals.
 
 ## Install And Start
 
-Vault MCP is currently a public alpha release candidate. Until its Obsidian
-Community Plugins review is complete, install release `0.2.0` with BRAT or place
+Vault MCP Connector is currently a public alpha release candidate. Until its Obsidian
+Community Plugins review is complete, install release `0.2.1` with BRAT or place
 the release assets `manifest.json`, `main.js`, and `styles.css` in
-`<vault>/.obsidian/plugins/vault-mcp/`.
+`<vault>/.obsidian/plugins/vault-mcp-connector/`.
 
-1. Enable Vault MCP under **Settings > Community plugins**.
-2. Open **Settings > Vault MCP** for setup and advanced configuration.
+1. Enable Vault MCP Connector under **Settings > Community plugins**.
+2. Open **Settings > Vault MCP Connector** for setup and advanced configuration.
 3. For local-only use, leave the server URL alone, choose a local file access
    level, and turn on **Run local MCP server**. No external Node installation is
    required.
@@ -225,9 +225,9 @@ npm run plugin:brat:evidence-status
 npm run plugin:brat:verify-ui-evidence
 ```
 
-Upload `dist/brat/vault-mcp/manifest.json`, `dist/brat/vault-mcp/main.js`, and
-`dist/brat/vault-mcp/styles.css` to the GitHub release whose tag exactly matches
-the plugin manifest version. The Community Plugins candidate is release `0.2.0`.
+Upload `dist/brat/vault-mcp-connector/manifest.json`, `dist/brat/vault-mcp-connector/main.js`, and
+`dist/brat/vault-mcp-connector/styles.css` to the GitHub release whose tag exactly matches
+the plugin manifest version. The Community Plugins candidate is release `0.2.1`.
 Use [docs/brat-private-alpha-walkthrough.md](docs/brat-private-alpha-walkthrough.md)
 for the screenshot-backed BRAT UI evidence gate.
 

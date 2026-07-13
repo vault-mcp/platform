@@ -6,6 +6,7 @@ import { spawn } from "node:child_process";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const args = parseArgs(process.argv.slice(2));
+const pluginManifest = JSON.parse(await fs.readFile(path.join(repoRoot, "apps", "obsidian-plugin", "manifest.json"), "utf8"));
 const baseUrl = stringArg("base-url", "SMOKE_BASE_URL", "PUBLIC_BASE_URL")?.replace(/\/$/, "") ?? "https://vault-mcp-connector.vercel.app";
 const syncToken = stringArg("sync-token", "MCP_SYNC_TOKEN");
 const vaultRoot = stringArg("vault-root", "VAULT_ROOT") ?? "";
@@ -19,7 +20,7 @@ const dryRun = Boolean(args["dry-run"]);
 assert(syncToken, "--sync-token or MCP_SYNC_TOKEN is required");
 assert(vaultRoot.includes("vault copy"), `Refusing to prepare UI smoke outside a copied vault: ${vaultRoot}`);
 
-const pluginDir = path.join(vaultRoot, ".obsidian", "plugins", "vault-mcp");
+const pluginDir = path.join(vaultRoot, ".obsidian", "plugins", pluginManifest.id);
 const settingsPath = path.join(pluginDir, "data.json");
 const settings = safeSmokeSettings();
 

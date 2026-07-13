@@ -35,7 +35,7 @@ assert(releaseManifest.package.sha256 === actualChecksum, "Release manifest SHA2
 
 const releaseNotes = await readFile(releaseNotesPath, "utf8");
 assert(releaseNotes.includes(pluginVersion), `Release notes must mention version ${pluginVersion}`);
-assert(/^# Vault MCP Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Obsidian plugin");
+assert(/^# Vault MCP Connector Obsidian Plugin /m.test(releaseNotes), "Release notes must identify the Vault MCP Connector Obsidian plugin");
 
 if (!vaultRoot) {
   vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vault-mcp-fresh-install-"));
@@ -107,13 +107,13 @@ try {
       "zip checksum matches .sha256 and release manifest",
       "release notes identify the plugin and version",
       "zip extracts to one plugin folder",
-      "runtime files install under .obsidian/plugins/vault-mcp",
+      `runtime files install under .obsidian/plugins/${pluginId}`,
       "local server runtime is embedded in main.js",
       "installed manifest matches release manifest",
       "manifest.json, main.js, and styles.css are non-empty",
       "no sidecar directory is required",
       "double-nested plugin folder is absent",
-      "community-plugins.json enables vault-mcp",
+      `community-plugins.json enables ${pluginId}`,
     ],
   };
 

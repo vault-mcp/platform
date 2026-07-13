@@ -62,7 +62,7 @@ try {
   await writeFile(path.join(obsidianDir, "community-plugins.json"), `${JSON.stringify([pluginId], null, 2)}\n`, "utf8");
   await writeFile(path.join(installedPluginDir, "manifest.json"), `${JSON.stringify({
     id: pluginId,
-    name: "Vault MCP",
+    name: sourceManifest.name,
     version: "0.0.0-lifecycle",
     minAppVersion: "1.5.0",
     description: "Old lifecycle smoke plugin manifest",
@@ -133,10 +133,10 @@ try {
       "release manifest, checksum, and zip are self-consistent",
       "upgrade replaces manifest.json, main.js, and styles.css from the release zip",
       "upgrade uses the local server runtime embedded in main.js",
-      "upgrade preserves existing .obsidian/plugins/vault-mcp/data.json exactly",
+      `upgrade preserves existing .obsidian/plugins/${pluginId}/data.json exactly`,
       "upgrade avoids double-nested plugin folders",
       "uninstall removes the plugin folder",
-      "uninstall removes vault-mcp from community-plugins.json",
+      `uninstall removes ${pluginId} from community-plugins.json`,
       "uninstall leaves normal vault notes in place",
       "uninstall leaves write-audit notes in place",
     ],
